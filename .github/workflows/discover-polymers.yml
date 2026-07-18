@@ -1,0 +1,62 @@
+name: Discover new polymers
+
+# Periodically checks scripts/monomer-watchlist.json against PubChem for
+# polymers not yet in polymer-data.js and opens a PR with candidates -
+# never merges automatically. See scripts/discover-polymers.js for the
+# full explanation of what gets auto-generated vs. flagged for manual
+# review, and why.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # every Monday, 06:00 UTC
+  workflow_dispatch: {} # allows a manual run from the Actions tab
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run discovery pipeline
+        run: node scripts/discover-polymers.js
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet -- polymer-data.js; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Read run summary
+        id: summary
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          {
+            echo 'body<<DISCOVERY_EOF'
+            cat discovery-summary.md
+            echo 'DISCOVERY_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open pull request
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'Add candidate polymers from automated discovery'
+          title: 'Automated polymer discovery: new candidates for review'
+          body: ${{ steps.summary.outputs.body }}
+          branch: automated-polymer-discovery
+          add-paths: polymer-data.js
+          labels: automated

@@ -1,0 +1,43 @@
+{
+  "_comment": [
+    "Candidate monomers the discovery pipeline checks each run, one PubChem lookup per entry.",
+    "Add to this list to steer what gets discovered - the pipeline only ever considers names here,",
+    "it does not crawl PubChem on its own. `monomer` must be a name PubChem's PUG REST /compound/name",
+    "endpoint resolves to a real compound (test at https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/<name>/property/CanonicalSMILES/JSON).",
+    "`cls`/`tags`/`polymerName`/`aka` are supplied by hand (a human judgment call, not derived from PubChem)",
+    "so the resulting DB entry reads the way the rest of the curated library does.",
+    "Step-growth/condensation polymers (nylons, most polyesters) are intentionally NOT listed here:",
+    "they need a monomer *pair* plus specific linkage chemistry that a single PubChem lookup can't supply,",
+    "and PubChem generally has no compound record for the polymer name itself to fall back on either.",
+    "Those stay a manual-entry workflow using the existing structure editor."
+  ],
+  "monomers": [
+    { "monomer": "butyl acrylate", "polymerName": "Poly(butyl acrylate)", "aka": ["PBA"], "cls": "Addition (acrylate)", "tags": ["acrylic"] },
+    { "monomer": "2-ethylhexyl acrylate", "polymerName": "Poly(2-ethylhexyl acrylate)", "aka": ["P2EHA"], "cls": "Addition (acrylate)", "tags": ["acrylic"] },
+    { "monomer": "tert-butyl acrylate", "polymerName": "Poly(tert-butyl acrylate)", "aka": ["PtBA"], "cls": "Addition (acrylate)", "tags": ["acrylic"] },
+    { "monomer": "butyl methacrylate", "polymerName": "Poly(butyl methacrylate)", "aka": ["PBMA"], "cls": "Addition (methacrylate)", "tags": ["acrylic"] },
+    { "monomer": "tert-butyl methacrylate", "polymerName": "Poly(tert-butyl methacrylate)", "aka": ["PtBMA"], "cls": "Addition (methacrylate)", "tags": ["acrylic"] },
+    { "monomer": "benzyl methacrylate", "polymerName": "Poly(benzyl methacrylate)", "aka": ["PBzMA"], "cls": "Addition (methacrylate)", "tags": ["acrylic"] },
+    { "monomer": "glycidyl methacrylate", "polymerName": "Poly(glycidyl methacrylate)", "aka": ["PGMA"], "cls": "Addition (methacrylate)", "tags": ["acrylic", "specialty"] },
+    { "monomer": "2-(dimethylamino)ethyl methacrylate", "polymerName": "Poly(2-(dimethylamino)ethyl methacrylate)", "aka": ["PDMAEMA"], "cls": "Addition (methacrylate)", "tags": ["acrylic", "water-soluble", "biomedical"] },
+    { "monomer": "alpha-methylstyrene", "polymerName": "Poly(alpha-methylstyrene)", "aka": ["PAMS"], "cls": "Addition (vinyl)", "tags": ["specialty"] },
+    { "monomer": "4-methylstyrene", "polymerName": "Poly(4-methylstyrene)", "aka": ["P4MS"], "cls": "Addition (vinyl)", "tags": ["specialty"] },
+    { "monomer": "4-tert-butylstyrene", "polymerName": "Poly(4-tert-butylstyrene)", "aka": ["PtBS"], "cls": "Addition (vinyl)", "tags": ["specialty"] },
+    { "monomer": "chlorotrifluoroethylene", "polymerName": "Poly(chlorotrifluoroethylene)", "aka": ["PCTFE"], "cls": "Addition (vinyl)", "tags": ["engineering", "fluoropolymer"] },
+    { "monomer": "N-vinylcaprolactam", "polymerName": "Poly(N-vinylcaprolactam)", "aka": ["PVCL"], "cls": "Addition (vinyl)", "tags": ["water-soluble", "biomedical"] },
+    { "monomer": "vinyl propionate", "polymerName": "Poly(vinyl propionate)", "aka": ["PVPr"], "cls": "Addition (vinyl)", "tags": ["coating"] },
+    { "monomer": "methyl vinyl ether", "polymerName": "Poly(methyl vinyl ether)", "aka": ["PMVE"], "cls": "Addition (vinyl)", "tags": ["specialty"] },
+    { "monomer": "ethyl vinyl ether", "polymerName": "Poly(ethyl vinyl ether)", "aka": ["PEVE"], "cls": "Addition (vinyl)", "tags": ["specialty"] },
+    { "monomer": "N-vinylformamide", "polymerName": "Poly(N-vinylformamide)", "aka": ["PNVF"], "cls": "Addition (vinyl)", "tags": ["water-soluble"] },
+    { "monomer": "2,3-dimethyl-1,3-butadiene", "polymerName": "Poly(2,3-dimethylbutadiene)", "aka": [], "cls": "Addition (diene)", "tags": ["elastomer"] },
+    { "monomer": "epsilon-caprolactone", "polymerName": "Poly(caprolactone)", "aka": ["PCL"], "cls": "Ring-opening", "tags": ["biodegradable", "biomedical"] },
+    { "monomer": "glycolide", "polymerName": "Poly(glycolide)", "aka": ["PGA"], "cls": "Ring-opening", "tags": ["biodegradable", "biomedical"] },
+    { "monomer": "lactide", "polymerName": "Poly(lactide)", "aka": ["PLA"], "cls": "Ring-opening", "tags": ["biodegradable", "biomedical", "commodity"] },
+    { "monomer": "delta-valerolactone", "polymerName": "Poly(valerolactone)", "aka": ["PVL"], "cls": "Ring-opening", "tags": ["biodegradable"] },
+    { "monomer": "beta-propiolactone", "polymerName": "Poly(propiolactone)", "aka": [], "cls": "Ring-opening", "tags": ["biodegradable"] },
+    { "monomer": "trimethylene carbonate", "polymerName": "Poly(trimethylene carbonate)", "aka": ["PTMC"], "cls": "Ring-opening", "tags": ["biodegradable", "biomedical"] },
+    { "monomer": "epichlorohydrin", "polymerName": "Poly(epichlorohydrin)", "aka": ["PECH"], "cls": "Ring-opening", "tags": ["elastomer"] },
+    { "monomer": "1,2-butylene oxide", "polymerName": "Poly(butylene oxide)", "aka": ["PBO"], "cls": "Ring-opening", "tags": ["polyether"] },
+    { "monomer": "styrene oxide", "polymerName": "Poly(styrene oxide)", "aka": [], "cls": "Ring-opening", "tags": ["specialty"] }
+  ]
+}
