@@ -1311,3 +1311,285 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
   }
   a[href]::after { content: ""; }
 }
+
+/* Polymer structure search */
+.mol-toolbar-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; }
+.mol-toolbar-row:last-of-type { margin-bottom: 0; }
+.mol-tool-cluster { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.mol-tool-divider { width: 1px; height: 24px; background: var(--border); margin: 0 2px; flex-shrink: 0; }
+.mol-toolbar-label { font-size: 0.72rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; margin-right: 2px; }
+
+.mol-mode-btn, .mol-icon-btn, .mol-el-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.mol-mode-btn svg, .mol-icon-btn svg { width: 17px; height: 17px; display: block; pointer-events: none; }
+.mol-mode-btn:hover, .mol-icon-btn:hover, .mol-el-btn:hover { border-color: var(--primary); color: var(--primary); }
+.mol-mode-btn.active, .mol-el-btn.active {
+  border-color: var(--primary);
+  background: var(--primary-dim);
+  color: var(--primary);
+}
+.mol-custom-el {
+  width: 84px;
+  padding: 5px 8px;
+  font-size: 0.82rem;
+  height: 32px;
+}
+.mol-canvas-box { justify-content: flex-start; padding: 6px; background: var(--bg); }
+#mol-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background-color: var(--card-bg);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 18px 18px;
+  border-radius: calc(var(--radius) - 2px);
+  touch-action: none;
+  cursor: crosshair;
+}
+.mol-search-btn { border-color: var(--primary); color: var(--primary); font-weight: 700; margin-left: 6px; display: inline-flex; align-items: center; }
+.mol-export-wrap { position: relative; margin-left: auto; }
+.mol-export-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+  padding: 4px;
+  gap: 2px;
+}
+.mol-export-menu[hidden] { display: none; }
+.mol-export-menu button {
+  text-align: left;
+  padding: 7px 10px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--text);
+  cursor: pointer;
+}
+.mol-export-menu button:hover { background: var(--primary-dim); color: var(--primary); }
+.mol-details { margin-top: 6px; }
+.mol-details summary { cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--primary); padding: 2px 0; list-style-position: outside; }
+.mol-details summary:hover { text-decoration: underline; }
+.mol-details[open] summary { margin-bottom: 6px; }
+.mol-tips {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px 28px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+@media (min-width: 700px) {
+  .mol-tips { grid-template-columns: 1fr 1fr; }
+}
+.mol-tip-group h5 {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--primary);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+.mol-tip-group dl { margin: 0; display: flex; flex-direction: column; gap: 9px; }
+.mol-tip { display: grid; grid-template-columns: 118px 1fr; gap: 10px; }
+.mol-tip dt { font-weight: 700; font-size: 0.78rem; color: var(--text); }
+.mol-tip dd { margin: 0; font-size: 0.78rem; color: var(--text-dim); line-height: 1.42; }
+@media (max-width: 480px) {
+  .mol-tip { grid-template-columns: 1fr; gap: 2px; }
+}
+.mol-results { display: flex; flex-direction: column; gap: 10px; }
+.mol-result-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--primary-dim);
+}
+.mol-result-name { font-weight: 700; font-size: 0.98rem; }
+.mol-result-aka { font-size: 0.8rem; color: var(--text-dim); margin-top: 1px; }
+.mol-result-meta { font-size: 0.82rem; margin-top: 4px; }
+.mol-result-props { font-size: 0.82rem; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.mol-result-note { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; font-style: italic; }
+.mol-pub-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+.mol-pub-label { font-size: 0.72rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.02em; margin-right: 2px; }
+.mol-pub-link {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  text-decoration: none;
+}
+.mol-pub-link:hover { border-color: var(--primary); text-decoration: underline; }
+
+.mol-tag-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.mol-tag-chip {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.mol-tag-chip:hover { border-color: var(--primary); color: var(--primary); }
+.mol-tag-chip.active { border-color: var(--primary); background: var(--primary-dim); color: var(--primary); }
+
+.mol-upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.mol-upload-btn { display: inline-flex; align-items: center; cursor: pointer; }
+.mol-ocr-status { font-size: 0.82rem; color: var(--text-dim); }
+.mol-ocr-text {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 160px;
+  overflow-y: auto;
+}
+.mol-ocr-text[hidden] { display: none; }
+
+/* Modern/fun pass: icon badges on each card heading, a staggered entrance
+   animation for the cards, and hover polish on the page's interactive
+   controls - matching the motion language already used by .home-card and
+   .paper-card (0.15s ease transform/shadow transitions, opacity+translateY
+   entrance) rather than inventing a new one. Scoped to .mol-* classes and
+   new classes only, so it can't affect any other page's shared .card rules. */
+.mol-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  font-size: 0.92rem;
+  margin-right: 8px;
+  vertical-align: -6px;
+}
+.mol-card-icon--1 { background: color-mix(in srgb, var(--primary) 18%, transparent); }
+.mol-card-icon--2 { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.mol-card-icon--3 { background: color-mix(in srgb, #f59e0b 20%, transparent); }
+
+.mol-card-in { opacity: 0; animation: mol-card-in 0.4s ease forwards; }
+.mol-card-in:nth-of-type(1) { animation-delay: 0s; }
+.mol-card-in:nth-of-type(2) { animation-delay: 0.06s; }
+.mol-card-in:nth-of-type(3) { animation-delay: 0.12s; }
+.mol-card-in:nth-of-type(4) { animation-delay: 0.18s; }
+.mol-card-in:nth-of-type(5) { animation-delay: 0.24s; }
+@keyframes mol-card-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mol-mode-btn, .mol-icon-btn, .mol-el-btn, .mol-example-btn, .mol-search-btn,
+.mol-tag-chip, .mol-pub-link, .mol-upload-btn {
+  transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.mol-mode-btn:hover, .mol-icon-btn:hover, .mol-el-btn:hover { transform: scale(1.08); }
+.mol-example-btn:hover, .mol-search-btn:hover, .mol-upload-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(16, 24, 40, 0.12); }
+.mol-tag-chip:hover { transform: translateY(-1px); }
+.mol-pub-link:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(16, 24, 40, 0.1); }
+
+.mol-result-card {
+  opacity: 0;
+  animation: mol-card-in 0.3s ease forwards;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.mol-result-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16, 24, 40, 0.12); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mol-card-in, .mol-result-card { animation: none; opacity: 1; }
+  .mol-mode-btn, .mol-icon-btn, .mol-el-btn, .mol-example-btn, .mol-search-btn,
+  .mol-tag-chip, .mol-pub-link, .mol-upload-btn, .mol-result-card {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .mol-search-btn { margin-left: 0; width: 100%; }
+}
+
+.mol-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+.mol-modal-overlay[hidden] { display: none; }
+.mol-modal-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 18px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.mol-modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.mol-modal-head h4 { margin: 0; font-size: 0.95rem; }
+.mol-modal-close {
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.mol-modal-close:hover { color: var(--text); }
+.mol-periodic-grid {
+  display: grid;
+  grid-template-columns: repeat(18, 30px);
+  grid-auto-rows: 30px;
+  gap: 3px;
+}
+.mol-periodic-el {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+.mol-periodic-el:hover { border-color: var(--primary); background: var(--primary-dim); color: var(--primary); }
