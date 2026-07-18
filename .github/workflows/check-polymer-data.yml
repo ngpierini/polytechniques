@@ -1,0 +1,30 @@
+name: Check polymer data integrity
+
+# Runs on every PR/push that touches polymer-data.js (human-authored or
+# from the automated discovery pipeline) and fails if an entry is
+# malformed - duplicate name/CAS/structure, a bond pointing at a
+# nonexistent atom, a missing chain-end pseudo-atom, or an obviously bad
+# valence. See scripts/check-polymer-data.js for what it actually checks.
+
+on:
+  pull_request:
+    paths:
+      - 'polymer-data.js'
+  push:
+    branches:
+      - main
+    paths:
+      - 'polymer-data.js'
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: node scripts/check-polymer-data.js

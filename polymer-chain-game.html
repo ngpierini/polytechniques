@@ -4,8 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Build a Polymer Chain: PolyTechniques</title>
+<meta name="description" content="Build a polymer chain the right way in this quick interactive game &ndash; a hands-on way to learn skeletal formula conventions for repeat units.">
+<link rel="canonical" href="https://getpolytechniques.com/polymer-chain-game.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Build a Polymer Chain: PolyTechniques">
+<meta property="og:description" content="Build a polymer chain the right way in this quick interactive game, a hands-on way to learn skeletal formula conventions.">
+<meta property="og:url" content="https://getpolytechniques.com/polymer-chain-game.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Build a Polymer Chain: PolyTechniques">
+<meta name="twitter:description" content="A quick interactive game for learning skeletal formula conventions in polymer chemistry.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Build a Polymer Chain",
+  "url": "https://getpolytechniques.com/polymer-chain-game.html",
+  "description": "Build a polymer chain the right way in this quick interactive game - a hands-on way to learn skeletal formula conventions for repeat units.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
 <script src="theme.js"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
 <link rel="stylesheet" href="style.css?v=30">
 </head>
 <body>
@@ -531,5 +560,11 @@
 })();
 </script>
 
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://polytechniques.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

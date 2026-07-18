@@ -4,8 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculator: PolyTechniques</title>
+<meta name="description" content="Target molecular weight, degree of polymerization, or concentration across ATRP, RAFT, ROMP, and FRP. Includes macroinitiators and a block copolymer recipe builder.">
+<link rel="canonical" href="https://getpolytechniques.com/calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Calculator: PolyTechniques">
+<meta property="og:description" content="Target molecular weight, degree of polymerization, or concentration across ATRP, RAFT, ROMP, and FRP. Includes macroinitiators and a block copolymer recipe builder.">
+<meta property="og:url" content="https://getpolytechniques.com/calculator.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Calculator: PolyTechniques">
+<meta name="twitter:description" content="Target Mn, DP, or concentration across ATRP, RAFT, ROMP, and FRP. Macroinitiators and block copolymer builder included.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Polymer Synthesis Calculator",
+  "url": "https://getpolytechniques.com/calculator.html",
+  "description": "Target molecular weight, degree of polymerization, or concentration across ATRP, RAFT, ROMP, and FRP. Includes macroinitiators and a block copolymer recipe builder.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
 <script src="theme.js"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
 <link rel="stylesheet" href="style.css?v=30">
 </head>
 <body>
@@ -35,5 +64,11 @@
 </footer>
 
 <script src="app.js?v=10" defer></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://polytechniques.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

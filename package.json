@@ -4,7 +4,8 @@
   "description": "CI-only tooling for the automated polymer discovery pipeline. Not part of the static site itself - nothing here ships to the browser.",
   "type": "commonjs",
   "scripts": {
-    "discover": "node scripts/discover-polymers.js"
+    "discover": "node scripts/discover-polymers.js",
+    "check-data": "node scripts/check-polymer-data.js"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"
