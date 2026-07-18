@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's New: PolyTechniques</title>
+<meta name="description" content="A running list of what's been added to PolyTechniques: the polymer structure search, the automated discovery pipeline, new calculators, and site improvements.">
+<link rel="canonical" href="https://getpolytechniques.com/whats-new.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="What's New: PolyTechniques">
+<meta property="og:description" content="A running list of what's been added to PolyTechniques: the polymer structure search, the automated discovery pipeline, new calculators, and site improvements.">
+<meta property="og:url" content="https://getpolytechniques.com/whats-new.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="What's New: PolyTechniques">
+<meta name="twitter:description" content="A running list of what's been added to PolyTechniques, newest first.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "PolyTechniques changelog",
+  "url": "https://getpolytechniques.com/whats-new.html",
+  "description": "A running list of what's been added to PolyTechniques, newest first."
+}
+</script>
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="stylesheet" href="style.css?v=30">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>What's New</h1>
+      <p class="subtitle">A running list of what's been added to the toolkit, newest first</p>
+    </div>
+    <div class="guide-links">
+      <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+      <a class="brand-link" href="home.html">
+        <img src="favicon.svg" alt="" class="brand-mark">
+        <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <p class="guide-note">
+      This site keeps growing as I run into more things worth building. No fixed release schedule &ndash; entries land whenever a tool or guide is ready, roughly newest first below. Have a suggestion? <a href="https://github.com/ngpierini/polytechniques/issues/new" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a>.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🛠️ Site polish: SEO, accessibility, and analytics</h3>
+    <p class="guide-note">Search-friendly meta tags and structured data on every page, a custom 404 page, aria-labels on every icon-only button in the structure editor, a sitemap, and privacy-respecting analytics to see which tools people actually use.</p>
+  </div>
+
+  <div class="card">
+    <h3>🤖 Automated polymer discovery pipeline</h3>
+    <p class="guide-note">A scheduled job checks a watchlist of common monomers against PubChem, derives the repeat unit structure for the straightforward cases (vinyl, acrylate, methacrylate, diene, and some ring-opening chemistries), and opens a pull request for review. Nothing reaches the live database without a manual check first.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎮 Build a Polymer Chain</h3>
+    <p class="guide-note">A small maze game for practicing skeletal formula conventions: collect the right monomer beads and dodge inhibitors and chain transfer agents before they terminate your chain.</p>
+  </div>
+
+  <div class="card">
+    <h3>🔍 Polymer Search</h3>
+    <p class="guide-note">Look up a common polymer by name, or draw its repeat unit in a freeform structure editor (with ring tools, wedge/hash bonds, and formal charges) and search a curated reference library by structure. Explore mode adds tag browsing and a photo-upload search that reads polymer names or CAS numbers straight off a label or textbook page.</p>
+  </div>
+
+  <div class="card">
+    <h3>📉 GPC Peak Interpretation, expanded</h3>
+    <p class="guide-note">A troubleshooting quick-reference for common chromatogram artifacts, a multi-detector section, an interactive flow-rate drift calibration demo, and an image-upload trace analyzer for reading M<sub>n</sub>/M<sub>w</sub> off a real chromatogram photo.</p>
+  </div>
+
+  <div class="card">
+    <h3>⚖️ Recipe Scaling</h3>
+    <p class="guide-note">Scale any polymerization recipe up or down by a factor, or between batch sizes, while keeping every component's ratio exact.</p>
+  </div>
+
+  <div class="card">
+    <h3>🌡️ Tg Predictor</h3>
+    <p class="guide-note">Estimate a random copolymer or miscible blend's glass transition temperature from its components using the Fox equation.</p>
+  </div>
+
+  <div class="card">
+    <h3>📏 GPC Calibration Converter</h3>
+    <p class="guide-note">Convert a polystyrene-equivalent molecular weight from a GPC report into a true molecular weight for the actual polymer, using Mark-Houwink parameters.</p>
+  </div>
+
+  <div class="card">
+    <h3>🧬 Copolymer Composition</h3>
+    <p class="guide-note">Predict instantaneous copolymer composition from feed ratio and reactivity ratios with the Mayo-Lewis equation, including a composition diagram and azeotrope detection.</p>
+  </div>
+
+  <div class="card">
+    <h3>📖 Glossary, mobile pass, and recipe tools</h3>
+    <p class="guide-note">A glossary of common polymer chemistry terms, a full mobile responsiveness pass, an interactive kinetics plot on the conversion monitoring guide, a print/export stylesheet for recipes, save/reload recipe presets, dispersity (Đ) guidance on results, and a Stock Solutions tab on the calculator.</p>
+  </div>
+
+  <div class="card">
+    <h3>🌙 Light/dark theme</h3>
+    <p class="guide-note">The calculator and every guide page now follow a light or dark theme, with a toggle in the header.</p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>PolyTechniques &ndash; free tools for polymer synthesis.</p>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://polytechniques.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found: PolyTechniques</title>
+<meta name="description" content="This page doesn't exist. Find calculators, guides, and structure search tools on PolyTechniques.">
+<meta name="robots" content="noindex">
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="stylesheet" href="style.css?v=30">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Page not found</h1>
+      <p class="subtitle">That link is broken, or the page moved. Sorry about that.</p>
+    </div>
+    <div class="guide-links">
+      <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+      <a class="brand-link" href="home.html">
+        <img src="favicon.svg" alt="" class="brand-mark">
+        <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>Try one of these instead</h3>
+    <ul class="guide-list">
+      <li><a href="home.html">Home</a> &ndash; the full toolkit</li>
+      <li><a href="calculator.html">Calculator</a> &ndash; target Mn, DP, or concentration across ATRP, RAFT, ROMP, and FRP</li>
+      <li><a href="polymer-search.html">Polymer Search</a> &ndash; look up a polymer by name or draw its structure</li>
+      <li><a href="tg-predictor.html">Tg Predictor</a> &ndash; estimate a copolymer or blend's glass transition</li>
+      <li><a href="gpc-calibration.html">GPC Calibration Converter</a></li>
+    </ul>
+    <p class="guide-note">If you followed a link here from somewhere else and it's broken, <a href="https://github.com/ngpierini/polytechniques/issues/new" target="_blank" rel="noopener noreferrer">let me know</a>.</p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>PolyTechniques &ndash; free tools for polymer synthesis.</p>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://polytechniques.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
