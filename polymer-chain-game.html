@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build a Polymer Chain: PolyTechniques</title>
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Build a Polymer Chain</h1>
+      <p class="subtitle">Collect every monomer bead before your radical gets terminated</p>
+    </div>
+    <div class="guide-links">
+      <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+      <a class="brand-link" href="home.html">
+        <img src="favicon.svg" alt="" class="brand-mark">
+        <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <div class="radio-row" id="game-difficulty-row" style="margin-bottom:14px;">
+      <label class="radio-opt checked">
+        <input type="radio" name="game-difficulty" value="normal" checked> Normal
+      </label>
+      <label class="radio-opt">
+        <input type="radio" name="game-difficulty" value="hard"> Hard mode
+      </label>
+    </div>
+
+    <div class="game-hud">
+      <div class="stat">
+        <div class="label">Repeat units</div>
+        <div class="value" id="game-score">0 / 0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Time</div>
+        <div class="value" id="game-time">0.0s</div>
+      </div>
+      <div class="stat">
+        <div class="label">Status</div>
+        <div class="value" id="game-status" style="font-size:1rem;">Ready</div>
+      </div>
+    </div>
+
+    <div class="game-stage">
+      <canvas id="game-canvas"></canvas>
+      <div class="game-overlay" id="game-overlay">
+        <h4 id="game-overlay-title">Build a Polymer Chain</h4>
+        <p id="game-overlay-text">Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O&#8322;, the inhibitor, and the chain transfer agent, they'll terminate your chain on contact.</p>
+        <button type="button" id="game-start-btn">Start polymerizing</button>
+      </div>
+    </div>
+
+    <div class="game-controls">
+      <div class="game-dpad">
+        <button type="button" class="dpad-up" data-dir="up" aria-label="Up">&#9650;</button>
+        <button type="button" class="dpad-left" data-dir="left" aria-label="Left">&#9664;</button>
+        <button type="button" class="dpad-down" data-dir="down" aria-label="Down">&#9660;</button>
+        <button type="button" class="dpad-right" data-dir="right" aria-label="Right">&#9654;</button>
+      </div>
+      <div class="game-legend">
+        <span><span class="dot" style="background:#e8fff6"></span> You (propagating chain end)</span>
+        <span><span class="dot" style="background:#ef6a6a"></span> O&#8322;</span>
+        <span><span class="dot" style="background:#a78bfa"></span> Inhibitor</span>
+        <span><span class="dot" style="background:#f2b84b"></span> Chain transfer agent</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How to play</h3>
+    <ul class="guide-list">
+      <li>Move with the arrow keys or WASD, or use the on screen pad. Every bead you touch attaches to your growing chain, drawn as the beaded trail behind you.</li>
+      <li>Collect every bead in the maze to win. There's no rush, but the clock is running if you want to compare runs.</li>
+      <li>Touching O&#8322;, the inhibitor, or the chain transfer agent ends the run, just like they'd end a real radical chain. Press restart and try again with a different route.</li>
+      <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>The chemistry behind the joke</h3>
+    <p class="guide-note">
+      This is a light hearted spin on a real problem in radical polymerization. A propagating chain is a radical, and radicals are indiscriminately reactive: several everyday species can intercept one before it finishes growing.
+    </p>
+    <ul class="guide-list">
+      <li><strong>O&#8322;</strong> reacts with carbon radicals to form a peroxy radical that is far less reactive toward monomer, effectively stalling the chain. This is why air free technique matters so much for controlled radical methods; see the <a href="air-free-technique.html">Air Free Reaction Setup</a> guide.</li>
+      <li><strong>Inhibitors</strong> are added deliberately to monomer stock (to prevent it polymerizing in the bottle) and scavenge the first radicals that form, which is also why an induction period shows up before a monomer that hasn't been purified starts converting.</li>
+      <li><strong>Chain transfer agents</strong> hand the radical off to a new molecule on purpose, ending one chain and starting another, which is exactly the mechanism RAFT is built around; see <a href="mechanisms.html">Polymerization Mechanisms</a> for the real reaction schemes.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Just for fun. No actual polymers were harmed in the making of this maze.</p>
+</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+
+  var COLS = 19, ROWS = 15, CELL = 26;
+  var PALETTE = ["#5b8def", "#37c98f", "#f2b84b", "#ef6a6a", "#a78bfa", "#4fd1c5", "#f472b6"];
+
+  var DIFFICULTY = {
+    normal: { tickMs: 160, graceTicks: 16, chaseChance: 0.55 },
+    hard: { tickMs: 130, graceTicks: 5, chaseChance: 0.82 }
+  };
+  var currentDifficulty = "normal";
+  var params = DIFFICULTY[currentDifficulty];
+
+  var canvas = $("game-canvas");
+  canvas.width = COLS * CELL;
+  canvas.height = ROWS * CELL;
+  var ctx = canvas.getContext("2d");
+
+  var wall = [];
+  for (var r = 0; r < ROWS; r++) {
+    wall[r] = [];
+    for (var c = 0; c < COLS; c++) {
+      var isWall = (r === 0 || r === ROWS - 1 || c === 0 || c === COLS - 1) || (r % 2 === 0 && c % 2 === 0);
+      wall[r][c] = isWall;
+    }
+  }
+
+  function cellValid(r, c) {
+    return r >= 0 && r < ROWS && c >= 0 && c < COLS && !wall[r][c];
+  }
+
+  var PLAYER_START = { r: 7, c: 9 };
+  var ENEMY_DEFS = [
+    { r: 3, c: 3, name: "O₂", color: "#ef6a6a" },
+    { r: 3, c: 15, name: "Inh", color: "#a78bfa" },
+    { r: 11, c: 3, name: "CTA", color: "#f2b84b" }
+  ];
+
+  var beadPresent, player, enemies, path, beadTotal, beadEaten, state, tickTimer, startTime, elapsed, deathReason, ticksElapsed, lastTickTime, animFrame;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function resetGame() {
+    params = DIFFICULTY[currentDifficulty];
+    beadPresent = [];
+    beadTotal = 0;
+    for (var r = 0; r < ROWS; r++) {
+      beadPresent[r] = [];
+      for (var c = 0; c < COLS; c++) {
+        var has = !wall[r][c] && !(r === PLAYER_START.r && c === PLAYER_START.c);
+        beadPresent[r][c] = has;
+        if (has) beadTotal++;
+      }
+    }
+    beadEaten = 0;
+    player = { r: PLAYER_START.r, c: PLAYER_START.c, prevR: PLAYER_START.r, prevC: PLAYER_START.c, dir: null, nextDir: null };
+    enemies = ENEMY_DEFS.map(function (d) { return { r: d.r, c: d.c, prevR: d.r, prevC: d.c, name: d.name, color: d.color, dir: null }; });
+    path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
+    elapsed = 0;
+    startTime = null;
+    deathReason = null;
+    ticksElapsed = 0;
+    lastTickTime = Date.now();
+    $("game-score").textContent = beadEaten + " / " + beadTotal;
+    $("game-time").textContent = "0.0s";
+    $("game-status").textContent = "Ready";
+  }
+
+  var DIRS = {
+    up: { dr: -1, dc: 0 },
+    down: { dr: 1, dc: 0 },
+    left: { dr: 0, dc: -1 },
+    right: { dr: 0, dc: 1 }
+  };
+
+  function setNextDir(d) {
+    if (state === "idle") { startGame(); }
+    if (state !== "playing") return;
+    player.nextDir = d;
+  }
+
+  function moveEnemy(e) {
+    var options = [];
+    ["up", "down", "left", "right"].forEach(function (name) {
+      var d = DIRS[name];
+      if (cellValid(e.r + d.dr, e.c + d.dc)) options.push({ name: name, dr: d.dr, dc: d.dc });
+    });
+    if (!options.length) return;
+    var choice;
+    var chaseChance = ticksElapsed < params.graceTicks ? 0 : params.chaseChance;
+    if (Math.random() < chaseChance) {
+      options.sort(function (a, b) {
+        var da = Math.abs(e.r + a.dr - player.r) + Math.abs(e.c + a.dc - player.c);
+        var db = Math.abs(e.r + b.dr - player.r) + Math.abs(e.c + b.dc - player.c);
+        return da - db;
+      });
+      choice = options[0];
+    } else {
+      choice = options[Math.floor(Math.random() * options.length)];
+    }
+    e.r += choice.dr;
+    e.c += choice.dc;
+    e.dir = choice.name;
+  }
+
+  function checkCollision() {
+    for (var i = 0; i < enemies.length; i++) {
+      if (enemies[i].r === player.r && enemies[i].c === player.c) return enemies[i];
+    }
+    return null;
+  }
+
+  function tick() {
+    ticksElapsed++;
+    lastTickTime = Date.now();
+
+    player.prevR = player.r;
+    player.prevC = player.c;
+    if (player.nextDir) {
+      var nd = DIRS[player.nextDir];
+      if (cellValid(player.r + nd.dr, player.c + nd.dc)) {
+        player.dir = player.nextDir;
+      }
+    }
+    if (player.dir) {
+      var d = DIRS[player.dir];
+      if (cellValid(player.r + d.dr, player.c + d.dc)) {
+        player.r += d.dr;
+        player.c += d.dc;
+      }
+    }
+
+    var ateHere = false;
+    if (beadPresent[player.r][player.c]) {
+      beadPresent[player.r][player.c] = false;
+      beadEaten++;
+      ateHere = true;
+      $("game-score").textContent = beadEaten + " / " + beadTotal;
+    }
+    path.push({ r: player.r, c: player.c, bead: ateHere });
+
+    enemies.forEach(function (e) {
+      e.prevR = e.r;
+      e.prevC = e.c;
+      moveEnemy(e);
+    });
+
+    var hit = checkCollision();
+    if (hit) {
+      endGame("lost", hit.name);
+      return;
+    }
+
+    if (beadEaten >= beadTotal) {
+      endGame("won", null);
+      return;
+    }
+  }
+
+  function startGame() {
+    resetGame();
+    state = "playing";
+    startTime = Date.now();
+    $("game-status").textContent = "Polymerizing";
+    hideOverlay();
+    if (tickTimer) clearInterval(tickTimer);
+    tickTimer = setInterval(function () {
+      tick();
+      elapsed = (Date.now() - startTime) / 1000;
+      $("game-time").textContent = elapsed.toFixed(1) + "s";
+    }, params.tickMs);
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animFrame = requestAnimationFrame(frameLoop);
+  }
+
+  function frameLoop() {
+    var t = Math.min(1, (Date.now() - lastTickTime) / params.tickMs);
+    render(t);
+    if (state === "playing") animFrame = requestAnimationFrame(frameLoop);
+  }
+
+  function endGame(result, byWhom) {
+    state = result;
+    deathReason = byWhom;
+    clearInterval(tickTimer);
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    render(1);
+    var modeNote = currentDifficulty === "hard" ? " on hard mode" : "";
+    if (result === "won") {
+      $("game-status").textContent = "Complete";
+      showOverlay(
+        "Polymerization complete! 🎉",
+        "You collected all " + beadTotal + " repeat units" + modeNote + " in " + elapsed.toFixed(1) + " seconds. Ð = 1.00, every bead accounted for.",
+        "Play again"
+      );
+    } else {
+      $("game-status").textContent = "Terminated";
+      showOverlay(
+        "Chain terminated by " + byWhom + "!",
+        "Your radical made it to " + beadEaten + " of " + beadTotal + " repeat units" + modeNote + " before getting quenched. Try a different route.",
+        "Try again"
+      );
+    }
+  }
+
+  function showOverlay(title, text, btnLabel) {
+    $("game-overlay-title").textContent = title;
+    $("game-overlay-text").textContent = text;
+    $("game-start-btn").textContent = btnLabel;
+    $("game-overlay").style.display = "";
+  }
+  function hideOverlay() { $("game-overlay").style.display = "none"; }
+
+  function drawRoundedRect(x, y, w, h, rad, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x + rad, y);
+    ctx.arcTo(x + w, y, x + w, y + h, rad);
+    ctx.arcTo(x + w, y + h, x, y + h, rad);
+    ctx.arcTo(x, y + h, x, y, rad);
+    ctx.arcTo(x, y, x + w, y, rad);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function cx(c) { return c * CELL + CELL / 2; }
+  function cy(r) { return r * CELL + CELL / 2; }
+
+  function drawBeadShine(x, y, r) {
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.beginPath();
+    ctx.ellipse(x - r * 0.32, y - r * 0.32, r * 0.34, r * 0.2, -0.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawEnemy(e, ex, ey) {
+    var R = 11;
+    ctx.fillStyle = e.color;
+    ctx.beginPath();
+    ctx.arc(ex, ey, R, 0, Math.PI * 2);
+    ctx.fill();
+    drawBeadShine(ex, ey, R);
+
+    if (e.name === "O₂") {
+      ctx.fillStyle = e.color;
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.arc(ex + 9, ey - 8, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = "#3a0d0d";
+      ctx.lineWidth = 1.4;
+      ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(ex - 6, ey - 4); ctx.lineTo(ex - 2, ey - 1.5); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ex + 2, ey - 1.5); ctx.lineTo(ex + 6, ey - 4); ctx.stroke();
+      ctx.fillStyle = "#1c0505";
+      ctx.beginPath(); ctx.arc(ex - 3.5, ey + 0.5, 1.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(ex + 3.5, ey + 0.5, 1.4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#1c0505";
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.moveTo(ex - 4, ey + 5.5); ctx.lineTo(ex - 1.5, ey + 3.5); ctx.lineTo(ex + 1.5, ey + 6.5); ctx.lineTo(ex + 4, ey + 4.5);
+      ctx.stroke();
+    } else if (e.name === "Inh") {
+      ctx.fillStyle = "rgba(255,255,255,0.35)";
+      ctx.beginPath();
+      ctx.moveTo(ex, ey - 14); ctx.lineTo(ex + 4.5, ey - 12); ctx.lineTo(ex + 4.5, ey - 7);
+      ctx.lineTo(ex, ey - 4); ctx.lineTo(ex - 4.5, ey - 7); ctx.lineTo(ex - 4.5, ey - 12);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#2a1550";
+      ctx.lineWidth = 1.4;
+      ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(ex - 5.5, ey - 2.5); ctx.lineTo(ex - 2, ey - 2.5); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ex + 2, ey - 2.5); ctx.lineTo(ex + 5.5, ey - 2.5); ctx.stroke();
+      ctx.fillStyle = "#2a1550";
+      ctx.beginPath(); ctx.arc(ex - 3.5, ey + 1, 1.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(ex + 3.5, ey + 1, 1.4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#2a1550";
+      ctx.lineWidth = 1.3;
+      ctx.beginPath(); ctx.moveTo(ex - 3, ey + 5.5); ctx.lineTo(ex + 3, ey + 5.5); ctx.stroke();
+    } else {
+      ctx.strokeStyle = "rgba(255,255,255,0.65)";
+      ctx.lineWidth = 1.4;
+      ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(ex - 9, ey - 9); ctx.quadraticCurveTo(ex - 2, ey - 15, ex + 6, ey - 10); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ex + 3, ey - 12.5); ctx.lineTo(ex + 6, ey - 10); ctx.lineTo(ex + 2.5, ey - 8); ctx.stroke();
+      ctx.strokeStyle = "#4a3000";
+      ctx.lineWidth = 1.3;
+      ctx.beginPath(); ctx.arc(ex - 3.5, ey + 0.5, 1.6, Math.PI * 0.1, Math.PI * 0.9); ctx.stroke();
+      ctx.fillStyle = "#4a3000";
+      ctx.beginPath(); ctx.arc(ex + 3.5, ey, 1.4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#4a3000";
+      ctx.lineWidth = 1.3;
+      ctx.beginPath(); ctx.moveTo(ex - 3, ey + 4); ctx.quadraticCurveTo(ex + 1, ey + 7.5, ex + 5, ey + 3); ctx.stroke();
+    }
+  }
+
+  function drawPlayer(px, py) {
+    var pulse = 9.5 + Math.sin(Date.now() / 180) * 1.2;
+
+    var sparkAngleBase = Date.now() / 260;
+    ctx.strokeStyle = "rgba(143,255,224,0.8)";
+    ctx.lineWidth = 1.4;
+    ctx.lineCap = "round";
+    for (var i = 0; i < 4; i++) {
+      var ang = sparkAngleBase + i * (Math.PI / 2);
+      var x1 = px + Math.cos(ang) * (pulse + 1.5), y1 = py + Math.sin(ang) * (pulse + 1.5);
+      var x2 = px + Math.cos(ang) * (pulse + 5), y2 = py + Math.sin(ang) * (pulse + 5);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    }
+
+    ctx.fillStyle = "#e8fff6";
+    ctx.shadowColor = "#8fffe0";
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(px, py, pulse, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = "#0b1f1a";
+    ctx.beginPath(); ctx.arc(px - 3, py - 1, 1.3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(px + 3, py - 1, 1.3, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#0b1f1a";
+    ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.arc(px, py, 3.2, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+  }
+
+  function render(t) {
+    if (t == null) t = 1;
+    ctx.fillStyle = "#0b0f1a";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#1c2b4a";
+    for (var r = 0; r < ROWS; r++) {
+      for (var c = 0; c < COLS; c++) {
+        if (wall[r][c]) drawRoundedRect(c * CELL + 2, r * CELL + 2, CELL - 4, CELL - 4, 5, "#1c2b4a");
+      }
+    }
+
+    for (var r2 = 0; r2 < ROWS; r2++) {
+      for (var c2 = 0; c2 < COLS; c2++) {
+        if (beadPresent[r2][c2]) {
+          ctx.fillStyle = "#8fb8ff";
+          ctx.beginPath();
+          ctx.arc(cx(c2), cy(r2), 3.2, 0, Math.PI * 2);
+          ctx.fill();
+          drawBeadShine(cx(c2), cy(r2), 3.2);
+        }
+      }
+    }
+
+    if (path.length > 1) {
+      ctx.strokeStyle = "rgba(232,255,246,0.55)";
+      ctx.lineWidth = 3;
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(cx(path[0].c), cy(path[0].r));
+      for (var i = 1; i < path.length; i++) ctx.lineTo(cx(path[i].c), cy(path[i].r));
+      ctx.stroke();
+    }
+
+    var paletteIdx = 0;
+    path.forEach(function (p) {
+      if (p.bead) {
+        var bx = cx(p.c), by = cy(p.r);
+        ctx.fillStyle = PALETTE[paletteIdx % PALETTE.length];
+        paletteIdx++;
+        ctx.beginPath();
+        ctx.arc(bx, by, 6.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(0,0,0,0.25)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        drawBeadShine(bx, by, 6.5);
+      }
+    });
+
+    enemies.forEach(function (e) {
+      var er = lerp(e.prevR, e.r, t);
+      var ec = lerp(e.prevC, e.c, t);
+      drawEnemy(e, cx(ec), cy(er));
+    });
+
+    var pr = lerp(player.prevR, player.r, t);
+    var pc = lerp(player.prevC, player.c, t);
+    drawPlayer(cx(pc), cy(pr));
+  }
+
+  document.querySelectorAll(".game-dpad button").forEach(function (btn) {
+    btn.addEventListener("click", function () { setNextDir(btn.getAttribute("data-dir")); });
+  });
+
+  document.querySelectorAll('input[name="game-difficulty"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      document.querySelectorAll("#game-difficulty-row .radio-opt").forEach(function (opt) {
+        opt.classList.toggle("checked", opt.querySelector("input").checked);
+      });
+      currentDifficulty = document.querySelector('input[name="game-difficulty"]:checked').value;
+      if (state !== "playing") resetGame();
+    });
+  });
+
+  var KEY_MAP = {
+    ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
+    w: "up", s: "down", a: "left", d: "right",
+    W: "up", S: "down", A: "left", D: "right"
+  };
+  window.addEventListener("keydown", function (e) {
+    var d = KEY_MAP[e.key];
+    if (!d) return;
+    if (state === "idle" || state === "playing") e.preventDefault();
+    setNextDir(d);
+  });
+
+  $("game-start-btn").addEventListener("click", startGame);
+
+  state = "idle";
+  resetGame();
+  render();
+  showOverlay("Build a Polymer Chain", "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, and the chain transfer agent, they'll terminate your chain on contact.", "Start polymerizing");
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tg Predictor: PolyTechniques</title>
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Tg Predictor</h1>
+      <p class="subtitle">Predict a random copolymer or miscible blend's glass transition from its components (Fox equation)</p>
+    </div>
+    <div class="guide-links">
+      <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+      <a class="brand-link" href="home.html">
+        <img src="favicon.svg" alt="" class="brand-mark">
+        <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>How this works</h3>
+    <p class="guide-note">
+      The Fox equation estimates the glass transition temperature of a random copolymer or a miscible polymer blend from the weight fraction and homopolymer T<sub>g</sub> of each component. It assumes the components mix freely at the segmental level with no specific interactions (hydrogen bonding, ionic association) and no leftover monomer or solvent acting as a plasticizer.
+    </p>
+    <div class="guide-formula">
+      1 &divide; T<sub>g,mix</sub> = &Sigma; ( w<sub>i</sub> &divide; T<sub>g,i</sub> ) &nbsp;&nbsp; (all temperatures in Kelvin)
+    </div>
+    <p class="guide-note">
+      This works reasonably well for statistical copolymers and truly miscible blends. It does not apply to block copolymers or phase separated blends, which typically show two distinct glass transitions instead of one intermediate value, since each block or phase relaxes on its own.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Tg calculator</h3>
+    <div class="dyn-row-labels">
+      <span>Component</span>
+      <span>Homopolymer T<sub>g</sub> (&deg;C)</span>
+      <span>Weight %</span>
+      <span class="dyn-label-spacer"></span>
+    </div>
+    <div id="tg-rows" class="dyn-rows"></div>
+    <div class="actions" style="justify-content:flex-start; margin-top:6px;">
+      <button type="button" class="copy-btn" id="tg-add-row">+ Add component</button>
+    </div>
+
+    <div class="stat-grid" id="tg-stats" style="margin-top:16px;"></div>
+
+    <div class="table-scroll" id="tg-breakdown-wrap" style="margin-top:12px;">
+      <table class="recipe" id="tg-breakdown-table">
+        <thead><tr><th>Component</th><th>Normalized wt fraction</th><th>Tg (K)</th><th>w<sub>i</sub> &divide; T<sub>g,i</sub></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Reference homopolymer Tg values</h3>
+    <p class="guide-note">Typical literature values for the atactic or common commercial form. Real Tg depends on tacticity, molecular weight, and measurement method (DSC heating rate, for example), so treat these as starting points.</p>
+    <div class="table-scroll">
+      <table class="recipe" id="tg-ref-table">
+        <thead><tr><th>Polymer</th><th>Typical Tg (&deg;C)</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Predicted values are estimates for formulation planning. Always confirm Tg experimentally by DSC or DMA for a real material.</p>
+</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+
+  var REF = [
+    { name: "Polystyrene", tg: 100 },
+    { name: "Poly(methyl methacrylate)", tg: 105 },
+    { name: "Poly(methyl acrylate)", tg: 10 },
+    { name: "Poly(ethyl acrylate)", tg: -22 },
+    { name: "Poly(n-butyl acrylate)", tg: -54 },
+    { name: "Poly(2-ethylhexyl acrylate)", tg: -50 },
+    { name: "Poly(vinyl acetate)", tg: 32 },
+    { name: "Polyisoprene (cis 1,4)", tg: -70 },
+    { name: "Polybutadiene (high cis)", tg: -95 },
+    { name: "Polyacrylonitrile", tg: 95 }
+  ];
+
+  var DEMO = [
+    { name: "Methyl methacrylate", tg: 105, wt: 60 },
+    { name: "Butyl acrylate", tg: -54, wt: 40 }
+  ];
+
+  function makeRow(name, tg, wt) {
+    var row = document.createElement("div");
+    row.className = "dyn-row";
+    row.innerHTML =
+      '<input type="text" class="tg-name" placeholder="Component name" value="' + (name || "") + '">' +
+      '<input type="number" class="tg-tg" placeholder="Tg (°C)" step="any" value="' + (tg ?? "") + '">' +
+      '<input type="number" class="tg-wt" placeholder="Weight %" step="any" min="0" value="' + (wt ?? "") + '">' +
+      '<button type="button" class="dyn-row-remove" aria-label="Remove component">&times;</button>';
+    row.querySelector(".dyn-row-remove").addEventListener("click", function () {
+      row.remove();
+      recalc();
+    });
+    return row;
+  }
+
+  function addRow(name, tg, wt) {
+    var rows = $("tg-rows");
+    var row = makeRow(name, tg, wt);
+    rows.appendChild(row);
+    return row;
+  }
+
+  function fillRefTable() {
+    var body = document.querySelector("#tg-ref-table tbody");
+    body.innerHTML = REF.map(function (p) {
+      return "<tr><td>" + p.name + "</td><td class=\"num\">" + p.tg + "</td></tr>";
+    }).join("");
+  }
+
+  function recalc() {
+    var rows = Array.from(document.querySelectorAll("#tg-rows .dyn-row"));
+    var comps = [];
+    rows.forEach(function (row) {
+      var name = row.querySelector(".tg-name").value.trim();
+      var tgC = parseFloat(row.querySelector(".tg-tg").value);
+      var wt = parseFloat(row.querySelector(".tg-wt").value);
+      if (!name || !isFinite(tgC) || !isFinite(wt) || wt <= 0) return;
+      comps.push({ name: name, tgK: tgC + 273.15, wt: wt });
+    });
+
+    var stats = $("tg-stats");
+    var breakdownWrap = $("tg-breakdown-wrap");
+    var breakdownBody = document.querySelector("#tg-breakdown-table tbody");
+
+    if (comps.length < 1) {
+      stats.innerHTML = '<div class="error-msg">Add at least one component with a Tg and a weight percent.</div>';
+      breakdownWrap.style.display = "none";
+      return;
+    }
+
+    var sumWt = comps.reduce(function (s, c) { return s + c.wt; }, 0);
+    var invTg = 0;
+    comps.forEach(function (c) {
+      var wi = c.wt / sumWt;
+      c.wi = wi;
+      c.term = wi / c.tgK;
+      invTg += c.term;
+    });
+    var tgMixK = 1 / invTg;
+    var tgMixC = tgMixK - 273.15;
+
+    var normNote = Math.abs(sumWt - 100) < 0.5
+      ? "weight percents sum to 100%"
+      : "weight percents summed to " + sumWt.toFixed(1) + "%, normalized to 100% automatically";
+
+    stats.innerHTML =
+      '<div class="stat"><div class="label">Predicted T<sub>g</sub></div><div class="value">' + tgMixC.toFixed(1) + ' &deg;C</div><div class="sub">' + tgMixK.toFixed(1) + ' K</div></div>' +
+      '<div class="stat"><div class="label">Components</div><div class="value">' + comps.length + '</div><div class="sub">' + normNote + '</div></div>';
+
+    breakdownWrap.style.display = "";
+    breakdownBody.innerHTML = comps.map(function (c) {
+      return "<tr><td>" + c.name + "</td><td class=\"num\">" + (c.wi * 100).toFixed(1) + "%</td><td class=\"num\">" + c.tgK.toFixed(1) + "</td><td class=\"num\">" + c.term.toExponential(3) + "</td></tr>";
+    }).join("");
+  }
+
+  $("tg-add-row").addEventListener("click", function () {
+    addRow("", "", "");
+    recalc();
+  });
+  $("tg-rows").addEventListener("input", function (e) {
+    if (e.target.matches("input")) recalc();
+  });
+
+  DEMO.forEach(function (d) { addRow(d.name, d.tg, d.wt); });
+  fillRefTable();
+  recalc();
+})();
+</script>
+
+</body>
+</html>

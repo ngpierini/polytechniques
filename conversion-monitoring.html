@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitoring Conversion by Aliquot: PolyTechniques</title>
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Monitoring Conversion by Aliquot</h1>
+      <p class="subtitle">Taking samples partway through the reaction, and why an internal standard makes the numbers trustworthy</p>
+    </div>
+    <div class="guide-links">
+      <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+      <a class="brand-link" href="home.html">
+        <img src="favicon.svg" alt="" class="brand-mark">
+        <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>Why monitor conversion</h3>
+    <p class="guide-note">
+      Conversion is the bridge between the recipe you designed and the polymer you actually get: every "Predicted Mₙ at X% conversion" figure in the calculator is only as good as your knowledge of the real time conversion, <em>p</em>. Tracking it lets you decide when to quench (hit your target Mₙ), catch a stalled reaction early, and, by plotting ln([M]₀/[M]) vs. time, check that the polymerization is behaving as a controlled/living process (a straight line means a roughly constant concentration of propagating chains, the kinetic signature of ATRP/RAFT/ROMP working as intended).
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Choosing a method</h3>
+    <div class="table-scroll">
+    <table class="recipe">
+      <thead><tr><th>Method</th><th>Good for</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>¹H NMR</strong></td>
+          <td>Most vinyl monomers (ATRP, RAFT, FRP) and ROMP olefins</td>
+          <td class="num" style="text-align:left;">Most common. Compares a shrinking monomer peak (e.g. vinyl protons) to a fixed internal standard peak. Fast, quantitative, needs only a small aliquot.</td>
+        </tr>
+        <tr>
+          <td><strong>GC</strong></td>
+          <td>Volatile monomers/solvents</td>
+          <td class="num" style="text-align:left;">Tracks monomer peak area vs. an internal standard peak area; good for monomers with poor/overlapping NMR signals.</td>
+        </tr>
+        <tr>
+          <td><strong>Gravimetric</strong></td>
+          <td>Quick, rough estimates</td>
+          <td class="num" style="text-align:left;">Dry an aliquot and weigh the solid residue vs. total mass. Simple but loses accuracy to volatile monomer/solvent evaporating unevenly. An internal standard doesn't fully fix this, so treat results as approximate.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="card" id="why-internal-standard">
+    <h3>Why an internal standard matters</h3>
+    <p class="guide-note">
+      The problem: every time you pull an aliquot, you're taking an uncontrolled microvolume that's hard to reproduce. Needle dead volume, viscosity (which climbs as the reaction proceeds), and solvent evaporation during transfer all mean the aliquot's dilution isn't precisely known. If you just integrate the monomer peak on its own and compare it to a separate, earlier spectrum, differences in how much sample you actually dissolved, how much deuterated solvent you added, or the instrument's receiver gain will masquerade as changes in monomer concentration, and the data becomes unreliable.
+    </p>
+    <p class="guide-note">
+      The fix: add a small amount of a chemically inert reference compound directly to the bulk reaction mixture <em>before</em> polymerization starts, at a known fixed concentration relative to the monomer. Because it's mixed homogeneously into the whole pot, every aliquot you ever withdraw, no matter its exact volume, contains the standard and the monomer in the same fixed molar ratio as the bulk. The standard doesn't react, so its peak area only tracks how much of the aliquot you happen to be looking at; the monomer peak area tracks both that <em>and</em> how much monomer has been consumed. Dividing one by the other cancels out the aliquot size/dilution/gain uncertainty entirely, leaving a number that only depends on real conversion.
+    </p>
+    <div class="guide-formula">
+      p = 1 &minus; (I<sub>M,t</sub> / I<sub>std,t</sub>) &divide; (I<sub>M,0</sub> / I<sub>std,0</sub>)
+    </div>
+    <p class="guide-note">
+      where I<sub>M</sub> is the integral (or peak area) of a monomer signal, I<sub>std</sub> is the integral of the internal standard signal, and the subscripts 0 / t denote the initial time point and the sampling time. Because I<sub>std</sub> is constant per mole of standard, this ratio is invariant to how much of the aliquot ended up in the NMR tube.
+    </p>
+    <p class="guide-note">
+      <strong>Important:</strong> the standard must go into the reaction flask itself, not be spiked into each NMR/GC sample afterward. Spiking each sample separately just reintroduces the same volumetric uncertainty you were trying to eliminate.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Step by step: taking and analyzing an aliquot</h3>
+    <ol class="guide-steps">
+      <li>
+        <strong>Add the internal standard up front.</strong> Weigh it in with the monomer/solvent charge (degassed along with everything else), at a molar ratio to monomer that gives a convenient peak size, commonly 2 to 10&nbsp;mol% relative to monomer. Record the exact ratio; you'll need it (or just the t&nbsp;=&nbsp;0 spectrum) as your reference point.
+      </li>
+      <li>
+        <strong>Purge the sampling needle.</strong> Flush a clean needle/syringe with inert gas before it goes anywhere near the septum, so you're not injecting a plug of air into the flask.
+      </li>
+      <li>
+        <strong>Withdraw a small aliquot (≈20 to 50&nbsp;µL)</strong> through the septum under positive inert gas flow. Keep it small: enough for the analysis, not so much that you meaningfully change the monomer/agent ratio in the pot over the course of the run.
+      </li>
+      <li>
+        <strong>Quench/dilute immediately.</strong> Expel the aliquot straight into an NMR tube containing deuterated solvent (e.g. CDCl₃) or a GC vial with solvent. For ATRP, air exposure at this point also helps terminate further reaction in the aliquot, so it's a true snapshot of that time point rather than continuing to convert while it waits for analysis.
+      </li>
+      <li>
+        <strong>Reseal the flask</strong> and restore positive inert gas flow right away.
+      </li>
+      <li>
+        <strong>Run the spectrum promptly.</strong> If there will be a delay before analysis, keep the sample cold (and, for radical polymerizations, consider a trace radical inhibitor) so it doesn't keep reacting and give you a falsely high reading.
+      </li>
+      <li>
+        <strong>Integrate and calculate.</strong> Integrate the monomer signal and the internal standard signal, and apply the formula above (or track the raw ratio over time and normalize at the end). Repeat at set time intervals to build a conversion vs. time curve.
+      </li>
+      <li>
+        <strong>Feed it back into the calculator.</strong> Drop the measured conversion into the "Conversion for predicted Mₙ" field on any technique tab to see the real time predicted Mₙ for your actual reaction progress.
+      </li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>Choosing an internal standard</h3>
+    <p class="guide-note">A good standard is chemically inert to your monomer/catalyst/radicals, gives a sharp well resolved signal (a singlet is ideal), doesn't overlap the monomer, polymer backbone, solvent, or initiator/CTA peaks, and isn't so volatile that it evaporates preferentially versus the monomer during handling.</p>
+    <div class="table-scroll">
+    <table class="recipe">
+      <thead><tr><th>Standard</th><th>Typical signal (¹H NMR)</th><th>Works well with</th></tr></thead>
+      <tbody>
+        <tr><td>Mesitylene</td><td class="num" style="text-align:left;">~6.8 ppm (ArH, s, 3H)</td><td class="num" style="text-align:left;">Most acrylates/methacrylates, styrene derivatives</td></tr>
+        <tr><td>1,3,5-Trioxane</td><td class="num" style="text-align:left;">~5.1 ppm (s, 6H)</td><td class="num" style="text-align:left;">Monomers with a clear aromatic/aliphatic window near 5 ppm</td></tr>
+        <tr><td>Anisole</td><td class="num" style="text-align:left;">~3.8 ppm (OCH₃, s, 3H)</td><td class="num" style="text-align:left;">Monomers without competing OCH₃/OCH₂ signals</td></tr>
+        <tr><td>1,3,5-Trimethoxybenzene</td><td class="num" style="text-align:left;">~6.1 ppm (ArH, s, 3H)</td><td class="num" style="text-align:left;">Acrylamides, acrylates with clean 6 to 6.5 ppm region</td></tr>
+        <tr><td>Hexamethyldisiloxane (HMDSO)</td><td class="num" style="text-align:left;">~0.06 ppm (s, 18H)</td><td class="num" style="text-align:left;">Almost any monomer, far upfield, rarely overlaps</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="guide-note">For GC, pick a standard with a retention time and boiling point close to the monomer's (so it doesn't evaporate or elute disproportionately) but well separated from every other peak in the chromatogram.</p>
+  </div>
+
+  <div class="card">
+    <h3>Worked example</h3>
+    <p class="guide-note">
+      ATRP of styrene, mesitylene added at a 1:20 molar ratio to monomer (5&nbsp;mol%). At t&nbsp;=&nbsp;0, the styrene vinyl region integrates to 3.00 against a mesitylene ArH integral of 1.00 (I<sub>M,0</sub>/I<sub>std,0</sub>&nbsp;=&nbsp;3.00). At t&nbsp;=&nbsp;2&nbsp;h, an aliquot gives a vinyl integral of 1.35 against the same mesitylene integral of 1.00 (I<sub>M,t</sub>/I<sub>std,t</sub>&nbsp;=&nbsp;1.35).
+    </p>
+    <div class="guide-formula">
+      p = 1 &minus; (1.35 / 3.00) = 1 &minus; 0.45 = 0.55 &nbsp;&rarr;&nbsp; 55% conversion
+    </div>
+    <p class="guide-note">Enter 55 into the "Conversion for predicted Mₙ" field on the ATRP tab (with the same target ratio you used to design the recipe) to see the real Mₙ at this point in the reaction.</p>
+  </div>
+
+  <div class="card">
+    <h3>Kinetics plot</h3>
+    <p class="guide-note">
+      Enter your (time, conversion) data points from a series of aliquots below. This plots ln([M]&#8320;/[M]) = &minus;ln(1&minus;<em>p</em>) against time. For a well behaved controlled/living polymerization with a roughly constant concentration of propagating chains, this should be a straight line through the origin. Curvature (especially flattening out) suggests the radical/chain end concentration isn't staying constant: slow or ongoing initiation, or chains dying off.
+    </p>
+
+    <div id="kin-rows" class="kin-rows"></div>
+    <div class="actions" style="justify-content:flex-start; margin-top:6px;">
+      <button type="button" class="copy-btn" id="kin-add-row">+ Add point</button>
+    </div>
+
+    <div class="kin-chart-wrap">
+      <svg id="kin-chart" class="kin-chart" viewBox="0 0 560 320" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+
+    <div class="stat-grid" id="kin-stats"></div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>General laboratory guidance only. Always follow your institution's safety rules and your PI's protocol for specific reagents and instruments.</p>
+</footer>
+
+<script>
+(function () {
+  var DEMO = [
+    { t: 0, p: 0 },
+    { t: 15, p: 18 },
+    { t: 30, p: 33 },
+    { t: 45, p: 45 },
+    { t: 60, p: 55 },
+  ];
+
+  function $(id) { return document.getElementById(id); }
+
+  function makeRow(t, p) {
+    var row = document.createElement("div");
+    row.className = "kin-row";
+    row.innerHTML =
+      '<input type="number" class="kin-time" placeholder="Time (min)" step="any" value="' + (t ?? "") + '">' +
+      '<input type="number" class="kin-conv" placeholder="Conversion (%)" step="any" min="0" max="100" value="' + (p ?? "") + '">' +
+      '<button type="button" class="kin-row-remove" aria-label="Remove point">&times;</button>';
+    row.querySelector(".kin-row-remove").addEventListener("click", function () {
+      row.remove();
+      recalcKinetics();
+    });
+    return row;
+  }
+
+  function addRow(t, p) {
+    var rows = $("kin-rows");
+    var row = makeRow(t, p);
+    rows.appendChild(row);
+    return row;
+  }
+
+  function linearRegression(points) {
+    var n = points.length;
+    var sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+    for (var i = 0; i < n; i++) {
+      sumX += points[i].x; sumY += points[i].y;
+      sumXY += points[i].x * points[i].y; sumXX += points[i].x * points[i].x;
+    }
+    var meanX = sumX / n, meanY = sumY / n;
+    var denom = n * sumXX - sumX * sumX;
+    var slope = denom !== 0 ? (n * sumXY - sumX * sumY) / denom : 0;
+    var intercept = meanY - slope * meanX;
+    var ssTot = 0, ssRes = 0;
+    for (var j = 0; j < n; j++) {
+      var pred = slope * points[j].x + intercept;
+      ssTot += Math.pow(points[j].y - meanY, 2);
+      ssRes += Math.pow(points[j].y - pred, 2);
+    }
+    var r2 = ssTot > 0 ? 1 - ssRes / ssTot : 1;
+    return { slope: slope, intercept: intercept, r2: r2 };
+  }
+
+  function niceTicks(min, max, count) {
+    if (min === max) { min -= 1; max += 1; }
+    var ticks = [];
+    for (var i = 0; i <= count; i++) ticks.push(min + ((max - min) * i) / count);
+    return ticks;
+  }
+
+  function fmtTick(v) {
+    if (Math.abs(v) < 0.0001) return "0";
+    var abs = Math.abs(v);
+    var digits = abs >= 100 ? 0 : abs >= 10 ? 1 : 2;
+    return v.toFixed(digits);
+  }
+
+  function renderChart(points) {
+    var svg = $("kin-chart");
+    var W = 560, H = 320;
+    var M = { left: 54, right: 18, top: 16, bottom: 40 };
+    var plotW = W - M.left - M.right;
+    var plotH = H - M.top - M.bottom;
+
+    if (points.length < 2) {
+      svg.innerHTML = '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" class="kin-empty">Add at least 2 data points to see the plot</text>';
+      return null;
+    }
+
+    var xs = points.map(function (p) { return p.x; });
+    var ys = points.map(function (p) { return p.y; });
+    var xMin = Math.min(0, Math.min.apply(null, xs));
+    var xMax = Math.max.apply(null, xs);
+    var yMin = Math.min(0, Math.min.apply(null, ys));
+    var yMax = Math.max.apply(null, ys);
+    if (xMax === xMin) xMax = xMin + 1;
+    if (yMax === yMin) yMax = yMin + 1;
+    xMax += (xMax - xMin) * 0.08;
+    yMax += (yMax - yMin) * 0.12;
+
+    function sx(x) { return M.left + ((x - xMin) / (xMax - xMin)) * plotW; }
+    function sy(y) { return H - M.bottom - ((y - yMin) / (yMax - yMin)) * plotH; }
+
+    var svgParts = [];
+
+    var xTicks = niceTicks(xMin, xMax, 5);
+    var yTicks = niceTicks(yMin, yMax, 5);
+    yTicks.forEach(function (t) {
+      svgParts.push('<line class="kin-grid" x1="' + M.left + '" y1="' + sy(t) + '" x2="' + (W - M.right) + '" y2="' + sy(t) + '"/>');
+      svgParts.push('<text class="kin-tick-label" x="' + (M.left - 8) + '" y="' + (sy(t) + 3) + '" text-anchor="end">' + fmtTick(t) + '</text>');
+    });
+    xTicks.forEach(function (t) {
+      svgParts.push('<text class="kin-tick-label" x="' + sx(t) + '" y="' + (H - M.bottom + 16) + '" text-anchor="middle">' + fmtTick(t) + '</text>');
+    });
+
+    svgParts.push('<line class="kin-axis" x1="' + M.left + '" y1="' + (H - M.bottom) + '" x2="' + (W - M.right) + '" y2="' + (H - M.bottom) + '"/>');
+    svgParts.push('<line class="kin-axis" x1="' + M.left + '" y1="' + M.top + '" x2="' + M.left + '" y2="' + (H - M.bottom) + '"/>');
+
+    svgParts.push('<text class="kin-axis-label" x="' + (W / 2) + '" y="' + (H - 4) + '" text-anchor="middle">Time (min)</text>');
+    svgParts.push('<text class="kin-axis-label" x="14" y="' + (H / 2) + '" text-anchor="middle" transform="rotate(-90 14 ' + (H / 2) + ')">ln([M]&#8320;/[M])</text>');
+
+    var reg = linearRegression(points);
+    var lineY1 = reg.slope * xMin + reg.intercept;
+    var lineY2 = reg.slope * xMax + reg.intercept;
+    svgParts.push('<line class="kin-fit-line" x1="' + sx(xMin) + '" y1="' + sy(lineY1) + '" x2="' + sx(xMax) + '" y2="' + sy(lineY2) + '"/>');
+
+    points.forEach(function (p) {
+      svgParts.push('<circle class="kin-point" cx="' + sx(p.x) + '" cy="' + sy(p.y) + '" r="4.5"/>');
+    });
+
+    svg.innerHTML = svgParts.join("");
+    return reg;
+  }
+
+  function recalcKinetics() {
+    var rows = Array.from(document.querySelectorAll("#kin-rows .kin-row"));
+    var points = [];
+    rows.forEach(function (row) {
+      var t = parseFloat(row.querySelector(".kin-time").value);
+      var pPct = parseFloat(row.querySelector(".kin-conv").value);
+      if (!isFinite(t) || !isFinite(pPct)) return;
+      if (pPct < 0 || pPct >= 100) return;
+      var p = pPct / 100;
+      var y = -Math.log(1 - p);
+      points.push({ x: t, y: y });
+    });
+    points.sort(function (a, b) { return a.x - b.x; });
+
+    var reg = renderChart(points);
+    var stats = $("kin-stats");
+    if (!reg) {
+      stats.innerHTML = "";
+      return;
+    }
+    var verdict = reg.r2 >= 0.98 ? "Looks linear, consistent with controlled/living kinetics"
+      : reg.r2 >= 0.9 ? "Roughly linear, some scatter or curvature"
+      : "Not very linear. Check for curvature (loss of control, termination, slow initiation)";
+    stats.innerHTML =
+      '<div class="stat"><div class="label">Slope (apparent k<sub>obs</sub>)</div><div class="value">' + reg.slope.toFixed(4) + '</div><div class="sub">min&#8315;&#185;</div></div>' +
+      '<div class="stat"><div class="label">R&#178;</div><div class="value">' + reg.r2.toFixed(4) + '</div><div class="sub">fit quality</div></div>' +
+      '<div class="stat"><div class="label">Reading</div><div class="value" style="font-size:0.95rem;">' + verdict + '</div></div>';
+  }
+
+  $("kin-add-row").addEventListener("click", function () {
+    addRow("", "");
+    recalcKinetics();
+  });
+  $("kin-rows").addEventListener("input", function (e) {
+    if (e.target.matches("input")) recalcKinetics();
+  });
+
+  DEMO.forEach(function (d) { addRow(d.t, d.p); });
+  recalcKinetics();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PolyTechniques</title>
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+
+<button class="theme-toggle-btn theme-toggle-fixed" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+
+<section class="hero">
+  <svg id="polymer-art" class="polymer-art" viewBox="0 0 1200 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+  <div class="hero-scrim" aria-hidden="true"></div>
+  <div class="hero-content">
+    <div class="hero-brand">
+      <img src="favicon.svg" alt="" class="brand-mark">
+      <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+    </div>
+    <div class="tech-pills">
+      <span class="tech-pill">ATRP</span>
+      <span class="tech-pill">RAFT</span>
+      <span class="tech-pill">ROMP</span>
+      <span class="tech-pill">FRP</span>
+    </div>
+    <p>Target a molecular weight, get a lab recipe, and use the technique guides to actually run the reaction.</p>
+    <div class="home-links-header">
+      <h2>🧰 Explore the Toolkit</h2>
+      <p>Calculators, references, and lab guides for every stage of the synthesis.</p>
+    </div>
+  </div>
+</section>
+
+<main class="home-links">
+  <a class="home-card" href="index.html" style="--card-accent:#5b8def">
+    <div class="home-card-icon">🧮</div>
+    <div class="home-card-eyebrow">Calculator</div>
+    <h2>Open the Calculator</h2>
+    <p>Target Mₙ, DP, or concentration across ATRP, RAFT, ROMP, and FRP. Includes macroinitiators and a block copolymer builder.</p>
+    <span class="home-card-arrow">Start designing &rarr;</span>
+  </a>
+  <a class="home-card" href="copolymer-composition.html" style="--card-accent:#4fd1c5">
+    <div class="home-card-icon">🧬</div>
+    <div class="home-card-eyebrow">Tool</div>
+    <h2>Copolymer Composition</h2>
+    <p>Predict instantaneous copolymer composition from feed ratio and reactivity ratios, with a composition diagram and azeotrope detection.</p>
+    <span class="home-card-arrow">Open the calculator &rarr;</span>
+  </a>
+  <a class="home-card" href="gpc-calibration.html" style="--card-accent:#4fd1c5">
+    <div class="home-card-icon">📏</div>
+    <div class="home-card-eyebrow">Tool</div>
+    <h2>GPC Calibration Converter</h2>
+    <p>Convert a polystyrene equivalent molecular weight from your GPC report into a true molecular weight for your actual polymer.</p>
+    <span class="home-card-arrow">Convert a result &rarr;</span>
+  </a>
+  <a class="home-card" href="tg-predictor.html" style="--card-accent:#4fd1c5">
+    <div class="home-card-icon">🌡️</div>
+    <div class="home-card-eyebrow">Tool</div>
+    <h2>Tg Predictor</h2>
+    <p>Estimate a random copolymer or miscible blend's glass transition temperature from its components using the Fox equation.</p>
+    <span class="home-card-arrow">Predict a Tg &rarr;</span>
+  </a>
+  <a class="home-card" href="recipe-scaling.html" style="--card-accent:#4fd1c5">
+    <div class="home-card-icon">⚖️</div>
+    <div class="home-card-eyebrow">Tool</div>
+    <h2>Recipe Scaling</h2>
+    <p>Scale any recipe up or down by a factor or between batch sizes while keeping every component's ratio the same.</p>
+    <span class="home-card-arrow">Scale a recipe &rarr;</span>
+  </a>
+  <a class="home-card" href="mechanisms.html" style="--card-accent:#37c98f">
+    <div class="home-card-icon">⚛️</div>
+    <div class="home-card-eyebrow">Chemistry</div>
+    <h2>Polymerization Mechanisms</h2>
+    <p>How ATRP, RAFT, ROMP, and FRP actually build a chain: reaction schemes and the "why" behind each technique's controlled (or uncontrolled) character.</p>
+    <span class="home-card-arrow">See the mechanisms &rarr;</span>
+  </a>
+  <a class="home-card" href="air-free-technique.html" style="--card-accent:#f2b84b">
+    <div class="home-card-icon">💨</div>
+    <div class="home-card-eyebrow">Lab technique</div>
+    <h2>Air Free Reaction Setup</h2>
+    <p>Schlenk line technique, the full freeze pump thaw procedure, and safety notes for running these polymerizations under inert atmosphere.</p>
+    <span class="home-card-arrow">Read the guide &rarr;</span>
+  </a>
+  <a class="home-card" href="conversion-monitoring.html" style="--card-accent:#f2b84b">
+    <div class="home-card-icon">📊</div>
+    <div class="home-card-eyebrow">Lab technique</div>
+    <h2>Monitoring Conversion &amp; Internal Standards</h2>
+    <p>How to take and analyze aliquots partway through the reaction, and why an internal standard is essential for trustworthy conversion data.</p>
+    <span class="home-card-arrow">Read the guide &rarr;</span>
+  </a>
+  <a class="home-card" href="gpc-peak-interpretation.html" style="--card-accent:#f2b84b">
+    <div class="home-card-icon">📉</div>
+    <div class="home-card-eyebrow">Lab technique</div>
+    <h2>GPC Peak Interpretation</h2>
+    <p>Columns, solvents, shouldering, and integration choices, with an interactive chromatogram to see how integration limits change Mn, Mw, and Đ.</p>
+    <span class="home-card-arrow">Read the guide &rarr;</span>
+  </a>
+  <a class="home-card" href="glossary.html" style="--card-accent:#a78bfa">
+    <div class="home-card-icon">📖</div>
+    <div class="home-card-eyebrow">Reference</div>
+    <h2>Glossary</h2>
+    <p>Plain language definitions for M<sub>n</sub>, Đ, DP, CTAs, macroinitiators, and every other term used across the calculator and guides.</p>
+    <span class="home-card-arrow">Look up a term &rarr;</span>
+  </a>
+  <a class="home-card" href="polymer-chain-game.html" style="--card-accent:#4fd1c5">
+    <div class="home-card-icon">🎮</div>
+    <div class="home-card-eyebrow">Fun</div>
+    <h2>Build a Polymer Chain</h2>
+    <p>A tiny maze game. Collect every monomer bead and dodge O&#8322;, an inhibitor, and a chain transfer agent before they terminate your chain.</p>
+    <span class="home-card-arrow">Play now &rarr;</span>
+  </a>
+  <a class="home-card" href="founder.html" style="--card-accent:#f472b6">
+    <div class="home-card-icon">👋</div>
+    <div class="home-card-eyebrow">About</div>
+    <h2>Meet the Founder</h2>
+    <p>A polymer chemist's path from a community college chemistry class to a Ph.D. in polymer and DNA nanotechnology, and why this calculator exists.</p>
+    <span class="home-card-arrow">Read the bio &rarr;</span>
+  </a>
+</main>
+
+<section class="hot-papers">
+  <div class="hot-papers-header">
+    <div>
+      <h2>🔥 Hot Off the Press</h2>
+      <p class="hot-papers-subtitle">Recent polymer papers from the past week, with any early citations surfaced first</p>
+    </div>
+    <span class="hot-papers-live"><span class="live-dot"></span> Live feed · refreshes every 24h</span>
+  </div>
+  <div id="hot-papers-grid" class="hot-papers-grid">
+    <div class="hot-papers-loading">Finding the papers everyone's citing…</div>
+  </div>
+  <p class="hot-papers-caption" id="hot-papers-caption"></p>
+</section>
+
+<section class="trivia">
+  <div class="trivia-header">
+    <h2>🧠 Daily Polymer Trivia</h2>
+    <p class="trivia-subtitle">One new chemistry question every day. You get three tries.</p>
+  </div>
+  <div class="trivia-card" id="trivia-card"></div>
+</section>
+
+<p class="home-footnote">Reagent data and lab guidance are references for convenience. Always verify against your reagent's COA and your institution's safety protocols.</p>
+
+<script>
+(function () {
+  var svg = document.getElementById('polymer-art');
+  var W = 1200, H = 460;
+  var palette = ['#5b8def', '#37c98f', '#f2b84b', '#ef6a6a', '#a78bfa', '#4fd1c5', '#f472b6'];
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function el(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function waveY(x, baseline, amplitude, freq, phase) {
+    return baseline
+      + Math.sin(x * freq + phase) * amplitude
+      + Math.sin(x * freq * 2.3 + phase * 1.7) * amplitude * 0.25;
+  }
+
+  var numChains = 7;
+  for (var c = 0; c < numChains; c++) {
+    var color = palette[c % palette.length];
+    var baseline = 30 + (H - 60) * (c / (numChains - 1)) + (Math.random() - 0.5) * 26;
+    var amplitude = 22 + Math.random() * 32;
+    var freq = 0.005 + Math.random() * 0.006;
+    var phase = Math.random() * Math.PI * 2;
+    var opacity = 0.5 + Math.random() * 0.35;
+
+    var step = 12;
+    var pts = [];
+    for (var x = -20; x <= W + 20; x += step) {
+      pts.push([x, waveY(x, baseline, amplitude, freq, phase)]);
+    }
+    var d = 'M ' + pts[0][0] + ' ' + pts[0][1];
+    for (var i = 1; i < pts.length; i++) {
+      var x0 = pts[i - 1][0], y0 = pts[i - 1][1];
+      var x1 = pts[i][0], y1 = pts[i][1];
+      var mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+      d += ' Q ' + x0 + ' ' + y0 + ' ' + mx + ' ' + my;
+    }
+
+    svg.appendChild(el('path', {
+      d: d, fill: 'none', stroke: color, 'stroke-width': 2.5,
+      'stroke-linecap': 'round', opacity: (opacity * 0.7).toFixed(2)
+    }));
+
+    var beadSpacing = 46 + Math.random() * 20;
+    for (var bx = 10 + Math.random() * beadSpacing; bx < W - 10; bx += beadSpacing) {
+      var by = waveY(bx, baseline, amplitude, freq, phase);
+      var r = 5 + Math.random() * 4;
+      svg.appendChild(el('circle', {
+        cx: bx.toFixed(1), cy: by.toFixed(1), r: r.toFixed(1),
+        fill: color, opacity: opacity.toFixed(2)
+      }));
+    }
+  }
+})();
+</script>
+
+<script>
+(function () {
+  var CACHE_KEY = 'polytechniques_hot_papers_v1';
+  var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+  var ACCENTS = ['#5b8def', '#37c98f', '#f2b84b', '#ef6a6a', '#a78bfa', '#4fd1c5'];
+
+  var FALLBACK_PAPERS = [
+    {
+      title: 'A comparison of RAFT and ATRP methods for controlled radical polymerization',
+      authors: 'Truong et al.',
+      journal: 'Nature Reviews Chemistry',
+      year: '2021',
+      url: 'https://doi.org/10.1038/s41570-021-00328-8'
+    },
+    {
+      title: 'Synergistic Combination of Living Ring Opening Metathesis Polymerization and Atom Transfer Radical Polymerization to Synthesize Structurally Tailored and Engineered Macromolecular Networks',
+      authors: 'Yasir et al.',
+      journal: 'Langmuir',
+      year: '2024',
+      url: 'https://doi.org/10.1021/acs.langmuir.4c03654'
+    },
+    {
+      title: 'Photo RAFT Polymerization Under Microwatt Irradiation via Unimolecular Photoinduced Electron Transfer',
+      authors: 'Lissandrini et al.',
+      journal: 'Angewandte Chemie International Edition',
+      year: '2025',
+      url: 'https://doi.org/10.1002/anie.202424225'
+    }
+  ];
+
+  function escapeHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s || '';
+    return d.innerHTML;
+  }
+
+  function formatAuthors(authorArr) {
+    if (!authorArr || !authorArr.length) return '';
+    var first = authorArr[0].family || authorArr[0].name || '';
+    return authorArr.length > 1 ? first + ' et al.' : first;
+  }
+
+  function extractYear(item) {
+    var d = (item.published && item.published['date-parts']) ||
+            (item['published-online'] && item['published-online']['date-parts']) ||
+            (item['published-print'] && item['published-print']['date-parts']);
+    return (d && d[0] && d[0][0]) ? String(d[0][0]) : '';
+  }
+
+  function normalizeItems(items) {
+    var seen = {};
+    var out = [];
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      var rawTitle = it.title && it.title[0];
+      if (!rawTitle) continue;
+      var title = rawTitle.replace(/<\/?i>|<\/?sub>|<\/?sup>|<\/?b>/g, '').replace(/\s+/g, ' ').replace(/\s+([,.;:])/g, '$1').trim();
+      if (/^(outside front cover|front cover|back cover|cover feature|issue information|editorial board|contents)/i.test(title)) continue;
+      var key = title.toLowerCase().slice(0, 60);
+      if (seen[key]) continue;
+      seen[key] = true;
+      var journal = (it['short-container-title'] && it['short-container-title'][0]) ||
+                    (it['container-title'] && it['container-title'][0]) || '';
+      out.push({
+        title: title,
+        authors: formatAuthors(it.author),
+        journal: journal,
+        year: extractYear(it),
+        cites: it['is-referenced-by-count'] || 0,
+        url: it.DOI ? ('https://doi.org/' + it.DOI) : it.URL
+      });
+    }
+    out.sort(function (a, b) { return b.cites - a.cites; });
+    return out.slice(0, 6);
+  }
+
+  function timeAgo(ts) {
+    var mins = Math.round((Date.now() - ts) / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + 'm ago';
+    return Math.round(mins / 60) + 'h ago';
+  }
+
+  function hoursLeft(ts) {
+    var msLeft = CACHE_TTL_MS - (Date.now() - ts);
+    return Math.max(0, Math.ceil(msLeft / 3600000)) + 'h';
+  }
+
+  function renderPapers(papers, captionText) {
+    var grid = document.getElementById('hot-papers-grid');
+    var caption = document.getElementById('hot-papers-caption');
+    if (!papers || !papers.length) {
+      grid.innerHTML = '<div class="hot-papers-error">Couldn\'t load new papers right now. Check back soon.</div>';
+      caption.textContent = '';
+      return;
+    }
+    grid.innerHTML = papers.map(function (p, i) {
+      var accent = ACCENTS[i % ACCENTS.length];
+      var metaText = escapeHtml(p.authors || '') + (p.year ? ' · ' + p.year : '');
+      var citeBadge = '';
+      if (typeof p.cites === 'number') {
+        citeBadge = p.cites > 0
+          ? '<span class="paper-cites">🔥 ' + p.cites + (p.cites === 1 ? ' citation' : ' citations') + '</span>'
+          : '<span class="paper-cites paper-cites-new">✨ just released</span>';
+      }
+      return '<a class="paper-card" style="--paper-accent:' + accent + '; animation-delay:' + (i * 0.06).toFixed(2) + 's" ' +
+        'href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener">' +
+        '<div class="paper-top-row">' +
+        (p.journal ? '<span class="paper-journal">' + escapeHtml(p.journal) + '</span>' : '<span></span>') +
+        citeBadge +
+        '</div>' +
+        '<p class="paper-title">' + escapeHtml(p.title) + '</p>' +
+        '<div class="paper-meta"><span>' + metaText + '</span><span class="paper-link-hint">Read &rarr;</span></div>' +
+        '</a>';
+    }).join('');
+    caption.textContent = captionText || '';
+  }
+
+  function fetchFresh(staleCache) {
+    // Pull this week's papers, then rank that pool by citation count client-side
+    // so the feed surfaces the ones getting the most attention out of what just
+    // published, not just the newest or the most generically on-topic.
+    var since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    var until = new Date().toISOString().slice(0, 10);
+    var url = 'https://api.crossref.org/works?query.bibliographic=' +
+      encodeURIComponent('RAFT polymerization ATRP ROMP macromolecular') +
+      '&filter=' + encodeURIComponent('type:journal-article,from-pub-date:' + since + ',until-pub-date:' + until) +
+      '&rows=50' +
+      '&select=' + encodeURIComponent('title,author,container-title,short-container-title,DOI,published,published-online,published-print,is-referenced-by-count');
+    // No &sort= param: CrossRef's default relevance ranking keeps the candidate
+    // pool on-topic across the week's window; citation-count ranking then
+    // happens client-side in normalizeItems() so "popular" stays relevant, not just cited.
+
+    fetch(url).then(function (res) {
+      if (!res.ok) throw new Error('bad status');
+      return res.json();
+    }).then(function (data) {
+      var items = (data.message && data.message.items) || [];
+      var papers = normalizeItems(items);
+      if (!papers.length) throw new Error('no items');
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), papers: papers }));
+      renderPapers(papers, 'Updated just now · next refresh in 24h');
+    }).catch(function () {
+      if (staleCache && staleCache.papers && staleCache.papers.length) {
+        renderPapers(staleCache.papers, 'Showing last saved results · refresh unavailable right now');
+      } else {
+        renderPapers(FALLBACK_PAPERS, 'Showing offline picks · live feed unavailable right now');
+      }
+    });
+  }
+
+  function loadHotPapers() {
+    var cached = null;
+    try { cached = JSON.parse(localStorage.getItem(CACHE_KEY)); } catch (e) {}
+    if (cached && cached.papers && cached.papers.length && (Date.now() - cached.timestamp) < CACHE_TTL_MS) {
+      renderPapers(cached.papers, 'Updated ' + timeAgo(cached.timestamp) + ' · next refresh in ' + hoursLeft(cached.timestamp));
+      return;
+    }
+    fetchFresh(cached);
+  }
+
+  loadHotPapers();
+})();
+</script>
+
+<script>
+(function () {
+  var STORAGE_KEY = "polytechniques_trivia_v1";
+  var MAX_TRIES = 3;
+
+  var QUESTIONS = [
+    {
+      q: "Who accidentally discovered PTFE (Teflon) in 1938 while working at DuPont?",
+      options: ["Wallace Carothers", "Roy Plunkett", "Leo Baekeland", "Stephanie Kwolek"],
+      correct: 1,
+      explain: "Roy Plunkett found that a cylinder of tetrafluoroethylene gas had polymerized on its own into a waxy, slippery white solid, the first batch of PTFE."
+    },
+    {
+      q: "Which metal is most commonly used to mediate the reversible activation and deactivation equilibrium in ATRP?",
+      options: ["Iron", "Copper", "Ruthenium", "Palladium"],
+      correct: 1,
+      explain: "Copper, usually as a Cu(I)/ligand complex in equilibrium with Cu(II), is the classic ATRP catalyst, though iron and ruthenium based ATRP also exist."
+    },
+    {
+      q: "Karl Ziegler shared the 1963 Nobel Prize in Chemistry with Giulio Natta for developing:",
+      options: ["Living anionic polymerization", "Coordination catalysts for polyolefins", "The first synthetic rubber", "Nylon"],
+      correct: 1,
+      explain: "Ziegler Natta catalysts enabled controlled, stereoregular polymerization of alpha olefins like ethylene and propylene, reshaping the plastics industry."
+    },
+    {
+      q: "The 2005 Nobel Prize in Chemistry, for developing the metathesis reaction that underlies ROMP, was shared by Robert Grubbs, Richard Schrock, and:",
+      options: ["Yves Chauvin", "George Whitesides", "Barry Sharpless", "Roger Tsien"],
+      correct: 0,
+      explain: "Chauvin proposed the metal carbene mechanism for olefin metathesis; Grubbs and Schrock developed the practical catalysts built on that mechanism."
+    },
+    {
+      q: "Hermann Staudinger, often called the father of polymer science, is best known for proposing that polymers are:",
+      options: ["Colloidal aggregates of small molecules", "Long chains of covalently bonded repeat units", "Crystalline salts", "Metal organic frameworks"],
+      correct: 1,
+      explain: "Staudinger's macromolecular hypothesis from the 1920s, controversial at the time, established polymers as true covalent long chain molecules."
+    },
+    {
+      q: "Kevlar, the high strength aramid fiber used in body armor, was discovered in 1965 by:",
+      options: ["Rosalind Franklin", "Stephanie Kwolek", "Ruth Benerito", "Marie Curie"],
+      correct: 1,
+      explain: "Kwolek, a chemist at DuPont, found that a liquid crystalline aramid solution could be spun into an exceptionally strong, stiff fiber."
+    },
+    {
+      q: "What does dispersity (Đ) describe about a polymer sample?",
+      options: ["Its color", "How uniform the chain lengths are", "Its glass transition temperature", "Its solubility"],
+      correct: 1,
+      explain: "Đ is Mw divided by Mn. A value of 1.00 means every chain is exactly the same length; broader distributions give higher values."
+    },
+    {
+      q: "Which of these is not one of the four polymerization techniques covered by this calculator?",
+      options: ["Ring opening metathesis polymerization", "Reversible addition fragmentation chain transfer", "Anionic ring opening polymerization", "Atom transfer radical polymerization"],
+      correct: 2,
+      explain: "The calculator covers ATRP, RAFT, ROMP, and FRP. Anionic ring opening polymerization is a real, useful technique, just not one of these four."
+    },
+    {
+      q: "Bakelite, generally considered the first fully synthetic plastic, was created in 1907 by:",
+      options: ["Leo Baekeland", "Wallace Carothers", "John Wesley Hyatt", "Charles Goodyear"],
+      correct: 0,
+      explain: "Leo Baekeland's phenol formaldehyde resin was the first plastic made from entirely synthetic components, not derived from a natural polymer."
+    },
+    {
+      q: "PET, the plastic most commonly used for beverage bottles, stands for:",
+      options: ["Polyethylene terephthalate", "Poly ether toluene", "Polyester thermoplastic", "Polyethylene thiophene"],
+      correct: 0,
+      explain: "Polyethylene terephthalate is a polyester made from ethylene glycol and terephthalic acid, valued for its clarity and gas barrier properties."
+    },
+    {
+      q: "In a Mayo Lewis copolymerization, if both reactivity ratios r1 and r2 are much less than 1, the copolymer strongly tends toward:",
+      options: ["A blocky structure", "Alternation", "Homopolymerizing only monomer 1", "No polymerization at all"],
+      correct: 1,
+      explain: "When each chain end strongly prefers crossing over to the other monomer, the two monomers alternate along the backbone almost regardless of feed ratio."
+    },
+    {
+      q: "What common polymer is widely cited as the world's most produced plastic by mass?",
+      options: ["Polystyrene", "Polyethylene", "PVC", "Polycarbonate"],
+      correct: 1,
+      explain: "Polyethylene, spanning grades from LDPE to HDPE and UHMWPE, is produced in greater total volume than any other synthetic plastic."
+    },
+    {
+      q: "A polymer's glass transition temperature (Tg) marks the transition between:",
+      options: ["Solid and liquid states (melting)", "Glassy/rigid and rubbery/flexible amorphous states", "Crystalline and amorphous regions forming", "Two different crystal structures"],
+      correct: 1,
+      explain: "Below Tg, amorphous chain segments are frozen in place; above Tg, they have enough mobility to flow and deform easily."
+    },
+    {
+      q: "Charles Goodyear's discovery of rubber vulcanization in 1839 is popularly described as happening when he:",
+      options: ["Read about it in a chemistry journal", "Accidentally dropped a rubber sulfur mixture on a hot stove", "Purchased the process from another inventor", "Ran a carefully designed experiment"],
+      correct: 1,
+      explain: "The popular account has Goodyear spilling a rubber and sulfur mixture onto a hot stove, discovering that heat transformed sticky rubber into a durable, elastic material."
+    },
+    {
+      q: "In RAFT polymerization, what does the R group of the chain transfer agent become at the end of the reaction?",
+      options: ["It is cleaved off entirely and discarded", "It becomes the other end of the finished chain", "It becomes part of the catalyst", "It stays permanently bonded to unreacted monomer"],
+      correct: 1,
+      explain: "The R group is the initial leaving and reinitiating fragment; once polymerization ends, it sits at the chain end opposite the thiocarbonylthio group."
+    }
+  ];
+
+  function $(id) { return document.getElementById(id); }
+
+  function dayKey() {
+    var d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  }
+
+  function hashString(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) {
+      h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    }
+    return h;
+  }
+
+  function todaysQuestionIndex() {
+    return hashString(dayKey()) % QUESTIONS.length;
+  }
+
+  function loadState() {
+    var today = dayKey();
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) {}
+    if (!stored || stored.date !== today) {
+      stored = { date: today, qIndex: todaysQuestionIndex(), attempts: 0, wrongIndices: [], solved: false, revealed: false };
+      saveState(stored);
+    }
+    return stored;
+  }
+
+  function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function triesDots(attempts) {
+    var dots = "";
+    for (var i = 0; i < MAX_TRIES; i++) {
+      dots += '<span class="try-dot ' + (i < attempts ? "used" : "") + '"></span>';
+    }
+    return '<div class="trivia-tries">' + dots + "</div>";
+  }
+
+  function render(state) {
+    var q = QUESTIONS[state.qIndex];
+    var locked = state.solved || state.revealed;
+    var optionsHtml = q.options.map(function (opt, i) {
+      var cls = "trivia-option";
+      var disabled = "";
+      if (state.solved && i === q.correct) cls += " correct";
+      if (state.revealed && !state.solved && i === q.correct) cls += " correct";
+      if (state.wrongIndices.indexOf(i) !== -1) cls += " wrong";
+      if (locked || state.wrongIndices.indexOf(i) !== -1) disabled = "disabled";
+      if (locked && cls === "trivia-option") cls += " neutral-disabled";
+      return '<button type="button" class="' + cls + '" data-index="' + i + '" ' + disabled + '>' + opt + "</button>";
+    }).join("");
+
+    var feedbackHtml = "";
+    if (state.solved) {
+      feedbackHtml = '<p class="trivia-feedback win">Correct! 🎉</p>';
+    } else if (state.revealed) {
+      feedbackHtml = '<p class="trivia-feedback lose">Out of tries, here is the answer.</p>';
+    } else if (state.attempts > 0) {
+      var left = MAX_TRIES - state.attempts;
+      feedbackHtml = '<p class="trivia-feedback">Not quite. ' + left + (left === 1 ? " try" : " tries") + " left.</p>";
+    }
+
+    var explanationHtml = locked ? '<p class="trivia-explanation">' + q.explain + "</p>" : "";
+
+    $("trivia-card").innerHTML =
+      triesDots(state.attempts) +
+      '<p class="trivia-question">' + q.q + "</p>" +
+      '<div class="trivia-options">' + optionsHtml + "</div>" +
+      feedbackHtml +
+      explanationHtml;
+
+    $("trivia-card").querySelectorAll(".trivia-option").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        onAnswer(state, parseInt(btn.getAttribute("data-index"), 10));
+      });
+    });
+  }
+
+  function onAnswer(state, index) {
+    var q = QUESTIONS[state.qIndex];
+    if (state.solved || state.revealed) return;
+    if (index === q.correct) {
+      state.solved = true;
+    } else {
+      if (state.wrongIndices.indexOf(index) === -1) {
+        state.wrongIndices.push(index);
+        state.attempts += 1;
+      }
+      if (state.attempts >= MAX_TRIES) {
+        state.revealed = true;
+      }
+    }
+    saveState(state);
+    render(state);
+  }
+
+  render(loadState());
+})();
+</script>
+
+</body>
+</html>

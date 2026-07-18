@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Air Free Reaction Setup: PolyTechniques</title>
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Air Free Reaction Setup</h1>
+      <p class="subtitle">Schlenk line technique for running ATRP, RAFT, ROMP &amp; FRP under inert atmosphere</p>
+    </div>
+    <div class="guide-links">
+      <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+      <a class="brand-link" href="home.html">
+        <img src="favicon.svg" alt="" class="brand-mark">
+        <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>Materials</h3>
+    <ul class="guide-list">
+      <li>Schlenk line (vacuum + inert gas manifold) or a N₂/Ar tank with bubbler + balloon</li>
+      <li>Oven dried Schlenk flask/tube (or septum capped round bottom), stir bar</li>
+      <li>Rubber septa, needles (various gauges), gas tight syringes</li>
+      <li>Liquid N₂ (or dry ice/acetone) bath for freeze pump thaw</li>
+      <li>Glovebox, if your catalyst is extremely O₂ sensitive (e.g. some Cu(I) complexes)</li>
+    </ul>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="480" height="180" viewBox="0 0 480 180">
+        <text x="24" y="16" class="small" fill="#4fd1c5">inert gas</text>
+        <line x1="20" y1="25" x2="460" y2="25" stroke="#4fd1c5" stroke-width="4" stroke-linecap="round"/>
+        <text x="24" y="78" class="small" fill="#a78bfa">vacuum</text>
+        <line x1="20" y1="60" x2="460" y2="60" stroke="#a78bfa" stroke-width="4" stroke-linecap="round"/>
+
+        <line x1="180" y1="25" x2="180" y2="60" stroke="var(--text-dim)" stroke-width="3"/>
+        <circle cx="180" cy="42" r="8" fill="var(--card-bg)" stroke="var(--text-dim)" stroke-width="2"/>
+        <line x1="180" y1="60" x2="180" y2="100" stroke="var(--text-dim)" stroke-width="3"/>
+        <path d="M163,100 L197,100 L197,122 Q197,148 180,154 Q163,148 163,122 Z" fill="var(--primary-dim)" stroke="var(--border)" stroke-width="2"/>
+        <text x="180" y="170" text-anchor="middle" class="small dim">Schlenk flask</text>
+
+        <line x1="420" y1="25" x2="420" y2="55" stroke="var(--text-dim)" stroke-width="3"/>
+        <path d="M403,55 L437,55 L437,102 Q437,118 420,118 Q403,118 403,102 Z" fill="var(--primary-dim)" stroke="var(--border)" stroke-width="2"/>
+        <line x1="403" y1="92" x2="437" y2="92" stroke="#5b8def" stroke-width="2" opacity="0.55"/>
+        <circle cx="413" cy="101" r="2.6" fill="#8fb8ff"/>
+        <circle cx="424" cy="107" r="2.1" fill="#8fb8ff"/>
+        <circle cx="418" cy="111" r="1.6" fill="#8fb8ff"/>
+        <text x="420" y="134" text-anchor="middle" class="small dim">bubbler</text>
+      </svg>
+      <p class="diagram-caption">A Schlenk line is just two manifolds, inert gas and vacuum, joined by stopcocks so any flask can switch between them without ever opening to air. A bubbler on the gas line shows a visible, gentle positive flow.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Step by step</h3>
+    <ol class="guide-steps">
+      <li>
+        <strong>Dry the glassware.</strong> Oven dry the flask overnight at 120 to 150&nbsp;°C, or flame/heat gun dry under vacuum on the Schlenk line, then cool under inert gas. Any residual water will hydrolyze catalysts or terminate chains.
+      </li>
+      <li>
+        <strong>Purge the empty vessel.</strong> Cap with a septum, then do 3 evacuate/backfill cycles on the Schlenk line (vacuum until it holds, then backfill with N₂ or Ar). This renders the flask's headspace inert before anything goes in.
+      </li>
+      <li>
+        <strong>Add solids under counter flow.</strong> With inert gas flowing out through the septum (needle vent, or briefly removing the septum under positive pressure), quickly add air stable solids: initiator, ligand, monomer if solid, then reseal immediately. Anything pyrophoric or very O₂ sensitive (e.g. neat CuBr) goes in inside a glovebox instead.
+      </li>
+      <li>
+        <strong>Add solvent and monomer via syringe.</strong>
+      </li>
+      <li>
+        <strong>Degas: freeze pump thaw (FPT), the gold standard.</strong> See the dedicated <a href="#fpt">Freeze Pump Thaw Method</a> section below for the full procedure. Repeat 3 to 4 cycles total; backfill with inert gas after the last one.
+        <p class="guide-note"><em>Simpler alternative:</em> sparge with N₂/Ar through a long needle to the bottom of the flask (with a second needle as vent) for 20 to 30+ min. Less rigorous than FPT and can strip volatile monomer, but adequate for RAFT/FRP or ARGET type ATRP.</p>
+      </li>
+      <li>
+        <strong>Add the catalyst last, under inert atmosphere.</strong> For ATRP, the Cu(I)/ligand complex is usually the most O₂ sensitive component. Prepare it as a degassed stock solution and add it by syringe (or cannula) right before heating, since this is effectively what starts the clock. Same idea for ROMP: add the Grubbs/Hoveyda catalyst as a stock solution last.
+      </li>
+      <li>
+        <strong>Heat with positive pressure maintained.</strong> Submerge in a preheated oil bath or heating block; keep a slight positive N₂/Ar flow (bubbler or balloon) throughout so air can't diffuse back in through the septum.
+      </li>
+      <li>
+        <strong>Sampling</strong> (if tracking conversion). Withdraw aliquots by syringe/needle quickly, ideally with gas still flowing out of a second needle to prevent air being drawn in. Use an internal standard added to the bulk reaction mixture up front so the conversion you calculate from each aliquot is trustworthy regardless of aliquot size.
+      </li>
+      <li>
+        <strong>Quench.</strong> Open to air (this terminates ATRP by oxidizing Cu(I)→Cu(II)) or add a radical inhibitor/scavenger, then cool and work up (precipitation, dialysis, etc.).
+      </li>
+    </ol>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="480" height="120" viewBox="0 0 480 120">
+        <line x1="40" y1="40" x2="440" y2="40" stroke="var(--border)" stroke-width="3"/>
+
+        <circle cx="40" cy="40" r="16" fill="#5b8def"/>
+        <text x="40" y="41" text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="700" font-size="11">1</text>
+        <text x="40" y="72" text-anchor="middle" class="small dim">Dry &amp;</text>
+        <text x="40" y="84" text-anchor="middle" class="small dim">purge</text>
+
+        <circle cx="120" cy="40" r="16" fill="#37c98f"/>
+        <text x="120" y="41" text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="700" font-size="11">2</text>
+        <text x="120" y="72" text-anchor="middle" class="small dim">Add</text>
+        <text x="120" y="84" text-anchor="middle" class="small dim">solids</text>
+
+        <circle cx="200" cy="40" r="16" fill="#f2b84b"/>
+        <text x="200" y="41" text-anchor="middle" dominant-baseline="central" fill="#1c2530" font-weight="700" font-size="11">3</text>
+        <text x="200" y="72" text-anchor="middle" class="small dim">Add</text>
+        <text x="200" y="84" text-anchor="middle" class="small dim">solvent</text>
+
+        <circle cx="280" cy="40" r="16" fill="#ef6a6a"/>
+        <text x="280" y="41" text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="700" font-size="11">4</text>
+        <text x="280" y="72" text-anchor="middle" class="small dim">Degas</text>
+        <text x="280" y="84" text-anchor="middle" class="small dim">(FPT)</text>
+
+        <circle cx="360" cy="40" r="16" fill="#a78bfa"/>
+        <text x="360" y="41" text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="700" font-size="11">5</text>
+        <text x="360" y="72" text-anchor="middle" class="small dim">Catalyst</text>
+        <text x="360" y="84" text-anchor="middle" class="small dim">&amp; heat</text>
+
+        <circle cx="440" cy="40" r="16" fill="#4fd1c5"/>
+        <text x="440" y="41" text-anchor="middle" dominant-baseline="central" fill="#1c2530" font-weight="700" font-size="11">6</text>
+        <text x="440" y="72" text-anchor="middle" class="small dim">Sample &amp;</text>
+        <text x="440" y="84" text-anchor="middle" class="small dim">quench</text>
+      </svg>
+      <p class="diagram-caption">The nine steps above collapse into six phases: everything before degassing sets up an inert headspace, degassing removes dissolved gas, and the catalyst only goes in once the flask is truly ready to run.</p>
+    </div>
+  </div>
+
+  <div class="card" id="fpt">
+    <h3>Freeze Pump Thaw Method</h3>
+    <p class="guide-note">Freeze pump thaw (FPT) removes dissolved gas (mostly O₂ and N₂) from a liquid by alternately freezing it solid, pulling vacuum on the headspace, and letting it thaw. Each cycle releases gas that was trapped in the liquid. It's the most thorough degassing method and the standard for ATRP.</p>
+
+    <h4 style="margin: 14px 0 8px; font-size: 0.9rem;">What you need</h4>
+    <ul class="guide-list">
+      <li>Schlenk flask/tube with a sidearm stopcock (or a septum plus a needle to a Schlenk line), rated for vacuum</li>
+      <li>Vacuum source with a cold trap in line (liquid N₂ or dry ice/acetone) to protect the pump from condensing solvent/monomer vapor</li>
+      <li>Liquid N₂ in a wide mouth Dewar, deep enough to submerge the flask's contents</li>
+      <li>Insulated gloves, cryogenic rated face/eye protection</li>
+    </ul>
+
+    <h4 style="margin: 14px 0 8px; font-size: 0.9rem;">Procedure (one cycle)</h4>
+    <ol class="guide-steps">
+      <li><strong>Freeze.</strong> Lower the flask into the liquid N₂ bath (stopcock still open to the inert gas line, not to vacuum yet) and swirl briefly until the contents are fully frozen solid. A partially frozen liquid can still splash or bump when vacuum is applied.</li>
+      <li><strong>Evacuate.</strong> With the contents frozen (so nothing can boil over into the vacuum line), open the flask to vacuum. Evacuate until the vacuum gauge reads close to the line's static base pressure and holds steady. This pulls the headspace gas out through the solid.</li>
+      <li><strong>Isolate.</strong> Close the stopcock to seal the flask under vacuum, then remove it from the liquid N₂ bath.</li>
+      <li><strong>Thaw.</strong> Let the flask warm to room temperature undisturbed (a room temperature water bath speeds this up). As it melts, dissolved gas that migrated to the surface during freezing bubbles out into the now evacuated headspace. Let it fully liquefy and sit a minute so the gas has time to escape.</li>
+      <li><strong>Repeat.</strong> Refreeze and repeat the evacuate &rarr; isolate &rarr; thaw sequence <strong>3 to 4 times total</strong>. Each cycle should show visibly less bubbling on thaw than the last; once you barely see bubbles on the final thaw, degassing is essentially complete.</li>
+      <li><strong>Backfill.</strong> On the last cycle, instead of opening to vacuum, backfill the flask with inert gas (N₂/Ar) while still cold, then let it warm under a positive inert atmosphere.</li>
+    </ol>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="480" height="180" viewBox="0 0 480 180">
+        <line x1="60" y1="50" x2="180" y2="50" stroke="var(--border)" stroke-width="3"/>
+        <line x1="180" y1="50" x2="300" y2="50" stroke="var(--border)" stroke-width="3"/>
+        <line x1="300" y1="50" x2="420" y2="50" stroke="var(--border)" stroke-width="3"/>
+        <path d="M420,66 Q240,150 60,66" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="1,7" stroke-linecap="round"/>
+        <path d="M66,72 L60,66 L70,63 Z" fill="var(--accent)"/>
+        <text x="240" y="146" text-anchor="middle" class="small" fill="var(--accent)">repeat 3 to 4 times</text>
+
+        <circle cx="60" cy="50" r="18" fill="#4fd1c5"/>
+        <text x="60" y="51" text-anchor="middle" dominant-baseline="central" fill="#1c2530" font-weight="700" font-size="11">1</text>
+        <text x="60" y="84" text-anchor="middle" class="small dim">Freeze</text>
+
+        <circle cx="180" cy="50" r="18" fill="#a78bfa"/>
+        <text x="180" y="51" text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="700" font-size="11">2</text>
+        <text x="180" y="84" text-anchor="middle" class="small dim">Evacuate</text>
+
+        <circle cx="300" cy="50" r="18" fill="#f2b84b"/>
+        <text x="300" y="51" text-anchor="middle" dominant-baseline="central" fill="#1c2530" font-weight="700" font-size="11">3</text>
+        <text x="300" y="84" text-anchor="middle" class="small dim">Isolate</text>
+
+        <circle cx="420" cy="50" r="18" fill="#ef6a6a"/>
+        <text x="420" y="51" text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="700" font-size="11">4</text>
+        <text x="420" y="84" text-anchor="middle" class="small dim">Thaw</text>
+
+        <text x="240" y="170" text-anchor="middle" class="small dim">then backfill with inert gas on the final cycle instead of reopening to vacuum</text>
+      </svg>
+      <p class="diagram-caption">Freeze pump thaw is a loop, not a checklist: each pass through freeze, evacuate, isolate, thaw pulls out a little more dissolved gas, and you can watch it working as the bubbling on thaw gets weaker each time.</p>
+    </div>
+
+    <div class="error-msg" style="margin-top: 12px;">
+      <strong>Safety notes</strong>
+      <ul style="margin: 6px 0 0; padding-left: 18px; font-weight: 400;">
+        <li>Liquid N₂ causes cryogenic burns. Always use insulated gloves and a face shield; never let it contact skin.</li>
+        <li>Only freeze the contents with the flask open to the inert gas line or vacuum already vented. Never apply vacuum to a liquid that isn't fully frozen (violent bumping/loss of material).</li>
+        <li>Never leave a flask sealed under static vacuum unattended while it warms from cryogenic temperature. Use a stopcock rated for vacuum and keep the vacuum line's cold trap fresh so solvent vapor doesn't clog or overpressurize it.</li>
+        <li>Some solvents (notably water, and some monomer/solvent mixtures) expand on freezing. Don't fill a rigid vessel past ~2/3 to avoid cracking it.</li>
+        <li>Work behind a blast shield or in a fume hood when evacuating a frozen flask for the first time with an unfamiliar solvent, in case of a flask flaw under vacuum.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Technique specific notes</h3>
+    <ul class="guide-list">
+      <li><strong>ATRP:</strong> most O₂ sensitive. Do the full 3 to 4x FPT. ARGET/ICAR/SARA variants continuously regenerate Cu(I) and tolerate trace O₂ better, so sparging alone is sometimes acceptable there.</li>
+      <li><strong>RAFT:</strong> no O₂ sensitive metal, but O₂ scavenges initial radicals and causes an induction period. FPT (3x) or thorough sparging both work; less rigor needed than ATRP.</li>
+      <li><strong>ROMP:</strong> Grubbs type catalysts are fairly bench stable as solids but degrade in solution with O₂/moisture. Degas the monomer solution and add catalyst last as a fresh stock solution.</li>
+      <li><strong>FRP:</strong> most O₂ tolerant, but degassing still shortens the induction period and improves reproducibility.</li>
+    </ul>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="460" height="110" viewBox="0 0 460 110">
+        <defs>
+          <linearGradient id="o2Grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#ef6a6a"/>
+            <stop offset="100%" stop-color="#37c98f"/>
+          </linearGradient>
+        </defs>
+        <text x="20" y="20" class="small dim">most O&#8322; sensitive</text>
+        <text x="440" y="20" text-anchor="end" class="small dim">most O&#8322; tolerant</text>
+        <rect x="20" y="30" width="420" height="14" rx="7" fill="url(#o2Grad)"/>
+
+        <circle cx="60" cy="37" r="7" fill="#fff" stroke="#1c2530" stroke-width="1.5"/>
+        <text x="60" y="65" text-anchor="middle" class="small" font-weight="700">ATRP</text>
+
+        <circle cx="180" cy="37" r="7" fill="#fff" stroke="#1c2530" stroke-width="1.5"/>
+        <text x="180" y="65" text-anchor="middle" class="small" font-weight="700">RAFT</text>
+
+        <circle cx="300" cy="37" r="7" fill="#fff" stroke="#1c2530" stroke-width="1.5"/>
+        <text x="300" y="65" text-anchor="middle" class="small" font-weight="700">ROMP</text>
+
+        <circle cx="420" cy="37" r="7" fill="#fff" stroke="#1c2530" stroke-width="1.5"/>
+        <text x="420" y="65" text-anchor="middle" class="small" font-weight="700">FRP</text>
+      </svg>
+      <p class="diagram-caption">Roughly where each technique sits on the spectrum from strict Schlenk technique to a quick sparge being good enough.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>General laboratory guidance only. Always follow your institution's safety rules and your PI's protocol for specific reagents.</p>
+</footer>
+
+</body>
+</html>

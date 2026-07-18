@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC Peak Interpretation: PolyTechniques</title>
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>GPC Peak Interpretation</h1>
+      <p class="subtitle">Reading a chromatogram past the Mn and Mw numbers: columns, solvents, shouldering, and integration choices</p>
+    </div>
+    <div class="guide-links">
+      <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+      <a class="brand-link" href="home.html">
+        <img src="favicon.svg" alt="" class="brand-mark">
+        <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>Basic principles</h3>
+    <p class="guide-note">
+      GPC (gel permeation chromatography, a type of SEC or size exclusion chromatography) separates chains by hydrodynamic size, not directly by molecular weight or chemical identity. A column packed with porous beads lets small chains diffuse into the pores and take a longer path through the column, while large chains are excluded from the pores and elute first. A detector, usually refractive index, sometimes UV or light scattering, records signal against elution time, producing a chromatogram.
+    </p>
+    <p class="guide-note">
+      To turn that time axis into a molecular weight axis, the instrument needs a calibration curve, typically built by injecting a series of narrow molecular weight standards (often polystyrene) and fitting log(M) against retention time or volume. Every molecular weight your GPC reports for an unknown sample is only as good as that calibration curve and how closely the unknown's hydrodynamic behavior matches the standards used to build it. This is why the numbers are usually called a polystyrene equivalent molecular weight rather than a true molecular weight unless you are running true light scattering detection (MALS) or have converted using Mark Houwink parameters for your actual polymer.
+    </p>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="480" height="180" viewBox="0 0 480 180">
+        <text x="240" y="16" text-anchor="middle" class="small dim">mobile phase flow &rarr;</text>
+        <circle cx="240" cy="100" r="58" fill="var(--primary-dim)" stroke="var(--border)" stroke-width="2"/>
+        <circle cx="212" cy="80" r="9" fill="var(--card-bg)" stroke="var(--border)"/>
+        <circle cx="262" cy="70" r="7" fill="var(--card-bg)" stroke="var(--border)"/>
+        <circle cx="222" cy="118" r="8" fill="var(--card-bg)" stroke="var(--border)"/>
+        <circle cx="268" cy="112" r="10" fill="var(--card-bg)" stroke="var(--border)"/>
+        <circle cx="244" cy="95" r="6" fill="var(--card-bg)" stroke="var(--border)"/>
+        <path d="M20,55 Q220,4 400,55" fill="none" stroke="#f472b6" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="20" cy="55" r="8" fill="#f472b6"/>
+        <text x="478" y="58" text-anchor="end" class="small" fill="#f472b6">elutes first</text>
+        <path d="M20,140 Q120,158 200,120 Q222,108 222,118 Q222,128 244,95 Q256,78 268,112 Q284,148 330,130 Q365,108 400,140" fill="none" stroke="#4fd1c5" stroke-width="3" stroke-linecap="round" stroke-dasharray="1,6"/>
+        <circle cx="20" cy="140" r="5" fill="#4fd1c5"/>
+        <text x="478" y="143" text-anchor="end" class="small" fill="#4fd1c5">elutes later</text>
+      </svg>
+      <div class="diagram-legend">
+        <span><span class="swatch" style="background:#f472b6"></span> Large chain: excluded from pores, takes the short path</span>
+        <span><span class="swatch" style="background:#4fd1c5"></span> Small chain: diffuses into pores, takes the long way round</span>
+      </div>
+      <p class="diagram-caption">A single porous bead in cross section. Size, not chemistry, decides how long each chain lingers in the column.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Column selection</h3>
+    <p class="guide-note">
+      Pore size distribution sets the usable molecular weight range. A column optimized for small oligomers will let every large chain coelute at the exclusion limit with no separation between them, while a column built for very high molecular weight polymer will crowd small molecules together near the total permeation limit. Mixed bed columns blend several pore sizes to give a wide, reasonably linear calibration across several orders of magnitude, at some cost to resolution compared with a column matched tightly to your expected range.
+    </p>
+    <p class="guide-note">
+      Connecting two or three columns in series extends the usable range and improves resolution, at the cost of longer run times and higher back pressure. Smaller particle size packing gives sharper separation but needs more pump pressure and is less forgiving of particulates, which is why a guard column upstream is cheap insurance against slowly fouling the analytical columns. Column chemistry also has to match your solvent and sample: polystyrene divinylbenzene columns are the default for organic solvents like THF, while aqueous or polar samples need columns built and packed for water or DMF/DMAc service, since running the wrong solvent through the wrong packing can shrink, swell, or damage it.
+    </p>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="460" height="150" viewBox="0 0 460 150">
+        <text x="14" y="16" class="small">Oligomer column</text>
+        <rect x="10" y="20" width="226" height="16" rx="8" fill="#4fd1c5" fill-opacity="0.75"/>
+        <text x="98" y="44" class="small">Standard column</text>
+        <rect x="94" y="48" width="196" height="16" rx="8" fill="#5b8def" fill-opacity="0.75"/>
+        <text x="224" y="72" class="small">High MW column</text>
+        <rect x="220" y="76" width="140" height="16" rx="8" fill="#a78bfa" fill-opacity="0.75"/>
+        <text x="49" y="100" class="small">Mixed bed (broad, less sharp)</text>
+        <rect x="45" y="104" width="401" height="16" rx="8" fill="#f2b84b" fill-opacity="0.55" stroke="#f2b84b" stroke-dasharray="3,3"/>
+        <line x1="10" y1="128" x2="450" y2="128" stroke="var(--text-dim)" stroke-width="1"/>
+        <g class="dim small">
+          <line x1="10" y1="128" x2="10" y2="132"/><text x="10" y="144" text-anchor="middle">10&#178;</text>
+          <line x1="94" y1="128" x2="94" y2="132"/><text x="94" y="144" text-anchor="middle">10&#179;</text>
+          <line x1="178" y1="128" x2="178" y2="132"/><text x="178" y="144" text-anchor="middle">10&#8308;</text>
+          <line x1="262" y1="128" x2="262" y2="132"/><text x="262" y="144" text-anchor="middle">10&#8309;</text>
+          <line x1="346" y1="128" x2="346" y2="132"/><text x="346" y="144" text-anchor="middle">10&#8310;</text>
+          <line x1="430" y1="128" x2="430" y2="132"/><text x="430" y="144" text-anchor="middle">10&#8311;</text>
+        </g>
+      </svg>
+      <p class="diagram-caption">Working molecular weight range by column type. A mixed bed column covers more ground but resolves each region less sharply than a matched column.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Solvent system</h3>
+    <p class="guide-note">
+      The mobile phase has to fully dissolve your polymer with no aggregation, and it has to be compatible with the column chemistry and detector. THF is the default for many organic soluble polymers because it is a good general solvent, low viscosity, and works cleanly with refractive index detection.
+    </p>
+    <p class="guide-note">
+      Polar or hydrogen bonding polymers (polyamides, some polyurethanes, polyacrylonitrile, polyacids) often need DMF or DMAc with a lithium salt such as LiBr added, since the salt screens ionic and hydrogen bonding interactions with the column that would otherwise cause tailing or irreversible adsorption. Aqueous SEC for water soluble polymers usually needs added salt too, for the same reason: without it, polyelectrolytes and charged polymers can show anomalous elution from electrostatic interaction with the column packing rather than pure size exclusion.
+    </p>
+    <p class="guide-note">
+      Flow rate stability matters more than people expect, since the whole molecular weight axis is built from retention time. A flow rate that drifts between your calibration run and your sample run shifts the apparent molecular weight even though nothing about the sample changed, which is why many setups include an internal flow marker. Finally, remember that Mark Houwink parameters (see the calibration tool on this site) are solvent and temperature specific, so a K and &alpha; measured in THF do not apply to a DMF or aqueous run.
+    </p>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="460" height="210" viewBox="0 0 460 210">
+        <rect x="140" y="8" width="180" height="34" rx="10" fill="var(--card-bg)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="230" y="29" text-anchor="middle" class="small">What kind of polymer?</text>
+
+        <line x1="230" y1="42" x2="70" y2="66" stroke="var(--text-dim)"/>
+        <line x1="230" y1="42" x2="230" y2="66" stroke="var(--text-dim)"/>
+        <line x1="230" y1="42" x2="390" y2="66" stroke="var(--text-dim)"/>
+
+        <rect x="4" y="66" width="132" height="48" rx="8" fill="var(--card-bg)" stroke="var(--border)"/>
+        <text x="70" y="86" text-anchor="middle" class="small">Organic soluble,</text>
+        <text x="70" y="100" text-anchor="middle" class="small">weak interactions</text>
+
+        <rect x="164" y="66" width="132" height="48" rx="8" fill="var(--card-bg)" stroke="var(--border)"/>
+        <text x="230" y="86" text-anchor="middle" class="small">Polar or hydrogen</text>
+        <text x="230" y="100" text-anchor="middle" class="small">bonding</text>
+
+        <rect x="324" y="66" width="132" height="48" rx="8" fill="var(--card-bg)" stroke="var(--border)"/>
+        <text x="390" y="86" text-anchor="middle" class="small">Water soluble</text>
+        <text x="390" y="100" text-anchor="middle" class="small">or charged</text>
+
+        <line x1="70" y1="114" x2="70" y2="136" stroke="var(--text-dim)"/>
+        <line x1="230" y1="114" x2="230" y2="136" stroke="var(--text-dim)"/>
+        <line x1="390" y1="114" x2="390" y2="136" stroke="var(--text-dim)"/>
+
+        <rect x="4" y="136" width="132" height="44" rx="8" fill="#5b8def" fill-opacity="0.85"/>
+        <text x="70" y="163" text-anchor="middle" class="small" fill="#fff">THF</text>
+
+        <rect x="164" y="136" width="132" height="44" rx="8" fill="#f2b84b" fill-opacity="0.85"/>
+        <text x="230" y="158" text-anchor="middle" class="small" fill="#1c2530">DMF or DMAc</text>
+        <text x="230" y="172" text-anchor="middle" class="small" fill="#1c2530">+ LiBr</text>
+
+        <rect x="324" y="136" width="132" height="44" rx="8" fill="#4fd1c5" fill-opacity="0.85"/>
+        <text x="390" y="158" text-anchor="middle" class="small" fill="#1c2530">Aqueous SEC</text>
+        <text x="390" y="172" text-anchor="middle" class="small" fill="#1c2530">+ salt</text>
+      </svg>
+      <p class="diagram-caption">A starting point, not a rule. Always confirm full dissolution and check for column and detector compatibility before committing to a method.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Try it: flow rate drift and calibration</h3>
+    <p class="guide-note">
+      A calibration curve is built once, from a set of standards run at a known flow rate. If your sample runs at a slightly different flow rate, even by a percent or two, its peak lands at a different retention time than it "should," and reading that shifted time off the original calibration line gives the wrong molecular weight, even though the polymer itself never changed.
+    </p>
+
+    <div class="grid">
+      <div class="field">
+        <label for="gpc-drift">Flow rate drift, &Delta;t (minutes)</label>
+        <input type="range" id="gpc-drift" min="-2" max="2" step="0.05" value="0">
+        <span class="hint" id="gpc-drift-val"></span>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <svg id="gpc-cal-chart" class="chart-svg" viewBox="0 0 560 300" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+
+    <div class="stat-grid" id="gpc-cal-stats"></div>
+  </div>
+
+  <div class="card">
+    <h3>Peak shouldering</h3>
+    <p class="guide-note">
+      A shoulder or a poorly resolved second peak usually means there is a second population of hydrodynamic sizes in the sample, but the cause could be chemical or it could be an artifact of the measurement.
+    </p>
+    <p class="guide-note">
+      <strong>Real causes</strong> include chain coupling by radical termination (combination roughly doubles the chain length for the coupled fraction, showing up as a smaller peak near twice the molecular weight of the main peak), a blend of two batches or a chain extension that did not fully consume the first block, star or branched contamination alongside linear chains of similar mass but different hydrodynamic volume, or a genuinely broad or multimodal distribution from the polymerization chemistry itself.
+    </p>
+    <p class="guide-note">
+      <strong>Artifacts</strong> include physical aggregation (chains sticking together in solution, especially near their solubility limit or if the sample was not fully dissolved before injection, showing up as a small hump at an unrealistically high apparent molecular weight), column overloading from injecting too much mass at once, which broadens and can skew a peak with no real change in the underlying distribution, and residual low molecular weight material such as unreacted monomer, initiator fragments, or a system peak eluting at the low molecular weight end.
+    </p>
+    <p class="guide-note">
+      A useful check is to run the same sample at two different injected concentrations. Aggregation and overloading artifacts are concentration dependent and shrink or shift at lower loading, while a real second population stays put.
+    </p>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="480" height="120" viewBox="0 0 480 120">
+        <path d="M10,60 Q25,40 40,60 T70,60" fill="none" stroke="#5b8def" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="75" cy="60" r="6" fill="#ef6a6a"/>
+        <text x="42" y="90" text-anchor="middle" class="small dim">chain A&#8226;</text>
+
+        <text x="100" y="65" text-anchor="middle" class="small dim">+</text>
+
+        <circle cx="125" cy="60" r="6" fill="#ef6a6a"/>
+        <path d="M130,60 Q145,80 160,60 T190,60" fill="none" stroke="#37c98f" stroke-width="3" stroke-linecap="round"/>
+        <text x="160" y="90" text-anchor="middle" class="small dim">chain B&#8226;</text>
+
+        <text x="215" y="65" text-anchor="middle" class="dim">&rarr;</text>
+        <text x="215" y="82" text-anchor="middle" class="small dim">coupling</text>
+
+        <path d="M250,60 Q265,40 280,60 T310,60 Q325,80 340,60 T400,60 Q420,40 440,60 T470,60" fill="none" stroke="#a78bfa" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="310" cy="60" r="3.5" fill="var(--text-dim)"/>
+        <text x="360" y="90" text-anchor="middle" class="small dim">one chain, roughly 2&#215; the length, no radical</text>
+      </svg>
+      <p class="diagram-caption">Combination termination joins two propagating chain ends into one, which is why coupling shows up as a shoulder near twice the main peak's molecular weight.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Correct way to integrate peaks</h3>
+    <p class="guide-note">
+      Where you set the baseline and the start and end cutoffs has a large, and often underappreciated, effect on the reported M<sub>n</sub>, M<sub>w</sub>, and Đ, because the two averages are not equally sensitive to the same parts of the distribution.
+    </p>
+    <p class="guide-note">
+      M<sub>n</sub> weights every chain equally, so even a small amount of area at low molecular weight, unreacted monomer, a short chain population, a poorly resolved solvent peak, pulls M<sub>n</sub> down hard, since it is essentially an average of 1/M. M<sub>w</sub> weights by mass, so a small amount of area at high molecular weight, an aggregate shoulder, a coupling peak, can pull M<sub>w</sub> up disproportionately even though it represents only a few percent of the sample by chain count. Try this yourself in the demo below.
+    </p>
+    <p class="guide-note">
+      In practice: use a consistent baseline method (usually a straight line from a stable point before the peak to a stable point well after it, not a curve that follows drift) across every sample you plan to compare. Decide up front whether a shoulder is part of the real distribution or an artifact you intend to exclude, and apply that decision consistently rather than choosing cutoffs sample by sample to make the numbers look better. Report where you set your integration limits, since two people integrating the same raw chromatogram differently can get meaningfully different Đ values from identical data.
+    </p>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="480" height="150" viewBox="0 0 480 150">
+        <path d="M10,110 L210,110 L100,110 Q120,40 140,30 Q160,40 180,110 Z" fill="var(--accent)" fill-opacity="0.28"/>
+        <path d="M10,110 Q40,110 60,90 Q80,40 100,30 Q120,40 140,90 Q160,110 210,110" fill="none" stroke="var(--text)" stroke-width="2.5"/>
+        <line x1="10" y1="110" x2="210" y2="110" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="110" y="16" text-anchor="middle" class="small" fill="var(--accent)">&#10003; straight, consistent baseline</text>
+        <text x="110" y="132" text-anchor="middle" class="small dim">full peak counted every time</text>
+
+        <path d="M270,110 Q300,110 320,90 Q340,40 360,30 Q380,40 400,90 Q420,110 470,110 L400,90 Q380,72 360,72 Q345,72 320,90 Z" fill="var(--danger)" fill-opacity="0.28"/>
+        <path d="M270,110 Q300,110 320,90 Q340,40 360,30 Q380,40 400,90 Q420,110 470,110" fill="none" stroke="var(--text)" stroke-width="2.5"/>
+        <path d="M270,105 Q330,95 360,72 Q400,90 470,110" fill="none" stroke="var(--danger)" stroke-width="2.5" stroke-dasharray="5,4"/>
+        <text x="370" y="16" text-anchor="middle" class="small" fill="var(--danger)">&#10007; drifting, sloped baseline</text>
+        <text x="370" y="132" text-anchor="middle" class="small dim">shoulder area cut differently each time</text>
+      </svg>
+      <p class="diagram-caption">Same underlying peak, two baseline choices. The sloped baseline on the right silently excludes part of the real distribution, and would exclude a different part on a different day.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Try it: peak shape and integration limits</h3>
+    <p class="guide-note">
+      These are idealized, simulated distributions built from Gaussian components in log(M) space for illustration, not raw instrument data. Pick a scenario, then drag the integration limits and watch M<sub>n</sub>, M<sub>w</sub>, and Đ recalculate against the full curve versus your selected range.
+    </p>
+
+    <div class="grid">
+      <div class="field">
+        <label for="gpc-scenario">Scenario</label>
+        <select id="gpc-scenario">
+          <option value="narrow">Narrow, well controlled</option>
+          <option value="broad">Broad, uncontrolled</option>
+          <option value="bimodal">Bimodal (coupling shoulder)</option>
+          <option value="aggregate">High MW aggregation tail</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:12px;">
+      <div class="field">
+        <label for="gpc-lo">Integration start, log&#8321;&#8320;(M)</label>
+        <input type="range" id="gpc-lo" min="3" max="6.5" step="0.02" value="3">
+        <span class="hint" id="gpc-lo-val"></span>
+      </div>
+      <div class="field">
+        <label for="gpc-hi">Integration end, log&#8321;&#8320;(M)</label>
+        <input type="range" id="gpc-hi" min="3" max="6.5" step="0.02" value="6.5">
+        <span class="hint" id="gpc-hi-val"></span>
+      </div>
+    </div>
+    <div class="actions" style="justify-content:flex-start; margin-top:10px;">
+      <button type="button" class="copy-btn" id="gpc-reset">Reset to full range</button>
+    </div>
+
+    <div class="chart-wrap">
+      <svg id="gpc-chart" class="chart-svg" viewBox="0 0 560 320" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+
+    <div class="stat-group-label">Full curve, nothing excluded</div>
+    <div class="stat-grid" id="gpc-stats-full"></div>
+    <div class="stat-group-label">Your integration limits</div>
+    <div class="stat-grid" id="gpc-stats-selected"></div>
+  </div>
+
+  <div class="card">
+    <h3>Try it: upload your own trace</h3>
+    <p class="guide-note">
+      Upload a screenshot or photo of a chromatogram and get a rough, automatic read on its shape: how many peaks it has, whether there's a shoulder, and which direction any tailing points. This runs entirely in your browser using pixel analysis, not a trained model. It reads shape only, not real M<sub>n</sub>/M<sub>w</sub>/Đ values, and your image is never uploaded anywhere.
+    </p>
+
+    <label class="upload-dropzone" id="trace-dropzone" for="trace-file">
+      <input type="file" id="trace-file" accept="image/*">
+      <div id="trace-dropzone-text">
+        <strong>Click to upload</strong> or drag an image here
+        <div class="upload-hint">PNG, JPG, or a screenshot. Works best with a clean, high contrast trace line on a plain background.</div>
+      </div>
+    </label>
+
+    <div id="trace-controls" style="display:none;">
+      <div class="grid" style="margin-top:14px;">
+        <div class="field">
+          <label for="trace-crop-left">Plot left edge (%)</label>
+          <input type="range" id="trace-crop-left" min="0" max="99" step="1" value="5">
+        </div>
+        <div class="field">
+          <label for="trace-crop-right">Plot right edge (%)</label>
+          <input type="range" id="trace-crop-right" min="1" max="100" step="1" value="95">
+        </div>
+      </div>
+      <div class="radio-row" id="trace-direction-row" style="margin-top:12px;">
+        <label class="radio-opt checked">
+          <input type="radio" name="trace-direction" value="right" checked> Molecular weight increases to the right
+        </label>
+        <label class="radio-opt">
+          <input type="radio" name="trace-direction" value="left"> Molecular weight increases to the left
+        </label>
+      </div>
+      <p class="guide-note" style="margin-top:8px;">
+        Drag the crop edges to bracket just the plotted curve, excluding axis labels and legends. Match the direction toggle to your image: raw chromatograms usually elute high molecular weight first, on the left; converted molecular weight distribution curves usually increase to the right, like the demo above.
+      </p>
+    </div>
+
+    <div class="trace-canvas-wrap" id="trace-canvas-wrap" style="display:none;">
+      <canvas id="trace-canvas"></canvas>
+    </div>
+
+    <div class="trace-findings" id="trace-findings"></div>
+  </div>
+
+  <div class="card">
+    <h3>Inconsistencies between users and GPC setups</h3>
+    <p class="guide-note">
+      Absolute molecular weight numbers from GPC are much less portable between labs than people assume, even for the same physical sample. The single biggest source of disagreement is calibration standard identity: unless everyone is running true light scattering detection (MALS), the reported M<sub>n</sub>/M<sub>w</sub> is a polystyrene equivalent (or whatever standard was used) value, not necessarily the polymer's true molecular weight. Two labs calibrated against different standards, or standards from different suppliers or lots, will report different numbers for the same sample even on identical instruments. Use the <a href="gpc-calibration.html">GPC Calibration Converter</a> on this site to translate between them when you know both polymers' Mark Houwink parameters.
+    </p>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="480" height="160" viewBox="0 0 480 160">
+        <line x1="20" y1="130" x2="460" y2="130" stroke="var(--text-dim)" stroke-width="1"/>
+        <path d="M20,130 Q140,130 175,90 Q210,20 240,20 Q270,20 305,90 Q340,130 460,130" fill="none" stroke="#5b8def" stroke-width="2.5"/>
+        <path d="M20,130 Q120,130 155,95 Q195,32 225,32 Q255,32 290,95 Q325,130 460,130" fill="none" stroke="#f472b6" stroke-width="2.5" stroke-dasharray="6,3"/>
+        <path d="M20,130 Q160,130 195,88 Q225,15 255,15 Q285,15 320,88 Q355,130 460,130" fill="none" stroke="#f2b84b" stroke-width="2.5" stroke-dasharray="2,4"/>
+        <text x="240" y="150" text-anchor="middle" class="small dim">same physical sample, three labs, three traces</text>
+      </svg>
+      <div class="diagram-legend">
+        <span><span class="swatch" style="background:#5b8def"></span> Lab A</span>
+        <span><span class="swatch" style="background:#f472b6"></span> Lab B</span>
+        <span><span class="swatch" style="background:#f2b84b"></span> Lab C</span>
+      </div>
+    </div>
+
+    <p class="guide-note">
+      Detector choice adds another layer. Refractive index detection responds to concentration and to each polymer's specific refractive index increment (dn/dc), UV detection responds to chromophore content, and light scattering responds to molecular weight and concentration directly, so a copolymer or a polymer with an unusual dn/dc can give different apparent distributions on different detector types even on the same column.
+    </p>
+    <p class="guide-note">
+      Band broadening, meaning peak spreading caused by the instrument itself from tubing, fittings, and column efficiency, varies between instruments and increases the apparent Đ of a narrow sample, so a column and system combination in poor condition can make a genuinely narrow, well controlled polymerization look broader than it is. Flow rate reproducibility, column aging, mobile phase batch variation, and even ambient temperature control all shift retention time calibration in ways that are usually small individually but add up.
+    </p>
+    <p class="guide-note">
+      None of this means GPC data is unreliable, but it does mean comparing M<sub>n</sub>/M<sub>w</sub>/Đ values across different labs, instruments, or runs months apart on the same instrument should be done cautiously. Relative comparisons, same instrument, same calibration, same day, are far more trustworthy than absolute ones.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Multiple detector methods</h3>
+    <p class="guide-note">
+      Everything above assumes a single concentration detector (refractive index or UV) and a calibration curve built from standards. Adding more detectors changes what the instrument can measure directly instead of by comparison.
+    </p>
+    <p class="guide-note">
+      A light scattering detector (MALS) measures molecular weight directly from how much light a chain scatters, with no calibration curve or standards needed at all, though it does need an accurate refractive index increment (dn/dc) for your specific polymer to convert scattering intensity into a molecular weight. A viscometer measures intrinsic viscosity directly, which combined with light scattering gives a true Mark Houwink plot for your actual sample and can reveal branching, since a branched polymer has a smaller hydrodynamic size, and therefore lower intrinsic viscosity, than a linear chain of the same true molecular weight. Combining a concentration detector, a light scattering detector, and a viscometer (often called triple detection) gives absolute molecular weight, size, and branching information without relying on a polystyrene equivalent conversion at all.
+    </p>
+    <p class="guide-note">
+      The tradeoff is practical, not fundamental: light scattering signal is weak for low molecular weight material and very sensitive to dust and filtration, viscometers need careful baseline and pressure stability, and both need a correct dn/dc to mean anything. For routine relative comparisons within one lab, conventional calibration is usually good enough. For a true, absolute molecular weight, especially on a branched or unusual polymer, multiple detector methods are worth the extra setup.
+    </p>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="480" height="170" viewBox="0 0 480 170">
+        <text x="10" y="18" class="small dim">RI</text>
+        <line x1="40" y1="30" x2="470" y2="30" stroke="var(--border)" stroke-width="1"/>
+        <path d="M40,30 Q160,30 200,4 Q240,-14 280,4 Q320,30 470,30" fill="none" stroke="#5b8def" stroke-width="2.5"/>
+        <text x="290" y="16" class="small dim">responds to concentration &amp; dn/dc</text>
+
+        <text x="10" y="70" class="small dim">UV</text>
+        <line x1="40" y1="82" x2="470" y2="82" stroke="var(--border)" stroke-width="1"/>
+        <path d="M40,82 Q170,82 200,66 Q230,52 260,66 Q290,82 470,82" fill="none" stroke="#a78bfa" stroke-width="2.5"/>
+        <text x="290" y="68" class="small dim">responds to chromophore content</text>
+
+        <text x="10" y="122" class="small dim">LS</text>
+        <line x1="40" y1="134" x2="470" y2="134" stroke="var(--border)" stroke-width="1"/>
+        <path d="M40,134 Q140,134 170,128 Q200,90 250,58 Q280,40 320,60 Q360,90 470,132" fill="none" stroke="#37c98f" stroke-width="2.5"/>
+        <text x="330" y="46" class="small dim">weighted toward higher MW</text>
+
+        <text x="240" y="160" text-anchor="middle" class="small dim">same injection, same column, three different responses</text>
+      </svg>
+      <p class="diagram-caption">Each detector answers a different question about the same eluting chains, which is why they can disagree even when nothing about the sample changed.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Troubleshooting quick reference</h3>
+    <p class="guide-note">A fast lookup for the discussion above. Start here, then read the relevant section for the full reasoning.</p>
+    <div class="table-scroll">
+      <table class="recipe">
+        <thead><tr><th>Symptom</th><th>Likely cause</th><th>What to check</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>M<sub>n</sub> much lower than expected, M<sub>w</sub> about right</td>
+            <td>Low molecular weight tail or a solvent/system peak included in the integration</td>
+            <td>Integration start cutoff and baseline near the low molecular weight end</td>
+          </tr>
+          <tr>
+            <td>M<sub>w</sub> much higher than expected, M<sub>n</sub> about right</td>
+            <td>Small high molecular weight shoulder or aggregate</td>
+            <td>Look for a tiny hump at high molecular weight; rerun at lower concentration</td>
+          </tr>
+          <tr>
+            <td>Đ broader than usual for the same recipe</td>
+            <td>Band broadening from an aging or fouled column, or integration limits set too wide</td>
+            <td>Compare against a fresh narrow standard; inspect the guard column</td>
+          </tr>
+          <tr>
+            <td>Retention time shifts run to run</td>
+            <td>Flow rate drift or a pump issue</td>
+            <td>Flow marker peak position; pump pressure and seal condition</td>
+          </tr>
+          <tr>
+            <td>A shoulder appears that was not there last time</td>
+            <td>Could be a real second population or a concentration dependent artifact</td>
+            <td>Rerun at a lower injected concentration and compare</td>
+          </tr>
+          <tr>
+            <td>Different columns or instruments give different M<sub>n</sub>/M<sub>w</sub> for the same sample</td>
+            <td>Different calibration standards or detector types</td>
+            <td>Confirm both are polystyrene equivalent, or convert with Mark Houwink parameters; check detector type</td>
+          </tr>
+          <tr>
+            <td>Peak tails badly on one side</td>
+            <td>Column overloading or adsorption onto the packing</td>
+            <td>Reduce injection mass or concentration; confirm solvent and column compatibility</td>
+          </tr>
+          <tr>
+            <td>Same sample looks narrower on one instrument than another</td>
+            <td>Band broadening differences between the two systems</td>
+            <td>Run the same narrow standard on both systems and compare peak width</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>General guidance for interpreting chromatograms. Always follow your instrument vendor's documentation and your lab's SOP for actual data processing and reporting.</p>
+</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+
+  var X_MIN = 3.0, X_MAX = 6.5, N = 300;
+
+  var SCENARIOS = {
+    narrow: {
+      label: "Narrow, well controlled",
+      components: [{ mu: 4.30, sigma: 0.07, amp: 1.0 }],
+      defaultLo: X_MIN, defaultHi: X_MAX
+    },
+    broad: {
+      label: "Broad, uncontrolled",
+      components: [{ mu: 4.30, sigma: 0.24, amp: 1.0 }],
+      defaultLo: X_MIN, defaultHi: X_MAX
+    },
+    bimodal: {
+      label: "Bimodal (coupling shoulder)",
+      components: [{ mu: 4.25, sigma: 0.09, amp: 1.0 }, { mu: 4.56, sigma: 0.07, amp: 0.35 }],
+      defaultLo: X_MIN, defaultHi: 4.40
+    },
+    aggregate: {
+      label: "High MW aggregation tail",
+      components: [{ mu: 4.30, sigma: 0.08, amp: 1.0 }, { mu: 5.60, sigma: 0.15, amp: 0.06 }],
+      defaultLo: X_MIN, defaultHi: 5.00
+    }
+  };
+
+  function gaussianMixture(components, x) {
+    var y = 0;
+    for (var i = 0; i < components.length; i++) {
+      var c = components[i];
+      var d = x - c.mu;
+      y += c.amp * Math.exp(-(d * d) / (2 * c.sigma * c.sigma));
+    }
+    return y;
+  }
+
+  function buildCurve(components) {
+    var pts = [];
+    for (var i = 0; i < N; i++) {
+      var x = X_MIN + (X_MAX - X_MIN) * i / (N - 1);
+      pts.push({ x: x, y: gaussianMixture(components, x) });
+    }
+    return pts;
+  }
+
+  function clipCurve(pts, xa, xb) {
+    var out = [];
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[i], p1 = pts[i + 1];
+      if (p1.x < xa || p0.x > xb) continue;
+      var x0 = p0.x, y0 = p0.y, x1 = p1.x, y1 = p1.y;
+      if (x0 < xa) { var t = (xa - p0.x) / (p1.x - p0.x); y0 = p0.y + (p1.y - p0.y) * t; x0 = xa; }
+      if (x1 > xb) { var t2 = (xb - p0.x) / (p1.x - p0.x); y1 = p0.y + (p1.y - p0.y) * t2; x1 = xb; }
+      if (x1 <= x0) continue;
+      if (out.length === 0) out.push({ x: x0, y: y0 });
+      out.push({ x: x1, y: y1 });
+    }
+    return out;
+  }
+
+  function integrateStats(pts, xa, xb) {
+    var seg = clipCurve(pts, xa, xb);
+    var area = 0, sumMy = 0, sumYoverM = 0;
+    for (var i = 0; i < seg.length - 1; i++) {
+      var x0 = seg[i].x, y0 = seg[i].y, x1 = seg[i + 1].x, y1 = seg[i + 1].y;
+      var dx = x1 - x0;
+      area += dx * (y0 + y1) / 2;
+      var m0 = Math.pow(10, x0), m1 = Math.pow(10, x1);
+      sumMy += dx * (y0 * m0 + y1 * m1) / 2;
+      sumYoverM += dx * (y0 / m0 + y1 / m1) / 2;
+    }
+    var Mw = area > 0 ? sumMy / area : NaN;
+    var Mn = sumYoverM > 0 ? area / sumYoverM : NaN;
+    var Dj = (Mn > 0 && isFinite(Mn)) ? Mw / Mn : NaN;
+    return { area: area, Mn: Mn, Mw: Mw, Dj: Dj };
+  }
+
+  function fmtM(n) {
+    if (!isFinite(n)) return "n/a";
+    if (n >= 1000) return Math.round(n).toLocaleString();
+    return n.toPrecision(3);
+  }
+
+  function renderStats(elId, stats) {
+    $(elId).innerHTML =
+      '<div class="stat"><div class="label">M<sub>n</sub></div><div class="value">' + fmtM(stats.Mn) + '</div><div class="sub">g/mol</div></div>' +
+      '<div class="stat"><div class="label">M<sub>w</sub></div><div class="value">' + fmtM(stats.Mw) + '</div><div class="sub">g/mol</div></div>' +
+      '<div class="stat"><div class="label">Đ</div><div class="value">' + (isFinite(stats.Dj) ? stats.Dj.toFixed(2) : "n/a") + '</div><div class="sub">M<sub>w</sub> &divide; M<sub>n</sub></div></div>';
+  }
+
+  function renderChart(pts, xLo, xHi) {
+    var svg = $("gpc-chart");
+    var W = 560, H = 320;
+    var M = { left: 46, right: 16, top: 16, bottom: 40 };
+    var plotW = W - M.left - M.right;
+    var plotH = H - M.top - M.bottom;
+
+    var yMax = 0;
+    pts.forEach(function (p) { if (p.y > yMax) yMax = p.y; });
+    yMax *= 1.12;
+
+    function sx(x) { return M.left + ((x - X_MIN) / (X_MAX - X_MIN)) * plotW; }
+    function sy(y) { return H - M.bottom - (y / yMax) * plotH; }
+
+    function areaPath(seg) {
+      if (seg.length < 2) return "";
+      var d = "M " + sx(seg[0].x) + " " + sy(0);
+      seg.forEach(function (p) { d += " L " + sx(p.x) + " " + sy(p.y); });
+      d += " L " + sx(seg[seg.length - 1].x) + " " + sy(0) + " Z";
+      return d;
+    }
+
+    var parts = [];
+
+    for (var lv = Math.ceil(X_MIN); lv <= Math.floor(X_MAX); lv++) {
+      parts.push('<line class="grid" x1="' + sx(lv) + '" y1="' + M.top + '" x2="' + sx(lv) + '" y2="' + (H - M.bottom) + '"/>');
+      parts.push('<text class="tick-label" x="' + sx(lv) + '" y="' + (H - M.bottom + 16) + '" text-anchor="middle">10<tspan baseline-shift="super" font-size="7">' + lv + '</tspan></text>');
+    }
+
+    var leftSeg = clipCurve(pts, X_MIN, xLo);
+    var midSeg = clipCurve(pts, xLo, xHi);
+    var rightSeg = clipCurve(pts, xHi, X_MAX);
+    if (leftSeg.length > 1) parts.push('<path class="area-excluded" d="' + areaPath(leftSeg) + '"/>');
+    if (rightSeg.length > 1) parts.push('<path class="area-excluded" d="' + areaPath(rightSeg) + '"/>');
+    if (midSeg.length > 1) parts.push('<path class="area-included" d="' + areaPath(midSeg) + '"/>');
+
+    var linePts = pts.map(function (p) { return sx(p.x) + "," + sy(p.y); }).join(" ");
+    parts.push('<polyline class="curve-line" points="' + linePts + '"/>');
+
+    if (xLo > X_MIN + 0.001) parts.push('<line class="bound-line" x1="' + sx(xLo) + '" y1="' + M.top + '" x2="' + sx(xLo) + '" y2="' + (H - M.bottom) + '"/>');
+    if (xHi < X_MAX - 0.001) parts.push('<line class="bound-line" x1="' + sx(xHi) + '" y1="' + M.top + '" x2="' + sx(xHi) + '" y2="' + (H - M.bottom) + '"/>');
+
+    parts.push('<line class="axis" x1="' + M.left + '" y1="' + (H - M.bottom) + '" x2="' + (W - M.right) + '" y2="' + (H - M.bottom) + '"/>');
+    parts.push('<line class="axis" x1="' + M.left + '" y1="' + M.top + '" x2="' + M.left + '" y2="' + (H - M.bottom) + '"/>');
+    parts.push('<text class="axis-label" x="' + (W / 2) + '" y="' + (H - 4) + '" text-anchor="middle">Molecular weight (log scale)</text>');
+    parts.push('<text class="axis-label" x="12" y="' + (H / 2) + '" text-anchor="middle" transform="rotate(-90 12 ' + (H / 2) + ')">Detector signal</text>');
+
+    svg.innerHTML = parts.join("");
+  }
+
+  function recalc() {
+    var scenarioKey = $("gpc-scenario").value;
+    var scenario = SCENARIOS[scenarioKey];
+    var pts = buildCurve(scenario.components);
+
+    var lo = parseFloat($("gpc-lo").value);
+    var hi = parseFloat($("gpc-hi").value);
+    if (lo > hi) { var t = lo; lo = hi; hi = t; }
+
+    $("gpc-lo-val").innerHTML = lo.toFixed(2) + " (M &approx; " + fmtM(Math.pow(10, lo)) + ")";
+    $("gpc-hi-val").innerHTML = hi.toFixed(2) + " (M &approx; " + fmtM(Math.pow(10, hi)) + ")";
+
+    renderChart(pts, lo, hi);
+    renderStats("gpc-stats-full", integrateStats(pts, X_MIN, X_MAX));
+    renderStats("gpc-stats-selected", integrateStats(pts, lo, hi));
+  }
+
+  function applyScenarioDefaults() {
+    var scenario = SCENARIOS[$("gpc-scenario").value];
+    $("gpc-lo").value = scenario.defaultLo;
+    $("gpc-hi").value = scenario.defaultHi;
+  }
+
+  $("gpc-scenario").addEventListener("change", function () {
+    applyScenarioDefaults();
+    recalc();
+  });
+  $("gpc-lo").addEventListener("input", recalc);
+  $("gpc-hi").addEventListener("input", recalc);
+  $("gpc-reset").addEventListener("click", function () {
+    $("gpc-lo").value = X_MIN;
+    $("gpc-hi").value = X_MAX;
+    recalc();
+  });
+
+  var CAL_A = 7.0, CAL_B = 0.12, CAL_T_MIN = 10, CAL_T_MAX = 40, CAL_T0 = 22;
+
+  function calLogM(t) { return CAL_A - CAL_B * t; }
+
+  function renderCalChart(driftMin) {
+    var svg = $("gpc-cal-chart");
+    var W = 560, H = 300;
+    var M = { left: 54, right: 20, top: 20, bottom: 44 };
+    var plotW = W - M.left - M.right;
+    var plotH = H - M.top - M.bottom;
+    var yMin = 2, yMax = 6.2;
+
+    function sx(t) { return M.left + ((t - CAL_T_MIN) / (CAL_T_MAX - CAL_T_MIN)) * plotW; }
+    function sy(y) { return H - M.bottom - ((y - yMin) / (yMax - yMin)) * plotH; }
+
+    var parts = [];
+
+    for (var lv = Math.ceil(yMin); lv <= Math.floor(yMax); lv++) {
+      parts.push('<line class="grid" x1="' + M.left + '" y1="' + sy(lv) + '" x2="' + (W - M.right) + '" y2="' + sy(lv) + '"/>');
+      parts.push('<text class="tick-label" x="' + (M.left - 8) + '" y="' + (sy(lv) + 3) + '" text-anchor="end">10<tspan baseline-shift="super" font-size="7">' + lv + '</tspan></text>');
+    }
+    [10, 20, 30, 40].forEach(function (t) {
+      parts.push('<text class="tick-label" x="' + sx(t) + '" y="' + (H - M.bottom + 16) + '" text-anchor="middle">' + t + '</text>');
+    });
+
+    parts.push('<line class="axis" x1="' + M.left + '" y1="' + (H - M.bottom) + '" x2="' + (W - M.right) + '" y2="' + (H - M.bottom) + '"/>');
+    parts.push('<line class="axis" x1="' + M.left + '" y1="' + M.top + '" x2="' + M.left + '" y2="' + (H - M.bottom) + '"/>');
+    parts.push('<text class="axis-label" x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle">Retention time (min)</text>');
+    parts.push('<text class="axis-label" x="14" y="' + (H / 2) + '" text-anchor="middle" transform="rotate(-90 14 ' + (H / 2) + ')">Molecular weight (log scale)</text>');
+
+    parts.push('<line class="curve-line" x1="' + sx(CAL_T_MIN) + '" y1="' + sy(calLogM(CAL_T_MIN)) + '" x2="' + sx(CAL_T_MAX) + '" y2="' + sy(calLogM(CAL_T_MAX)) + '"/>');
+
+    var trueLogM = calLogM(CAL_T0);
+    var observedT = CAL_T0 + driftMin;
+    var apparentLogM = calLogM(observedT);
+
+    parts.push('<line class="ref-line" x1="' + sx(CAL_T0) + '" y1="' + sy(trueLogM) + '" x2="' + sx(CAL_T0) + '" y2="' + (H - M.bottom) + '"/>');
+    parts.push('<line class="ref-line" x1="' + M.left + '" y1="' + sy(trueLogM) + '" x2="' + sx(CAL_T0) + '" y2="' + sy(trueLogM) + '"/>');
+    parts.push('<circle class="marker-point" cx="' + sx(CAL_T0) + '" cy="' + sy(trueLogM) + '" r="5.5"/>');
+    parts.push('<text class="tick-label" x="' + sx(CAL_T0) + '" y="' + (sy(trueLogM) - 10) + '" text-anchor="middle" fill="var(--accent)">true</text>');
+
+    parts.push('<line class="azeo-line" x1="' + sx(observedT) + '" y1="' + sy(apparentLogM) + '" x2="' + sx(observedT) + '" y2="' + (H - M.bottom) + '"/>');
+    parts.push('<line class="azeo-line" x1="' + M.left + '" y1="' + sy(apparentLogM) + '" x2="' + sx(observedT) + '" y2="' + sy(apparentLogM) + '"/>');
+    parts.push('<circle class="azeo-point" cx="' + sx(observedT) + '" cy="' + sy(apparentLogM) + '" r="5.5"/>');
+    parts.push('<text class="tick-label" x="' + sx(observedT) + '" y="' + (sy(apparentLogM) - 10) + '" text-anchor="middle" fill="var(--danger)">observed</text>');
+
+    svg.innerHTML = parts.join("");
+
+    var trueM = Math.pow(10, trueLogM);
+    var apparentM = Math.pow(10, apparentLogM);
+    var pctError = (apparentM - trueM) / trueM * 100;
+
+    $("gpc-cal-stats").innerHTML =
+      '<div class="stat"><div class="label">True M, no drift</div><div class="value">' + fmtM(trueM) + '</div><div class="sub">g/mol, at t = ' + CAL_T0.toFixed(1) + ' min</div></div>' +
+      '<div class="stat"><div class="label">Apparent M, with drift</div><div class="value">' + fmtM(apparentM) + '</div><div class="sub">g/mol, read at t = ' + observedT.toFixed(2) + ' min</div></div>' +
+      '<div class="stat"><div class="label">Error from drift alone</div><div class="value">' + (pctError >= 0 ? "+" : "") + pctError.toFixed(1) + '%</div></div>';
+  }
+
+  $("gpc-drift").addEventListener("input", function () {
+    var d = parseFloat($("gpc-drift").value);
+    $("gpc-drift-val").textContent = (d >= 0 ? "+" : "") + d.toFixed(2) + " min";
+    renderCalChart(d);
+  });
+
+  applyScenarioDefaults();
+  recalc();
+  $("gpc-drift-val").textContent = "+0.00 min";
+  renderCalChart(0);
+})();
+</script>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+
+  var traceImg = null;
+  var traceCanvas = $("trace-canvas");
+  var traceCtx = traceCanvas.getContext("2d");
+  var MAX_W = 900;
+
+  function digitize(cropLeftPct, cropRightPct) {
+    var w = traceCanvas.width, h = traceCanvas.height;
+    var imgData = traceCtx.getImageData(0, 0, w, h).data;
+
+    function pixelAt(x, y) {
+      var idx = (y * w + x) * 4;
+      return [imgData[idx], imgData[idx + 1], imgData[idx + 2]];
+    }
+
+    var corners = [pixelAt(1, 1), pixelAt(w - 2, 1), pixelAt(1, h - 2), pixelAt(w - 2, h - 2)];
+    var bg = [0, 0, 0];
+    corners.forEach(function (c) { bg[0] += c[0] / 4; bg[1] += c[1] / 4; bg[2] += c[2] / 4; });
+
+    var xStart = Math.max(0, Math.round((w * cropLeftPct) / 100));
+    var xEnd = Math.min(w - 1, Math.round((w * cropRightPct) / 100));
+
+    var THRESH = 42;
+    var ys = [];
+    for (var x = xStart; x <= xEnd; x++) {
+      var runs = [];
+      var curRun = null;
+      for (var y = 0; y < h; y++) {
+        var p = pixelAt(x, y);
+        var dist = Math.sqrt(Math.pow(p[0] - bg[0], 2) + Math.pow(p[1] - bg[1], 2) + Math.pow(p[2] - bg[2], 2));
+        if (dist > THRESH) {
+          if (!curRun) curRun = { start: y, end: y };
+          else curRun.end = y;
+        } else if (curRun) {
+          runs.push(curRun);
+          curRun = null;
+        }
+      }
+      if (curRun) runs.push(curRun);
+      if (runs.length === 0) { ys.push(null); continue; }
+      runs.sort(function (a, b) { return (b.end - b.start) - (a.end - a.start); });
+      var best = runs[0];
+      ys.push((best.start + best.end) / 2);
+    }
+
+    for (var i = 0; i < ys.length; i++) {
+      if (ys[i] == null) {
+        var prev = null, next = null;
+        for (var j = i - 1; j >= 0; j--) { if (ys[j] != null) { prev = { i: j, v: ys[j] }; break; } }
+        for (var k = i + 1; k < ys.length; k++) { if (ys[k] != null) { next = { i: k, v: ys[k] }; break; } }
+        if (prev && next) ys[i] = prev.v + ((next.v - prev.v) * (i - prev.i)) / (next.i - prev.i);
+        else if (prev) ys[i] = prev.v;
+        else if (next) ys[i] = next.v;
+        else ys[i] = h / 2;
+      }
+    }
+
+    var smoothed = ys.slice();
+    var win = 3;
+    for (var s = 0; s < ys.length; s++) {
+      var sum = 0, cnt = 0;
+      for (var d = -win; d <= win; d++) {
+        var idx2 = s + d;
+        if (idx2 >= 0 && idx2 < ys.length) { sum += ys[idx2]; cnt++; }
+      }
+      smoothed[s] = sum / cnt;
+    }
+
+    return { xStart: xStart, xEnd: xEnd, ysPixel: smoothed, height: h, width: w };
+  }
+
+  function findPeaks(signal) {
+    var n = signal.length;
+    var maxSignal = Math.max.apply(null, signal);
+    if (!(maxSignal > 0)) return [];
+
+    var win = Math.max(2, Math.round(n / 60));
+    var sm = signal.slice();
+    for (var i = 0; i < n; i++) {
+      var sum = 0, cnt = 0;
+      for (var d = -win; d <= win; d++) {
+        var idx = i + d;
+        if (idx >= 0 && idx < n) { sum += signal[idx]; cnt++; }
+      }
+      sm[i] = sum / cnt;
+    }
+
+    var candidates = [];
+    for (var j = 1; j < n - 1; j++) {
+      if (sm[j] >= sm[j - 1] && sm[j] > sm[j + 1] && sm[j] > maxSignal * 0.05) candidates.push(j);
+    }
+
+    var merged = [];
+    candidates.forEach(function (c) {
+      if (merged.length && c - merged[merged.length - 1] < win * 2) {
+        if (sm[c] > sm[merged[merged.length - 1]]) merged[merged.length - 1] = c;
+      } else merged.push(c);
+    });
+
+    var peaks = merged.map(function (idx) {
+      var leftMin = sm[idx];
+      for (var a = idx; a >= 0; a--) { if (sm[a] > sm[idx]) break; if (sm[a] < leftMin) leftMin = sm[a]; }
+      var rightMin = sm[idx];
+      for (var b = idx; b < n; b++) { if (sm[b] > sm[idx]) break; if (sm[b] < rightMin) rightMin = sm[b]; }
+      var prominence = sm[idx] - Math.max(leftMin, rightMin);
+      return { index: idx, height: sm[idx], prominence: prominence };
+    });
+
+    var promThreshold = maxSignal * 0.08;
+    var significant = peaks.filter(function (p) { return p.prominence > promThreshold; });
+    significant.sort(function (a, b) { return b.height - a.height; });
+    return significant;
+  }
+
+  function analyzeSkew(signal, mainIdx) {
+    var n = signal.length;
+    var mainHeight = signal[mainIdx];
+    var halfHeight = mainHeight / 2;
+    var leftHalfIdx = 0;
+    for (var i = mainIdx; i >= 0; i--) { if (signal[i] <= halfHeight) { leftHalfIdx = i; break; } }
+    var rightHalfIdx = n - 1;
+    for (var j = mainIdx; j < n; j++) { if (signal[j] <= halfHeight) { rightHalfIdx = j; break; } }
+    return { leftWidth: mainIdx - leftHalfIdx, rightWidth: rightHalfIdx - mainIdx };
+  }
+
+  function renderFindings(peaks, signal, direction) {
+    var container = $("trace-findings");
+    if (!peaks.length) {
+      container.innerHTML = '<div class="trace-finding-item warn">No clear trace line was detected in the cropped region. Try adjusting the crop edges, or use a cleaner, higher contrast image.</div>';
+      return;
+    }
+    var mainIdx = peaks[0].index;
+    var mainHeight = peaks[0].height;
+    var items = [];
+
+    items.push('<div class="trace-finding-item">Detected ' + peaks.length + (peaks.length === 1 ? " peak" : " peaks") + ' in the cropped region.</div>');
+
+    if (peaks.length > 1) {
+      for (var i = 1; i < peaks.length; i++) {
+        var p = peaks[i];
+        var pctHeight = Math.round((p.height / mainHeight) * 100);
+        var isRightOfMain = p.index > mainIdx;
+        var higherMW = direction === "right" ? isRightOfMain : !isRightOfMain;
+        var sideLabel = higherMW ? "higher molecular weight side" : "lower molecular weight side";
+        items.push('<div class="trace-finding-item warn">A secondary peak or shoulder was found on the ' + sideLabel + ' of the main peak, at roughly ' + pctHeight + '% of its height. This could be a real second population (chain coupling, a blend, incomplete chain extension) or an artifact (aggregation, column overloading, a system peak). See Peak Shouldering above, and try rerunning at a lower injected concentration to check.</div>');
+      }
+    }
+
+    var skew = analyzeSkew(signal, mainIdx);
+    var ratio = skew.rightWidth > 0 ? skew.leftWidth / skew.rightWidth : 1;
+    if (ratio > 1.6 || ratio < 0.63) {
+      var isRightWide = ratio < 1;
+      var higherMWtail = direction === "right" ? isRightWide : !isRightWide;
+      var tailLabel = higherMWtail ? "higher molecular weight" : "lower molecular weight";
+      var reason = higherMWtail
+        ? "This pattern often points to aggregation or a poorly resolved high molecular weight shoulder."
+        : "This pattern often points to residual monomer, initiator fragments, or a poorly resolved solvent or system peak.";
+      items.push('<div class="trace-finding-item warn">The main peak looks noticeably wider on one side, tailing toward ' + tailLabel + '. ' + reason + '</div>');
+    } else {
+      items.push('<div class="trace-finding-item">The main peak looks reasonably symmetric, without a strong tail to either side.</div>');
+    }
+
+    container.innerHTML = items.join("");
+  }
+
+  function analyzeTrace() {
+    if (!traceImg) return;
+    var cropLeft = parseFloat($("trace-crop-left").value);
+    var cropRight = parseFloat($("trace-crop-right").value);
+    if (cropRight <= cropLeft) return;
+
+    traceCtx.clearRect(0, 0, traceCanvas.width, traceCanvas.height);
+    traceCtx.drawImage(traceImg, 0, 0, traceCanvas.width, traceCanvas.height);
+
+    var dig = digitize(cropLeft, cropRight);
+    var maxYPixel = Math.max.apply(null, dig.ysPixel);
+    var signal = dig.ysPixel.map(function (yp) { return maxYPixel - yp; });
+
+    traceCtx.strokeStyle = "#39ff88";
+    traceCtx.lineWidth = 2;
+    traceCtx.beginPath();
+    for (var i = 0; i < dig.ysPixel.length; i++) {
+      var x = dig.xStart + i;
+      var y = dig.ysPixel[i];
+      if (i === 0) traceCtx.moveTo(x, y); else traceCtx.lineTo(x, y);
+    }
+    traceCtx.stroke();
+
+    traceCtx.strokeStyle = "rgba(255,255,255,0.55)";
+    traceCtx.setLineDash([4, 4]);
+    traceCtx.beginPath();
+    traceCtx.moveTo(dig.xStart, 0); traceCtx.lineTo(dig.xStart, dig.height);
+    traceCtx.moveTo(dig.xEnd, 0); traceCtx.lineTo(dig.xEnd, dig.height);
+    traceCtx.stroke();
+    traceCtx.setLineDash([]);
+
+    var peaks = findPeaks(signal);
+    peaks.forEach(function (p, idx) {
+      var x = dig.xStart + p.index;
+      var y = dig.ysPixel[p.index];
+      traceCtx.fillStyle = idx === 0 ? "#39ff88" : "#ff5c7a";
+      traceCtx.beginPath();
+      traceCtx.arc(x, y, 5, 0, Math.PI * 2);
+      traceCtx.fill();
+    });
+
+    var direction = document.querySelector('input[name="trace-direction"]:checked').value;
+    renderFindings(peaks, signal, direction);
+  }
+
+  function loadFile(file) {
+    if (!file || !file.type || file.type.indexOf("image/") !== 0) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var img = new Image();
+      img.onload = function () {
+        traceImg = img;
+        var scale = Math.min(1, MAX_W / img.naturalWidth);
+        traceCanvas.width = Math.round(img.naturalWidth * scale);
+        traceCanvas.height = Math.round(img.naturalHeight * scale);
+        traceCtx.drawImage(img, 0, 0, traceCanvas.width, traceCanvas.height);
+        $("trace-controls").style.display = "";
+        $("trace-canvas-wrap").style.display = "";
+        $("trace-dropzone-text").innerHTML = "<strong>" + (file.name || "Image") + "</strong> loaded, click to replace";
+        analyzeTrace();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  $("trace-file").addEventListener("change", function (e) {
+    if (e.target.files && e.target.files[0]) loadFile(e.target.files[0]);
+  });
+
+  var dropzone = $("trace-dropzone");
+  ["dragenter", "dragover"].forEach(function (ev) {
+    dropzone.addEventListener(ev, function (e) { e.preventDefault(); dropzone.classList.add("drag-over"); });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    dropzone.addEventListener(ev, function (e) { e.preventDefault(); dropzone.classList.remove("drag-over"); });
+  });
+  dropzone.addEventListener("drop", function (e) {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+  });
+
+  ["trace-crop-left", "trace-crop-right"].forEach(function (id) {
+    $(id).addEventListener("input", analyzeTrace);
+  });
+  document.querySelectorAll('input[name="trace-direction"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      document.querySelectorAll("#trace-direction-row .radio-opt").forEach(function (opt) {
+        opt.classList.toggle("checked", opt.querySelector("input").checked);
+      });
+      analyzeTrace();
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC Calibration Converter: PolyTechniques</title>
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>GPC Calibration Converter</h1>
+      <p class="subtitle">Convert a polystyrene equivalent molecular weight to a true molecular weight using Mark Houwink parameters</p>
+    </div>
+    <div class="guide-links">
+      <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+      <a class="brand-link" href="home.html">
+        <img src="favicon.svg" alt="" class="brand-mark">
+        <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>How this works</h3>
+    <p class="guide-note">
+      Most GPC/SEC systems are calibrated with narrow polystyrene (or PMMA) standards, so the molecular weight your software reports is a "PS equivalent" value, the molecular weight a polystyrene chain would need to elute at the same retention time. Your actual polymer almost never has the same relationship between chain length and hydrodynamic size as polystyrene, so that number is only a true molecular weight if your sample happens to be polystyrene too.
+    </p>
+    <p class="guide-note">
+      The universal calibration principle says two polymers that elute at the same retention volume have the same hydrodynamic volume, which is proportional to [&eta;]&middot;M. Since intrinsic viscosity follows the Mark Houwink equation [&eta;] = K&middot;M<sup>&alpha;</sup>, you can convert between the calibration standard's apparent molecular weight and your polymer's true molecular weight if you know both polymers' K and &alpha; values in the same solvent.
+    </p>
+    <div class="guide-formula">
+      M<sub>true</sub> = ( (K<sub>std</sub> &divide; K<sub>sample</sub>) &middot; M<sub>apparent</sub><sup>(1 + &alpha;<sub>std</sub>)</sup> ) <sup>1 &divide; (1 + &alpha;<sub>sample</sub>)</sup>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Conversion calculator</h3>
+
+    <div class="subsection">
+      <div class="subsection-title">Calibration standard (what the GPC was calibrated against)</div>
+      <div class="grid">
+        <div class="field">
+          <label for="gpc-std-pick">Standard</label>
+          <select id="gpc-std-pick"></select>
+        </div>
+        <div class="field">
+          <label for="gpc-std-name">Name</label>
+          <input type="text" id="gpc-std-name" value="Polystyrene">
+        </div>
+        <div class="field">
+          <label for="gpc-std-k">K<sub>std</sub> (&times;10&#8315;&#8308; dL/g)</label>
+          <input type="number" id="gpc-std-k" value="1.14" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="gpc-std-a">&alpha;<sub>std</sub></label>
+          <input type="number" id="gpc-std-a" value="0.716" step="any" min="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Your polymer (sample)</div>
+      <div class="grid">
+        <div class="field">
+          <label for="gpc-sample-pick">Sample polymer</label>
+          <select id="gpc-sample-pick"></select>
+        </div>
+        <div class="field">
+          <label for="gpc-sample-name">Name</label>
+          <input type="text" id="gpc-sample-name" value="Poly(methyl methacrylate)">
+        </div>
+        <div class="field">
+          <label for="gpc-sample-k">K<sub>sample</sub> (&times;10&#8315;&#8308; dL/g)</label>
+          <input type="number" id="gpc-sample-k" value="0.80" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="gpc-sample-a">&alpha;<sub>sample</sub></label>
+          <input type="number" id="gpc-sample-a" value="0.70" step="any" min="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Apparent molecular weight from your GPC report</div>
+      <div class="grid">
+        <div class="field">
+          <label for="gpc-mn">Apparent M<sub>n</sub> (g/mol)</label>
+          <input type="number" id="gpc-mn" value="35000" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="gpc-mw">Apparent M<sub>w</sub> (g/mol), optional</label>
+          <input type="number" id="gpc-mw" value="45500" step="any" min="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-grid" id="gpc-stats" style="margin-top:16px;"></div>
+  </div>
+
+  <div class="card">
+    <h3>Reference Mark Houwink parameters</h3>
+    <p class="guide-note">Representative literature values, typically THF near room temperature unless noted. Polystyrene's constants are very well established; the others vary more across sources depending on tacticity, microstructure, and exact conditions. Always use your own column supplier's or a primary literature source's values for quantitative work.</p>
+    <div class="table-scroll">
+      <table class="recipe" id="gpc-ref-table">
+        <thead><tr><th>Polymer</th><th>Solvent</th><th>K (&times;10&#8315;&#8308; dL/g)</th><th>&alpha;</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="guide-note" style="margin-top:10px;">
+      This conversion assumes the universal calibration principle holds and that the GPC was calibrated with narrow, well characterized standards spanning the relevant molecular weight range. It does not account for branching, which changes a polymer's hydrodynamic volume independent of its true molecular weight, so branched samples will still read inaccurately even after this correction.
+    </p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>For planning and sanity checking only. For rigorous molecular weight determination, use light scattering (SEC MALS) or a calibration curve built from standards of your actual polymer.</p>
+</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+
+  var REF = [
+    { name: "Polystyrene", solvent: "THF, 25 to 35 °C", k: 1.14, a: 0.716 },
+    { name: "Poly(methyl methacrylate)", solvent: "THF, 25 to 35 °C", k: 0.80, a: 0.70 },
+    { name: "Polybutadiene (high cis)", solvent: "THF, 25 °C", k: 3.07, a: 0.75 },
+    { name: "Polyisoprene", solvent: "THF, 25 °C", k: 1.77, a: 0.735 },
+    { name: "Poly(ethylene glycol)", solvent: "Water, 25 °C (aqueous SEC)", k: 1.25, a: 0.78 }
+  ];
+
+  function fillPicks() {
+    var opts = ['<option value="-1">Custom</option>'];
+    REF.forEach(function (p, i) {
+      opts.push('<option value="' + i + '">' + p.name + '</option>');
+    });
+    $("gpc-std-pick").innerHTML = opts.join("");
+    $("gpc-std-pick").value = "0";
+    $("gpc-sample-pick").innerHTML = opts.join("");
+    $("gpc-sample-pick").value = "1";
+  }
+
+  function fillRefTable() {
+    var body = document.querySelector("#gpc-ref-table tbody");
+    body.innerHTML = REF.map(function (p) {
+      return "<tr><td>" + p.name + "</td><td>" + p.solvent + "</td><td class=\"num\">" + p.k.toFixed(2) + "</td><td class=\"num\">" + p.a.toFixed(3) + "</td></tr>";
+    }).join("");
+  }
+
+  function wirePick(pickId, nameId, kId, aId) {
+    $(pickId).addEventListener("change", function () {
+      var idx = parseInt(this.value, 10);
+      if (idx < 0) return;
+      var p = REF[idx];
+      $(nameId).value = p.name;
+      $(kId).value = p.k;
+      $(aId).value = p.a;
+      recalc();
+    });
+    [nameId, kId, aId].forEach(function (id) {
+      $(id).addEventListener("input", function () {
+        $(pickId).value = "-1";
+        recalc();
+      });
+    });
+  }
+
+  function convert(mApparent, kStd, aStd, kSample, aSample) {
+    var ratio = kStd / kSample;
+    var base = ratio * Math.pow(mApparent, 1 + aStd);
+    return Math.pow(base, 1 / (1 + aSample));
+  }
+
+  function fmt(n) {
+    if (!isFinite(n)) return "n/a";
+    if (n >= 1000) return Math.round(n).toLocaleString();
+    return n.toPrecision(3);
+  }
+
+  function recalc() {
+    var kStd = parseFloat($("gpc-std-k").value) * 1e-4;
+    var aStd = parseFloat($("gpc-std-a").value);
+    var kSample = parseFloat($("gpc-sample-k").value) * 1e-4;
+    var aSample = parseFloat($("gpc-sample-a").value);
+    var mn = parseFloat($("gpc-mn").value);
+    var mw = parseFloat($("gpc-mw").value);
+    var stats = $("gpc-stats");
+
+    if (!isFinite(kStd) || !isFinite(aStd) || !isFinite(kSample) || !isFinite(aSample) || kStd <= 0 || kSample <= 0 || !isFinite(mn) || mn <= 0) {
+      stats.innerHTML = '<div class="error-msg">Enter positive K and &alpha; values for both polymers, and a positive apparent M&#8345;.</div>';
+      return;
+    }
+
+    var trueMn = convert(mn, kStd, aStd, kSample, aSample);
+    var factor = trueMn / mn;
+    var html =
+      '<div class="stat"><div class="label">True M&#8345;</div><div class="value">' + fmt(trueMn) + '</div><div class="sub">g/mol</div></div>' +
+      '<div class="stat"><div class="label">Conversion factor</div><div class="value">' + factor.toFixed(3) + '&times;</div><div class="sub">true M&#8345; &divide; apparent M&#8345;</div></div>';
+
+    if (isFinite(mw) && mw > 0) {
+      var trueMw = convert(mw, kStd, aStd, kSample, aSample);
+      var apparentDj = mw / mn;
+      var trueDj = trueMw / trueMn;
+      html +=
+        '<div class="stat"><div class="label">True M<sub>w</sub></div><div class="value">' + fmt(trueMw) + '</div><div class="sub">g/mol</div></div>' +
+        '<div class="stat"><div class="label">True Đ</div><div class="value">' + trueDj.toFixed(2) + '</div><div class="sub">apparent Đ was ' + apparentDj.toFixed(2) + '</div></div>';
+    }
+
+    stats.innerHTML = html;
+  }
+
+  wirePick("gpc-std-pick", "gpc-std-name", "gpc-std-k", "gpc-std-a");
+  wirePick("gpc-sample-pick", "gpc-sample-name", "gpc-sample-k", "gpc-sample-a");
+  $("gpc-mn").addEventListener("input", recalc);
+  $("gpc-mw").addEventListener("input", recalc);
+
+  fillPicks();
+  fillRefTable();
+  recalc();
+})();
+</script>
+
+</body>
+</html>

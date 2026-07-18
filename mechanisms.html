@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polymerization Mechanisms: PolyTechniques</title>
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Polymerization Mechanisms</h1>
+      <p class="subtitle">How ATRP, RAFT, ROMP &amp; free radical polymerization actually build a chain</p>
+    </div>
+    <div class="guide-links">
+      <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+      <a class="brand-link" href="home.html">
+        <img src="favicon.svg" alt="" class="brand-mark">
+        <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>The common thread</h3>
+    <p class="guide-note">
+      ATRP, RAFT, and FRP all propagate through a <span class="radical">free radical</span> chain end (shown in red below), the same reactive, indiscriminate species in all three. What separates a <em>controlled</em> radical polymerization (ATRP, RAFT) from an uncontrolled one (FRP) is entirely about what happens to that radical between monomer additions: ATRP and RAFT both add a reversible step that keeps most chains "parked" in an unreactive, dormant form (shown in blue) most of the time, so they grow in small, evenly shared increments instead of a few chains racing to completion while others never even start. ROMP is the odd one out mechanistically: it never forms a free radical at all, and gets its living character from a metal (shown in green) that stays covalently bonded to the growing chain end throughout.
+    </p>
+  </div>
+
+  <div class="card" id="atrp-mech">
+    <h3>ATRP: Atom Transfer Radical Polymerization</h3>
+    <p class="guide-note">A dormant alkyl halide chain end is reversibly activated by a transition metal/ligand complex, which abstracts the halogen to briefly generate a radical chain end.</p>
+
+    <div class="mech-scheme">
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="pn">P<sub>n</sub>–X</span> + <span class="metal">Mt<sup>n</sup>/L</span></span>
+          <span class="mech-arrow">
+            <span class="mech-k">k<sub>act</sub></span>
+            <span class="mech-arrow-line">⇌</span>
+            <span class="mech-k">k<sub>deact</sub></span>
+          </span>
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + <span class="metal">X–Mt<sup>n+1</sup>/L</span></span>
+        </div>
+        <div class="mech-step-name">(activation/deactivation equilibrium)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + Monomer</span>
+          <span class="mech-arrow">
+            <span class="mech-k">k<sub>p</sub></span>
+            <span class="mech-arrow-line">→</span>
+          </span>
+          <span class="mech-species"><span class="radical">P<sub>n+1</sub>•</span></span>
+        </div>
+        <div class="mech-step-name">(propagation)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + <span class="radical">P<sub>m</sub>•</span></span>
+          <span class="mech-arrow">
+            <span class="mech-k">k<sub>t</sub></span>
+            <span class="mech-arrow-line">→</span>
+          </span>
+          <span class="mech-species">dead chains</span>
+        </div>
+        <div class="mech-step-name">(termination, minor pathway)</div>
+      </div>
+    </div>
+
+    <p class="guide-note">
+      The key to why this is "controlled": the equilibrium sits heavily toward the dormant <span class="pn">P<sub>n</sub>–X</span> side (<em>k</em><sub>act</sub> ≪ <em>k</em><sub>deact</sub>), so the instantaneous concentration of radicals in solution is kept very low at all times. Since termination is second order in radical concentration but propagation is only first order, suppressing [<span class="radical">P<sub>n</sub>•</span>] suppresses termination much more than it slows chain growth. Nearly every chain survives, grows a little bit at a time, and ends up close to the same length. ARGET/ICAR/SARA/eATRP variants use the same equilibrium but continuously regenerate the active catalyst state instead of relying on it being present stoichiometrically from the start.
+    </p>
+  </div>
+
+  <div class="card" id="raft-mech">
+    <h3>RAFT: Reversible Addition Fragmentation chain Transfer</h3>
+    <p class="guide-note">A thiocarbonylthio compound (the RAFT agent) shuttles the radical "identity" rapidly between all growing chains via degenerate chain transfer, rather than suppressing the total radical population the way ATRP does.</p>
+
+    <div class="mech-scheme">
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species">Initiator</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species">2 <span class="radical">I•</span></span>
+          <span class="mech-arrow">
+            <span class="mech-k">+ M</span>
+            <span class="mech-arrow-line">→</span>
+          </span>
+          <span class="mech-species"><span class="radical">P<sub>1</sub>•</span></span>
+        </div>
+        <div class="mech-step-name">(initiation)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + M</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species"><span class="radical">P<sub>n+1</sub>•</span></span>
+        </div>
+        <div class="mech-step-name">(propagation / chain growth)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + S=C(Z)–S–R</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">⇌</span></span>
+          <span class="mech-species">[<span class="pn">P<sub>n</sub></span>–S–C•(Z)–S–R]</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">⇌</span></span>
+          <span class="mech-species"><span class="pn">P<sub>n</sub></span>–S–C(Z)=S + <span class="radical">R•</span></span>
+        </div>
+        <div class="mech-step-name">(RAFT initial equilibrium)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">R•</span> + M</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species"><span class="radical">P<sub>1</sub>•</span></span>
+        </div>
+        <div class="mech-step-name">(reinitiation)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + S=C(Z)–S–<span class="pn">P<sub>m</sub></span></span>
+          <span class="mech-arrow"><span class="mech-arrow-line">⇌</span></span>
+          <span class="mech-species">[<span class="pn">P<sub>n</sub></span>–S–C•(Z)–S–<span class="pn">P<sub>m</sub></span>]</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">⇌</span></span>
+          <span class="mech-species"><span class="pn">P<sub>n</sub></span>–S–C(Z)=S + <span class="radical">P<sub>m</sub>•</span></span>
+        </div>
+        <div class="mech-step-name">(RAFT main equilibrium)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + <span class="radical">P<sub>m</sub>•</span></span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species">D<sub>n+m</sub> &nbsp;or&nbsp; D<sub>n</sub> + D<sub>m</sub></span>
+        </div>
+        <div class="mech-step-name">(termination, minor pathway)</div>
+      </div>
+    </div>
+
+    <p class="guide-note">
+      Unlike ATRP, RAFT doesn't lower the total radical concentration below a normal FRP level. Termination still happens at roughly the same rate it would without the RAFT agent; it's just a small loss relative to the much larger population of chains cycling through the main equilibrium. Every active chain adds a monomer, then quickly gets "capped" back to a dormant thiocarbonylthio terminated chain while a different chain takes its turn as the radical, so on average, all chains grow in lockstep even though only one is actively propagating at any instant. The <span class="pn">Z</span> group tunes the RAFT agent's reactivity for a given monomer class; the <span class="pn">R</span> group becomes the initial leaving and reinitiating fragment and ends up as the other chain end.
+    </p>
+  </div>
+
+  <div class="card" id="romp-mech">
+    <h3>ROMP: Ring Opening Metathesis Polymerization</h3>
+    <p class="guide-note">No radicals here at all. ROMP runs on <span class="metal">metal carbene</span> chemistry (the Chauvin mechanism): a metal alkylidene reacts with a strained cyclic olefin through a [2+2]/retro[2+2] cycloaddition sequence, opening the ring and handing the reactive carbene off to the new chain end.</p>
+
+    <div class="mech-scheme">
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="metal">[M]=CHR</span> + monomer (ring)</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">⇌</span></span>
+          <span class="mech-species">metallacyclobutane</span>
+        </div>
+        <div class="mech-step-name">(initiation, [2+2] cycloaddition)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species">metallacyclobutane</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species"><span class="metal">[M]=CH</span>–(chain)–CH=CHR</span>
+        </div>
+        <div class="mech-step-name">(ring opening, retro[2+2])</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="metal">[M]=CH</span>–(chain) + monomer</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species"><span class="metal">[M]=CH</span>–(longer chain)</span>
+        </div>
+        <div class="mech-step-name">(propagation, repeats per monomer)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="metal">[M]=CH</span>–(chain) + CH<sub>2</sub>=CH–OEt</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species">(chain)–CH=CH–OEt + <span class="metal">[M]=CHOEt</span></span>
+        </div>
+        <div class="mech-step-name">(termination, deliberate end capping)</div>
+      </div>
+    </div>
+
+    <div class="mech-ring-panel">
+      <svg class="mech-ring" width="240" height="190" viewBox="0 0 240 190">
+        <defs>
+          <radialGradient id="ringGlow" cx="50%" cy="42%" r="65%">
+            <stop offset="0%" stop-color="var(--primary-dim)" stop-opacity="0.9" />
+            <stop offset="100%" stop-color="var(--primary-dim)" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+        <circle cx="120" cy="95" r="88" fill="url(#ringGlow)" />
+
+        <!-- ring bonds -->
+        <line x1="120" y1="30" x2="196" y2="95" class="bond bond-break" />
+        <line x1="44" y1="95" x2="120" y2="30" class="bond bond-break" />
+        <line x1="196" y1="95" x2="120" y2="160" class="bond bond-keep" />
+        <line x1="120" y1="160" x2="44" y2="95" class="bond bond-keep" />
+
+        <!-- vertices -->
+        <g class="ring-atom ring-atom-metal">
+          <circle cx="120" cy="30" r="24" />
+          <text x="120" y="30">M</text>
+        </g>
+        <g class="ring-atom ring-atom-carbon">
+          <circle cx="196" cy="95" r="22" />
+          <text x="196" y="95">C<tspan baseline-shift="sub" font-size="9">α</tspan></text>
+        </g>
+        <g class="ring-atom ring-atom-carbon">
+          <circle cx="120" cy="160" r="22" />
+          <text x="120" y="160">C<tspan baseline-shift="sub" font-size="9">β</tspan></text>
+        </g>
+        <g class="ring-atom ring-atom-carbon">
+          <circle cx="44" cy="95" r="22" />
+          <text x="44" y="95">C<tspan baseline-shift="sub" font-size="9">γ</tspan></text>
+        </g>
+
+        <text x="196" y="126" text-anchor="middle" class="ring-substituent">(R)</text>
+      </svg>
+      <div class="mech-ring-legend">
+        <span><span class="legend-swatch legend-break"></span> forming / breaking (M&ndash;C)</span>
+        <span><span class="legend-swatch legend-keep"></span> retained (C&ndash;C)</span>
+      </div>
+    </div>
+    <p class="mech-ring-caption">Simplified metallacyclobutane intermediate: the four membered ring that forms and immediately opens on every cycle. When it opens, the two metal&ndash;carbon bonds break, regenerating a metal carbene on one side and a new alkene on the other.</p>
+
+    <p class="guide-note">
+      Because the metal never leaves the chain end between cycles, ROMP is "living" in the same practical sense as ATRP/RAFT (predictable Mₙ, low dispersity, chain extension possible) but for a completely different mechanistic reason. There's no dormant/active equilibrium to manage, just a metal that keeps finding the next ring to open. Leaving the reaction to run too long without quenching risks secondary metathesis (chain scission/backbiting) rather than radical termination. A closely related technique, <strong>ADMET</strong> (acyclic diene metathesis), uses the same metal carbene chemistry but builds chains from linear diene monomers with loss of ethylene instead of opening a ring. It isn't one of this calculator's tabs, but it's worth knowing it's a mechanistic cousin of ROMP.
+    </p>
+  </div>
+
+  <div class="card" id="frp-mech">
+    <h3>Free Radical Polymerization (FRP)</h3>
+    <p class="guide-note">The baseline case: a radical is generated once and propagates until it dies. There's no reversible step holding chains back, which is exactly why FRP isn't a controlled/living technique.</p>
+
+    <div class="mech-scheme">
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species">Initiator</span>
+          <span class="mech-arrow">
+            <span class="mech-k">k<sub>d</sub></span>
+            <span class="mech-arrow-line">→</span>
+          </span>
+          <span class="mech-species">2 <span class="radical">I•</span></span>
+        </div>
+        <div class="mech-step-name">(initiator decomposition)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">I•</span> + M</span>
+          <span class="mech-arrow">
+            <span class="mech-k">k<sub>i</sub></span>
+            <span class="mech-arrow-line">→</span>
+          </span>
+          <span class="mech-species"><span class="radical">P<sub>1</sub>•</span></span>
+        </div>
+        <div class="mech-step-name">(chain initiation)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + M</span>
+          <span class="mech-arrow">
+            <span class="mech-k">k<sub>p</sub></span>
+            <span class="mech-arrow-line">→</span>
+          </span>
+          <span class="mech-species"><span class="radical">P<sub>n+1</sub>•</span></span>
+        </div>
+        <div class="mech-step-name">(propagation)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + <span class="radical">P<sub>m</sub>•</span></span>
+          <span class="mech-arrow">
+            <span class="mech-k">k<sub>tc</sub></span>
+            <span class="mech-arrow-line">→</span>
+          </span>
+          <span class="mech-species">D<sub>n+m</sub></span>
+        </div>
+        <div class="mech-step-name">(termination by combination)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + <span class="radical">P<sub>m</sub>•</span></span>
+          <span class="mech-arrow">
+            <span class="mech-k">k<sub>td</sub></span>
+            <span class="mech-arrow-line">→</span>
+          </span>
+          <span class="mech-species">D<sub>n</sub> + D<sub>m</sub></span>
+        </div>
+        <div class="mech-step-name">(termination by disproportionation)</div>
+      </div>
+    </div>
+
+    <p class="guide-note">
+      There's no dormant state and no equilibrium bringing a chain back once it's a radical. Each chain simply propagates at rate <em>k</em><sub>p</sub>[M] until it terminates (or transfers), which typically happens in well under a second. Because initiator decomposition (<em>k</em><sub>d</sub>) is slow and continuous, new chains keep starting throughout the whole reaction while earlier chains have already terminated, so the population is a statistical mix of chain lengths (kinetic chain length set by <em>k</em><sub>p</sub>, <em>k</em><sub>t</sub>, and the steady state radical concentration) rather than the narrow distribution set by the feed ratio that you get from ATRP/RAFT/ROMP. This is exactly why the calculator's FRP tab treats Mₙ as a simplified estimate rather than a precise design target.
+    </p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Simplified schematic mechanisms for teaching purposes. Consult the primary literature for full kinetic and stereochemical detail.</p>
+</footer>
+
+</body>
+</html>

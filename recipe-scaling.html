@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Scaling: PolyTechniques</title>
+<script src="theme.js"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Recipe Scaling</h1>
+      <p class="subtitle">Scale any recipe up or down while keeping every component's ratio the same</p>
+    </div>
+    <div class="guide-links">
+      <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
+      <a class="brand-link" href="home.html">
+        <img src="favicon.svg" alt="" class="brand-mark">
+        <span class="brand-name"><span class="brand-poly">Poly</span>Techniques</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>How this works</h3>
+    <p class="guide-note">
+      Scaling a recipe just multiplies every component's amount by the same factor, which keeps every ratio (monomer to initiator, catalyst to ligand, concentration) exactly the same as the original. Enter each component from your recipe below, set a scale factor directly or derive one from a current and target batch size, and copy the scaled amounts back into your notebook.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Scale factor</h3>
+    <div class="radio-row" id="scale-mode-row">
+      <label class="radio-opt checked">
+        <input type="radio" name="scale-mode" value="factor" checked> Direct multiplier
+      </label>
+      <label class="radio-opt">
+        <input type="radio" name="scale-mode" value="totals"> From current and target batch size
+      </label>
+    </div>
+
+    <div class="grid" style="margin-top:12px;" id="scale-factor-fields">
+      <div class="field">
+        <label for="scale-factor">Scale factor</label>
+        <input type="number" id="scale-factor" value="5" step="any" min="0">
+        <span class="hint">2 doubles the recipe; 0.5 halves it</span>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:12px; display:none;" id="scale-totals-fields">
+      <div class="field">
+        <label for="scale-old-total">Current batch size</label>
+        <input type="number" id="scale-old-total" value="1" step="any" min="0">
+      </div>
+      <div class="field">
+        <label for="scale-new-total">Target batch size</label>
+        <input type="number" id="scale-new-total" value="5" step="any" min="0">
+        <span class="hint">Same unit as current batch size; only the ratio matters</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Components</h3>
+    <div class="dyn-row-labels">
+      <span>Component</span>
+      <span>Amount</span>
+      <span>Unit</span>
+      <span class="dyn-label-spacer"></span>
+    </div>
+    <div id="scale-rows" class="dyn-rows"></div>
+    <div class="actions" style="justify-content:flex-start; margin-top:6px;">
+      <button type="button" class="copy-btn" id="scale-add-row">+ Add component</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Scaled recipe</h3>
+    <div class="stat-grid" id="scale-stats" style="margin-bottom:12px;"></div>
+    <div class="table-scroll">
+      <table class="recipe recipe-data" id="scale-out-table">
+        <thead><tr><th>Component</th><th>Original amount</th><th>Scaled amount</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button class="copy-btn" id="scale-copy-btn">Copy scaled recipe as text</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Before you scale up</h3>
+    <ul class="guide-list">
+      <li><strong>Heat transfer changes with scale.</strong> A larger batch has a smaller surface area to volume ratio, so exotherms (radical initiation, fast catalyst turnover) dissipate heat more slowly. A recipe that runs isothermally at 1&nbsp;mL scale can run away at 100&nbsp;mL scale.</li>
+      <li><strong>Mixing and degassing take longer.</strong> Stir efficiency, freeze pump thaw cycle time, and sparge time all need to scale with volume, not stay fixed.</li>
+      <li><strong>Concentration, not just amount, controls kinetics.</strong> This tool keeps every ratio and concentration identical by design; if you also change solvent volume independently, recheck your target concentration.</li>
+      <li><strong>Reagent grade and purity matter more at scale.</strong> Trace inhibitor, water, or oxygen that's negligible in a small aliquot can meaningfully shift results in a larger, longer running batch.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Scaling preserves ratios only. Always reassess heat transfer, mixing, and safety before running an unfamiliar reaction at a new scale.</p>
+</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+
+  var UNITS = ["mL", "L", "g", "mg", "mol", "mmol", "&micro;mol"];
+
+  var DEMO = [
+    { name: "Styrene", amount: 1, unit: "g" },
+    { name: "Ethyl 2-bromoisobutyrate", amount: 9.8, unit: "mg" },
+    { name: "CuBr", amount: 7.2, unit: "mg" },
+    { name: "PMDETA", amount: 8.8, unit: "mg" },
+    { name: "Solvent", amount: 8.5, unit: "mL" }
+  ];
+
+  function unitOptions(selected) {
+    return UNITS.map(function (u) {
+      return '<option value="' + u + '"' + (u === selected ? " selected" : "") + '>' + u + '</option>';
+    }).join("");
+  }
+
+  function makeRow(name, amount, unit) {
+    var row = document.createElement("div");
+    row.className = "dyn-row";
+    row.innerHTML =
+      '<input type="text" class="scale-name" placeholder="Component name" value="' + (name || "") + '">' +
+      '<input type="number" class="scale-amount" placeholder="Amount" step="any" min="0" value="' + (amount ?? "") + '">' +
+      '<select class="scale-unit">' + unitOptions(unit || "g") + '</select>' +
+      '<button type="button" class="dyn-row-remove" aria-label="Remove component">&times;</button>';
+    row.querySelector(".dyn-row-remove").addEventListener("click", function () {
+      row.remove();
+      recalc();
+    });
+    return row;
+  }
+
+  function addRow(name, amount, unit) {
+    var rows = $("scale-rows");
+    var row = makeRow(name, amount, unit);
+    rows.appendChild(row);
+    return row;
+  }
+
+  function currentFactor() {
+    var mode = document.querySelector('input[name="scale-mode"]:checked').value;
+    if (mode === "factor") {
+      return parseFloat($("scale-factor").value);
+    }
+    var oldT = parseFloat($("scale-old-total").value);
+    var newT = parseFloat($("scale-new-total").value);
+    if (!isFinite(oldT) || oldT <= 0 || !isFinite(newT)) return NaN;
+    return newT / oldT;
+  }
+
+  function fmtAmount(n) {
+    if (!isFinite(n)) return "n/a";
+    if (n === 0) return "0";
+    var abs = Math.abs(n);
+    if (abs >= 100) return n.toFixed(1);
+    if (abs >= 1) return n.toFixed(3);
+    return n.toPrecision(3);
+  }
+
+  function recalc() {
+    var factor = currentFactor();
+    var stats = $("scale-stats");
+    var body = document.querySelector("#scale-out-table tbody");
+    var rows = Array.from(document.querySelectorAll("#scale-rows .dyn-row"));
+    var comps = [];
+    rows.forEach(function (row) {
+      var name = row.querySelector(".scale-name").value.trim();
+      var amount = parseFloat(row.querySelector(".scale-amount").value);
+      var unit = row.querySelector(".scale-unit").value;
+      if (!name || !isFinite(amount)) return;
+      comps.push({ name: name, amount: amount, unit: unit });
+    });
+
+    if (!isFinite(factor) || factor <= 0) {
+      stats.innerHTML = '<div class="error-msg">Enter a valid scale factor, or a current and target batch size, greater than zero.</div>';
+      body.innerHTML = "";
+      return;
+    }
+    if (comps.length < 1) {
+      stats.innerHTML = '<div class="stat"><div class="label">Scale factor</div><div class="value">' + factor.toFixed(3) + '&times;</div></div>';
+      body.innerHTML = "";
+      return;
+    }
+
+    stats.innerHTML =
+      '<div class="stat"><div class="label">Scale factor</div><div class="value">' + factor.toFixed(3) + '&times;</div><div class="sub">applied to every component</div></div>' +
+      '<div class="stat"><div class="label">Components</div><div class="value">' + comps.length + '</div></div>';
+
+    body.innerHTML = comps.map(function (c) {
+      var scaled = c.amount * factor;
+      return "<tr><td>" + c.name + "</td><td class=\"num\">" + fmtAmount(c.amount) + " " + c.unit + "</td><td class=\"num\"><strong>" + fmtAmount(scaled) + " " + c.unit + "</strong></td></tr>";
+    }).join("");
+  }
+
+  function buildRecipeText() {
+    var factor = currentFactor();
+    var rows = Array.from(document.querySelectorAll("#scale-rows .dyn-row"));
+    var lines = ["Scaled recipe (" + (isFinite(factor) ? factor.toFixed(3) : "?") + "x)", ""];
+    rows.forEach(function (row) {
+      var name = row.querySelector(".scale-name").value.trim();
+      var amount = parseFloat(row.querySelector(".scale-amount").value);
+      var unit = row.querySelector(".scale-unit").value;
+      if (!name || !isFinite(amount)) return;
+      lines.push(name + ": " + fmtAmount(amount * factor) + " " + unit);
+    });
+    return lines.join("\n");
+  }
+
+  document.querySelectorAll('input[name="scale-mode"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      document.querySelectorAll('#scale-mode-row .radio-opt').forEach(function (opt) {
+        opt.classList.toggle("checked", opt.querySelector("input").checked);
+      });
+      var mode = document.querySelector('input[name="scale-mode"]:checked').value;
+      $("scale-factor-fields").style.display = mode === "factor" ? "" : "none";
+      $("scale-totals-fields").style.display = mode === "totals" ? "" : "none";
+      recalc();
+    });
+  });
+
+  $("scale-add-row").addEventListener("click", function () {
+    addRow("", "", "g");
+    recalc();
+  });
+  $("scale-rows").addEventListener("input", function (e) {
+    if (e.target.matches("input, select")) recalc();
+  });
+  $("scale-rows").addEventListener("change", function (e) {
+    if (e.target.matches("select")) recalc();
+  });
+  ["scale-factor", "scale-old-total", "scale-new-total"].forEach(function (id) {
+    $(id).addEventListener("input", recalc);
+  });
+
+  $("scale-copy-btn").addEventListener("click", function () {
+    var text = buildRecipeText();
+    navigator.clipboard.writeText(text).then(function () {
+      var btn = $("scale-copy-btn");
+      btn.textContent = "Copied!";
+      setTimeout(function () { btn.textContent = "Copy scaled recipe as text"; }, 1400);
+    });
+  });
+
+  DEMO.forEach(function (d) { addRow(d.name, d.amount, d.unit); });
+  recalc();
+})();
+</script>
+
+</body>
+</html>
