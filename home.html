@@ -39,7 +39,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=31">
+<link rel="stylesheet" href="style.css?v=32">
 </head>
 <body>
 
@@ -174,7 +174,12 @@
       <h2>🔥 Hot Off the Press</h2>
       <p class="hot-papers-subtitle">Recent polymer papers from the past week, with any early citations surfaced first</p>
     </div>
-    <span class="hot-papers-live"><span class="live-dot"></span> Live feed · refreshes every 24h</span>
+    <div class="hot-papers-controls">
+      <span class="hot-papers-live"><span class="live-dot"></span> Live feed · refreshes every 24h</span>
+      <button type="button" id="hot-papers-refresh" class="hot-papers-refresh" title="Check for new publications now">
+        <span class="refresh-icon" aria-hidden="true">&#10227;</span> Refresh
+      </button>
+    </div>
   </div>
   <div id="hot-papers-grid" class="hot-papers-grid">
     <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
@@ -400,7 +405,7 @@
     // pool on-topic across the week's window; citation-count ranking then
     // happens client-side in normalizeItems() so "popular" stays relevant, not just cited.
 
-    fetch(url).then(function (res) {
+    return fetch(url).then(function (res) {
       if (!res.ok) throw new Error('bad status');
       return res.json();
     }).then(function (data) {
@@ -415,6 +420,31 @@
       } else {
         renderPapers(FALLBACK_PAPERS, 'Showing offline picks · live feed unavailable right now');
       }
+    });
+  }
+
+  function showSkeletons() {
+    var grid = document.getElementById('hot-papers-grid');
+    var one = '<div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>';
+    grid.innerHTML = one + one + one + one + one + one;
+    document.getElementById('hot-papers-caption').textContent = '';
+  }
+
+  var refreshBtn = document.getElementById('hot-papers-refresh');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', function () {
+      if (refreshBtn.disabled) return;
+      refreshBtn.disabled = true;
+      refreshBtn.classList.add('refreshing');
+      // Keep the old results on hand so a failed refresh falls back to them
+      var previous = null;
+      try { previous = JSON.parse(localStorage.getItem(CACHE_KEY)); } catch (e) {}
+      try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
+      showSkeletons();
+      fetchFresh(previous).then(function () {
+        refreshBtn.disabled = false;
+        refreshBtn.classList.remove('refreshing');
+      });
     });
   }
 

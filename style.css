@@ -1777,3 +1777,45 @@ input.input-invalid {
   cursor: pointer;
 }
 .mol-onboarding-dismiss:hover { color: var(--primary); border-color: var(--primary); }
+
+/* ---------- Hot Off the Press refresh button ---------- */
+.hot-papers-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hot-papers-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card-bg);
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+.hot-papers-refresh:hover:not(:disabled) {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.hot-papers-refresh:disabled { cursor: default; opacity: 0.7; }
+.hot-papers-refresh .refresh-icon {
+  display: inline-block;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+.hot-papers-refresh.refreshing .refresh-icon {
+  animation: refresh-spin 0.9s linear infinite;
+}
+@keyframes refresh-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hot-papers-refresh.refreshing .refresh-icon { animation: none; }
+}
