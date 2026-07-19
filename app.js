@@ -1152,7 +1152,9 @@ function polyurethaneTemplate() {
       <h3>How this works</h3>
       <p class="guide-note">
         First, <strong>cap</strong> a hydroxyl-terminated polyol with an excess of diisocyanate so every chain end
-        becomes an isocyanate (the NCO:OH ratio, typically 1.6&ndash;2.2:1, sets how much free NCO remains). Second,
+        becomes an isocyanate (the NCO:OH ratio, typically 1.6&ndash;2.2:1, sets how much free NCO remains). The
+        theoretical %NCO below assumes the capping reaction goes to completion &ndash; every polyol OH consumed,
+        none left over &ndash; which is why measuring the real value in Step 2 matters. Second,
         <strong>chain extend</strong> the NCO-terminated prepolymer with a short diol or diamine, building the hard
         segments and driving molecular weight up. In practice, <strong>measure the real %NCO</strong> of your
         prepolymer before extending &ndash; follow the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> by in-line IR
@@ -1315,7 +1317,7 @@ function wirePolyurethanePanel() {
       `<div class="stat"><div class="label">Polyol eq wt</div><div class="value">${puFmt(eqwtPolyol, 1)}</div><div class="sub">g/eq OH &middot; Mn &asymp; ${puFmt(polyolMn, 0)} g/mol at f = ${puFmt(f, 2)}</div></div>` +
       `<div class="stat"><div class="label">OH equivalents</div><div class="value">${puFmt(eqOH * 1000, 1)}</div><div class="sub">meq, from ${puFmt(mPolyol, 1)} g polyol</div></div>` +
       `<div class="stat"><div class="label">Diisocyanate to charge</div><div class="value">${puFmt(mIso, 2)} g</div><div class="sub">${puFmt(eqNCO * 1000, 1)} meq NCO at ${puFmt(ratio, 2)} : 1</div></div>` +
-      `<div class="stat"><div class="label">Theoretical %NCO</div><div class="value">${puFmt(theoNCO, 2)}%</div><div class="sub">of ${puFmt(mPrepTotal, 1)} g prepolymer &middot; confirm by in-line IR</div></div>` +
+      `<div class="stat"><div class="label">Theoretical %NCO</div><div class="value">${puFmt(theoNCO, 2)}%</div><div class="sub">of ${puFmt(mPrepTotal, 1)} g prepolymer at 100% OH conversion &middot; confirm by in-line IR</div></div>` +
       `<div class="stat"><div class="label">Idealized capped adduct Mn</div><div class="value">${puFmt(idealMn, 0)}</div><div class="sub">g/mol${ratio < 2 ? " &middot; ratio &lt; 2: real Mn runs higher from chain coupling" : " &middot; real prepolymer also contains free diisocyanate"}</div></div>`;
 
     // Keep step 2's default mass in sync until the user edits it
