@@ -992,7 +992,7 @@ function disclaimerHTML(extraLead) {
 function disclaimerCompactHTML() {
   return `
     <div class="procedure-disclaimer procedure-disclaimer-compact">
-      <strong>&#9888;&#65039;</strong> Guidance only, provided &ldquo;as is&rdquo; &ndash; verify against
+      <strong>&#9888;&#65039;</strong> Guidance only, provided &ldquo;as is&rdquo;. Verify against
       the SDS and your institution's safety protocols before any lab work.
     </div>`;
 }
@@ -1024,13 +1024,13 @@ function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
         ? `Add ${monomerAmt} (inhibitor removed) and ${agentAmt}, dissolved together.`
         : `Add ${monomerAmt} (inhibitor removed).`,
       solventStep,
-      `Seal and degas thoroughly &ndash; three freeze-pump-thaw cycles is standard for ATRP (see the <a href="air-free-technique.html">air-free guide</a>), then backfill with inert gas.`,
+      `Seal and degas thoroughly. Three freeze-pump-thaw cycles is standard for ATRP (see the <a href="air-free-technique.html">air-free guide</a>), then backfill with inert gas.`,
       ctx.macroMode
         ? `Place the flask in a bath preheated to your chosen reaction temperature and stir.`
         : `Under positive inert pressure, add ${agentAmt} (separately degassed) by syringe, then place the flask in a bath preheated to your chosen reaction temperature.`,
       monitorStep,
       `Stop the reaction by cooling and exposing to air (oxidizes the Cu(I) activator).`,
-      `Remove the copper catalyst &ndash; pass a THF or DCM solution of the polymer through a short neutral alumina plug, or stir with an appropriate resin.`,
+      `Remove the copper catalyst by passing a THF or DCM solution of the polymer through a short neutral alumina plug, or stirring with an appropriate resin.`,
       workupStep,
       charStep,
     ];
@@ -1044,7 +1044,7 @@ function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
       `Place in a bath preheated to the initiator's working temperature (60&ndash;70&nbsp;&deg;C is typical for AIBN) and stir.`,
       monitorStep,
       `Stop by cooling and exposing to air.`,
-      workupStep + ` A retained thiocarbonylthio end group usually leaves the polymer pale yellow to pink &ndash; that's normal.`,
+      workupStep + ` A retained thiocarbonylthio end group usually leaves the polymer pale yellow to pink, which is normal.`,
       charStep,
     ];
   }
@@ -1053,7 +1053,7 @@ function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
       `In a glovebox, or on a Schlenk line under inert gas, dissolve ${monomerAmt} in dry, degassed solvent (DCM and THF are common). ${core.volTotalL != null ? `Target a total volume near ${fmtVol(core.volTotalL * 1000)}.` : ""}`,
       `Separately dissolve ${agentAmt} in a small amount of the same dry, degassed solvent.`,
       `Add the catalyst solution to the stirred monomer solution in one quick portion at room temperature.`,
-      `Monitor conversion &ndash; ROMP of strained monomers is often complete within minutes to an hour (see <a href="conversion-monitoring.html">monitoring conversion</a>).`,
+      `Monitor conversion. ROMP of strained monomers is often complete within minutes to an hour (see <a href="conversion-monitoring.html">monitoring conversion</a>).`,
       `Quench with a large excess of ethyl vinyl ether (roughly 100 equivalents versus catalyst) and stir 15&ndash;30 min to cap the chain ends.`,
       workupStep,
       charStep,
@@ -1065,7 +1065,7 @@ function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
     solventStep,
     `Degas by sparging with nitrogen or argon for 15&ndash;30 min (freeze-pump-thaw for more rigor).`,
     `Heat to the initiator's decomposition temperature (60&ndash;70&nbsp;&deg;C for AIBN, 70&ndash;85&nbsp;&deg;C for BPO) with stirring.`,
-    monitorStep + ` Watch the exotherm in bulk or concentrated runs &ndash; conventional FRP can autoaccelerate (Trommsdorff effect).`,
+    monitorStep + ` Watch the exotherm in bulk or concentrated runs, since conventional FRP can autoaccelerate (Trommsdorff effect).`,
     `Stop by cooling and exposing to air.`,
     workupStep,
     charStep,
@@ -1097,8 +1097,8 @@ const PU_POLYOLS = [
 
 const PU_DIISOS = [
   { name: "MDI (4,4'-)", eq: 125.13, mw: 250.26, nco: 33.6, note: "Solid, melts ~40 °C; handle melted under dry N₂" },
-  { name: "TDI (80/20)", eq: 87.08, mw: 174.16, nco: 48.3, note: "High vapor pressure - serious inhalation hazard" },
-  { name: "IPDI", eq: 111.14, mw: 222.28, nco: 37.8, note: "Aliphatic, UV-stable products; slow - usually catalyzed" },
+  { name: "TDI (80/20)", eq: 87.08, mw: 174.16, nco: 48.3, note: "High vapor pressure, a serious inhalation hazard" },
+  { name: "IPDI", eq: 111.14, mw: 222.28, nco: 37.8, note: "Aliphatic, UV-stable products; slow, usually catalyzed" },
   { name: "HDI", eq: 84.10, mw: 168.20, nco: 50.0, note: "Aliphatic; monomer is volatile and hazardous" },
   { name: "H12MDI (Desmodur W)", eq: 131.18, mw: 262.35, nco: 32.0, note: "Aliphatic, low viscosity" },
   { name: "Custom (enter value below)", eq: null, mw: null, nco: null, note: "" },
@@ -1106,9 +1106,9 @@ const PU_DIISOS = [
 
 const PU_CATALYSTS = [
   { name: "None", pct: null, note: "" },
-  { name: "DBTDL (dibutyltin dilaurate)", pct: 0.02, note: "The standard tin gelation catalyst; strongly selective for NCO-OH. Organotin - increasingly regulated" },
+  { name: "DBTDL (dibutyltin dilaurate)", pct: 0.02, note: "The standard tin gelation catalyst; strongly selective for NCO-OH. An organotin, increasingly regulated" },
   { name: "Stannous octoate (T-9)", pct: 0.05, note: "Common in castables and foams; less hydrolytically stable than DBTDL" },
-  { name: "DABCO (TEDA, tertiary amine)", pct: 0.1, note: "Amine catalyst; also accelerates the water-NCO side reaction - keep everything rigorously dry" },
+  { name: "DABCO (TEDA, tertiary amine)", pct: 0.1, note: "Amine catalyst; also accelerates the water-NCO side reaction, so keep everything rigorously dry" },
   { name: "Bismuth neodecanoate", pct: 0.1, note: "Lower-toxicity tin alternative with good gelation selectivity" },
   { name: "Zinc octoate", pct: 0.2, note: "Mild; often paired with an amine or used in tin-free systems" },
   { name: "Custom (enter wt% below)", pct: null, note: "" },
@@ -1120,8 +1120,8 @@ const PU_EXTENDERS = [
   { name: "1,6-Hexanediol", eq: 59.09, mw: 118.17, type: "diol", note: "Softer hard segments, better hydrolysis resistance" },
   { name: "Glycerol", eq: 30.70, mw: 92.09, type: "triol", note: "f = 3: crosslinker, not a linear extender" },
   { name: "Trimethylolpropane (TMP)", eq: 44.72, mw: 134.17, type: "triol", note: "f = 3: crosslinker, not a linear extender" },
-  { name: "MOCA (diamine)", eq: 133.58, mw: 267.16, type: "amine", note: "Forms urea hard segments (urethane-urea). Suspected human carcinogen - strict handling controls" },
-  { name: "DETDA / Ethacure 100 (diamine)", eq: 89.14, mw: 178.27, type: "amine", note: "Liquid aromatic diamine, fast - short pot life" },
+  { name: "MOCA (diamine)", eq: 133.58, mw: 267.16, type: "amine", note: "Forms urea hard segments (urethane-urea). Suspected human carcinogen, strict handling controls required" },
+  { name: "DETDA / Ethacure 100 (diamine)", eq: 89.14, mw: 178.27, type: "amine", note: "Liquid aromatic diamine, fast, with a short pot life" },
   { name: "Custom (enter value below)", eq: null, mw: null, type: "diol", note: "" },
 ];
 
@@ -1161,11 +1161,11 @@ function polyurethaneTemplate() {
         <p class="guide-note">
           First, <strong>cap</strong> a hydroxyl-terminated polyol with an excess of diisocyanate so every chain end
           becomes an isocyanate (the NCO:OH ratio, typically 1.6&ndash;2.2:1, sets how much free NCO remains). The
-          theoretical %NCO below assumes the capping reaction goes to completion &ndash; every polyol OH consumed,
-          none left over &ndash; which is why measuring the real value in Step 2 matters. Second,
+          theoretical %NCO below assumes the capping reaction goes to completion, with every polyol OH consumed and
+          none left over, which is why measuring the real value in Step 2 matters. Second,
           <strong>chain extend</strong> the NCO-terminated prepolymer with a short diol or diamine, building the hard
           segments and driving molecular weight up. In practice, <strong>measure the real %NCO</strong> of your
-          prepolymer before extending &ndash; follow the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> by in-line IR
+          prepolymer before extending by following the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> by in-line IR
           and quantify against a calibration. Side reactions, moisture, and polyol batch variation all pull the real
           value below theory, and Step 2 accepts your measured value for exactly that reason.
         </p>
@@ -1173,7 +1173,7 @@ function polyurethaneTemplate() {
           Polyol eq wt = 56100 &divide; OH# &nbsp;|&nbsp; Diisocyanate eq wt = 4202 &divide; %NCO &nbsp;|&nbsp; %NCO<sub>prepolymer</sub> = 4202 &times; (eq NCO &minus; eq OH) &divide; total mass
         </div>
         <p class="guide-note" style="margin-top:8px;">
-          OH# and %NCO are read directly off your polyol and isocyanate certificates of analysis &ndash; nothing here is titrated as part of this synthesis. 56100 and 4202 are just the standard conversion constants for turning those two reporting conventions into equivalent weight (100 &times; 42.02, the molecular weight of the &minus;NCO group itself, for the isocyanate side).
+          OH# and %NCO are read directly off your polyol and isocyanate certificates of analysis. Nothing here is titrated as part of this synthesis. 56100 and 4202 are just the standard conversion constants for turning those two reporting conventions into equivalent weight (100 &times; 42.02, the molecular weight of the &minus;NCO group itself, for the isocyanate side).
         </p>
       </div>
       <div class="pu-simple-only">
@@ -1188,13 +1188,13 @@ function polyurethaneTemplate() {
           Polyol eq wt = Mn &divide; 2 &nbsp;|&nbsp; Diisocyanate eq wt = MW &divide; 2 &nbsp;|&nbsp; Extender eq wt = MW &divide; 2
         </div>
         <p class="guide-note" style="margin-top:8px;">
-          Dividing by 2 assumes every reagent here is difunctional &ndash; a linear diol soft segment, a diisocyanate, and a diol chain extender &ndash; which is exactly what a segmented block copolymer needs.
+          Dividing by 2 assumes every reagent here is difunctional (a linear diol soft segment, a diisocyanate, and a diol chain extender), which is exactly what a segmented block copolymer needs.
         </p>
       </div>
     </div>
 
     <div class="card">
-      <h3>Step 1 &ndash; Prepolymer (capping)</h3>
+      <h3>Step 1: Prepolymer (capping)</h3>
       <div class="grid">
         <div class="field">
           <label for="pu-polyol-select">Polyol (diol)</label>
@@ -1245,7 +1245,7 @@ function polyurethaneTemplate() {
     </div>
 
     <div class="card">
-      <h3>Step 2 &ndash; Chain extension</h3>
+      <h3>Step 2: Chain extension</h3>
       <div class="grid">
         <div class="field">
           <label for="pu-prepoly-mass">Prepolymer mass to extend (g)</label>
@@ -1294,7 +1294,7 @@ function polyurethaneTemplate() {
 
     <div class="card pu-advanced-only">
       <h3>Reference data</h3>
-      <p class="guide-note">Typical values for common building blocks. Always use the certificate of analysis for your actual lot &ndash; OH number and %NCO vary batch to batch, and that variation is exactly why measured %NCO beats theoretical for the extension step.</p>
+      <p class="guide-note">Typical values for common building blocks. Always use the certificate of analysis for your actual lot, since OH number and %NCO vary batch to batch, and that variation is exactly why measured %NCO beats theoretical for the extension step.</p>
       <div class="table-scroll">
         <table class="recipe">
           <thead><tr><th>Diisocyanate</th><th>Eq wt (g/eq)</th><th>%NCO</th><th>Notes</th></tr></thead>
@@ -1482,28 +1482,28 @@ function wirePolyurethanePanel() {
     const polyolSel = PU_POLYOLS[parseInt($("pu-polyol-select").value, 10)] || PU_POLYOLS[0];
     const shortName = (s) => s.replace(/ \(.*$/, "");
     const irStep = simple
-      ? `Follow the capping reaction by in-line IR if available: watch the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> decay as the polyol OH is consumed (the urethane carbonyl grows in at ~1700&ndash;1730 cm<sup>&minus;1</sup>), plateauing once capping is complete. Store any unused prepolymer under dry inert gas &ndash; it is moisture-reactive.`
-      : `Follow the capping reaction by in-line IR: watch the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> decay as the polyol OH is consumed (the urethane carbonyl grows in at ~1700&ndash;1730 cm<sup>&minus;1</sup>). The step is done when the NCO band plateaus at the level corresponding to the theoretical ${puFmt(theoNCO, 2)}% free NCO &ndash; quantify against your calibration and enter the measured value in Step 2. Store any unused prepolymer under dry inert gas &ndash; it is moisture-reactive.`;
+      ? `Follow the capping reaction by in-line IR if available: watch the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> decay as the polyol OH is consumed (the urethane carbonyl grows in at ~1700&ndash;1730 cm<sup>&minus;1</sup>), plateauing once capping is complete. Store any unused prepolymer under dry inert gas, since it is moisture-reactive.`
+      : `Follow the capping reaction by in-line IR: watch the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> decay as the polyol OH is consumed (the urethane carbonyl grows in at ~1700&ndash;1730 cm<sup>&minus;1</sup>). The step is done when the NCO band plateaus at the level corresponding to the theoretical ${puFmt(theoNCO, 2)}% free NCO. Quantify against your calibration and enter the measured value in Step 2. Store any unused prepolymer under dry inert gas, since it is moisture-reactive.`;
     const puSteps = [
       `Dry ${puFmt(mPolyol, 1)} g of ${shortName(polyolSel.name)} at 80&ndash;100 &deg;C under vacuum (&lt;1&nbsp;torr) for 1&ndash;2&nbsp;h, until bubbling stops. Residual water consumes NCO and generates CO<sub>2</sub> bubbles in the final part.`,
       `Cool to 60&ndash;70 &deg;C and blanket with dry nitrogen. Charge ${puFmt(mIso, 2)} g of ${shortName(isoSel.name)} with stirring.`,
       `React at 70&ndash;80 &deg;C under dry N<sub>2</sub> for 2&ndash;3 h (aliphatic isocyanates are slower and may need a tin catalyst such as DBTDL at 0.01&ndash;0.05 wt%).`,
       irStep,
       `For chain extension: warm ${puFmt(mPre, 1)} g of prepolymer to 60&ndash;80 &deg;C to lower viscosity, and degas under vacuum until bubble-free.`,
-      ...(useCat ? [`Pre-dissolve ${catMassText} of ${shortName(catSel.name)} in the chain extender (or dose it into the degassed prepolymer just before extension). At ${puFmt(catPct, 3)} wt%, expect the pot life to shorten noticeably &ndash; run a small trial batch first.`] : []),
-      `Add ${puFmt(mExt, 2)} g of ${shortName(extSel.name)}${extSel.type === "amine" ? " (melt MOCA at ~110 &deg;C first if using it)" : ""} and mix rapidly but thoroughly for 1&ndash;2 min, avoiding air entrainment.${extSel.type === "amine" ? " Amine curatives react fast &ndash; know your pot life before you scale up." : ""}`,
+      ...(useCat ? [`Pre-dissolve ${catMassText} of ${shortName(catSel.name)} in the chain extender (or dose it into the degassed prepolymer just before extension). At ${puFmt(catPct, 3)} wt%, expect the pot life to shorten noticeably, so run a small trial batch first.`] : []),
+      `Add ${puFmt(mExt, 2)} g of ${shortName(extSel.name)}${extSel.type === "amine" ? " (melt MOCA at ~110 &deg;C first if using it)" : ""} and mix rapidly but thoroughly for 1&ndash;2 min, avoiding air entrainment.${extSel.type === "amine" ? " Amine curatives react fast, so know your pot life before you scale up." : ""}`,
       `Degas briefly if pot life allows, then cast into preheated, release-coated molds.`,
-      `Cure (typical: 100 &deg;C for 16 h for aromatic systems; adjust to your chemistry). If the IR probe survives your cure setup, the extension/cure can be followed the same way &ndash; the 2270 cm<sup>&minus;1</sup> NCO band decaying to baseline is your endpoint. Post-cure/condition about a week at room temperature before testing.`,
+      `Cure (typical: 100 &deg;C for 16 h for aromatic systems; adjust to your chemistry). If the IR probe survives your cure setup, the extension/cure can be followed the same way: the 2270 cm<sup>&minus;1</sup> NCO band decaying to baseline is your endpoint. Post-cure/condition about a week at room temperature before testing.`,
       `Characterize: hardness and tensile after conditioning; confirm full NCO consumption by the absence of the 2270 cm<sup>&minus;1</sup> band; DSC/DMA for the soft-segment T<sub>g</sub> and hard-segment transitions.`,
     ];
     const catHazard = useCat && /DBTDL|octoate|neodecanoate/i.test(catSel.name)
-      ? " Organotin and organometallic catalysts (DBTDL, stannous octoate, bismuth/zinc carboxylates) carry their own handling precautions - avoid skin contact and check your SDS, particularly for organotins."
+      ? " Organotin and organometallic catalysts (DBTDL, stannous octoate, bismuth/zinc carboxylates) carry their own handling precautions, so avoid skin contact and check your SDS, particularly for organotins."
       : "";
     $("pu-procedure").innerHTML = procedureBlock(
       simple ? "diol-only block copolymer" : "two-step prepolymer route",
       puSteps,
       false,
-      "Diisocyanates are potent respiratory and skin sensitizers &ndash; handle them only with proper engineering controls (fume hood, sealed transfers), and note that MOCA is a suspected human carcinogen subject to strict occupational limits." + catHazard
+      "Diisocyanates are potent respiratory and skin sensitizers. Handle them only with proper engineering controls (fume hood, sealed transfers), and note that MOCA is a suspected human carcinogen subject to strict occupational limits." + catHazard
     );
   }
 
@@ -1622,11 +1622,11 @@ function emulsionTemplate() {
         N &asymp; k (R<sub>i</sub> &divide; &mu;)<sup>0.4</sup> (a<sub>s</sub> &middot; [S])<sup>0.6</sup> &nbsp;&nbsp; (Smith-Ewart, particles per volume of water)
       </div>
       <p class="guide-note" style="margin-top:8px;">
-        This is a textbook scaling estimate, not a validated simulation &ndash; treat it as order-of-magnitude and
+        This is a textbook scaling estimate, not a validated simulation. Treat it as order-of-magnitude and
         useful for trends (more surfactant &rarr; smaller particles, more initiator &rarr; more particles), not as
         an exact prediction. Real particle size depends on agitation, addition method (batch vs. monomer-starved
         feed), electrolyte, trace metals, and impurities, none of which are captured here. Every reference constant
-        below (a<sub>s</sub>, k<sub>p</sub>, &phi;<sub>sat</sub>, the initiator half-life) is editable &ndash; use
+        below (a<sub>s</sub>, k<sub>p</sub>, &phi;<sub>sat</sub>, the initiator half-life) is editable, so use
         your own literature or supplier data where you have it.
       </p>
     </div>
@@ -1670,12 +1670,12 @@ function emulsionTemplate() {
         <div class="field">
           <label for="em-temp">Reaction temperature (&deg;C)</label>
           <input type="number" id="em-temp" value="70" step="any">
-          <span class="hint">Context only &ndash; k<sub>p</sub> and the half-life below should already be at (or near) this temperature</span>
+          <span class="hint">Context only. k<sub>p</sub> and the half-life below should already be at (or near) this temperature</span>
         </div>
         <div class="field">
           <label for="em-half-life">Initiator half-life at this temperature (h)</label>
           <input type="number" id="em-half-life" value="5" step="any" min="0.01">
-          <span class="hint">From your supplier/literature data at your actual temperature and pH &ndash; this varies a lot and matters a lot</span>
+          <span class="hint">From your supplier/literature data at your actual temperature and pH. This varies a lot and matters a lot</span>
         </div>
         <div class="field">
           <label for="em-f">Initiator efficiency, f</label>
@@ -1770,7 +1770,7 @@ function emulsionTemplate() {
 
     <div class="card">
       <h3>Reference data</h3>
-      <p class="guide-note">Typical literature values. Always verify against your reagent's COA and your own kinetic data where it exists &ndash; k<sub>p</sub>, half-life, and swelling values here are approximate order-of-magnitude figures, not certified constants.</p>
+      <p class="guide-note">Typical literature values. Always verify against your reagent's COA and your own kinetic data where it exists. k<sub>p</sub>, half-life, and swelling values here are approximate order-of-magnitude figures, not certified constants.</p>
       <div class="table-scroll">
         <table class="recipe">
           <thead><tr><th>Monomer</th><th>Density (g/mL)</th><th>Polymer density (g/mL)</th><th>&phi;<sub>sat</sub></th><th>k<sub>p</sub> (L/mol/s, ~50&deg;C)</th></tr></thead>
@@ -1798,7 +1798,7 @@ function wireEmulsionPanel() {
     document.querySelectorAll(".em-mediator-atrp").forEach((el) => { el.style.display = type === "atrp" ? "" : "none"; });
     $("em-mediator-hint").textContent = type === "raft"
       ? "Ab initio emulsion RAFT: the same KPS above still generates the radicals; a CTA:initiator ratio of roughly 5-10:1 is typical."
-      : "ATRP is normally run as a miniemulsion (pre-homogenized droplets carrying the catalyst), not classical ab initio emulsion - the particle size above assumes micellar nucleation and may not apply; treat it as reflecting the homogenized droplet size instead.";
+      : "ATRP is normally run as a miniemulsion (pre-homogenized droplets carrying the catalyst), not classical ab initio emulsion. The particle size above assumes micellar nucleation and may not apply; treat it as reflecting the homogenized droplet size instead.";
   }
 
   function recalcEmulsion() {
@@ -1872,7 +1872,7 @@ function wireEmulsionPanel() {
     const solidsPct = ((massPolymer + mSurf) / totalCharge) * 100;
 
     stats.innerHTML =
-      (belowCmc ? `<div class="stat" style="grid-column:1/-1;"><div class="label">Surfactant vs. CMC</div><div class="value" style="color:var(--danger);font-size:1rem;">Below CMC &ndash; no micelles</div><div class="sub">${emFmt(sTotalM * 1000, 2)} mmol/L total vs. ${emFmt(cmc, 2)} mmol/L CMC. Micellar nucleation doesn't apply here; particle number/size below aren't meaningful.</div></div>` : "") +
+      (belowCmc ? `<div class="stat" style="grid-column:1/-1;"><div class="label">Surfactant vs. CMC</div><div class="value" style="color:var(--danger);font-size:1rem;">Below CMC, no micelles</div><div class="sub">${emFmt(sTotalM * 1000, 2)} mmol/L total vs. ${emFmt(cmc, 2)} mmol/L CMC. Micellar nucleation doesn't apply here; particle number/size below aren't meaningful.</div></div>` : "") +
       `<div class="stat"><div class="label">Surfactant available for micelles</div><div class="value">${emFmt(sMicellarM * 1000, 2)}</div><div class="sub">mmol/L, above the ${emFmt(cmc, 2)} mmol/L CMC</div></div>` +
       `<div class="stat"><div class="label">Radical generation rate, R<sub>i</sub></div><div class="value">${emFmt(RiMolPerLs, 2)}</div><div class="sub">mol radicals / (L&middot;s), k<sub>d</sub> = ${emFmt(kd, 2)} s<sup>-1</sup></div></div>` +
       `<div class="stat"><div class="label">Predicted particle number</div><div class="value">${emFmt(NperL, 2)}</div><div class="sub">particles/L water &middot; ${emFmt(totalParticles, 2)} total</div></div>` +
@@ -1936,10 +1936,10 @@ function wireEmulsionPanel() {
     const steps = [
       `Charge ${emFmt(base.mWater, 1)} g of water and ${emFmt(base.mSurf, 2)} g of ${base.surfName} to the reactor, purge with nitrogen, and heat to the reaction temperature with agitation.`,
       mediator && mediator.type === "atrp"
-        ? `Pre-homogenize the monomer with the ATRP catalyst system (and a costabilizer such as hexadecane) to form a miniemulsion before charging &ndash; ATRP's hydrophobic catalyst won't redistribute between droplets the way monomer and radicals do in a classical batch charge.`
+        ? `Pre-homogenize the monomer with the ATRP catalyst system (and a costabilizer such as hexadecane) to form a miniemulsion before charging, since ATRP's hydrophobic catalyst won't redistribute between droplets the way monomer and radicals do in a classical batch charge.`
         : `Charge ${emFmt(base.mMonomer, 1)} g of monomer to the reactor with continued agitation.`,
       mediator && mediator.type === "raft"
-        ? `Add ${emFmt(mediator.mass, 3)} g of ${mediator.name} along with the monomer &ndash; it partitions into the organic phase and mediates chain growth once particles nucleate.`
+        ? `Add ${emFmt(mediator.mass, 3)} g of ${mediator.name} along with the monomer. It partitions into the organic phase and mediates chain growth once particles nucleate.`
         : "",
       `Dissolve the initiator in a small aliquot of water and add it to start the reaction (or feed it in over time for better control of the exotherm).`,
       `Hold at temperature, monitoring conversion gravimetrically: pull a small aliquot, weigh it, dry to constant mass, and compare the nonvolatile fraction to the theoretical value at full conversion.`,
@@ -1948,13 +1948,13 @@ function wireEmulsionPanel() {
       `Characterize: particle size by DLS, Mn/&#272; by GPC after breaking the latex and isolating the polymer, and solids content by gravimetric analysis.`,
     ].filter(Boolean);
     const mediatorHazard = mediator && mediator.type === "atrp"
-      ? " ATRP catalyst/ligand systems carry their own handling requirements - check the SDS for the copper source and ligand."
-      : (mediator && mediator.type === "raft" ? " RAFT agents are typically strongly colored (yellow/pink/red) and can have a distinct odor - this is normal, not necessarily a sign of decomposition." : "");
+      ? " ATRP catalyst/ligand systems carry their own handling requirements, so check the SDS for the copper source and ligand."
+      : (mediator && mediator.type === "raft" ? " RAFT agents are typically strongly colored (yellow/pink/red) and can have a distinct odor. This is normal, not necessarily a sign of decomposition." : "");
     $("em-procedure").innerHTML = procedureBlock(
       mediator ? `emulsion, ${mediator.type === "raft" ? "RAFT-mediated" : "ATRP-mediated"}` : "conventional emulsion",
       steps,
       false,
-      "Potassium persulfate is a strong oxidizer - keep it away from reducing agents and organics in bulk, and handle per its SDS. Monomers carry standard flammability/inhalation hazards; work in a fume hood with appropriate PPE." + mediatorHazard
+      "Potassium persulfate is a strong oxidizer. Keep it away from reducing agents and organics in bulk, and handle per its SDS. Monomers carry standard flammability/inhalation hazards; work in a fume hood with appropriate PPE." + mediatorHazard
     );
   }
 
@@ -2588,11 +2588,11 @@ function renderBcpResults(res) {
     ];
     res.blockResults.slice(1).forEach((b, i) => {
       steps.push(
-        `When Block ${i + 1} reaches its target conversion, pull a sample for GPC/NMR, then add ${fmtMass(b.massM)}${b.volM != null ? ` (${fmtVol(b.volM)})` : ""} of degassed ${b.name} directly to the living reaction. (Alternatively, isolate and purify the intermediate as a ${res.cfg.macroTerm} and start a fresh polymerization &ndash; cleaner blocks, more work.)`
+        `When Block ${i + 1} reaches its target conversion, pull a sample for GPC/NMR, then add ${fmtMass(b.massM)}${b.volM != null ? ` (${fmtVol(b.volM)})` : ""} of degassed ${b.name} directly to the living reaction. (Alternatively, isolate and purify the intermediate as a ${res.cfg.macroTerm} and start a fresh polymerization: cleaner blocks, but more work.)`
       );
     });
     steps.push(
-      `Chain-end fidelity is everything in sequential addition &ndash; keep conversions per block in the range where the chain ends stay living for your technique, and keep everything rigorously degassed between additions.`,
+      `Chain-end fidelity is everything in sequential addition. Keep conversions per block in the range where the chain ends stay living for your technique, and keep everything rigorously degassed between additions.`,
       `After the final block, quench as usual for ${res.cfg.label}, precipitate into a suitable non-solvent, filter, and dry under vacuum.`,
       `Characterize each stage: a clean shift of the whole GPC trace to higher molecular weight after each block, without a residual low-MW shoulder, is the signature of successful chain extension.`
     );
@@ -2984,7 +2984,7 @@ function recalcStockDilute() {
     <div class="stat"><div class="label">Final volume</div><div class="value">${fmtVol(v2)}</div></div>
     ${procedureBlock(null, [
       `Measure ${fmtVol(v1)} of the stock solution accurately (volumetric pipette or syringe, per the precision you need).`,
-      `Add diluent up to a final volume of ${fmtVol(v2)} &ndash; in a volumetric flask, fill to the mark; then cap and invert to mix.`,
+      `Add diluent up to a final volume of ${fmtVol(v2)}. In a volumetric flask, fill to the mark, then cap and invert to mix.`,
       `Label the new solution with contents, concentration, solvent, date, and your initials.`,
     ], true)}
   `;
