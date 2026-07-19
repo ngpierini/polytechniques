@@ -381,49 +381,6 @@
     </div>
     <p class="mech-ring-caption">The calculator's Step 1 caps a polyol (soft segment) with excess diisocyanate; Step 2 chain extends the leftover isocyanate ends, building the hard segment shown here between two diisocyanate units.</p>
 
-    <div class="mech-ring-panel">
-      <svg class="mech-ring" width="400" height="200" viewBox="0 0 400 200">
-        <text x="8" y="16" class="small dim">Hard segment (e.g. MDI)</text>
-        <line x1="8" y1="60" x2="23" y2="60" class="bond bond-keep"/>
-        <text x="35" y="60" font-size="13">NH</text>
-        <line x1="47" y1="60" x2="58" y2="60" class="bond bond-keep"/>
-        <text x="65" y="60" font-size="13" font-weight="700">C</text>
-        <line x1="61" y1="52" x2="61" y2="35" class="bond bond-keep"/>
-        <line x1="69" y1="52" x2="69" y2="35" class="bond bond-keep"/>
-        <text x="65" y="27" text-anchor="middle" class="ring-substituent">O</text>
-        <line x1="72" y1="60" x2="85" y2="60" class="bond bond-keep"/>
-        <text x="92" y="60" font-size="13">O</text>
-        <line x1="99" y1="60" x2="112" y2="60" class="bond bond-keep"/>
-        <polygon points="135,40 152.3,50 152.3,70 135,80 117.7,70 117.7,50" fill="var(--card-bg)" stroke="var(--border)" stroke-width="2"/>
-        <line x1="152.3" y1="60" x2="175" y2="60" class="bond bond-keep"/>
-        <text x="190" y="60" font-size="13">CH<tspan baseline-shift="sub" font-size="9">2</tspan></text>
-        <line x1="205" y1="60" x2="218" y2="60" class="bond bond-keep"/>
-        <polygon points="250,40 267.3,50 267.3,70 250,80 232.7,70 232.7,50" fill="var(--card-bg)" stroke="var(--border)" stroke-width="2"/>
-        <line x1="267.3" y1="60" x2="290" y2="60" class="bond bond-keep"/>
-        <text x="297" y="60" font-size="13">O</text>
-        <line x1="304" y1="60" x2="317" y2="60" class="bond bond-keep"/>
-        <text x="324" y="60" font-size="13" font-weight="700">C</text>
-        <line x1="320" y1="52" x2="320" y2="35" class="bond bond-keep"/>
-        <line x1="328" y1="52" x2="328" y2="35" class="bond bond-keep"/>
-        <text x="324" y="27" text-anchor="middle" class="ring-substituent">O</text>
-        <line x1="331" y1="60" x2="344" y2="60" class="bond bond-keep"/>
-        <text x="356" y="60" font-size="13">NH</text>
-        <line x1="368" y1="60" x2="381" y2="60" class="bond bond-keep"/>
-
-        <text x="8" y="103" class="small dim">Soft segment (e.g. PTMEG)</text>
-        <path d="M15,110 L15,150 M15,110 L20,110 M15,150 L20,150" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
-        <path d="M25,130 L40,115 L55,130 L70,115 L85,130" fill="none" stroke="var(--text-dim)" stroke-width="2"/>
-        <path d="M95,110 L95,150 M95,110 L90,110 M95,150 L90,150" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
-        <text x="103" y="147" font-style="italic" font-size="12">n</text>
-
-        <text x="8" y="177" class="small dim">Chain extender (e.g. 1,4-butanediol)</text>
-        <text x="150" y="190" font-size="13">HO</text>
-        <path d="M170,190 L185,175 L200,190 L215,175" fill="none" stroke="var(--text-dim)" stroke-width="2"/>
-        <text x="222" y="190" font-size="13">OH</text>
-      </svg>
-    </div>
-    <p class="mech-ring-caption">Representative repeat units for the calculator's default reagents. Swap in the structures for whatever diisocyanate, polyol, or extender you're actually using; the reasoning is the same regardless.</p>
-
     <p class="guide-note">
       There's no chain end propagating through hundreds of monomer additions the way there is above. Instead, molecular weight builds through <em>step</em> growth: any two molecules with a free OH and a free NCO can react, at any point in the reaction, so early on the mixture is mostly short oligomers, and high molecular weight only shows up once conversion is very high. This is exactly why the calculator's polyurethane tab is built around a two step recipe instead of a target Mn and DP: cap a polyol with excess diisocyanate first (Step 1), so the free NCO ends are known and controlled, then react that prepolymer against a measured amount of chain extender (Step 2) to build the final hard segment length deliberately, rather than leaving stoichiometry to chance.
     </p>
