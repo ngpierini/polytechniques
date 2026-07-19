@@ -204,6 +204,43 @@ function chooseVolUnit(mL) {
 function fmtMol(mol) { const u = chooseMolUnit(mol); return `${fmtNum(u.v)} ${u.u}`; }
 function fmtMass(g) { const u = chooseMassUnit(g); return `${fmtNum(u.v)} ${u.u}`; }
 function fmtVol(mL) { const u = chooseVolUnit(mL); return `${fmtNum(u.v)} ${u.u}`; }
+
+/* Molecular weight display units: g/mol (as computed) or kg/mol.
+   Display-layer only - every calculation stays in g/mol. Stats keep their
+   original g/mol text in data attributes so the toggle can flip both ways,
+   and a MutationObserver reapplies the preference after every recalc
+   re-render. Writes are guarded by value comparison so identical rewrites
+   don't retrigger the observer. */
+const MW_UNIT_KEY = "polytechniques_mw_unit";
+function mwUnitPref() {
+  try { return localStorage.getItem(MW_UNIT_KEY) === "kg" ? "kg" : "g"; } catch (e) { return "g"; }
+}
+function applyMwUnitDisplay() {
+  const pref = mwUnitPref();
+  document.querySelectorAll("#app .stat").forEach((stat) => {
+    const sub = stat.querySelector(".sub");
+    const val = stat.querySelector(".value");
+    if (!sub || !val) return;
+    const origSub = sub.dataset.origSub || sub.textContent;
+    if (!/^g\/mol/.test(origSub)) return;
+    if (!sub.dataset.origSub) {
+      sub.dataset.origSub = origSub;
+      val.dataset.origVal = val.textContent;
+    }
+    let targetVal, targetSub;
+    if (pref === "kg") {
+      const n = parseFloat(val.dataset.origVal);
+      if (!isFinite(n)) return;
+      targetVal = fmtNum(n / 1000);
+      targetSub = origSub.replace(/^g\/mol/, "kg/mol");
+    } else {
+      targetVal = val.dataset.origVal;
+      targetSub = origSub;
+    }
+    if (val.textContent !== targetVal) val.textContent = targetVal;
+    if (sub.textContent !== targetSub) sub.textContent = targetSub;
+  });
+}
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function escapeHtml(s) {
   const d = document.createElement("div");
@@ -561,7 +598,12 @@ function applyPanelState(panelId, state, panelRecalc) {
   if (panelRecalc) panelRecalc();
 }
 
+// tabId -> {collect, apply}, populated by wirePresetBar. Used by both the
+// preset save/load bar and the share-link feature.
+const STATE_REGISTRY = {};
+
 function wirePresetBar(tabId, collectFn, applyFn) {
+  STATE_REGISTRY[tabId] = { collect: collectFn, apply: applyFn };
   const storageKey = "polytechniques_presets_" + tabId;
 
   function getStore() {
@@ -1949,11 +1991,77 @@ function init() {
   appEl.appendChild(stockPanel);
 
   wireStockSolutionsPanel();
+
+  // Molecular-weight unit toggle, rendered at the end of the tab row
+  const unitBtn = document.createElement("button");
+  unitBtn.className = "tab-btn mw-unit-toggle";
+  unitBtn.title = "Toggle how molecular weights are displayed (calculations are unchanged)";
+  const refreshUnitBtn = () => {
+    unitBtn.textContent = "Mₙ in " + (mwUnitPref() === "kg" ? "kg/mol" : "g/mol");
+  };
+  refreshUnitBtn();
+  unitBtn.addEventListener("click", () => {
+    try { localStorage.setItem(MW_UNIT_KEY, mwUnitPref() === "kg" ? "g" : "kg"); } catch (e) {}
+    refreshUnitBtn();
+    applyMwUnitDisplay();
+  });
+  tabsEl.appendChild(unitBtn);
+
+  const mwObserver = new MutationObserver(() => {
+    if (mwUnitPref() === "kg") requestAnimationFrame(applyMwUnitDisplay);
+  });
+  mwObserver.observe(appEl, { childList: true, subtree: true });
+  applyMwUnitDisplay();
+
+  // Share button: encodes the active tab's inputs into a URL hash so a
+  // recipe can be sent as a link. Display-only base64 of the same state
+  // object the preset system uses.
+  const shareBtn = document.createElement("button");
+  shareBtn.className = "tab-btn share-recipe-btn";
+  shareBtn.textContent = "🔗 Share";
+  shareBtn.title = "Copy a link that reopens the calculator with your current inputs";
+  shareBtn.addEventListener("click", () => {
+    const activeBtn = document.querySelector(".tab-btn.active");
+    const tab = activeBtn && activeBtn.dataset.target;
+    const reg = tab && STATE_REGISTRY[tab];
+    if (!reg || !navigator.clipboard) return;
+    const payload = JSON.stringify({ t: tab, s: reg.collect() });
+    const url = location.origin + location.pathname + "#r=" + btoa(unescape(encodeURIComponent(payload)));
+    navigator.clipboard.writeText(url).then(() => {
+      const orig = shareBtn.textContent;
+      shareBtn.textContent = "Link copied ✓";
+      setTimeout(() => { shareBtn.textContent = orig; }, 1400);
+    }).catch(() => {});
+  });
+  tabsEl.appendChild(shareBtn);
+
+  // Restore a shared recipe from the URL hash; wins over the last-used tab
+  let restoredFromHash = false;
+  if (location.hash.indexOf("#r=") === 0) {
+    try {
+      const payload = JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(3)))));
+      if (payload && payload.t && STATE_REGISTRY[payload.t]) {
+        switchTab(payload.t);
+        STATE_REGISTRY[payload.t].apply(payload.s || {});
+        restoredFromHash = true;
+      }
+    } catch (e) { /* malformed hash - ignore */ }
+  }
+
+  // Otherwise reopen on the technique the user was last working in
+  if (!restoredFromHash) {
+    let lastTab = null;
+    try { lastTab = localStorage.getItem(LAST_TAB_KEY); } catch (e) {}
+    if (lastTab && document.getElementById(`panel-${lastTab}`)) switchTab(lastTab);
+  }
 }
+
+const LAST_TAB_KEY = "polytechniques_last_calc_tab";
 
 function switchTab(targetId) {
   document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.target === targetId));
   document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.id === `panel-${targetId}`));
+  try { localStorage.setItem(LAST_TAB_KEY, targetId); } catch (e) {}
 }
 
 document.addEventListener("DOMContentLoaded", init);

@@ -1522,11 +1522,59 @@
       scrollResultsIntoView();
     });
 
+    // Recent name searches, shown as one-click chips under the search box.
+    // A query is remembered once it has sat unchanged for a moment with at
+    // least one match, so half-typed prefixes don't pollute the list.
+    var RECENT_KEY = 'polytechniques_recent_searches';
+    var recentTimer = null;
+    function getRecent() {
+      try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch (e) { return []; }
+    }
+    function saveRecent(q) {
+      var list = getRecent().filter(function (r) { return r.toLowerCase() !== q.toLowerCase(); });
+      list.unshift(q);
+      try { localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 5))); } catch (e) {}
+      renderRecent();
+    }
+    function renderRecent() {
+      var wrap = document.getElementById('mol-recent');
+      if (!wrap) return;
+      var list = getRecent();
+      if (!list.length) { wrap.hidden = true; return; }
+      wrap.hidden = false;
+      wrap.innerHTML = '<span class="mol-recent-label">Recent:</span>';
+      list.forEach(function (q) {
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'mol-recent-chip';
+        chip.textContent = q;
+        chip.addEventListener('click', function () {
+          var input = document.getElementById('mol-name-search');
+          input.value = q;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.focus();
+        });
+        wrap.appendChild(chip);
+      });
+      var clear = document.createElement('button');
+      clear.type = 'button';
+      clear.className = 'mol-recent-clear';
+      clear.textContent = 'clear';
+      clear.setAttribute('aria-label', 'Clear recent searches');
+      clear.addEventListener('click', function () {
+        try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+        renderRecent();
+      });
+      wrap.appendChild(clear);
+    }
+    renderRecent();
+
     var nameInput = document.getElementById('mol-name-search');
     if (nameInput) {
       nameInput.addEventListener('input', function () {
         var q = nameInput.value.trim().toLowerCase();
         var statusEl = document.getElementById('mol-status');
+        clearTimeout(recentTimer);
         if (!q) { renderResults([]); if (statusEl) statusEl.textContent = ''; return; }
         var db = window.POLYMER_DB || [];
         var matches = db.filter(function (p) {
@@ -1535,7 +1583,19 @@
         }).slice(0, 20);
         if (statusEl) statusEl.textContent = matches.length ? (matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ':') : 'No name matches.';
         renderResults(matches);
+        if (matches.length && q.length >= 3) {
+          var toSave = nameInput.value.trim();
+          recentTimer = setTimeout(function () { saveRecent(toSave); }, 1500);
+        }
       });
+
+      // Deep link: polymer-search.html?q=name prefills the name search
+      // (used by the Ctrl+K palette)
+      var deepQ = new URLSearchParams(location.search).get('q');
+      if (deepQ) {
+        nameInput.value = deepQ;
+        nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
     }
 
     // ---------- Explore: browse the library by tag ----------

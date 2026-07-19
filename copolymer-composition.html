@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=32">
+<link rel="stylesheet" href="style.css?v=33">
 </head>
 <body>
 
@@ -111,7 +111,7 @@
     <div class="chart-wrap">
       <svg id="cc-chart" class="chart-svg" viewBox="0 0 420 380" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
-    <p class="guide-note" style="margin-top:8px;">The dashed diagonal is where copolymer composition equals feed composition. The solid curve is F<sub>1</sub> predicted across the whole feed range; the accent dot marks your current feed. If the curve crosses the diagonal, that crossing (marked in red) is the azeotrope.</p>
+    <p class="guide-note" style="margin-top:8px;"><strong>Drag or click anywhere on the chart</strong> to move the feed point &ndash; the composition updates live. The dashed diagonal is where copolymer composition equals feed composition. The solid curve is F<sub>1</sub> predicted across the whole feed range; the accent dot marks your current feed. If the curve crosses the diagonal, that crossing (marked in red) is the azeotrope.</p>
   </div>
 
   <div class="card">
@@ -182,11 +182,16 @@
     return ticks;
   }
 
+  // Chart geometry, shared by the renderer and the drag handler
+  var CHART_W = 420, CHART_H = 380;
+  var CHART_M = { left: 46, right: 16, top: 16, bottom: 46 };
+  var CHART_PLOT_W = CHART_W - CHART_M.left - CHART_M.right;
+
   function renderChart(r1, r2, f1) {
     var svg = $("cc-chart");
-    var W = 420, H = 380;
-    var M = { left: 46, right: 16, top: 16, bottom: 46 };
-    var plotW = W - M.left - M.right;
+    var W = CHART_W, H = CHART_H;
+    var M = CHART_M;
+    var plotW = CHART_PLOT_W;
     var plotH = H - M.top - M.bottom;
 
     function sx(x) { return M.left + x * plotW; }
@@ -275,6 +280,44 @@
       recalc();
     });
   });
+
+  // Drag (or click) anywhere on the chart to move the feed point. The SVG
+  // element persists across re-renders (only its children are replaced),
+  // so the pointer handlers live on the SVG itself. Changing f1 by drag
+  // keeps the selected monomer pair - only the feed composition moves.
+  (function () {
+    var svg = $("cc-chart");
+    var dragging = false;
+
+    function clientToF1(evt) {
+      var rect = svg.getBoundingClientRect();
+      var scale = Math.min(rect.width / CHART_W, rect.height / CHART_H);
+      if (!scale) return null;
+      var offsetX = (rect.width - CHART_W * scale) / 2;
+      var xView = (evt.clientX - rect.left - offsetX) / scale;
+      var f = (xView - CHART_M.left) / CHART_PLOT_W;
+      return Math.max(0, Math.min(1, f));
+    }
+
+    function setF1(evt) {
+      var f = clientToF1(evt);
+      if (f === null) return;
+      $("cc-f1").value = f.toFixed(3);
+      recalc();
+    }
+
+    svg.addEventListener("pointerdown", function (evt) {
+      dragging = true;
+      svg.setPointerCapture(evt.pointerId);
+      setF1(evt);
+      evt.preventDefault();
+    });
+    svg.addEventListener("pointermove", function (evt) {
+      if (dragging) setF1(evt);
+    });
+    svg.addEventListener("pointerup", function () { dragging = false; });
+    svg.addEventListener("pointercancel", function () { dragging = false; });
+  })();
 
   fillPairSelect();
   fillRefTable();

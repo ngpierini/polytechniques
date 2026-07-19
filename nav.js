@@ -41,6 +41,168 @@
     }
   }, true);
 
+  // ---- PWA install suggestion, shown on a repeat visit ----
+  // The site works fully offline via the service worker; this surfaces the
+  // install option once for returning visitors, and stays gone if dismissed.
+  var INSTALL_DISMISS_KEY = "polytechniques_install_dismissed";
+  var VISIT_KEY = "polytechniques_visits";
+  try {
+    if (!sessionStorage.getItem("pt_visit_counted")) {
+      sessionStorage.setItem("pt_visit_counted", "1");
+      localStorage.setItem(VISIT_KEY, String((parseInt(localStorage.getItem(VISIT_KEY), 10) || 0) + 1));
+    }
+  } catch (e) {}
+
+  window.addEventListener("beforeinstallprompt", function (e) {
+    var dismissed = false, visits = 0;
+    try {
+      dismissed = localStorage.getItem(INSTALL_DISMISS_KEY) === "1";
+      visits = parseInt(localStorage.getItem(VISIT_KEY), 10) || 0;
+    } catch (err) { return; }
+    if (dismissed || visits < 2) return;
+    e.preventDefault();
+
+    var banner = document.createElement("div");
+    banner.className = "install-banner";
+    banner.innerHTML =
+      '<span class="install-banner-text">📲 Install PolyTechniques &ndash; the whole toolkit works offline at the bench.</span>' +
+      '<span class="install-banner-actions">' +
+      '<button type="button" class="install-banner-yes">Install</button>' +
+      '<button type="button" class="install-banner-no">Not now</button>' +
+      "</span>";
+    document.body.appendChild(banner);
+
+    banner.querySelector(".install-banner-yes").addEventListener("click", function () {
+      banner.remove();
+      e.prompt();
+    });
+    banner.querySelector(".install-banner-no").addEventListener("click", function () {
+      try { localStorage.setItem(INSTALL_DISMISS_KEY, "1"); } catch (err) {}
+      banner.remove();
+    });
+  });
+
+  // ---- Ctrl+K / Cmd+K command palette ----
+  var PALETTE_PAGES = [
+    ["calculator.html", "Calculator", "atrp raft romp frp recipe mn dp block copolymer stock solutions"],
+    ["polymer-search.html", "Polymer Search", "structure draw name lookup database repeat unit"],
+    ["copolymer-composition.html", "Copolymer Composition", "mayo lewis reactivity ratio azeotrope feed"],
+    ["gpc-calibration.html", "GPC Calibration Converter", "mark houwink polystyrene equivalent molecular weight"],
+    ["tg-predictor.html", "Tg Predictor", "fox equation glass transition blend"],
+    ["recipe-scaling.html", "Recipe Scaling", "scale batch size factor"],
+    ["mechanisms.html", "Polymerization Mechanisms", "atrp raft romp frp scheme controlled radical"],
+    ["air-free-technique.html", "Air-Free Reaction Setup", "schlenk line freeze pump thaw degas inert"],
+    ["conversion-monitoring.html", "Monitoring Conversion", "aliquot internal standard kinetics nmr"],
+    ["gpc-peak-interpretation.html", "GPC Peak Interpretation", "chromatogram shoulder tailing column detector"],
+    ["glossary.html", "Glossary", "terms definitions dispersity dp cta"],
+    ["polymer-chain-game.html", "Build a Polymer Chain", "game maze fun"],
+    ["whats-new.html", "What's New", "changelog updates"],
+    ["founder.html", "About the Founder", "nick pierini bio contact"],
+    ["home.html", "Home", "toolkit start"]
+  ];
+
+  var palette = null;
+  var paletteInput = null;
+  var paletteList = null;
+  var paletteIndex = 0;
+
+  function buildPalette() {
+    if (palette) return;
+    palette = document.createElement("div");
+    palette.className = "cmdk-overlay";
+    palette.hidden = true;
+    palette.innerHTML =
+      '<div class="cmdk-box" role="dialog" aria-label="Quick navigation">' +
+      '<input type="text" class="cmdk-input" placeholder="Jump to a tool, or type a polymer or term&hellip;" aria-label="Search pages">' +
+      '<div class="cmdk-list" role="listbox"></div>' +
+      '<div class="cmdk-foot">&uarr;&darr; navigate &middot; Enter open &middot; Esc close</div>' +
+      "</div>";
+    document.body.appendChild(palette);
+    paletteInput = palette.querySelector(".cmdk-input");
+    paletteList = palette.querySelector(".cmdk-list");
+
+    palette.addEventListener("click", function (e) {
+      if (e.target === palette) closePalette();
+    });
+    paletteInput.addEventListener("input", renderPaletteResults);
+    paletteInput.addEventListener("keydown", function (e) {
+      var items = paletteList.querySelectorAll(".cmdk-item");
+      if (e.key === "ArrowDown") { e.preventDefault(); setPaletteIndex(paletteIndex + 1, items); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); setPaletteIndex(paletteIndex - 1, items); }
+      else if (e.key === "Enter") {
+        e.preventDefault();
+        var sel = items[paletteIndex];
+        if (sel) location.href = sel.getAttribute("data-href");
+      } else if (e.key === "Escape") {
+        closePalette();
+      }
+    });
+  }
+
+  function setPaletteIndex(i, items) {
+    if (!items.length) return;
+    paletteIndex = (i + items.length) % items.length;
+    items.forEach(function (el, j) { el.classList.toggle("cmdk-active", j === paletteIndex); });
+    items[paletteIndex].scrollIntoView({ block: "nearest" });
+  }
+
+  function renderPaletteResults() {
+    var q = paletteInput.value.trim().toLowerCase();
+    var rows = [];
+    PALETTE_PAGES.forEach(function (p) {
+      if (!q || p[1].toLowerCase().indexOf(q) !== -1 || p[2].indexOf(q) !== -1) {
+        rows.push({ href: p[0], label: p[1], hint: "page" });
+      }
+    });
+    if (q) {
+      rows.push({ href: "polymer-search.html?q=" + encodeURIComponent(q), label: 'Search polymers for “' + paletteInput.value.trim() + '”', hint: "polymer search" });
+      rows.push({ href: "glossary.html?q=" + encodeURIComponent(q), label: 'Search glossary for “' + paletteInput.value.trim() + '”', hint: "glossary" });
+    }
+    paletteList.innerHTML = "";
+    rows.forEach(function (r) {
+      var item = document.createElement("a");
+      item.className = "cmdk-item";
+      item.setAttribute("data-href", r.href);
+      item.href = r.href;
+      item.innerHTML = "<span>" + r.label + "</span><span class='cmdk-hint'>" + r.hint + "</span>";
+      paletteList.appendChild(item);
+    });
+    paletteIndex = 0;
+    var items = paletteList.querySelectorAll(".cmdk-item");
+    if (items.length) items[0].classList.add("cmdk-active");
+  }
+
+  function openPalette() {
+    buildPalette();
+    palette.hidden = false;
+    paletteInput.value = "";
+    renderPaletteResults();
+    paletteInput.focus();
+  }
+  function closePalette() {
+    if (palette) palette.hidden = true;
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+      e.preventDefault();
+      if (palette && !palette.hidden) closePalette();
+      else openPalette();
+    }
+  });
+
+  // ---- "/" focuses the page's search box (glossary, polymer search) ----
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    var box = document.querySelector('input[type="search"], #mol-name-search');
+    if (!box) return;
+    e.preventDefault();
+    box.focus();
+    box.select();
+  });
+
   // ---- Click-to-copy on result stat values, site-wide ----
   // Every tool renders results as .stat > .value blocks; clicking one copies
   // the number for pasting into a notebook or ELN.
@@ -86,7 +248,32 @@
     }
 
     buildSectionNav(current);
+    buildBackToTop();
   });
+
+  // ---- Floating back-to-top button, appears after two screens of scroll ----
+  function buildBackToTop() {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "back-to-top";
+    btn.setAttribute("aria-label", "Back to top");
+    btn.innerHTML = "&uarr;";
+    btn.hidden = true;
+    btn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    document.body.appendChild(btn);
+
+    var ticking = false;
+    window.addEventListener("scroll", function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        btn.hidden = window.scrollY < window.innerHeight * 2;
+        ticking = false;
+      });
+    }, { passive: true });
+  }
 
   // ---- "On this page" sticky jump nav for the long guide pages ----
   var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html"];

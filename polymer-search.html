@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=32">
+<link rel="stylesheet" href="style.css?v=33">
 </head>
 <body>
 
@@ -81,6 +81,7 @@
   <div class="card mol-card-in">
     <h3><span class="mol-card-icon mol-card-icon--2">&#127991;&#65039;</span>Search by name</h3>
     <input type="text" id="mol-name-search" placeholder="Try &quot;polystyrene&quot;, &quot;PMMA&quot;, or &quot;Teflon&quot;&hellip;">
+    <div id="mol-recent" class="mol-recent" hidden></div>
   </div>
 
   <div class="card mol-card-in">
@@ -277,7 +278,7 @@
 
 <script src="polymer-data.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="polymer-search.js?v=42"></script>
+<script src="polymer-search.js?v=43"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
