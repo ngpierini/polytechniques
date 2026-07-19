@@ -105,7 +105,7 @@
       <canvas id="game-canvas"></canvas>
       <div class="game-overlay" id="game-overlay">
         <h4 id="game-overlay-title">Build a Polymer Chain</h4>
-        <p id="game-overlay-text">Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O&#8322;, the inhibitor, and the chain transfer agent, they'll terminate your chain on contact. They start penned up in a holding cage and release one at a time, so the first few seconds of each level are the safest.</p>
+        <p id="game-overlay-text">Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O&#8322;, the inhibitor, and the chain transfer agent, they'll terminate your chain on contact. They start penned up in a holding cage and release one at a time, so the first few seconds of each level are the safest. Grab an initiator ring to make them edible, or the flame for a 10 second speed boost.</p>
         <button type="button" id="game-start-btn">Start polymerizing</button>
       </div>
     </div>
@@ -124,6 +124,7 @@
         <span><span class="dot" style="background:#f2b84b"></span> Chain transfer agent</span>
         <span><span class="dot" style="background:#f472b6"></span> Rival radical (level 8+)</span>
         <span><span class="dot" style="background:#ffe14d"></span> Initiator (power up)</span>
+        <span><span class="dot" style="background:#ff8a3d"></span> Heat (speed boost)</span>
       </div>
     </div>
   </div>
@@ -136,7 +137,8 @@
       <li>Ten levels, each with its own maze, tighter corridors and quicker enemies as you climb. Clear level 10 to finish the polymer for good.</li>
       <li>Enemies start held in a cage at the center of the maze and release one by one after a brief pause, mimicking a classic maze chase game. The longer a level runs, the more of them are loose.</li>
       <li>You have <strong>3 lives</strong>. Touching an enemy costs one life. Your chain end disintegrates, then you respawn at the start with the beads you already collected still counted. Lose all three and the game is over.</li>
-      <li>Grab an <strong>initiator</strong>, the flashing hollow ring, to flip the tables for a few seconds. Enemies are quenched and edible, and running into one sends it straight back to the cage instead of ending your life. Up to three initiators sit in the corners of each maze.</li>
+      <li>Grab an <strong>initiator</strong>, the flashing hollow ring, to flip the tables for a few seconds. Enemies are quenched and edible, and running into one sends it straight back to the cage instead of ending your life. Four initiators sit in the corners of each maze, one per corner.</li>
+      <li>Grab the <strong>heat</strong>, the flickering flame, for a 10 second speed boost. You move at double pace while the terminators carry on at their usual speed, which is the easiest way to clear a stubborn stretch of maze. There's only one per level, somewhere in the middle, so spend it well.</li>
       <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly, on every level.</li>
     </ul>
   </div>
@@ -152,6 +154,7 @@
       <li><strong>Chain transfer agents</strong> hand the radical off to a new molecule on purpose, ending one chain and starting another, which is exactly the mechanism RAFT is built around; see <a href="mechanisms.html">Polymerization Mechanisms</a> for the real reaction schemes.</li>
       <li><strong>Rival radicals</strong> show up once things get crowded on level 8 and beyond: two propagating chains meeting is termination by combination, one of the two ways a radical chain naturally dies even with nothing else around to blame.</li>
       <li><strong>Initiators</strong> are the molecules that kick a radical polymerization off in the first place, splitting into fresh radicals that start new chains. Grabbing one here is a nod to that burst of reactivity: for a moment your chain end is the aggressor and the terminators are the ones running for cover.</li>
+      <li><strong>Heat</strong> speeds you up for the same reason it speeds up a real polymerization: raising the temperature raises the rate constant for propagation, so chains grow faster. In practice it cuts both ways, since initiator decomposition and termination speed up too, which is why a hotter reaction usually gives you a lower molecular weight.</li>
     </ul>
   </div>
 
@@ -170,6 +173,9 @@
   var LIVES_START = 3;
   var POWER_TICKS = 45;
   var CAGE_RETURN_TICKS = 16;
+  var INITIATOR_COUNT = 4;
+  var HEAT_MS = 10000;      // heat boost lasts 10 seconds of wall clock
+  var HEAT_TICK_MUL = 0.5;  // player ticks twice as fast; enemies move every other tick
 
   var DIFFICULTY_MOD = {
     normal: { tickMul: 1, chaseAdd: 0, graceMul: 1 },
@@ -345,7 +351,7 @@
 
   var beadPresent, player, enemies, path, beadTotal, beadEaten, state, tickTimer, startTime, elapsed, deathReason, ticksElapsed, lastTickTime, animFrame;
   var levelStartTime, deathPos, deathParticles, pendingAdvance;
-  var lives, powerTicksRemaining, initiators;
+  var lives, powerTicksRemaining, initiators, heatSpot, heatUntil, wasHeated;
   var DEATH_DURATION_MS = 1100;
   var READY_MS = 900;
 
@@ -384,10 +390,10 @@
     });
   }
 
-  // Places up to three initiator power-ups, one per randomly chosen corner
-  // region, on cells that would otherwise hold a repeat-unit bead (the bead is
-  // consumed so it no longer counts toward the level total). Fewer than three
-  // can appear if a dense maze leaves a corner region with no open cell.
+  // Places one initiator power-up in each of the four corner regions, on cells
+  // that would otherwise hold a repeat-unit bead (the bead is consumed so it no
+  // longer counts toward the level total). Fewer than four can appear only if a
+  // dense maze leaves a corner region with no open cell.
   function placeInitiators() {
     var regions = [
       { r0: 1, r1: 4, c0: 1, c1: 5 },
@@ -400,7 +406,7 @@
       var tmp = regions[i]; regions[i] = regions[j]; regions[j] = tmp;
     }
     var placed = [];
-    for (var k = 0; k < regions.length && placed.length < 3; k++) {
+    for (var k = 0; k < regions.length && placed.length < INITIATOR_COUNT; k++) {
       var reg = regions[k], cands = [];
       for (var r = reg.r0; r <= reg.r1; r++) {
         for (var c = reg.c0; c <= reg.c1; c++) {
@@ -415,6 +421,26 @@
       }
     }
     return placed;
+  }
+
+  // Places the single heat power-up on a bead cell outside the corner regions
+  // (those belong to the initiators), so it sits somewhere along the middle of
+  // the maze and takes a detour to reach.
+  function placeHeat() {
+    var cands = [];
+    for (var r = 1; r < ROWS - 1; r++) {
+      for (var c = 1; c < COLS - 1; c++) {
+        if (!beadPresent[r][c]) continue;
+        var inCorner = (r <= 4 || r >= 10) && (c <= 5 || c >= 13);
+        if (inCorner) continue;
+        cands.push({ r: r, c: c });
+      }
+    }
+    if (!cands.length) return null;
+    var pick = cands[Math.floor(Math.random() * cands.length)];
+    beadPresent[pick.r][pick.c] = false;
+    beadTotal--;
+    return pick;
   }
 
   function updateLivesHud() {
@@ -437,6 +463,9 @@
     player = { r: PLAYER_START.r, c: PLAYER_START.c, prevR: PLAYER_START.r, prevC: PLAYER_START.c, dir: null, nextDir: null };
     spawnEnemies();
     initiators = placeInitiators();
+    heatSpot = placeHeat();
+    heatUntil = 0;
+    wasHeated = false;
     powerTicksRemaining = 0;
     path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
     elapsed = 0;
@@ -461,6 +490,8 @@
     path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
     ticksElapsed = 0;
     powerTicksRemaining = 0;
+    heatUntil = 0;
+    wasHeated = false;
     lastTickTime = Date.now();
     levelStartTime = Date.now();
     startTime = Date.now();
@@ -539,7 +570,15 @@
 
     if (powerTicksRemaining > 0) {
       powerTicksRemaining--;
-      if (powerTicksRemaining === 0) $("game-status").textContent = "Polymerizing";
+      if (powerTicksRemaining === 0) refreshStatus();
+    }
+
+    // Heat runs on wall clock, so drop back to the normal tick rate the moment
+    // it lapses (the interval has to be rebuilt to change its period).
+    if (wasHeated && !heatActive()) {
+      wasHeated = false;
+      refreshStatus();
+      beginTicking();
     }
 
     player.prevR = player.r;
@@ -572,17 +611,29 @@
         if (initiators[ii].r === player.r && initiators[ii].c === player.c) {
           initiators.splice(ii, 1);
           powerTicksRemaining = POWER_TICKS;
-          $("game-status").textContent = "Initiated!";
+          refreshStatus();
           break;
         }
       }
     }
 
-    enemies.forEach(function (e) {
-      e.prevR = e.r;
-      e.prevC = e.c;
-      advanceEnemy(e);
-    });
+    if (heatSpot && heatSpot.r === player.r && heatSpot.c === player.c) {
+      heatSpot = null;
+      heatUntil = Date.now() + HEAT_MS;
+      wasHeated = true;
+      refreshStatus();
+      beginTicking();
+    }
+
+    // Heated ticks come twice as fast, so let the enemies act on every second
+    // one. That keeps their real speed unchanged while the player doubles.
+    if (!heatActive() || ticksElapsed % 2 === 0) {
+      enemies.forEach(function (e) {
+        e.prevR = e.r;
+        e.prevC = e.c;
+        advanceEnemy(e);
+      });
+    }
 
     var collided = [];
     for (var ci = 0; ci < enemies.length; ci++) {
@@ -642,19 +693,34 @@
     beginTicking();
   }
 
+  function heatActive() { return Date.now() < heatUntil; }
+
+  // While heated the whole loop runs twice as fast, and tick() compensates by
+  // moving the enemies only every other tick, so only the player speeds up.
+  function effectiveTickMs() {
+    return heatActive() ? Math.max(45, Math.round(params.tickMs * HEAT_TICK_MUL)) : params.tickMs;
+  }
+
+  // Reflects whichever power-ups are currently running.
+  function refreshStatus() {
+    if (state !== "playing") return;
+    var hot = heatActive(), init = powerTicksRemaining > 0;
+    $("game-status").textContent = init && hot ? "Initiated + heated!" : init ? "Initiated!" : hot ? "Heated!" : "Polymerizing";
+  }
+
   function beginTicking() {
     if (tickTimer) clearInterval(tickTimer);
     tickTimer = setInterval(function () {
       tick();
       elapsed = (Date.now() - startTime) / 1000;
       $("game-time").textContent = elapsed.toFixed(1) + "s";
-    }, params.tickMs);
+    }, effectiveTickMs());
     if (animFrame) cancelAnimationFrame(animFrame);
     animFrame = requestAnimationFrame(frameLoop);
   }
 
   function frameLoop() {
-    var t = Math.min(1, (Date.now() - lastTickTime) / params.tickMs);
+    var t = Math.min(1, (Date.now() - lastTickTime) / effectiveTickMs());
     render(t);
     if (state === "playing") animFrame = requestAnimationFrame(frameLoop);
   }
@@ -759,6 +825,77 @@
     }
   }
 
+  // Flickering pixel flame for the single heat power-up.
+  var HEAT_FLAME = [
+    "..##..",
+    ".####.",
+    "######",
+    "######",
+    ".####.",
+    "..##.."
+  ];
+  function drawHeat(x, y) {
+    var flick = Math.floor(Date.now() / 150) % 2 === 0;
+    drawSprite(HEAT_FLAME, x, y, flick ? "#ff8a3d" : "#ff5b2e");
+    var ps = 2, mx = Math.round(x / ps) * ps, my = Math.round(y / ps) * ps;
+    ctx.fillStyle = flick ? "#ffe14d" : "#ffb03d";
+    ctx.fillRect(mx - ps, my, ps, ps);
+    ctx.fillRect(mx - ps, my + ps, ps, ps);
+    ctx.fillStyle = "#fff6d6";
+    ctx.fillRect(mx - ps, my - 2 * ps, ps, ps);
+  }
+
+  // Shared cute face: big sparkly eyes plus a mood-specific mouth. Used by the
+  // player and every terminator so the whole cast reads as one friendly set.
+  function drawCuteFace(mx, my, eye, mouth, cheeks) {
+    var ps = 2;
+    var eyeY = my - 2 * ps;
+    ctx.fillStyle = eye;
+    ctx.fillRect(mx - 3 * ps, eyeY, 2 * ps, 2 * ps);
+    ctx.fillRect(mx + ps, eyeY, 2 * ps, 2 * ps);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(mx - 3 * ps, eyeY, ps, ps);
+    ctx.fillRect(mx + ps, eyeY, ps, ps);
+
+    if (cheeks) {
+      ctx.fillStyle = cheeks;
+      ctx.fillRect(mx - 4 * ps, my + ps, ps, ps);
+      ctx.fillRect(mx + 3 * ps, my + ps, ps, ps);
+    }
+
+    ctx.fillStyle = eye;
+    if (mouth === "smile") {
+      ctx.fillRect(mx - 2 * ps, my + ps, ps, ps);
+      ctx.fillRect(mx - ps, my + 2 * ps, 2 * ps, ps);
+      ctx.fillRect(mx + ps, my + ps, ps, ps);
+    } else if (mouth === "grump") {
+      ctx.fillRect(mx - 2 * ps, my + 2 * ps, ps, ps);
+      ctx.fillRect(mx - ps, my + ps, 2 * ps, ps);
+      ctx.fillRect(mx + ps, my + 2 * ps, ps, ps);
+    } else if (mouth === "smirk") {
+      ctx.fillRect(mx - ps, my + 2 * ps, 2 * ps, ps);
+      ctx.fillRect(mx + ps, my + ps, ps, ps);
+    } else if (mouth === "oh") {
+      ctx.fillRect(mx - ps, my + ps, 2 * ps, 2 * ps);
+    }
+  }
+
+  // Dizzy X eyes and a wobbly mouth for quenched (harmless) terminators.
+  function drawDizzyFace(mx, my, ink) {
+    var ps = 2, eyeY = my - 2 * ps;
+    ctx.fillStyle = ink;
+    [[-3, 0], [-2, 1], [-3, 1], [-2, 0]].forEach(function (p) {
+      ctx.fillRect(mx + p[0] * ps, eyeY + p[1] * ps, ps, ps);
+    });
+    [[1, 0], [2, 1], [1, 1], [2, 0]].forEach(function (p) {
+      ctx.fillRect(mx + p[0] * ps, eyeY + p[1] * ps, ps, ps);
+    });
+    ctx.fillRect(mx - 2 * ps, my + 2 * ps, ps, ps);
+    ctx.fillRect(mx - ps, my + ps, ps, ps);
+    ctx.fillRect(mx, my + 2 * ps, ps, ps);
+    ctx.fillRect(mx + ps, my + ps, ps, ps);
+  }
+
   // Chemistry-native pixel sprites, deliberately not ghost-shaped. Each
   // terminator is drawn as a small molecule token, distinguished by shape and
   // color to match the legend. A power-up "quenches" them into a faded,
@@ -802,47 +939,48 @@
     var ps = 2;
     var frightened = powerTicksRemaining > 0 && e.free;
 
+    var mx = Math.round(ex / ps) * ps, my = Math.round(ey / ps) * ps;
+
     if (frightened) {
-      // Quenched: a faded, greyed molecule with paired-off electrons, clearly
-      // harmless (no chasing character, no blinking-blue face).
+      // Quenched: a faded molecule gone cross-eyed and dizzy, clearly harmless.
       var flashing = powerTicksRemaining <= 8 && Math.floor(Date.now() / 120) % 2 === 0;
-      var g = flashing ? "#c9d3e6" : "#5a6472";
-      drawPixelDisc(ex, ey, 5, g);
-      ctx.fillStyle = flashing ? "#5a6472" : "#c9d3e6";
-      var qx = Math.round(ex / ps) * ps, qy = Math.round(ey / ps) * ps;
-      ctx.fillRect(qx - 3 * ps, qy, ps, ps);
-      ctx.fillRect(qx + 2 * ps, qy, ps, ps);
+      drawPixelDisc(ex, ey, 5, flashing ? "#c9d3e6" : "#7c8798");
+      drawDizzyFace(mx, my, flashing ? "#5a6472" : "#eef3ff");
       return;
     }
 
-    var mx = Math.round(ex / ps) * ps, my = Math.round(ey / ps) * ps;
+    // A little idle bob so the cast feels alive.
+    var bob = Math.sin(Date.now() / 260 + e.slotIndex) > 0 ? 0 : ps;
+
     if (e.name === "O₂") {
-      // dioxygen: two bonded spheres
-      drawPixelDisc(ex - 5, ey, 4, e.color);
-      drawPixelDisc(ex + 5, ey, 4, e.color);
-      ctx.fillStyle = "#ffd9d9";
-      ctx.fillRect(mx - ps, my - ps, ps, ps);
-      ctx.fillRect(mx - ps, my + ps, ps, ps);
+      // dioxygen: two bonded spheres sharing one face
+      drawPixelDisc(ex - 5, ey - bob, 4, e.color);
+      drawPixelDisc(ex + 5, ey - bob, 4, e.color);
+      ctx.fillStyle = "#c0392b";
+      ctx.fillRect(mx - ps, my - bob - ps, ps, ps);
+      ctx.fillRect(mx - ps, my - bob + ps, ps, ps);
+      drawCuteFace(mx, my - bob, "#4a0d0d", "smile", "#ff9d9d");
     } else if (e.name === "Inh") {
-      // inhibitor: an aromatic-ring token
-      drawSprite(INH_DIAMOND, ex, ey, e.color);
-      ctx.fillStyle = "#efe6ff";
-      ctx.fillRect(mx - ps, my - ps, ps, ps);
+      // inhibitor: an aromatic-ring token, and a bit of a grump about it
+      drawSprite(INH_DIAMOND, ex, ey - bob, e.color);
+      drawCuteFace(mx, my - bob, "#2a1550", "grump", "#d0b3ff");
     } else if (e.name === "CTA") {
-      // chain transfer agent: a sphere with a reactive hand-off tail
-      drawPixelDisc(ex, ey, 5, e.color);
+      // chain transfer agent: a sphere with a reactive hand-off tail, and a sly look
+      drawPixelDisc(ex, ey - bob, 5, e.color);
       ctx.fillStyle = e.color;
-      ctx.fillRect(mx + 4 * ps, my - ps, ps, ps);
-      ctx.fillRect(mx + 5 * ps, my - 2 * ps, ps, ps);
+      ctx.fillRect(mx + 4 * ps, my - bob - ps, ps, ps);
+      ctx.fillRect(mx + 5 * ps, my - bob - 2 * ps, ps, ps);
       ctx.fillStyle = "#fff3d6";
-      ctx.fillRect(mx + 6 * ps, my - 3 * ps, ps, ps);
+      ctx.fillRect(mx + 6 * ps, my - bob - 3 * ps, ps, ps);
+      drawCuteFace(mx, my - bob, "#4a3000", "smirk", "#ffd98a");
     } else {
       // rival radical R•: a sphere with an unpaired-electron spark on a stub bond
-      drawPixelDisc(ex, ey, 5, e.color);
+      drawPixelDisc(ex, ey - bob, 5, e.color);
       ctx.fillStyle = e.color;
-      ctx.fillRect(mx + 4 * ps, my - 4 * ps, ps, ps);
+      ctx.fillRect(mx + 4 * ps, my - bob - 4 * ps, ps, ps);
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(mx + 5 * ps, my - 5 * ps, ps, ps);
+      ctx.fillRect(mx + 5 * ps, my - bob - 5 * ps, ps, ps);
+      drawCuteFace(mx, my - bob, "#5a0e33", "oh", "#ffb3d9");
     }
   }
 
@@ -870,12 +1008,19 @@
   function drawPlayer(px, py, dir) {
     var ps = 2;
     var powered = powerTicksRemaining > 0;
-    drawPixelDisc(px, py, 5, powered ? "#a9ffe9" : "#e8fff6");
+    var hot = heatActive();
     var ox = Math.round(px / ps) * ps, oy = Math.round(py / ps) * ps;
+
+    // A warm flickering aura while the heat boost is running.
+    if (hot) {
+      drawPixelDisc(px, py, 7, Math.floor(Date.now() / 100) % 2 === 0 ? "#ff8a3d" : "#ffb03d");
+    }
+
+    drawPixelDisc(px, py, 5, powered ? "#a9ffe9" : "#e8fff6");
 
     // pulsing spark pixels around the radical
     var d = (6 + Math.floor(Date.now() / 120) % 2) * ps;
-    ctx.fillStyle = powered ? "#5ff2c8" : "#8fffe0";
+    ctx.fillStyle = hot ? "#fff6d6" : powered ? "#5ff2c8" : "#8fffe0";
     ctx.fillRect(ox, oy - d, ps, ps);
     ctx.fillRect(ox, oy + d, ps, ps);
     ctx.fillRect(ox - d, oy, ps, ps);
@@ -889,9 +1034,8 @@
       ctx.fillRect(ox + vdx * 8 * ps, oy + vdy * 8 * ps, ps, ps);
     }
 
-    // the unpaired electron: a white highlight dot
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(ox - 2 * ps, oy - 2 * ps, ps, ps);
+    // a happy little face, grinning wider while a power-up is running
+    drawCuteFace(ox, oy, "#0b3b32", powered || hot ? "smile" : "smirk", "#7fe3c8");
   }
 
   function render(t, deathT) {
@@ -912,6 +1056,7 @@
     }
 
     if (initiators) initiators.forEach(function (p) { drawInitiator(cx(p.c), cy(p.r)); });
+    if (heatSpot) drawHeat(cx(heatSpot.c), cy(heatSpot.r));
 
     if (path.length > 1) {
       ctx.strokeStyle = "rgba(180,240,220,0.5)";
@@ -1002,7 +1147,7 @@
   render();
   showOverlay(
     "Build a Polymer Chain",
-    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical. You get 3 lives per game. Grab a flashing initiator ring to turn the enemies edible for a few seconds and knock them back to the cage. Ten levels, all rendered in 8-bit.",
+    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical. You get 3 lives per game. Grab a flashing initiator ring to turn the enemies edible for a few seconds and knock them back to the cage, or the flame for a 10 second speed boost. Ten levels, all rendered in 8-bit.",
     "Start polymerizing"
   );
 })();
