@@ -39,7 +39,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=30">
+<link rel="stylesheet" href="style.css?v=31">
 </head>
 <body>
 
@@ -177,7 +177,12 @@
     <span class="hot-papers-live"><span class="live-dot"></span> Live feed · refreshes every 24h</span>
   </div>
   <div id="hot-papers-grid" class="hot-papers-grid">
-    <div class="hot-papers-loading">Finding the papers everyone's citing…</div>
+    <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+    <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+    <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+    <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+    <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+    <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
   </div>
   <p class="hot-papers-caption" id="hot-papers-caption"></p>
 </section>
@@ -253,7 +258,7 @@
 
 <script>
 (function () {
-  var CACHE_KEY = 'polytechniques_hot_papers_v1';
+  var CACHE_KEY = 'polytechniques_hot_papers_v2';
   var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
   var ACCENTS = ['#5b8def', '#37c98f', '#f2b84b', '#ef6a6a', '#a78bfa', '#4fd1c5'];
 
@@ -300,6 +305,16 @@
     return (d && d[0] && d[0][0]) ? String(d[0][0]) : '';
   }
 
+  // CrossRef's bibliographic query matches bare words like "raft" in any
+  // field, which drags in civil-engineering "raft foundations", hydrodynamic
+  // "raft drift", etc. Require a genuinely polymer-flavored signal in the
+  // title or journal name before a paper makes the feed.
+  var RELEVANT = /macromolec|monomer|polymeri[sz]|methacryl|acrylat|acrylic|hydrogel|elastomer|latex|resin|vulcaniz|atom.transfer.radical|ring.opening|metathesis|chain.transfer|dispersity|glass.transition|crosslink|cross-link|thermoset|thermoplast|\b(?:co|ter|homo)?poly(?!morph|gon\b|phenol|p\b)[a-z]{3,}/i;
+
+  function isRelevant(title, journal) {
+    return RELEVANT.test(title) || RELEVANT.test(journal || '');
+  }
+
   function normalizeItems(items) {
     var seen = {};
     var out = [];
@@ -314,6 +329,7 @@
       seen[key] = true;
       var journal = (it['short-container-title'] && it['short-container-title'][0]) ||
                     (it['container-title'] && it['container-title'][0]) || '';
+      if (!isRelevant(title, journal)) continue;
       out.push({
         title: title,
         authors: formatAuthors(it.author),
@@ -359,7 +375,7 @@
       return '<a class="paper-card" style="--paper-accent:' + accent + '; animation-delay:' + (i * 0.06).toFixed(2) + 's" ' +
         'href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener">' +
         '<div class="paper-top-row">' +
-        (p.journal ? '<span class="paper-journal">' + escapeHtml(p.journal) + '</span>' : '<span></span>') +
+        (p.journal ? '<span class="paper-journal" title="' + escapeHtml(p.journal) + '">' + escapeHtml(p.journal) + '</span>' : '<span></span>') +
         citeBadge +
         '</div>' +
         '<p class="paper-title">' + escapeHtml(p.title) + '</p>' +

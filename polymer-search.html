@@ -32,11 +32,12 @@
 }
 </script>
 <script src="theme.js"></script>
+<script src="nav.js" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=30">
+<link rel="stylesheet" href="style.css?v=31">
 </head>
 <body>
 
@@ -84,6 +85,15 @@
 
   <div class="card mol-card-in">
     <h3><span class="mol-card-icon mol-card-icon--3">&#9999;&#65039;</span>Search by structure</h3>
+
+    <div id="mol-onboarding" class="mol-onboarding" hidden>
+      <div class="mol-onboarding-steps">
+        <span><strong>1.</strong> Draw a bit more than one repeat unit &ndash; or press an <strong>Example</strong> button below to see the pattern</span>
+        <span><strong>2.</strong> Drag the <strong>Bracket tool</strong> over just the repeat unit</span>
+        <span><strong>3.</strong> Hit <strong>Search this structure</strong></span>
+      </div>
+      <button type="button" id="mol-onboarding-dismiss" class="mol-onboarding-dismiss" aria-label="Dismiss this hint">Got it &times;</button>
+    </div>
 
     <div class="mol-toolbar-row">
       <div class="mol-tool-cluster">
@@ -267,7 +277,7 @@
 
 <script src="polymer-data.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="polymer-search.js?v=41"></script>
+<script src="polymer-search.js?v=42"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
