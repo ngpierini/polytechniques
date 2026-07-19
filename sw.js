@@ -3,7 +3,7 @@
 // connection; anything not pre-cached is fetched from the network and
 // cached for next time. Bump CACHE_NAME whenever the pre-cache list below
 // changes so old clients pick up the new set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v1";
+const CACHE_NAME = "polytechniques-v2";
 
 const PRECACHE_URLS = [
   "home.html",
@@ -27,7 +27,10 @@ const PRECACHE_URLS = [
   "polymer-data.js",
   "polymer-search.js",
   "favicon.svg",
-  "manifest.json"
+  "manifest.json",
+  "icon-192.png",
+  "icon-512.png",
+  "apple-touch-icon.png"
 ];
 
 self.addEventListener("install", function (event) {
