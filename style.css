@@ -2032,3 +2032,8 @@ input.input-invalid {
     color: #000;
   }
 }
+
+/* ---------- Polyurethane simple/advanced mode toggle ---------- */
+.pu-simple-only { display: none; }
+#panel-pu.pu-simple .pu-simple-only { display: revert; }
+#panel-pu.pu-simple .pu-advanced-only { display: none; }
