@@ -1160,10 +1160,10 @@ function polyurethaneTemplate() {
         value below theory, and Step 2 accepts your measured value for exactly that reason.
       </p>
       <div class="guide-formula">
-        Polyol eq wt = (1000 &times; M<sub>KOH</sub>) &divide; OH# &nbsp;|&nbsp; Diisocyanate eq wt = (100 &times; M<sub>NCO</sub>) &divide; %NCO &nbsp;|&nbsp; %NCO<sub>prepolymer</sub> = 100 &times; M<sub>NCO</sub> &times; (eq NCO &minus; eq OH) &divide; total mass
+        Polyol eq wt = 56100 &divide; OH# &nbsp;|&nbsp; Diisocyanate eq wt = 4202 &divide; %NCO &nbsp;|&nbsp; %NCO<sub>prepolymer</sub> = 4202 &times; (eq NCO &minus; eq OH) &divide; total mass
       </div>
       <p class="guide-note" style="margin-top:8px;">
-        M<sub>KOH</sub> = 56.1 g/mol and M<sub>NCO</sub> = 42.02 g/mol are the molecular weights actually doing the work here &ndash; OH number is reported as mg KOH per gram (from the acetylation/KOH-titration method, where 1 mole KOH consumed &equiv; 1 mole OH group), and %NCO is a mass percent of the &minus;NCO group itself. The 1000&times; and 100&times; are just unit conversions (mg&rarr;g, %&rarr;fraction).
+        OH# and %NCO are read directly off your polyol and isocyanate certificates of analysis &ndash; nothing here is titrated as part of this synthesis. 56100 and 4202 are just the standard conversion constants for turning those two reporting conventions into equivalent weight (100 &times; 42.02, the molecular weight of the &minus;NCO group itself, for the isocyanate side).
       </p>
     </div>
 
