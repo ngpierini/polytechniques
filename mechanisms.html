@@ -358,38 +358,71 @@
     </div>
 
     <div class="mech-ring-panel">
-      <svg class="mech-ring" width="320" height="170" viewBox="0 0 320 170">
-        <path d="M8,95 Q23,80 38,95 T68,95" fill="none" stroke="var(--text-dim)" stroke-width="2.5"/>
-        <line x1="68" y1="95" x2="94" y2="95" class="bond bond-keep"/>
-        <g class="ring-atom ring-atom-carbon">
-          <circle cx="110" cy="95" r="14" />
-          <text x="110" y="95">O</text>
-        </g>
-        <line x1="124" y1="95" x2="147" y2="95" class="bond bond-keep"/>
-        <g class="ring-atom ring-atom-metal">
-          <circle cx="163" cy="95" r="16" />
-          <text x="163" y="95">C</text>
-        </g>
-        <line x1="158" y1="81" x2="158" y2="52" class="bond bond-keep"/>
-        <line x1="168" y1="81" x2="168" y2="52" class="bond bond-keep"/>
-        <text x="163" y="42" text-anchor="middle" class="ring-substituent">O</text>
-        <line x1="179" y1="95" x2="202" y2="95" class="bond bond-keep"/>
-        <g class="ring-atom ring-atom-carbon">
-          <circle cx="218" cy="95" r="14" />
-          <text x="218" y="95">N</text>
-        </g>
-        <line x1="218" y1="109" x2="218" y2="130" class="bond bond-keep"/>
-        <text x="218" y="144" text-anchor="middle" class="ring-substituent">H</text>
-        <line x1="232" y1="95" x2="255" y2="95" class="bond bond-keep"/>
-        <path d="M255,95 Q270,80 285,95 T312,95" fill="none" stroke="var(--text-dim)" stroke-width="2.5"/>
-        <text x="38" y="130" text-anchor="middle" class="ring-substituent">soft segment</text>
-        <text x="285" y="130" text-anchor="middle" class="ring-substituent">hard segment</text>
+      <svg class="mech-ring" width="460" height="150" viewBox="0 0 460 150">
+        <text x="10" y="45" font-weight="700">HO</text>
+        <path d="M45,70 Q57,52 70,70 Q83,88 95,70 Q108,52 120,70" fill="none" stroke="#f2b84b" stroke-width="3"/>
+        <rect x="125" y="55" width="55" height="30" rx="7" fill="var(--primary)"/>
+        <circle cx="196" cy="70" r="8" fill="var(--accent)"/>
+        <rect x="213" y="55" width="55" height="30" rx="7" fill="var(--primary)"/>
+        <path d="M278,70 Q290,52 303,70 Q316,88 328,70 Q341,52 353,70" fill="none" stroke="#f2b84b" stroke-width="3"/>
+        <rect x="358" y="55" width="55" height="30" rx="7" fill="var(--primary)"/>
+        <text x="425" y="45" font-weight="700">NCO</text>
+
+        <path d="M125,98 L125,106 M125,98 L268,98 M268,98 L268,106" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text x="196" y="122" text-anchor="middle" class="ring-substituent">Hard segment</text>
+        <path d="M278,98 L278,106 M278,98 L353,98 M353,98 L353,106" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text x="315" y="122" text-anchor="middle" class="ring-substituent">Soft segment</text>
       </svg>
-      <div class="mech-ring-legend">
-        <span><span class="legend-swatch" style="border-top-color:var(--accent);border-top-style:solid;"></span> the carbamate (urethane) carbon</span>
+      <div class="diagram-legend">
+        <span><span class="swatch" style="background:#f2b84b;"></span> polyol (&minus;OH), soft segment</span>
+        <span><span class="swatch" style="background:var(--primary);"></span> diisocyanate (&minus;NCO), hard segment</span>
+        <span><span class="swatch" style="background:var(--accent);border-radius:50%;"></span> chain extender</span>
       </div>
     </div>
-    <p class="mech-ring-caption">The urethane linkage that forms at every soft segment to hard segment junction. The alcohol oxygen has added across the isocyanate's carbon, which now carries both a carbonyl and an N&ndash;H.</p>
+    <p class="mech-ring-caption">The calculator's Step 1 caps a polyol (soft segment) with excess diisocyanate; Step 2 chain extends the leftover isocyanate ends, building the hard segment shown here between two diisocyanate units.</p>
+
+    <div class="mech-ring-panel">
+      <svg class="mech-ring" width="400" height="200" viewBox="0 0 400 200">
+        <text x="8" y="16" class="small dim">Hard segment (e.g. MDI)</text>
+        <line x1="8" y1="60" x2="23" y2="60" class="bond bond-keep"/>
+        <text x="35" y="60" font-size="13">NH</text>
+        <line x1="47" y1="60" x2="58" y2="60" class="bond bond-keep"/>
+        <text x="65" y="60" font-size="13" font-weight="700">C</text>
+        <line x1="61" y1="52" x2="61" y2="35" class="bond bond-keep"/>
+        <line x1="69" y1="52" x2="69" y2="35" class="bond bond-keep"/>
+        <text x="65" y="27" text-anchor="middle" class="ring-substituent">O</text>
+        <line x1="72" y1="60" x2="85" y2="60" class="bond bond-keep"/>
+        <text x="92" y="60" font-size="13">O</text>
+        <line x1="99" y1="60" x2="112" y2="60" class="bond bond-keep"/>
+        <polygon points="135,40 152.3,50 152.3,70 135,80 117.7,70 117.7,50" fill="var(--card-bg)" stroke="var(--border)" stroke-width="2"/>
+        <line x1="152.3" y1="60" x2="175" y2="60" class="bond bond-keep"/>
+        <text x="190" y="60" font-size="13">CH<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+        <line x1="205" y1="60" x2="218" y2="60" class="bond bond-keep"/>
+        <polygon points="250,40 267.3,50 267.3,70 250,80 232.7,70 232.7,50" fill="var(--card-bg)" stroke="var(--border)" stroke-width="2"/>
+        <line x1="267.3" y1="60" x2="290" y2="60" class="bond bond-keep"/>
+        <text x="297" y="60" font-size="13">O</text>
+        <line x1="304" y1="60" x2="317" y2="60" class="bond bond-keep"/>
+        <text x="324" y="60" font-size="13" font-weight="700">C</text>
+        <line x1="320" y1="52" x2="320" y2="35" class="bond bond-keep"/>
+        <line x1="328" y1="52" x2="328" y2="35" class="bond bond-keep"/>
+        <text x="324" y="27" text-anchor="middle" class="ring-substituent">O</text>
+        <line x1="331" y1="60" x2="344" y2="60" class="bond bond-keep"/>
+        <text x="356" y="60" font-size="13">NH</text>
+        <line x1="368" y1="60" x2="381" y2="60" class="bond bond-keep"/>
+
+        <text x="8" y="103" class="small dim">Soft segment (e.g. PTMEG)</text>
+        <path d="M15,110 L15,150 M15,110 L20,110 M15,150 L20,150" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <path d="M25,130 L40,115 L55,130 L70,115 L85,130" fill="none" stroke="var(--text-dim)" stroke-width="2"/>
+        <path d="M95,110 L95,150 M95,110 L90,110 M95,150 L90,150" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text x="103" y="147" font-style="italic" font-size="12">n</text>
+
+        <text x="8" y="177" class="small dim">Chain extender (e.g. 1,4-butanediol)</text>
+        <text x="150" y="190" font-size="13">HO</text>
+        <path d="M170,190 L185,175 L200,190 L215,175" fill="none" stroke="var(--text-dim)" stroke-width="2"/>
+        <text x="222" y="190" font-size="13">OH</text>
+      </svg>
+    </div>
+    <p class="mech-ring-caption">Representative repeat units for the calculator's default reagents. Swap in the structures for whatever diisocyanate, polyol, or extender you're actually using; the reasoning is the same regardless.</p>
 
     <p class="guide-note">
       There's no chain end propagating through hundreds of monomer additions the way there is above. Instead, molecular weight builds through <em>step</em> growth: any two molecules with a free OH and a free NCO can react, at any point in the reaction, so early on the mixture is mostly short oligomers, and high molecular weight only shows up once conversion is very high. This is exactly why the calculator's polyurethane tab is built around a two step recipe instead of a target Mn and DP: cap a polyol with excess diisocyanate first (Step 1), so the free NCO ends are known and controlled, then react that prepolymer against a measured amount of chain extender (Step 2) to build the final hard segment length deliberately, rather than leaving stoichiometry to chance.
@@ -431,29 +464,98 @@
     </div>
 
     <div class="diagram-panel">
-      <svg class="diagram-svg" width="440" height="190" viewBox="0 0 440 190">
-        <text x="10" y="18" class="small dim">continuous water phase</text>
-        <circle cx="70" cy="65" r="26" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
-        <circle cx="70" cy="150" r="20" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
-        <text x="70" y="105" text-anchor="middle" class="small dim">droplets</text>
-        <circle cx="195" cy="35" r="6" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
-        <circle cx="235" cy="115" r="6" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
-        <circle cx="180" cy="165" r="6" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
-        <circle cx="270" cy="55" r="6" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
-        <circle cx="310" cy="150" r="6" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
-        <line x1="100" y1="70" x2="365" y2="100" stroke="var(--text-dim)" stroke-width="1.5" stroke-dasharray="2,5"/>
-        <circle cx="385" cy="105" r="18" fill="var(--primary)" fill-opacity="0.85" stroke="var(--primary)" stroke-width="2"/>
-        <circle cx="380" cy="100" r="2" fill="var(--card-bg)"/>
-        <circle cx="390" cy="110" r="2" fill="var(--card-bg)"/>
-        <text x="385" y="140" text-anchor="middle" class="small dim">growing particle</text>
+      <svg class="diagram-svg" width="480" height="240" viewBox="0 0 480 240">
+        <defs>
+          <g id="em-surf">
+            <line x1="0" y1="0" x2="0" y2="-9" stroke="var(--text-dim)" stroke-width="1.4"/>
+            <circle cx="0" cy="-11" r="2.3" fill="var(--text)"/>
+          </g>
+          <polygon id="em-init" points="0,-4 3.5,3 -3.5,3" fill="var(--danger)"/>
+        </defs>
+
+        <text x="10" y="16" class="small dim">continuous water phase</text>
+
+        <!-- free surfactant molecules, dissolved in the water -->
+        <use href="#em-surf" transform="translate(255,22) rotate(160)"/>
+        <use href="#em-surf" transform="translate(300,55) rotate(15)"/>
+        <use href="#em-surf" transform="translate(140,30) rotate(250)"/>
+        <use href="#em-surf" transform="translate(415,70) rotate(300)"/>
+        <use href="#em-surf" transform="translate(250,110) rotate(70)"/>
+
+        <!-- free initiator molecules -->
+        <use href="#em-init" transform="translate(200,25)"/>
+        <use href="#em-init" transform="translate(340,35)"/>
+        <use href="#em-init" transform="translate(150,125)"/>
+        <use href="#em-init" transform="translate(445,85)"/>
+
+        <!-- monomer droplet, surfactant coated -->
+        <circle cx="90" cy="165" r="32" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="2"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(0) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(30) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(60) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(90) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(120) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(150) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(180) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(210) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(240) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(270) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(300) translate(0,-32)"/>
+        <use href="#em-surf" transform="translate(90,165) rotate(330) translate(0,-32)"/>
+        <text x="90" y="218" text-anchor="middle" class="small dim">monomer droplet</text>
+
+        <!-- empty micelles -->
+        <circle cx="235" cy="45" r="9" fill="none" stroke="var(--border)" stroke-width="1.3"/>
+        <use href="#em-surf" transform="translate(235,45) rotate(0) translate(0,-9) scale(0.55)"/>
+        <use href="#em-surf" transform="translate(235,45) rotate(60) translate(0,-9) scale(0.55)"/>
+        <use href="#em-surf" transform="translate(235,45) rotate(120) translate(0,-9) scale(0.55)"/>
+        <use href="#em-surf" transform="translate(235,45) rotate(180) translate(0,-9) scale(0.55)"/>
+        <use href="#em-surf" transform="translate(235,45) rotate(240) translate(0,-9) scale(0.55)"/>
+        <use href="#em-surf" transform="translate(235,45) rotate(300) translate(0,-9) scale(0.55)"/>
+
+        <circle cx="315" cy="150" r="8" fill="none" stroke="var(--border)" stroke-width="1.3"/>
+        <use href="#em-surf" transform="translate(315,150) rotate(0) translate(0,-8) scale(0.5)"/>
+        <use href="#em-surf" transform="translate(315,150) rotate(60) translate(0,-8) scale(0.5)"/>
+        <use href="#em-surf" transform="translate(315,150) rotate(120) translate(0,-8) scale(0.5)"/>
+        <use href="#em-surf" transform="translate(315,150) rotate(180) translate(0,-8) scale(0.5)"/>
+        <use href="#em-surf" transform="translate(315,150) rotate(240) translate(0,-8) scale(0.5)"/>
+        <use href="#em-surf" transform="translate(315,150) rotate(300) translate(0,-8) scale(0.5)"/>
+
+        <circle cx="185" cy="200" r="8" fill="none" stroke="var(--border)" stroke-width="1.3"/>
+        <use href="#em-surf" transform="translate(185,200) rotate(0) translate(0,-8) scale(0.5)"/>
+        <use href="#em-surf" transform="translate(185,200) rotate(72) translate(0,-8) scale(0.5)"/>
+        <use href="#em-surf" transform="translate(185,200) rotate(144) translate(0,-8) scale(0.5)"/>
+        <use href="#em-surf" transform="translate(185,200) rotate(216) translate(0,-8) scale(0.5)"/>
+        <use href="#em-surf" transform="translate(185,200) rotate(288) translate(0,-8) scale(0.5)"/>
+
+        <!-- monomer diffusing from the droplet to the growing particle -->
+        <path d="M128,150 Q250,115 350,122" fill="none" stroke="var(--text-dim)" stroke-width="1.5" stroke-dasharray="2,5"/>
+
+        <!-- nucleated, growing particle -->
+        <circle cx="390" cy="118" r="20" fill="var(--primary)" fill-opacity="0.22" stroke="var(--primary)" stroke-width="2"/>
+        <use href="#em-surf" transform="translate(390,118) rotate(0) translate(0,-20) scale(0.75)"/>
+        <use href="#em-surf" transform="translate(390,118) rotate(36) translate(0,-20) scale(0.75)"/>
+        <use href="#em-surf" transform="translate(390,118) rotate(72) translate(0,-20) scale(0.75)"/>
+        <use href="#em-surf" transform="translate(390,118) rotate(108) translate(0,-20) scale(0.75)"/>
+        <use href="#em-surf" transform="translate(390,118) rotate(144) translate(0,-20) scale(0.75)"/>
+        <use href="#em-surf" transform="translate(390,118) rotate(180) translate(0,-20) scale(0.75)"/>
+        <use href="#em-surf" transform="translate(390,118) rotate(216) translate(0,-20) scale(0.75)"/>
+        <use href="#em-surf" transform="translate(390,118) rotate(252) translate(0,-20) scale(0.75)"/>
+        <use href="#em-surf" transform="translate(390,118) rotate(288) translate(0,-20) scale(0.75)"/>
+        <use href="#em-surf" transform="translate(390,118) rotate(324) translate(0,-20) scale(0.75)"/>
+        <path d="M382,112 Q388,104 396,111 Q402,118 395,125 Q388,130 384,122 Q381,116 382,112" fill="none" stroke="var(--primary)" stroke-width="1.6"/>
+        <circle cx="390" cy="118" r="2" fill="var(--danger)"/>
+        <text x="390" y="168" text-anchor="middle" class="small dim">growing particle</text>
       </svg>
       <div class="diagram-legend">
-        <span><span class="swatch" style="background:var(--accent);opacity:0.4;"></span> monomer droplet, large and few</span>
-        <span><span class="swatch" style="background:none;border:1.5px solid var(--text-dim);"></span> surfactant micelle, small and empty</span>
-        <span><span class="swatch" style="background:var(--primary);"></span> nucleated particle, growing</span>
+        <span><span class="swatch" style="background:var(--accent);opacity:0.35;"></span> monomer droplet</span>
+        <span><span class="swatch" style="background:none;border:1.5px solid var(--border);"></span> empty micelle</span>
+        <span><span class="swatch" style="background:var(--primary);opacity:0.35;"></span> nucleated, growing particle</span>
+        <span><svg width="16" height="16" viewBox="-8 -14 16 16"><line x1="0" y1="0" x2="0" y2="-9" stroke="var(--text-dim)" stroke-width="1.4"/><circle cx="0" cy="-11" r="2.3" fill="var(--text)"/></svg> surfactant molecule</span>
+        <span><svg width="14" height="14" viewBox="-5 -6 10 10"><polygon points="0,-4 3.5,3 -3.5,3" fill="var(--danger)"/></svg> initiator</span>
       </div>
     </div>
-    <p class="diagram-caption">A snapshot of Interval II. Most monomer still sits in a few large droplets; micelles have mostly disappeared into the particles they seeded; each particle is fed by monomer diffusing through the water phase rather than by direct droplet contact.</p>
+    <p class="diagram-caption">Every droplet, micelle, and particle is coated in surfactant, head facing the water and tail facing the oil. An initiator-derived radical entering a micelle is what nucleates a particle; by the time nucleation is finished, there are roughly a thousand micelles for every particle that actually captured one, and the rest simply dissolve back into free surfactant as the particles grow. Monomer keeps diffusing in from the shrinking droplet until it disappears.</p>
 
     <p class="guide-note">
       Because nucleation is essentially over once the micelles run out, the particle count set during that short window determines the final particle size for the rest of the reaction: the same total polymer volume divided among however many particles got started. That's the whole basis for the calculator's emulsion tab, which estimates that particle count from the surfactant and initiator charge (Smith-Ewart theory) and then reports the final diameter from a simple mass balance. Everything downstream of nucleation (propagation, transfer, termination) is ordinary free radical chemistry; the physics of getting a chain started is the only genuinely new mechanism here.
