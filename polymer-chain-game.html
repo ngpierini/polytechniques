@@ -136,7 +136,7 @@
       <li>Ten levels, each with its own maze, tighter corridors and quicker enemies as you climb. Clear level 10 to finish the polymer for good.</li>
       <li>Enemies start held in a cage at the center of the maze and release one by one after a brief pause, mimicking a classic maze chase game. The longer a level runs, the more of them are loose.</li>
       <li>You have <strong>3 lives</strong>. Touching an enemy costs one life. Your chain end disintegrates, then you respawn at the start with the beads you already collected still counted. Lose all three and the game is over.</li>
-      <li>Grab an <strong>initiator</strong>, the flashing hollow ring, to flip the tables for a few seconds. Enemies turn blue and edible, and running into one sends it straight back to the cage instead of ending your life. Up to three initiators sit in the corners of each maze.</li>
+      <li>Grab an <strong>initiator</strong>, the flashing hollow ring, to flip the tables for a few seconds. Enemies are quenched and edible, and running into one sends it straight back to the cage instead of ending your life. Up to three initiators sit in the corners of each maze.</li>
       <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly, on every level.</li>
     </ul>
   </div>
@@ -201,7 +201,7 @@
   var ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
 
-  // --- Cage geometry (fixed across every level, like a ghost house) ---------
+  // --- Cage geometry (fixed across every level; a central holding pen) ------
   // Cage occupies the 3x3 block of maze cells at rows {5,7,9} x cols {7,9,11},
   // fully enclosed except for a single door at (4,9) leading north.
   var CAGE_CELLS = [
@@ -759,64 +759,90 @@
     }
   }
 
-  // Classic pixel-ghost body: domed top, three-toothed skirt. Enemies are
-  // distinguished by color (matching the legend); a power-up flips them all to
-  // the frightened blue/white sprite so it reads instantly.
-  var GHOST_BODY = [
-    "....####....",
-    "..########..",
-    ".##########.",
-    ".##########.",
-    "############",
-    "############",
-    "############",
-    "############",
-    "############",
-    "############",
-    "##.##..##.##",
-    "#...#..#...#"
-  ];
-
-  function drawEnemy(e, ex, ey) {
-    var ps = 2, n = 12;
-    var ox = Math.round(ex - n * ps / 2), oy = Math.round(ey - n * ps / 2);
-    var frightened = powerTicksRemaining > 0 && e.free;
-    var flashing = frightened && powerTicksRemaining <= 8 && Math.floor(Date.now() / 120) % 2 === 0;
-    var body = frightened ? (flashing ? "#f4f4ff" : "#2b3df2") : e.color;
-
-    ctx.fillStyle = body;
-    for (var gy = 0; gy < GHOST_BODY.length; gy++) {
-      var row = GHOST_BODY[gy];
-      for (var gx = 0; gx < row.length; gx++) {
-        if (row.charAt(gx) === "#") ctx.fillRect(ox + gx * ps, oy + gy * ps, ps, ps);
+  // Chemistry-native pixel sprites, deliberately not ghost-shaped. Each
+  // terminator is drawn as a small molecule token, distinguished by shape and
+  // color to match the legend. A power-up "quenches" them into a faded,
+  // harmless-looking state rather than a chaser.
+  function drawPixelDisc(centerX, centerY, Rpx, color) {
+    var ps = 2;
+    var ox = Math.round(centerX / ps) * ps, oy = Math.round(centerY / ps) * ps;
+    ctx.fillStyle = color;
+    for (var dy = -Rpx; dy <= Rpx; dy++) {
+      for (var dx = -Rpx; dx <= Rpx; dx++) {
+        if (dx * dx + dy * dy <= Rpx * Rpx) ctx.fillRect(ox + dx * ps, oy + dy * ps, ps, ps);
       }
     }
+  }
+
+  var INH_DIAMOND = [
+    "....##....",
+    "...####...",
+    "..######..",
+    ".########.",
+    "##########",
+    ".########.",
+    "..######..",
+    "...####...",
+    "....##...."
+  ];
+
+  function drawSprite(rows, ex, ey, color) {
+    var ps = 2, h = rows.length, w = rows[0].length;
+    var ox = Math.round(ex - w * ps / 2), oy = Math.round(ey - h * ps / 2);
+    ctx.fillStyle = color;
+    for (var y = 0; y < h; y++) {
+      var row = rows[y];
+      for (var x = 0; x < w; x++) {
+        if (row.charAt(x) === "#") ctx.fillRect(ox + x * ps, oy + y * ps, ps, ps);
+      }
+    }
+  }
+
+  function drawEnemy(e, ex, ey) {
+    var ps = 2;
+    var frightened = powerTicksRemaining > 0 && e.free;
 
     if (frightened) {
-      ctx.fillStyle = flashing ? "#e2223d" : "#f4f4ff";
-      ctx.fillRect(ox + 4 * ps, oy + 4 * ps, 2 * ps, 2 * ps);
-      ctx.fillRect(ox + 7 * ps, oy + 4 * ps, 2 * ps, 2 * ps);
-      var mouthY = [8, 7, 8, 7, 8, 7, 8];
-      for (var mx = 0; mx < mouthY.length; mx++) {
-        ctx.fillRect(ox + (2 + mx) * ps, oy + mouthY[mx] * ps, ps, ps);
-      }
+      // Quenched: a faded, greyed molecule with paired-off electrons, clearly
+      // harmless (no chasing character, no blinking-blue face).
+      var flashing = powerTicksRemaining <= 8 && Math.floor(Date.now() / 120) % 2 === 0;
+      var g = flashing ? "#c9d3e6" : "#5a6472";
+      drawPixelDisc(ex, ey, 5, g);
+      ctx.fillStyle = flashing ? "#5a6472" : "#c9d3e6";
+      var qx = Math.round(ex / ps) * ps, qy = Math.round(ey / ps) * ps;
+      ctx.fillRect(qx - 3 * ps, qy, ps, ps);
+      ctx.fillRect(qx + 2 * ps, qy, ps, ps);
       return;
     }
 
-    // Direction-tracking eyes: white sclera with a pupil nudged toward travel.
-    var lx = ox + 3 * ps, rx = ox + 7 * ps, eyeY = oy + 4 * ps;
-    ctx.fillStyle = "#f4f4ff";
-    ctx.fillRect(lx, eyeY, 2 * ps, 3 * ps);
-    ctx.fillRect(rx, eyeY, 2 * ps, 3 * ps);
-    var pdx = e.dir === "left" ? -1 : e.dir === "right" ? 1 : 0;
-    var pdy = e.dir === "up" ? -1 : e.dir === "down" ? 1 : 0;
-    ctx.fillStyle = "#101038";
-    ctx.fillRect(lx + ps + pdx * ps, eyeY + ps + pdy * ps, ps, ps);
-    ctx.fillRect(rx + ps + pdx * ps, eyeY + ps + pdy * ps, ps, ps);
-    if (e.name === "R•") {
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(ox + 9 * ps, oy + ps, ps, ps);
-      ctx.fillRect(ox + 10 * ps, oy, ps, ps);
+    var mx = Math.round(ex / ps) * ps, my = Math.round(ey / ps) * ps;
+    if (e.name === "O₂") {
+      // dioxygen: two bonded spheres
+      drawPixelDisc(ex - 5, ey, 4, e.color);
+      drawPixelDisc(ex + 5, ey, 4, e.color);
+      ctx.fillStyle = "#ffd9d9";
+      ctx.fillRect(mx - ps, my - ps, ps, ps);
+      ctx.fillRect(mx - ps, my + ps, ps, ps);
+    } else if (e.name === "Inh") {
+      // inhibitor: an aromatic-ring token
+      drawSprite(INH_DIAMOND, ex, ey, e.color);
+      ctx.fillStyle = "#efe6ff";
+      ctx.fillRect(mx - ps, my - ps, ps, ps);
+    } else if (e.name === "CTA") {
+      // chain transfer agent: a sphere with a reactive hand-off tail
+      drawPixelDisc(ex, ey, 5, e.color);
+      ctx.fillStyle = e.color;
+      ctx.fillRect(mx + 4 * ps, my - ps, ps, ps);
+      ctx.fillRect(mx + 5 * ps, my - 2 * ps, ps, ps);
+      ctx.fillStyle = "#fff3d6";
+      ctx.fillRect(mx + 6 * ps, my - 3 * ps, ps, ps);
+    } else {
+      // rival radical R•: a sphere with an unpaired-electron spark on a stub bond
+      drawPixelDisc(ex, ey, 5, e.color);
+      ctx.fillStyle = e.color;
+      ctx.fillRect(mx + 4 * ps, my - 4 * ps, ps, ps);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(mx + 5 * ps, my - 5 * ps, ps, ps);
     }
   }
 
@@ -838,28 +864,34 @@
     });
   }
 
-  // Pixel pac-style disc with an animated wedge mouth that opens toward travel.
+  // The propagating radical chain end: a bright pixel sphere with radiating
+  // sparks and an unpaired-electron dot, brighter in the direction of travel.
+  // Deliberately a reactive radical, not a wedge-mouth character.
   function drawPlayer(px, py, dir) {
-    var ps = 2, n = 12, cg = (n - 1) / 2, R = 5.5;
-    var openHalf = (0.14 + 0.13 * Math.abs(Math.sin(Date.now() / 150))) * Math.PI;
-    var base = dir === "left" ? Math.PI : dir === "up" ? -Math.PI / 2 : dir === "down" ? Math.PI / 2 : 0;
-    var ox = Math.round(px - n * ps / 2), oy = Math.round(py - n * ps / 2);
-    ctx.fillStyle = powerTicksRemaining > 0 ? "#a9ffe9" : "#e8fff6";
-    for (var gy = 0; gy < n; gy++) {
-      for (var gx = 0; gx < n; gx++) {
-        var dx = gx - cg, dy = gy - cg;
-        if (dx * dx + dy * dy > R * R) continue;
-        var ang = Math.atan2(dy, dx);
-        var da = Math.atan2(Math.sin(ang - base), Math.cos(ang - base));
-        if (Math.abs(da) < openHalf) continue;
-        ctx.fillRect(ox + gx * ps, oy + gy * ps, ps, ps);
-      }
+    var ps = 2;
+    var powered = powerTicksRemaining > 0;
+    drawPixelDisc(px, py, 5, powered ? "#a9ffe9" : "#e8fff6");
+    var ox = Math.round(px / ps) * ps, oy = Math.round(py / ps) * ps;
+
+    // pulsing spark pixels around the radical
+    var d = (6 + Math.floor(Date.now() / 120) % 2) * ps;
+    ctx.fillStyle = powered ? "#5ff2c8" : "#8fffe0";
+    ctx.fillRect(ox, oy - d, ps, ps);
+    ctx.fillRect(ox, oy + d, ps, ps);
+    ctx.fillRect(ox - d, oy, ps, ps);
+    ctx.fillRect(ox + d, oy, ps, ps);
+
+    // a brighter leading spark in the direction of travel
+    if (dir) {
+      var vdx = dir === "left" ? -1 : dir === "right" ? 1 : 0;
+      var vdy = dir === "up" ? -1 : dir === "down" ? 1 : 0;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(ox + vdx * 8 * ps, oy + vdy * 8 * ps, ps, ps);
     }
-    ctx.fillStyle = "#0b1f1a";
-    var eyeX, eyeY;
-    if (dir === "up" || dir === "down") { eyeX = ox + 3 * ps; eyeY = oy + Math.round(cg) * ps; }
-    else { eyeX = ox + Math.round(cg) * ps; eyeY = oy + 3 * ps; }
-    ctx.fillRect(eyeX, eyeY, ps, ps);
+
+    // the unpaired electron: a white highlight dot
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(ox - 2 * ps, oy - 2 * ps, ps, ps);
   }
 
   function render(t, deathT) {
@@ -924,9 +956,9 @@
       ctx.font = "bold 18px 'Courier New', monospace";
       ctx.textAlign = "center";
       ctx.fillStyle = "#000";
-      ctx.fillText("READY!", canvas.width / 2 + 1, cy(PLAYER_START.r) + 43);
+      ctx.fillText("INITIATE!", canvas.width / 2 + 1, cy(PLAYER_START.r) + 43);
       ctx.fillStyle = "#ffe14d";
-      ctx.fillText("READY!", canvas.width / 2, cy(PLAYER_START.r) + 42);
+      ctx.fillText("INITIATE!", canvas.width / 2, cy(PLAYER_START.r) + 42);
       ctx.textAlign = "start";
     }
   }
