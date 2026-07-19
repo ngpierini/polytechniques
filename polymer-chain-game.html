@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Build a Polymer Chain: PolyTechniques</title>
-<meta name="description" content="Build a polymer chain the right way in this quick interactive game &ndash; a hands-on way to learn skeletal formula conventions for repeat units.">
+<meta name="description" content="Build a polymer chain the right way in this quick interactive game, a hands-on way to learn skeletal formula conventions for repeat units, across 10 levels of increasing difficulty.">
 <link rel="canonical" href="https://getpolytechniques.com/polymer-chain-game.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="PolyTechniques">
@@ -24,7 +24,7 @@
   "@type": "WebApplication",
   "name": "Build a Polymer Chain",
   "url": "https://getpolytechniques.com/polymer-chain-game.html",
-  "description": "Build a polymer chain the right way in this quick interactive game - a hands-on way to learn skeletal formula conventions for repeat units.",
+  "description": "Build a polymer chain the right way in this quick interactive game, a hands-on way to learn skeletal formula conventions for repeat units.",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Any (web-based)",
   "isAccessibleForFree": true,
@@ -45,7 +45,7 @@
   <div class="topbar-inner topbar-row">
     <div>
       <h1>Build a Polymer Chain</h1>
-      <p class="subtitle">Collect every monomer bead before your radical gets terminated</p>
+      <p class="subtitle">Collect every monomer bead before your radical gets terminated, across 10 levels of increasing difficulty</p>
     </div>
     <div class="guide-links">
       <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
@@ -71,6 +71,10 @@
 
     <div class="game-hud">
       <div class="stat">
+        <div class="label">Level</div>
+        <div class="value" id="game-level">1 / 10</div>
+      </div>
+      <div class="stat">
         <div class="label">Repeat units</div>
         <div class="value" id="game-score">0 / 0</div>
       </div>
@@ -88,7 +92,7 @@
       <canvas id="game-canvas"></canvas>
       <div class="game-overlay" id="game-overlay">
         <h4 id="game-overlay-title">Build a Polymer Chain</h4>
-        <p id="game-overlay-text">Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O&#8322;, the inhibitor, and the chain transfer agent, they'll terminate your chain on contact.</p>
+        <p id="game-overlay-text">Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O&#8322;, the inhibitor, and the chain transfer agent, they'll terminate your chain on contact. They start penned up in a holding cage and release one at a time, so the first few seconds of each level are the safest.</p>
         <button type="button" id="game-start-btn">Start polymerizing</button>
       </div>
     </div>
@@ -105,6 +109,7 @@
         <span><span class="dot" style="background:#ef6a6a"></span> O&#8322;</span>
         <span><span class="dot" style="background:#a78bfa"></span> Inhibitor</span>
         <span><span class="dot" style="background:#f2b84b"></span> Chain transfer agent</span>
+        <span><span class="dot" style="background:#f472b6"></span> Rival radical (level 8+)</span>
       </div>
     </div>
   </div>
@@ -113,9 +118,11 @@
     <h3>How to play</h3>
     <ul class="guide-list">
       <li>Move with the arrow keys or WASD, or use the on screen pad. Every bead you touch attaches to your growing chain, drawn as the beaded trail behind you.</li>
-      <li>Collect every bead in the maze to win. There's no rush, but the clock is running if you want to compare runs.</li>
-      <li>Touching O&#8322;, the inhibitor, or the chain transfer agent ends the run, just like they'd end a real radical chain. Press restart and try again with a different route.</li>
-      <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly.</li>
+      <li>Collect every bead in the maze to win the level. There's no rush, but the clock is running if you want to compare runs.</li>
+      <li>Ten levels, each with its own maze, tighter corridors and quicker enemies as you climb. Clear level 10 to finish the polymer for good.</li>
+      <li>Enemies start held in a cage at the center of the maze and release one by one after a brief pause, mimicking a classic maze chase game. The longer a level runs, the more of them are loose.</li>
+      <li>Touching an enemy doesn't end things instantly. Your chain end takes a moment to disintegrate before the run ends, so watch it go. Press restart and try again with a different route.</li>
+      <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly, on every level.</li>
     </ul>
   </div>
 
@@ -128,6 +135,7 @@
       <li><strong>O&#8322;</strong> reacts with carbon radicals to form a peroxy radical that is far less reactive toward monomer, effectively stalling the chain. This is why air free technique matters so much for controlled radical methods; see the <a href="air-free-technique.html">Air Free Reaction Setup</a> guide.</li>
       <li><strong>Inhibitors</strong> are added deliberately to monomer stock (to prevent it polymerizing in the bottle) and scavenge the first radicals that form, which is also why an induction period shows up before a monomer that hasn't been purified starts converting.</li>
       <li><strong>Chain transfer agents</strong> hand the radical off to a new molecule on purpose, ending one chain and starting another, which is exactly the mechanism RAFT is built around; see <a href="mechanisms.html">Polymerization Mechanisms</a> for the real reaction schemes.</li>
+      <li><strong>Rival radicals</strong> show up once things get crowded on level 8 and beyond: two propagating chains meeting is termination by combination, one of the two ways a radical chain naturally dies even with nothing else around to blame.</li>
     </ul>
   </div>
 
@@ -144,66 +152,238 @@
   var COLS = 19, ROWS = 15, CELL = 26;
   var PALETTE = ["#5b8def", "#37c98f", "#f2b84b", "#ef6a6a", "#a78bfa", "#4fd1c5", "#f472b6"];
 
-  var DIFFICULTY = {
-    normal: { tickMs: 160, graceTicks: 16, chaseChance: 0.55 },
-    hard: { tickMs: 130, graceTicks: 5, chaseChance: 0.82 }
+  var DIFFICULTY_MOD = {
+    normal: { tickMul: 1, chaseAdd: 0, graceMul: 1 },
+    hard: { tickMul: 0.85, chaseAdd: 0.15, graceMul: 0.55 }
   };
   var currentDifficulty = "normal";
-  var params = DIFFICULTY[currentDifficulty];
+
+  // Ten levels of increasing difficulty: tighter/denser mazes (lower loopFactor
+  // means fewer extra loops carved into the base maze, so corridors stay narrow),
+  // faster ticks, more aggressive chasing, and more enemies released from the cage.
+  var LEVELS = [
+    { tickMs: 190, chaseChance: 0.45, graceTicks: 26, enemyCount: 2, loopFactor: 0.85 },
+    { tickMs: 182, chaseChance: 0.50, graceTicks: 24, enemyCount: 2, loopFactor: 0.75 },
+    { tickMs: 174, chaseChance: 0.54, graceTicks: 22, enemyCount: 3, loopFactor: 0.65 },
+    { tickMs: 167, chaseChance: 0.58, graceTicks: 20, enemyCount: 3, loopFactor: 0.56 },
+    { tickMs: 160, chaseChance: 0.62, graceTicks: 18, enemyCount: 3, loopFactor: 0.48 },
+    { tickMs: 153, chaseChance: 0.66, graceTicks: 16, enemyCount: 3, loopFactor: 0.40 },
+    { tickMs: 146, chaseChance: 0.70, graceTicks: 14, enemyCount: 3, loopFactor: 0.32 },
+    { tickMs: 139, chaseChance: 0.75, graceTicks: 12, enemyCount: 4, loopFactor: 0.24 },
+    { tickMs: 131, chaseChance: 0.80, graceTicks: 10, enemyCount: 4, loopFactor: 0.16 },
+    { tickMs: 122, chaseChance: 0.86, graceTicks: 8, enemyCount: 4, loopFactor: 0.09 }
+  ];
+  var currentLevel = 1;
+  var params = null;
 
   var canvas = $("game-canvas");
   canvas.width = COLS * CELL;
   canvas.height = ROWS * CELL;
   var ctx = canvas.getContext("2d");
 
-  var wall = [];
-  for (var r = 0; r < ROWS; r++) {
-    wall[r] = [];
-    for (var c = 0; c < COLS; c++) {
-      var isWall = (r === 0 || r === ROWS - 1 || c === 0 || c === COLS - 1) || (r % 2 === 0 && c % 2 === 0);
-      wall[r][c] = isWall;
-    }
-  }
+  // --- Cage geometry (fixed across every level, like a ghost house) ---------
+  // Cage occupies the 3x3 block of maze cells at rows {5,7,9} x cols {7,9,11},
+  // fully enclosed except for a single door at (4,9) leading north.
+  var CAGE_CELLS = [
+    { r: 5, c: 7 }, { r: 5, c: 9 }, { r: 5, c: 11 },
+    { r: 7, c: 7 }, { r: 7, c: 9 }, { r: 7, c: 11 },
+    { r: 9, c: 7 }, { r: 9, c: 9 }, { r: 9, c: 11 }
+  ];
+  var CAGE_FORCED_WALL = [[4, 7], [4, 11], [10, 7], [10, 9], [10, 11], [5, 6], [7, 6], [9, 6], [5, 12], [7, 12], [9, 12]];
+  var CAGE_FORCED_OPEN = [[6, 7], [6, 9], [6, 11], [8, 7], [8, 9], [8, 11], [5, 8], [5, 10], [7, 8], [7, 10], [9, 8], [9, 10], [4, 9]];
+  var DOOR = { r: 4, c: 9 };
+  var PLAYER_START = { r: 11, c: 9 };
 
-  function cellValid(r, c) {
-    return r >= 0 && r < ROWS && c >= 0 && c < COLS && !wall[r][c];
-  }
-
-  var PLAYER_START = { r: 7, c: 9 };
-  var ENEMY_DEFS = [
-    { r: 3, c: 3, name: "O₂", color: "#ef6a6a" },
-    { r: 3, c: 15, name: "Inh", color: "#a78bfa" },
-    { r: 11, c: 3, name: "CTA", color: "#f2b84b" }
+  var ENEMY_SLOTS = [
+    { r: 7, c: 7, name: "O₂", color: "#ef6a6a", releaseTick: 2, exitPath: [{ r: 7, c: 8 }, { r: 7, c: 9 }, { r: 6, c: 9 }, { r: 5, c: 9 }, { r: 4, c: 9 }] },
+    { r: 7, c: 9, name: "Inh", color: "#a78bfa", releaseTick: 14, exitPath: [{ r: 6, c: 9 }, { r: 5, c: 9 }, { r: 4, c: 9 }] },
+    { r: 7, c: 11, name: "CTA", color: "#f2b84b", releaseTick: 26, exitPath: [{ r: 7, c: 10 }, { r: 7, c: 9 }, { r: 6, c: 9 }, { r: 5, c: 9 }, { r: 4, c: 9 }] },
+    { r: 5, c: 9, name: "R•", color: "#f472b6", releaseTick: 38, exitPath: [{ r: 4, c: 9 }] }
   ];
 
+  function mulberry32(seed) {
+    return function () {
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function isCageInterior(r, c) {
+    // The whole sealed 5x5 box (the 9 primary cage cells plus the 12 internal
+    // connector cells between them) is off limits to the player and to bead
+    // placement; only the door at (4,9), one row above this range, lets
+    // anything cross the boundary.
+    return r >= 5 && r <= 9 && c >= 7 && c <= 11;
+  }
+
+  // Builds a fully-connected maze via randomized DFS carving (guarantees every
+  // non-cage cell reaches the player start), then opens extra walls at random
+  // (loopFactor fraction) to create the looping arcade-maze corridors instead
+  // of a bare spanning tree. The cage block is carved separately and joined to
+  // the rest of the maze through exactly one door.
+  function generateMaze(seed, loopFactor) {
+    var rng = mulberry32(seed);
+    var wallGrid = [];
+    for (var r = 0; r < ROWS; r++) {
+      wallGrid[r] = [];
+      for (var c = 0; c < COLS; c++) wallGrid[r][c] = true;
+    }
+    var cellRows = [], cellCols = [];
+    for (var r2 = 1; r2 < ROWS - 1; r2 += 2) cellRows.push(r2);
+    for (var c2 = 1; c2 < COLS - 1; c2 += 2) cellCols.push(c2);
+    cellRows.forEach(function (r) { cellCols.forEach(function (c) { wallGrid[r][c] = false; }); });
+
+    function key(r, c) { return r + "," + c; }
+    var visited = {};
+    CAGE_CELLS.forEach(function (cell) { visited[key(cell.r, cell.c)] = true; });
+    CAGE_FORCED_OPEN.forEach(function (w) { wallGrid[w[0]][w[1]] = false; });
+    CAGE_FORCED_WALL.forEach(function (w) { wallGrid[w[0]][w[1]] = true; });
+
+    var startR = 3, startC = 9;
+    visited[key(startR, startC)] = true;
+    var stack = [[startR, startC]];
+    while (stack.length) {
+      var cur = stack[stack.length - 1];
+      var cr = cur[0], cc = cur[1];
+      var neighbors = [];
+      [[cr - 2, cc, cr - 1, cc], [cr + 2, cc, cr + 1, cc], [cr, cc - 2, cr, cc - 1], [cr, cc + 2, cr, cc + 1]].forEach(function (n) {
+        var nr = n[0], nc = n[1], wr = n[2], wc = n[3];
+        if (nr > 0 && nr < ROWS - 1 && nc > 0 && nc < COLS - 1 && !visited[key(nr, nc)]) {
+          neighbors.push({ nr: nr, nc: nc, wr: wr, wc: wc });
+        }
+      });
+      if (neighbors.length) {
+        var pick = neighbors[Math.floor(rng() * neighbors.length)];
+        wallGrid[pick.wr][pick.wc] = false;
+        visited[key(pick.nr, pick.nc)] = true;
+        stack.push([pick.nr, pick.nc]);
+      } else {
+        stack.pop();
+      }
+    }
+
+    function isForcedCage(r, c) {
+      for (var i = 0; i < CAGE_FORCED_WALL.length; i++) {
+        if (CAGE_FORCED_WALL[i][0] === r && CAGE_FORCED_WALL[i][1] === c) return true;
+      }
+      return false;
+    }
+
+    var edgeWalls = [];
+    for (var r3 = 1; r3 < ROWS - 1; r3++) {
+      for (var c3 = 1; c3 < COLS - 1; c3++) {
+        var isEdge = (r3 % 2 === 1 && c3 % 2 === 0) || (r3 % 2 === 0 && c3 % 2 === 1);
+        if (isEdge && wallGrid[r3][c3] && !isForcedCage(r3, c3)) edgeWalls.push([r3, c3]);
+      }
+    }
+    for (var i2 = edgeWalls.length - 1; i2 > 0; i2--) {
+      var j = Math.floor(rng() * (i2 + 1));
+      var tmp = edgeWalls[i2]; edgeWalls[i2] = edgeWalls[j]; edgeWalls[j] = tmp;
+    }
+    var openCount = Math.floor(edgeWalls.length * loopFactor);
+    for (var k = 0; k < openCount; k++) wallGrid[edgeWalls[k][0]][edgeWalls[k][1]] = false;
+
+    return wallGrid;
+  }
+
+  // Flood-fill sanity check: every open, non-cage-interior cell must be
+  // reachable from the player start, so every bead placed can actually be
+  // collected. Runs once per generated level and only warns (never blocks
+  // play) if it somehow fails, since generateMaze's construction guarantees it.
+  function verifyConnectivity(wallGrid) {
+    var seen = [];
+    for (var r = 0; r < ROWS; r++) { seen[r] = []; for (var c = 0; c < COLS; c++) seen[r][c] = false; }
+    var queue = [[PLAYER_START.r, PLAYER_START.c]];
+    seen[PLAYER_START.r][PLAYER_START.c] = true;
+    while (queue.length) {
+      var cur = queue.shift();
+      [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (d) {
+        var nr = cur[0] + d[0], nc = cur[1] + d[1];
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !wallGrid[nr][nc] && !isCageInterior(nr, nc) && !seen[nr][nc]) {
+          seen[nr][nc] = true;
+          queue.push([nr, nc]);
+        }
+      });
+    }
+    for (var r2 = 0; r2 < ROWS; r2++) {
+      for (var c2 = 0; c2 < COLS; c2++) {
+        if (!wallGrid[r2][c2] && !isCageInterior(r2, c2) && !seen[r2][c2]) return false;
+      }
+    }
+    return true;
+  }
+
+  var wall = generateMaze(1000, LEVELS[0].loopFactor);
+
+  function cellValid(r, c, isPlayer) {
+    if (r < 0 || r >= ROWS || c < 0 || c >= COLS || wall[r][c]) return false;
+    if (isPlayer && isCageInterior(r, c)) return false;
+    return true;
+  }
+
   var beadPresent, player, enemies, path, beadTotal, beadEaten, state, tickTimer, startTime, elapsed, deathReason, ticksElapsed, lastTickTime, animFrame;
+  var levelStartTime, deathPos, deathParticles, pendingAdvance;
+  var DEATH_DURATION_MS = 1100;
+  var READY_MS = 900;
 
   function lerp(a, b, t) { return a + (b - a) * t; }
 
+  function applyParamsForCurrentLevel() {
+    var def = LEVELS[currentLevel - 1];
+    var mod = DIFFICULTY_MOD[currentDifficulty];
+    params = {
+      tickMs: Math.round(def.tickMs * mod.tickMul),
+      chaseChance: Math.min(0.95, def.chaseChance + mod.chaseAdd),
+      graceTicks: Math.max(3, Math.round(def.graceTicks * mod.graceMul)),
+      enemyCount: def.enemyCount
+    };
+  }
+
+  function loadLevel(levelNum) {
+    currentLevel = levelNum;
+    applyParamsForCurrentLevel();
+    var def = LEVELS[levelNum - 1];
+    wall = generateMaze(1000 + levelNum * 97, def.loopFactor);
+    if (!verifyConnectivity(wall)) {
+      console.warn("Maze connectivity check failed for level " + levelNum + ", regenerating with a fallback seed.");
+      wall = generateMaze(5000 + levelNum, Math.min(0.95, def.loopFactor + 0.3));
+    }
+    $("game-level").textContent = currentLevel + " / " + LEVELS.length;
+  }
+
   function resetGame() {
-    params = DIFFICULTY[currentDifficulty];
     beadPresent = [];
     beadTotal = 0;
     for (var r = 0; r < ROWS; r++) {
       beadPresent[r] = [];
       for (var c = 0; c < COLS; c++) {
-        var has = !wall[r][c] && !(r === PLAYER_START.r && c === PLAYER_START.c);
+        var has = !wall[r][c] && !isCageInterior(r, c) && !(r === PLAYER_START.r && c === PLAYER_START.c);
         beadPresent[r][c] = has;
         if (has) beadTotal++;
       }
     }
     beadEaten = 0;
     player = { r: PLAYER_START.r, c: PLAYER_START.c, prevR: PLAYER_START.r, prevC: PLAYER_START.c, dir: null, nextDir: null };
-    enemies = ENEMY_DEFS.map(function (d) { return { r: d.r, c: d.c, prevR: d.r, prevC: d.c, name: d.name, color: d.color, dir: null }; });
+    enemies = ENEMY_SLOTS.slice(0, params.enemyCount).map(function (d) {
+      return {
+        r: d.r, c: d.c, prevR: d.r, prevC: d.c, name: d.name, color: d.color, dir: null,
+        slotIndex: ENEMY_SLOTS.indexOf(d), releaseTick: d.releaseTick, exitPath: d.exitPath,
+        released: false, free: false, exitIndex: 0
+      };
+    });
     path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
     elapsed = 0;
-    startTime = null;
     deathReason = null;
     ticksElapsed = 0;
     lastTickTime = Date.now();
+    levelStartTime = Date.now();
+    pendingAdvance = false;
     $("game-score").textContent = beadEaten + " / " + beadTotal;
-    $("game-time").textContent = "0.0s";
+    $("game-time").textContent = elapsed.toFixed(1) + "s";
     $("game-status").textContent = "Ready";
+    $("game-level").textContent = currentLevel + " / " + LEVELS.length;
   }
 
   var DIRS = {
@@ -214,7 +394,7 @@
   };
 
   function setNextDir(d) {
-    if (state === "idle") { startGame(); }
+    if (state === "idle") { startRun(); }
     if (state !== "playing") return;
     player.nextDir = d;
   }
@@ -223,7 +403,7 @@
     var options = [];
     ["up", "down", "left", "right"].forEach(function (name) {
       var d = DIRS[name];
-      if (cellValid(e.r + d.dr, e.c + d.dc)) options.push({ name: name, dr: d.dr, dc: d.dc });
+      if (cellValid(e.r + d.dr, e.c + d.dc, false)) options.push({ name: name, dr: d.dr, dc: d.dc });
     });
     if (!options.length) return;
     var choice;
@@ -243,9 +423,28 @@
     e.dir = choice.name;
   }
 
+  function advanceEnemy(e) {
+    if (!e.released) {
+      if (ticksElapsed >= e.releaseTick) e.released = true;
+      return;
+    }
+    if (!e.free) {
+      if (e.exitIndex < e.exitPath.length) {
+        var next = e.exitPath[e.exitIndex];
+        e.r = next.r; e.c = next.c;
+        e.exitIndex++;
+        if (e.exitIndex >= e.exitPath.length) e.free = true;
+      } else {
+        e.free = true;
+      }
+      return;
+    }
+    moveEnemy(e);
+  }
+
   function checkCollision() {
     for (var i = 0; i < enemies.length; i++) {
-      if (enemies[i].r === player.r && enemies[i].c === player.c) return enemies[i];
+      if (enemies[i].free && enemies[i].r === player.r && enemies[i].c === player.c) return enemies[i];
     }
     return null;
   }
@@ -258,13 +457,13 @@
     player.prevC = player.c;
     if (player.nextDir) {
       var nd = DIRS[player.nextDir];
-      if (cellValid(player.r + nd.dr, player.c + nd.dc)) {
+      if (cellValid(player.r + nd.dr, player.c + nd.dc, true)) {
         player.dir = player.nextDir;
       }
     }
     if (player.dir) {
       var d = DIRS[player.dir];
-      if (cellValid(player.r + d.dr, player.c + d.dc)) {
+      if (cellValid(player.r + d.dr, player.c + d.dc, true)) {
         player.r += d.dr;
         player.c += d.dc;
       }
@@ -282,27 +481,58 @@
     enemies.forEach(function (e) {
       e.prevR = e.r;
       e.prevC = e.c;
-      moveEnemy(e);
+      advanceEnemy(e);
     });
 
     var hit = checkCollision();
     if (hit) {
-      endGame("lost", hit.name);
+      startDeath(hit);
       return;
     }
 
     if (beadEaten >= beadTotal) {
-      endGame("won", null);
+      clearInterval(tickTimer);
+      if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+      render(1);
+      if (currentLevel < LEVELS.length) {
+        state = "levelComplete";
+        pendingAdvance = true;
+        $("game-status").textContent = "Level complete";
+        showOverlay(
+          "Level " + currentLevel + " complete!",
+          "On to level " + (currentLevel + 1) + " of " + LEVELS.length + ". The maze gets tighter and the chase gets faster from here.",
+          "Next level"
+        );
+      } else {
+        endGame("won", null);
+      }
       return;
     }
   }
 
-  function startGame() {
+  function startRun() {
+    // A fresh idle start or a full-game win restarts at level 1; retrying
+    // after a loss re-loads the same level (same seed, same maze) rather
+    // than sending the player all the way back to the beginning.
+    loadLevel(state === "won" || state === "idle" ? 1 : currentLevel);
     resetGame();
     state = "playing";
     startTime = Date.now();
     $("game-status").textContent = "Polymerizing";
     hideOverlay();
+    beginTicking();
+  }
+
+  function advanceLevel() {
+    loadLevel(currentLevel + 1);
+    resetGame();
+    state = "playing";
+    $("game-status").textContent = "Polymerizing";
+    hideOverlay();
+    beginTicking();
+  }
+
+  function beginTicking() {
     if (tickTimer) clearInterval(tickTimer);
     tickTimer = setInterval(function () {
       tick();
@@ -319,9 +549,35 @@
     if (state === "playing") animFrame = requestAnimationFrame(frameLoop);
   }
 
+  function startDeath(hit) {
+    state = "dying";
+    deathReason = hit.name;
+    clearInterval(tickTimer);
+    deathPos = { r: player.r, c: player.c };
+    deathParticles = [];
+    var n = 14;
+    for (var i = 0; i < n; i++) {
+      var ang = (Math.PI * 2 * i) / n + (Math.random() - 0.5) * 0.3;
+      var speed = 0.6 + Math.random() * 0.9;
+      deathParticles.push({ vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed, r: 2 + Math.random() * 2.5 });
+    }
+    $("game-status").textContent = "Terminating…";
+    var deathStart = Date.now();
+    if (animFrame) cancelAnimationFrame(animFrame);
+    (function deathFrameLoop() {
+      var t = (Date.now() - deathStart) / DEATH_DURATION_MS;
+      render(1, Math.min(1, t));
+      if (t < 1) {
+        animFrame = requestAnimationFrame(deathFrameLoop);
+      } else {
+        endGame("lost", deathReason);
+      }
+    })();
+  }
+
   function endGame(result, byWhom) {
     state = result;
-    deathReason = byWhom;
+    if (byWhom) deathReason = byWhom;
     clearInterval(tickTimer);
     if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
     render(1);
@@ -329,15 +585,15 @@
     if (result === "won") {
       $("game-status").textContent = "Complete";
       showOverlay(
-        "Polymerization complete! 🎉",
-        "You collected all " + beadTotal + " repeat units" + modeNote + " in " + elapsed.toFixed(1) + " seconds. Ð = 1.00, every bead accounted for.",
+        "Full polymer complete! 🎉",
+        "You cleared all " + LEVELS.length + " levels" + modeNote + " in " + elapsed.toFixed(1) + " total seconds. Ð = 1.00, every bead accounted for.",
         "Play again"
       );
     } else {
       $("game-status").textContent = "Terminated";
       showOverlay(
-        "Chain terminated by " + byWhom + "!",
-        "Your radical made it to " + beadEaten + " of " + beadTotal + " repeat units" + modeNote + " before getting quenched. Try a different route.",
+        "Chain terminated by " + deathReason + "!",
+        "Your radical made it to " + beadEaten + " of " + beadTotal + " repeat units on level " + currentLevel + " of " + LEVELS.length + modeNote + " before getting quenched. Try that level again with a different route.",
         "Try again"
       );
     }
@@ -419,7 +675,7 @@
       ctx.strokeStyle = "#2a1550";
       ctx.lineWidth = 1.3;
       ctx.beginPath(); ctx.moveTo(ex - 3, ey + 5.5); ctx.lineTo(ex + 3, ey + 5.5); ctx.stroke();
-    } else {
+    } else if (e.name === "CTA") {
       ctx.strokeStyle = "rgba(255,255,255,0.65)";
       ctx.lineWidth = 1.4;
       ctx.lineCap = "round";
@@ -433,7 +689,47 @@
       ctx.strokeStyle = "#4a3000";
       ctx.lineWidth = 1.3;
       ctx.beginPath(); ctx.moveTo(ex - 3, ey + 4); ctx.quadraticCurveTo(ex + 1, ey + 7.5, ex + 5, ey + 3); ctx.stroke();
+    } else {
+      // R•, the rival propagating radical: an unpaired-electron dot on a
+      // short bond off the ring, echoing the R• skeletal-formula convention.
+      ctx.strokeStyle = "rgba(255,255,255,0.55)";
+      ctx.lineWidth = 1.3;
+      ctx.beginPath(); ctx.arc(ex, ey, R - 3.5, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(255,255,255,0.75)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(ex + 3, ey - 5); ctx.lineTo(ex + 7.5, ey - 9.5); ctx.stroke();
+      ctx.fillStyle = "#fff";
+      ctx.beginPath(); ctx.arc(ex + 9, ey - 11, 2.2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#5a0e33";
+      ctx.beginPath(); ctx.arc(ex - 3.5, ey + 0.5, 1.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(ex + 3.5, ey + 0.5, 1.4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#5a0e33";
+      ctx.lineWidth = 1.3;
+      ctx.beginPath(); ctx.arc(ex, ey + 4, 2.6, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
     }
+  }
+
+  function drawDeath(t) {
+    var fade = Math.max(0, 1 - t);
+    var cxp = cx(deathPos.c), cyp = cy(deathPos.r);
+    ctx.globalAlpha = fade;
+    ctx.fillStyle = "#e8fff6";
+    ctx.shadowColor = "#8fffe0";
+    ctx.shadowBlur = 8 * fade;
+    ctx.beginPath();
+    ctx.arc(cxp, cyp, 9.5 * fade, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    deathParticles.forEach(function (p) {
+      var x = cxp + p.vx * t * 42;
+      var y = cyp + p.vy * t * 42;
+      var rad = Math.max(0, p.r * fade);
+      ctx.fillStyle = "#8fffe0";
+      ctx.beginPath();
+      ctx.arc(x, y, rad, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
   }
 
   function drawPlayer(px, py) {
@@ -466,7 +762,7 @@
     ctx.beginPath(); ctx.arc(px, py, 3.2, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
   }
 
-  function render(t) {
+  function render(t, deathT) {
     if (t == null) t = 1;
     ctx.fillStyle = "#0b0f1a";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -519,12 +815,28 @@
     enemies.forEach(function (e) {
       var er = lerp(e.prevR, e.r, t);
       var ec = lerp(e.prevC, e.c, t);
-      drawEnemy(e, cx(ec), cy(er));
+      var ex = cx(ec), ey = cy(er);
+      if (!e.free) ey += Math.sin(Date.now() / 220 + e.slotIndex * 1.7) * 2.2;
+      drawEnemy(e, ex, ey);
     });
 
-    var pr = lerp(player.prevR, player.r, t);
-    var pc = lerp(player.prevC, player.c, t);
-    drawPlayer(cx(pc), cy(pr));
+    if (state === "dying" && deathPos) {
+      drawDeath(deathT == null ? 1 : deathT);
+    } else {
+      var pr = lerp(player.prevR, player.r, t);
+      var pc = lerp(player.prevC, player.c, t);
+      drawPlayer(cx(pc), cy(pr));
+    }
+
+    if (state === "playing" && levelStartTime && Date.now() - levelStartTime < READY_MS) {
+      var readyFade = 1 - (Date.now() - levelStartTime) / READY_MS;
+      ctx.globalAlpha = Math.min(1, readyFade * 1.6);
+      ctx.fillStyle = "#f2d24b";
+      ctx.font = "bold 22px 'Segoe UI', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("READY!", canvas.width / 2, cy(PLAYER_START.r) + 42);
+      ctx.globalAlpha = 1;
+    }
   }
 
   document.querySelectorAll(".game-dpad button").forEach(function (btn) {
@@ -537,7 +849,8 @@
         opt.classList.toggle("checked", opt.querySelector("input").checked);
       });
       currentDifficulty = document.querySelector('input[name="game-difficulty"]:checked').value;
-      if (state !== "playing") resetGame();
+      applyParamsForCurrentLevel();
+      if (state !== "playing" && state !== "dying") resetGame();
     });
   });
 
@@ -553,12 +866,20 @@
     setNextDir(d);
   });
 
-  $("game-start-btn").addEventListener("click", startGame);
+  $("game-start-btn").addEventListener("click", function () {
+    if (pendingAdvance) advanceLevel();
+    else startRun();
+  });
 
   state = "idle";
+  loadLevel(1);
   resetGame();
   render();
-  showOverlay("Build a Polymer Chain", "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, and the chain transfer agent, they'll terminate your chain on contact.", "Start polymerizing");
+  showOverlay(
+    "Build a Polymer Chain",
+    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical, they'll terminate your chain on contact. Enemies start penned in a cage and release gradually, across 10 levels of increasing difficulty.",
+    "Start polymerizing"
+  );
 })();
 </script>
 
