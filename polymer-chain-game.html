@@ -45,7 +45,7 @@
   <div class="topbar-inner topbar-row">
     <div>
       <h1>Build a Polymer Chain</h1>
-      <p class="subtitle">Collect every monomer bead before your radical gets terminated, across 10 levels of increasing difficulty</p>
+      <p class="subtitle">Collect every monomer bead before your radical gets terminated, across 10 levels of increasing 8-bit maze mayhem</p>
     </div>
     <div class="guide-links">
       <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
@@ -83,6 +83,10 @@
         <div class="value" id="game-time">0.0s</div>
       </div>
       <div class="stat">
+        <div class="label">Lives</div>
+        <div class="value" id="game-lives" style="color:#8fffe0;letter-spacing:2px;">&#9679;&#9679;&#9679;</div>
+      </div>
+      <div class="stat">
         <div class="label">Status</div>
         <div class="value" id="game-status" style="font-size:1rem;">Ready</div>
       </div>
@@ -110,6 +114,7 @@
         <span><span class="dot" style="background:#a78bfa"></span> Inhibitor</span>
         <span><span class="dot" style="background:#f2b84b"></span> Chain transfer agent</span>
         <span><span class="dot" style="background:#f472b6"></span> Rival radical (level 8+)</span>
+        <span><span class="dot" style="background:#ffe14d"></span> Initiator (power up)</span>
       </div>
     </div>
   </div>
@@ -121,7 +126,8 @@
       <li>Collect every bead in the maze to win the level. There's no rush, but the clock is running if you want to compare runs.</li>
       <li>Ten levels, each with its own maze, tighter corridors and quicker enemies as you climb. Clear level 10 to finish the polymer for good.</li>
       <li>Enemies start held in a cage at the center of the maze and release one by one after a brief pause, mimicking a classic maze chase game. The longer a level runs, the more of them are loose.</li>
-      <li>Touching an enemy doesn't end things instantly. Your chain end takes a moment to disintegrate before the run ends, so watch it go. Press restart and try again with a different route.</li>
+      <li>You have <strong>3 lives</strong>. Touching an enemy costs one life. Your chain end disintegrates, then you respawn at the start with the beads you already collected still counted. Lose all three and the game is over.</li>
+      <li>Grab an <strong>initiator</strong>, the flashing hollow ring, to flip the tables for a few seconds. Enemies turn blue and edible, and running into one sends it straight back to the cage instead of ending your life. Up to three initiators sit in the corners of each maze.</li>
       <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly, on every level.</li>
     </ul>
   </div>
@@ -136,6 +142,7 @@
       <li><strong>Inhibitors</strong> are added deliberately to monomer stock (to prevent it polymerizing in the bottle) and scavenge the first radicals that form, which is also why an induction period shows up before a monomer that hasn't been purified starts converting.</li>
       <li><strong>Chain transfer agents</strong> hand the radical off to a new molecule on purpose, ending one chain and starting another, which is exactly the mechanism RAFT is built around; see <a href="mechanisms.html">Polymerization Mechanisms</a> for the real reaction schemes.</li>
       <li><strong>Rival radicals</strong> show up once things get crowded on level 8 and beyond: two propagating chains meeting is termination by combination, one of the two ways a radical chain naturally dies even with nothing else around to blame.</li>
+      <li><strong>Initiators</strong> are the molecules that kick a radical polymerization off in the first place, splitting into fresh radicals that start new chains. Grabbing one here is a nod to that burst of reactivity: for a moment your chain end is the aggressor and the terminators are the ones running for cover.</li>
     </ul>
   </div>
 
@@ -151,6 +158,9 @@
 
   var COLS = 19, ROWS = 15, CELL = 26;
   var PALETTE = ["#5b8def", "#37c98f", "#f2b84b", "#ef6a6a", "#a78bfa", "#4fd1c5", "#f472b6"];
+  var LIVES_START = 3;
+  var POWER_TICKS = 45;
+  var CAGE_RETURN_TICKS = 16;
 
   var DIFFICULTY_MOD = {
     normal: { tickMul: 1, chaseAdd: 0, graceMul: 1 },
@@ -180,6 +190,7 @@
   canvas.width = COLS * CELL;
   canvas.height = ROWS * CELL;
   var ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
 
   // --- Cage geometry (fixed across every level, like a ghost house) ---------
   // Cage occupies the 3x3 block of maze cells at rows {5,7,9} x cols {7,9,11},
@@ -325,6 +336,7 @@
 
   var beadPresent, player, enemies, path, beadTotal, beadEaten, state, tickTimer, startTime, elapsed, deathReason, ticksElapsed, lastTickTime, animFrame;
   var levelStartTime, deathPos, deathParticles, pendingAdvance;
+  var lives, powerTicksRemaining, initiators;
   var DEATH_DURATION_MS = 1100;
   var READY_MS = 900;
 
@@ -353,6 +365,54 @@
     $("game-level").textContent = currentLevel + " / " + LEVELS.length;
   }
 
+  function spawnEnemies() {
+    enemies = ENEMY_SLOTS.slice(0, params.enemyCount).map(function (d) {
+      return {
+        r: d.r, c: d.c, prevR: d.r, prevC: d.c, name: d.name, color: d.color, dir: null,
+        slotIndex: ENEMY_SLOTS.indexOf(d), releaseTick: d.releaseTick, exitPath: d.exitPath,
+        released: false, free: false, exitIndex: 0
+      };
+    });
+  }
+
+  // Places up to three initiator power-ups, one per randomly chosen corner
+  // region, on cells that would otherwise hold a repeat-unit bead (the bead is
+  // consumed so it no longer counts toward the level total). Fewer than three
+  // can appear if a dense maze leaves a corner region with no open cell.
+  function placeInitiators() {
+    var regions = [
+      { r0: 1, r1: 4, c0: 1, c1: 5 },
+      { r0: 1, r1: 4, c0: 13, c1: 17 },
+      { r0: 10, r1: 13, c0: 1, c1: 5 },
+      { r0: 10, r1: 13, c0: 13, c1: 17 }
+    ];
+    for (var i = regions.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = regions[i]; regions[i] = regions[j]; regions[j] = tmp;
+    }
+    var placed = [];
+    for (var k = 0; k < regions.length && placed.length < 3; k++) {
+      var reg = regions[k], cands = [];
+      for (var r = reg.r0; r <= reg.r1; r++) {
+        for (var c = reg.c0; c <= reg.c1; c++) {
+          if (r >= 0 && r < ROWS && c >= 0 && c < COLS && beadPresent[r][c]) cands.push({ r: r, c: c });
+        }
+      }
+      if (cands.length) {
+        var pick = cands[Math.floor(Math.random() * cands.length)];
+        beadPresent[pick.r][pick.c] = false;
+        beadTotal--;
+        placed.push(pick);
+      }
+    }
+    return placed;
+  }
+
+  function updateLivesHud() {
+    var v = $("game-lives");
+    if (v) v.textContent = lives > 0 ? new Array(lives + 1).join("●") : "—";
+  }
+
   function resetGame() {
     beadPresent = [];
     beadTotal = 0;
@@ -366,13 +426,9 @@
     }
     beadEaten = 0;
     player = { r: PLAYER_START.r, c: PLAYER_START.c, prevR: PLAYER_START.r, prevC: PLAYER_START.c, dir: null, nextDir: null };
-    enemies = ENEMY_SLOTS.slice(0, params.enemyCount).map(function (d) {
-      return {
-        r: d.r, c: d.c, prevR: d.r, prevC: d.c, name: d.name, color: d.color, dir: null,
-        slotIndex: ENEMY_SLOTS.indexOf(d), releaseTick: d.releaseTick, exitPath: d.exitPath,
-        released: false, free: false, exitIndex: 0
-      };
-    });
+    spawnEnemies();
+    initiators = placeInitiators();
+    powerTicksRemaining = 0;
     path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
     elapsed = 0;
     deathReason = null;
@@ -384,6 +440,32 @@
     $("game-time").textContent = elapsed.toFixed(1) + "s";
     $("game-status").textContent = "Ready";
     $("game-level").textContent = currentLevel + " / " + LEVELS.length;
+    updateLivesHud();
+  }
+
+  // A soft reset after losing a life: keep the maze, the beads already
+  // collected, and the remaining initiators, but return the player to the
+  // start and re-cage every enemy so the level continues from where it was.
+  function respawn() {
+    player = { r: PLAYER_START.r, c: PLAYER_START.c, prevR: PLAYER_START.r, prevC: PLAYER_START.c, dir: null, nextDir: null };
+    spawnEnemies();
+    path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
+    ticksElapsed = 0;
+    powerTicksRemaining = 0;
+    lastTickTime = Date.now();
+    levelStartTime = Date.now();
+    startTime = Date.now();
+    state = "playing";
+    $("game-status").textContent = "Polymerizing";
+    hideOverlay();
+    beginTicking();
+  }
+
+  function sendToCage(e) {
+    var slot = ENEMY_SLOTS[e.slotIndex];
+    e.r = slot.r; e.c = slot.c; e.prevR = slot.r; e.prevC = slot.c;
+    e.released = false; e.free = false; e.exitIndex = 0; e.dir = null;
+    e.releaseTick = ticksElapsed + CAGE_RETURN_TICKS;
   }
 
   var DIRS = {
@@ -442,16 +524,14 @@
     moveEnemy(e);
   }
 
-  function checkCollision() {
-    for (var i = 0; i < enemies.length; i++) {
-      if (enemies[i].free && enemies[i].r === player.r && enemies[i].c === player.c) return enemies[i];
-    }
-    return null;
-  }
-
   function tick() {
     ticksElapsed++;
     lastTickTime = Date.now();
+
+    if (powerTicksRemaining > 0) {
+      powerTicksRemaining--;
+      if (powerTicksRemaining === 0) $("game-status").textContent = "Polymerizing";
+    }
 
     player.prevR = player.r;
     player.prevC = player.c;
@@ -478,16 +558,34 @@
     }
     path.push({ r: player.r, c: player.c, bead: ateHere });
 
+    if (initiators && initiators.length) {
+      for (var ii = 0; ii < initiators.length; ii++) {
+        if (initiators[ii].r === player.r && initiators[ii].c === player.c) {
+          initiators.splice(ii, 1);
+          powerTicksRemaining = POWER_TICKS;
+          $("game-status").textContent = "Initiated!";
+          break;
+        }
+      }
+    }
+
     enemies.forEach(function (e) {
       e.prevR = e.r;
       e.prevC = e.c;
       advanceEnemy(e);
     });
 
-    var hit = checkCollision();
-    if (hit) {
-      startDeath(hit);
-      return;
+    var collided = [];
+    for (var ci = 0; ci < enemies.length; ci++) {
+      if (enemies[ci].free && enemies[ci].r === player.r && enemies[ci].c === player.c) collided.push(enemies[ci]);
+    }
+    if (collided.length) {
+      if (powerTicksRemaining > 0) {
+        collided.forEach(sendToCage);
+      } else {
+        startDeath(collided[0]);
+        return;
+      }
     }
 
     if (beadEaten >= beadTotal) {
@@ -511,9 +609,12 @@
   }
 
   function startRun() {
-    // A fresh idle start or a full-game win restarts at level 1; retrying
-    // after a loss re-loads the same level (same seed, same maze) rather
-    // than sending the player all the way back to the beginning.
+    // startRun always begins a fresh set of lives: it fires from an idle start,
+    // a full-game win, or a game over (lives exhausted). Losing a single life
+    // mid-run goes through respawn(), not here. A game over re-loads the same
+    // level so the player picks up where they were stuck rather than at level 1.
+    lives = LIVES_START;
+    updateLivesHud();
     loadLevel(state === "won" || state === "idle" ? 1 : currentLevel);
     resetGame();
     state = "playing";
@@ -553,6 +654,8 @@
     state = "dying";
     deathReason = hit.name;
     clearInterval(tickTimer);
+    lives--;
+    updateLivesHud();
     deathPos = { r: player.r, c: player.c };
     deathParticles = [];
     var n = 14;
@@ -561,7 +664,7 @@
       var speed = 0.6 + Math.random() * 0.9;
       deathParticles.push({ vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed, r: 2 + Math.random() * 2.5 });
     }
-    $("game-status").textContent = "Terminating…";
+    $("game-status").textContent = lives > 0 ? "Chain snapped" : "Terminating…";
     var deathStart = Date.now();
     if (animFrame) cancelAnimationFrame(animFrame);
     (function deathFrameLoop() {
@@ -569,6 +672,8 @@
       render(1, Math.min(1, t));
       if (t < 1) {
         animFrame = requestAnimationFrame(deathFrameLoop);
+      } else if (lives > 0) {
+        respawn();
       } else {
         endGame("lost", deathReason);
       }
@@ -590,10 +695,10 @@
         "Play again"
       );
     } else {
-      $("game-status").textContent = "Terminated";
+      $("game-status").textContent = "Game over";
       showOverlay(
-        "Chain terminated by " + deathReason + "!",
-        "Your radical made it to " + beadEaten + " of " + beadTotal + " repeat units on level " + currentLevel + " of " + LEVELS.length + modeNote + " before getting quenched. Try that level again with a different route.",
+        "Out of lives! Terminated by " + deathReason + ".",
+        "All three chains quenched on level " + currentLevel + " of " + LEVELS.length + modeNote + ", the last at " + beadEaten + " of " + beadTotal + " repeat units. Restart this level with a fresh three lives.",
         "Try again"
       );
     }
@@ -607,189 +712,171 @@
   }
   function hideOverlay() { $("game-overlay").style.display = "none"; }
 
-  function drawRoundedRect(x, y, w, h, rad, color) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(x + rad, y);
-    ctx.arcTo(x + w, y, x + w, y + h, rad);
-    ctx.arcTo(x + w, y + h, x, y + h, rad);
-    ctx.arcTo(x, y + h, x, y, rad);
-    ctx.arcTo(x, y, x + w, y, rad);
-    ctx.closePath();
-    ctx.fill();
-  }
-
   function cx(c) { return c * CELL + CELL / 2; }
   function cy(r) { return r * CELL + CELL / 2; }
 
-  function drawBeadShine(x, y, r) {
-    ctx.fillStyle = "rgba(255,255,255,0.55)";
-    ctx.beginPath();
-    ctx.ellipse(x - r * 0.32, y - r * 0.32, r * 0.34, r * 0.2, -0.6, 0, Math.PI * 2);
-    ctx.fill();
+  // 8-bit beveled wall block: flat blue face with a lighter top-left highlight
+  // and a darker bottom-right shadow, the classic pixel-art raised-tile look.
+  function drawWall(gx, gy) {
+    ctx.fillStyle = "#2a53c4";
+    ctx.fillRect(gx, gy, CELL, CELL);
+    ctx.fillStyle = "#5b83e6";
+    ctx.fillRect(gx, gy, CELL, 2);
+    ctx.fillRect(gx, gy, 2, CELL);
+    ctx.fillStyle = "#16307a";
+    ctx.fillRect(gx, gy + CELL - 2, CELL, 2);
+    ctx.fillRect(gx + CELL - 2, gy, 2, CELL);
   }
 
-  function drawEnemy(e, ex, ey) {
-    var R = 11;
-    ctx.fillStyle = e.color;
-    ctx.beginPath();
-    ctx.arc(ex, ey, R, 0, Math.PI * 2);
-    ctx.fill();
-    drawBeadShine(ex, ey, R);
+  function drawBeadPixel(x, y) {
+    var bx = Math.round(x), by = Math.round(y);
+    ctx.fillStyle = "#8fb8ff";
+    ctx.fillRect(bx - 2, by - 2, 4, 4);
+    ctx.fillStyle = "#d6e6ff";
+    ctx.fillRect(bx - 2, by - 2, 2, 2);
+  }
 
-    if (e.name === "O₂") {
-      ctx.fillStyle = e.color;
-      ctx.globalAlpha = 0.85;
-      ctx.beginPath();
-      ctx.arc(ex + 9, ey - 8, 5.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = "#3a0d0d";
-      ctx.lineWidth = 1.4;
-      ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(ex - 6, ey - 4); ctx.lineTo(ex - 2, ey - 1.5); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(ex + 2, ey - 1.5); ctx.lineTo(ex + 6, ey - 4); ctx.stroke();
-      ctx.fillStyle = "#1c0505";
-      ctx.beginPath(); ctx.arc(ex - 3.5, ey + 0.5, 1.4, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(ex + 3.5, ey + 0.5, 1.4, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "#1c0505";
-      ctx.lineWidth = 1.3;
-      ctx.beginPath();
-      ctx.moveTo(ex - 4, ey + 5.5); ctx.lineTo(ex - 1.5, ey + 3.5); ctx.lineTo(ex + 1.5, ey + 6.5); ctx.lineTo(ex + 4, ey + 4.5);
-      ctx.stroke();
-    } else if (e.name === "Inh") {
-      ctx.fillStyle = "rgba(255,255,255,0.35)";
-      ctx.beginPath();
-      ctx.moveTo(ex, ey - 14); ctx.lineTo(ex + 4.5, ey - 12); ctx.lineTo(ex + 4.5, ey - 7);
-      ctx.lineTo(ex, ey - 4); ctx.lineTo(ex - 4.5, ey - 7); ctx.lineTo(ex - 4.5, ey - 12);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = "#2a1550";
-      ctx.lineWidth = 1.4;
-      ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(ex - 5.5, ey - 2.5); ctx.lineTo(ex - 2, ey - 2.5); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(ex + 2, ey - 2.5); ctx.lineTo(ex + 5.5, ey - 2.5); ctx.stroke();
-      ctx.fillStyle = "#2a1550";
-      ctx.beginPath(); ctx.arc(ex - 3.5, ey + 1, 1.4, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(ex + 3.5, ey + 1, 1.4, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "#2a1550";
-      ctx.lineWidth = 1.3;
-      ctx.beginPath(); ctx.moveTo(ex - 3, ey + 5.5); ctx.lineTo(ex + 3, ey + 5.5); ctx.stroke();
-    } else if (e.name === "CTA") {
-      ctx.strokeStyle = "rgba(255,255,255,0.65)";
-      ctx.lineWidth = 1.4;
-      ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(ex - 9, ey - 9); ctx.quadraticCurveTo(ex - 2, ey - 15, ex + 6, ey - 10); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(ex + 3, ey - 12.5); ctx.lineTo(ex + 6, ey - 10); ctx.lineTo(ex + 2.5, ey - 8); ctx.stroke();
-      ctx.strokeStyle = "#4a3000";
-      ctx.lineWidth = 1.3;
-      ctx.beginPath(); ctx.arc(ex - 3.5, ey + 0.5, 1.6, Math.PI * 0.1, Math.PI * 0.9); ctx.stroke();
-      ctx.fillStyle = "#4a3000";
-      ctx.beginPath(); ctx.arc(ex + 3.5, ey, 1.4, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "#4a3000";
-      ctx.lineWidth = 1.3;
-      ctx.beginPath(); ctx.moveTo(ex - 3, ey + 4); ctx.quadraticCurveTo(ex + 1, ey + 7.5, ex + 5, ey + 3); ctx.stroke();
-    } else {
-      // R•, the rival propagating radical: an unpaired-electron dot on a
-      // short bond off the ring, echoing the R• skeletal-formula convention.
-      ctx.strokeStyle = "rgba(255,255,255,0.55)";
-      ctx.lineWidth = 1.3;
-      ctx.beginPath(); ctx.arc(ex, ey, R - 3.5, 0, Math.PI * 2); ctx.stroke();
-      ctx.strokeStyle = "rgba(255,255,255,0.75)";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.moveTo(ex + 3, ey - 5); ctx.lineTo(ex + 7.5, ey - 9.5); ctx.stroke();
+  // Hollow, flashing pixel ring for the initiator power-up.
+  function drawInitiator(x, y) {
+    var col = Math.floor(Date.now() / 200) % 2 === 0 ? "#ffe14d" : "#ff8a3d";
+    var ps = 2, n = 11, half = (n - 1) / 2, R = 5.2, Rin = 3.1;
+    var ox = Math.round(x - n * ps / 2), oy = Math.round(y - n * ps / 2);
+    ctx.fillStyle = col;
+    for (var gy = 0; gy < n; gy++) {
+      for (var gx = 0; gx < n; gx++) {
+        var dx = gx - half, dy = gy - half, d2 = dx * dx + dy * dy;
+        if (d2 <= R * R && d2 >= Rin * Rin) ctx.fillRect(ox + gx * ps, oy + gy * ps, ps, ps);
+      }
+    }
+  }
+
+  // Classic pixel-ghost body: domed top, three-toothed skirt. Enemies are
+  // distinguished by color (matching the legend); a power-up flips them all to
+  // the frightened blue/white sprite so it reads instantly.
+  var GHOST_BODY = [
+    "....####....",
+    "..########..",
+    ".##########.",
+    ".##########.",
+    "############",
+    "############",
+    "############",
+    "############",
+    "############",
+    "############",
+    "##.##..##.##",
+    "#...#..#...#"
+  ];
+
+  function drawEnemy(e, ex, ey) {
+    var ps = 2, n = 12;
+    var ox = Math.round(ex - n * ps / 2), oy = Math.round(ey - n * ps / 2);
+    var frightened = powerTicksRemaining > 0 && e.free;
+    var flashing = frightened && powerTicksRemaining <= 8 && Math.floor(Date.now() / 120) % 2 === 0;
+    var body = frightened ? (flashing ? "#f4f4ff" : "#2b3df2") : e.color;
+
+    ctx.fillStyle = body;
+    for (var gy = 0; gy < GHOST_BODY.length; gy++) {
+      var row = GHOST_BODY[gy];
+      for (var gx = 0; gx < row.length; gx++) {
+        if (row.charAt(gx) === "#") ctx.fillRect(ox + gx * ps, oy + gy * ps, ps, ps);
+      }
+    }
+
+    if (frightened) {
+      ctx.fillStyle = flashing ? "#e2223d" : "#f4f4ff";
+      ctx.fillRect(ox + 4 * ps, oy + 4 * ps, 2 * ps, 2 * ps);
+      ctx.fillRect(ox + 7 * ps, oy + 4 * ps, 2 * ps, 2 * ps);
+      var mouthY = [8, 7, 8, 7, 8, 7, 8];
+      for (var mx = 0; mx < mouthY.length; mx++) {
+        ctx.fillRect(ox + (2 + mx) * ps, oy + mouthY[mx] * ps, ps, ps);
+      }
+      return;
+    }
+
+    // Direction-tracking eyes: white sclera with a pupil nudged toward travel.
+    var lx = ox + 3 * ps, rx = ox + 7 * ps, eyeY = oy + 4 * ps;
+    ctx.fillStyle = "#f4f4ff";
+    ctx.fillRect(lx, eyeY, 2 * ps, 3 * ps);
+    ctx.fillRect(rx, eyeY, 2 * ps, 3 * ps);
+    var pdx = e.dir === "left" ? -1 : e.dir === "right" ? 1 : 0;
+    var pdy = e.dir === "up" ? -1 : e.dir === "down" ? 1 : 0;
+    ctx.fillStyle = "#101038";
+    ctx.fillRect(lx + ps + pdx * ps, eyeY + ps + pdy * ps, ps, ps);
+    ctx.fillRect(rx + ps + pdx * ps, eyeY + ps + pdy * ps, ps, ps);
+    if (e.name === "R•") {
       ctx.fillStyle = "#fff";
-      ctx.beginPath(); ctx.arc(ex + 9, ey - 11, 2.2, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#5a0e33";
-      ctx.beginPath(); ctx.arc(ex - 3.5, ey + 0.5, 1.4, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(ex + 3.5, ey + 0.5, 1.4, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "#5a0e33";
-      ctx.lineWidth = 1.3;
-      ctx.beginPath(); ctx.arc(ex, ey + 4, 2.6, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+      ctx.fillRect(ox + 9 * ps, oy + ps, ps, ps);
+      ctx.fillRect(ox + 10 * ps, oy, ps, ps);
     }
   }
 
   function drawDeath(t) {
     var fade = Math.max(0, 1 - t);
     var cxp = cx(deathPos.c), cyp = cy(deathPos.r);
-    ctx.globalAlpha = fade;
-    ctx.fillStyle = "#e8fff6";
-    ctx.shadowColor = "#8fffe0";
-    ctx.shadowBlur = 8 * fade;
-    ctx.beginPath();
-    ctx.arc(cxp, cyp, 9.5 * fade, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
+    var R = Math.round(6 * fade);
+    if (R > 0) {
+      ctx.fillStyle = "#e8fff6";
+      ctx.fillRect(cxp - R, cyp - R, R * 2, R * 2);
+    }
     deathParticles.forEach(function (p) {
-      var x = cxp + p.vx * t * 42;
-      var y = cyp + p.vy * t * 42;
-      var rad = Math.max(0, p.r * fade);
-      ctx.fillStyle = "#8fffe0";
-      ctx.beginPath();
-      ctx.arc(x, y, rad, 0, Math.PI * 2);
-      ctx.fill();
+      var x = Math.round(cxp + p.vx * t * 46);
+      var y = Math.round(cyp + p.vy * t * 46);
+      var s = Math.max(0, Math.round(p.r * fade));
+      if (s <= 0) return;
+      ctx.fillStyle = (x + y) % 4 === 0 ? "#8fffe0" : "#e8fff6";
+      ctx.fillRect(x - s, y - s, s * 2, s * 2);
     });
-    ctx.globalAlpha = 1;
   }
 
-  function drawPlayer(px, py) {
-    var pulse = 9.5 + Math.sin(Date.now() / 180) * 1.2;
-
-    var sparkAngleBase = Date.now() / 260;
-    ctx.strokeStyle = "rgba(143,255,224,0.8)";
-    ctx.lineWidth = 1.4;
-    ctx.lineCap = "round";
-    for (var i = 0; i < 4; i++) {
-      var ang = sparkAngleBase + i * (Math.PI / 2);
-      var x1 = px + Math.cos(ang) * (pulse + 1.5), y1 = py + Math.sin(ang) * (pulse + 1.5);
-      var x2 = px + Math.cos(ang) * (pulse + 5), y2 = py + Math.sin(ang) * (pulse + 5);
-      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  // Pixel pac-style disc with an animated wedge mouth that opens toward travel.
+  function drawPlayer(px, py, dir) {
+    var ps = 2, n = 12, cg = (n - 1) / 2, R = 5.5;
+    var openHalf = (0.14 + 0.13 * Math.abs(Math.sin(Date.now() / 150))) * Math.PI;
+    var base = dir === "left" ? Math.PI : dir === "up" ? -Math.PI / 2 : dir === "down" ? Math.PI / 2 : 0;
+    var ox = Math.round(px - n * ps / 2), oy = Math.round(py - n * ps / 2);
+    ctx.fillStyle = powerTicksRemaining > 0 ? "#a9ffe9" : "#e8fff6";
+    for (var gy = 0; gy < n; gy++) {
+      for (var gx = 0; gx < n; gx++) {
+        var dx = gx - cg, dy = gy - cg;
+        if (dx * dx + dy * dy > R * R) continue;
+        var ang = Math.atan2(dy, dx);
+        var da = Math.atan2(Math.sin(ang - base), Math.cos(ang - base));
+        if (Math.abs(da) < openHalf) continue;
+        ctx.fillRect(ox + gx * ps, oy + gy * ps, ps, ps);
+      }
     }
-
-    ctx.fillStyle = "#e8fff6";
-    ctx.shadowColor = "#8fffe0";
-    ctx.shadowBlur = 10;
-    ctx.beginPath();
-    ctx.arc(px, py, pulse, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
     ctx.fillStyle = "#0b1f1a";
-    ctx.beginPath(); ctx.arc(px - 3, py - 1, 1.3, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(px + 3, py - 1, 1.3, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = "#0b1f1a";
-    ctx.lineWidth = 1.3;
-    ctx.beginPath(); ctx.arc(px, py, 3.2, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+    var eyeX, eyeY;
+    if (dir === "up" || dir === "down") { eyeX = ox + 3 * ps; eyeY = oy + Math.round(cg) * ps; }
+    else { eyeX = ox + Math.round(cg) * ps; eyeY = oy + 3 * ps; }
+    ctx.fillRect(eyeX, eyeY, ps, ps);
   }
 
   function render(t, deathT) {
     if (t == null) t = 1;
-    ctx.fillStyle = "#0b0f1a";
+    ctx.fillStyle = "#07070f";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#1c2b4a";
     for (var r = 0; r < ROWS; r++) {
       for (var c = 0; c < COLS; c++) {
-        if (wall[r][c]) drawRoundedRect(c * CELL + 2, r * CELL + 2, CELL - 4, CELL - 4, 5, "#1c2b4a");
+        if (wall[r][c]) drawWall(c * CELL, r * CELL);
       }
     }
 
     for (var r2 = 0; r2 < ROWS; r2++) {
       for (var c2 = 0; c2 < COLS; c2++) {
-        if (beadPresent[r2][c2]) {
-          ctx.fillStyle = "#8fb8ff";
-          ctx.beginPath();
-          ctx.arc(cx(c2), cy(r2), 3.2, 0, Math.PI * 2);
-          ctx.fill();
-          drawBeadShine(cx(c2), cy(r2), 3.2);
-        }
+        if (beadPresent[r2][c2]) drawBeadPixel(cx(c2), cy(r2));
       }
     }
 
+    if (initiators) initiators.forEach(function (p) { drawInitiator(cx(p.c), cy(p.r)); });
+
     if (path.length > 1) {
-      ctx.strokeStyle = "rgba(232,255,246,0.55)";
-      ctx.lineWidth = 3;
-      ctx.lineJoin = "round";
+      ctx.strokeStyle = "rgba(180,240,220,0.5)";
+      ctx.lineWidth = 2;
+      ctx.lineJoin = "miter";
+      ctx.lineCap = "butt";
       ctx.beginPath();
       ctx.moveTo(cx(path[0].c), cy(path[0].r));
       for (var i = 1; i < path.length; i++) ctx.lineTo(cx(path[i].c), cy(path[i].r));
@@ -799,16 +886,12 @@
     var paletteIdx = 0;
     path.forEach(function (p) {
       if (p.bead) {
-        var bx = cx(p.c), by = cy(p.r);
+        var bx = Math.round(cx(p.c)), by = Math.round(cy(p.r));
         ctx.fillStyle = PALETTE[paletteIdx % PALETTE.length];
         paletteIdx++;
-        ctx.beginPath();
-        ctx.arc(bx, by, 6.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = "rgba(0,0,0,0.25)";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        drawBeadShine(bx, by, 6.5);
+        ctx.fillRect(bx - 3, by - 3, 6, 6);
+        ctx.fillStyle = "rgba(255,255,255,0.5)";
+        ctx.fillRect(bx - 3, by - 3, 2, 2);
       }
     });
 
@@ -816,7 +899,7 @@
       var er = lerp(e.prevR, e.r, t);
       var ec = lerp(e.prevC, e.c, t);
       var ex = cx(ec), ey = cy(er);
-      if (!e.free) ey += Math.sin(Date.now() / 220 + e.slotIndex * 1.7) * 2.2;
+      if (!e.free) ey += Math.round(Math.sin(Date.now() / 220 + e.slotIndex * 1.7) * 2);
       drawEnemy(e, ex, ey);
     });
 
@@ -825,17 +908,17 @@
     } else {
       var pr = lerp(player.prevR, player.r, t);
       var pc = lerp(player.prevC, player.c, t);
-      drawPlayer(cx(pc), cy(pr));
+      drawPlayer(cx(pc), cy(pr), player.dir);
     }
 
     if (state === "playing" && levelStartTime && Date.now() - levelStartTime < READY_MS) {
-      var readyFade = 1 - (Date.now() - levelStartTime) / READY_MS;
-      ctx.globalAlpha = Math.min(1, readyFade * 1.6);
-      ctx.fillStyle = "#f2d24b";
-      ctx.font = "bold 22px 'Segoe UI', sans-serif";
+      ctx.font = "bold 18px 'Courier New', monospace";
       ctx.textAlign = "center";
+      ctx.fillStyle = "#000";
+      ctx.fillText("READY!", canvas.width / 2 + 1, cy(PLAYER_START.r) + 43);
+      ctx.fillStyle = "#ffe14d";
       ctx.fillText("READY!", canvas.width / 2, cy(PLAYER_START.r) + 42);
-      ctx.globalAlpha = 1;
+      ctx.textAlign = "start";
     }
   }
 
@@ -872,12 +955,13 @@
   });
 
   state = "idle";
+  lives = LIVES_START;
   loadLevel(1);
   resetGame();
   render();
   showOverlay(
     "Build a Polymer Chain",
-    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical, they'll terminate your chain on contact. Enemies start penned in a cage and release gradually, across 10 levels of increasing difficulty.",
+    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical. You get 3 lives per game. Grab a flashing initiator ring to turn the enemies edible for a few seconds and knock them back to the cage. Ten levels, all rendered in 8-bit.",
     "Start polymerizing"
   );
 })();
