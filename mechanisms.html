@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Polymerization Mechanisms: PolyTechniques</title>
-<meta name="description" content="How ATRP, RAFT, ROMP, and FRP actually build a chain: reaction schemes and the 'why' behind each technique's controlled (or uncontrolled) character.">
+<meta name="description" content="How ATRP, RAFT, ROMP, FRP, polyurethanes, and emulsion polymerization actually build a chain: reaction schemes and the 'why' behind each technique's character.">
 <link rel="canonical" href="https://getpolytechniques.com/mechanisms.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="PolyTechniques">
 <meta property="og:title" content="Polymerization Mechanisms: PolyTechniques">
-<meta property="og:description" content="How ATRP, RAFT, ROMP, and FRP actually build a chain, and the 'why' behind each technique's controlled character.">
+<meta property="og:description" content="How ATRP, RAFT, ROMP, FRP, polyurethanes, and emulsion polymerization actually build a chain, and the 'why' behind each one's character.">
 <meta property="og:url" content="https://getpolytechniques.com/mechanisms.html">
 <meta property="og:image" content="https://getpolytechniques.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="628">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Polymerization Mechanisms: PolyTechniques">
-<meta name="twitter:description" content="How ATRP, RAFT, ROMP, and FRP actually build a chain, reaction schemes included.">
+<meta name="twitter:description" content="How ATRP, RAFT, ROMP, FRP, polyurethanes, and emulsion polymerization actually build a chain, reaction schemes included.">
 <meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
 <script type="application/ld+json">
 {
@@ -24,7 +24,7 @@
   "@type": "TechArticle",
   "headline": "Polymerization Mechanisms",
   "url": "https://getpolytechniques.com/mechanisms.html",
-  "description": "How ATRP, RAFT, ROMP, and FRP actually build a chain: reaction schemes and the 'why' behind each technique's controlled (or uncontrolled) character.",
+  "description": "How ATRP, RAFT, ROMP, FRP, polyurethanes, and emulsion polymerization actually build a chain: reaction schemes and the 'why' behind each technique's character.",
   "author": { "@type": "Person", "name": "Nicholas Pierini" },
   "publisher": { "@type": "Organization", "name": "PolyTechniques" },
   "mainEntityOfPage": "https://getpolytechniques.com/mechanisms.html"
@@ -44,7 +44,7 @@
   <div class="topbar-inner topbar-row">
     <div>
       <h1>Polymerization Mechanisms</h1>
-      <p class="subtitle">How ATRP, RAFT, ROMP &amp; free radical polymerization actually build a chain</p>
+      <p class="subtitle">How ATRP, RAFT, ROMP, FRP, polyurethanes &amp; emulsion polymerization actually build a chain</p>
     </div>
     <div class="guide-links">
       <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
@@ -331,6 +331,132 @@
 
     <p class="guide-note">
       There's no dormant state and no equilibrium bringing a chain back once it's a radical. Each chain simply propagates at rate <em>k</em><sub>p</sub>[M] until it terminates (or transfers), which typically happens in well under a second. Because initiator decomposition (<em>k</em><sub>d</sub>) is slow and continuous, new chains keep starting throughout the whole reaction while earlier chains have already terminated, so the population is a statistical mix of chain lengths (kinetic chain length set by <em>k</em><sub>p</sub>, <em>k</em><sub>t</sub>, and the steady state radical concentration) rather than the narrow distribution set by the feed ratio that you get from ATRP/RAFT/ROMP. This is exactly why the calculator's FRP tab treats Mₙ as a simplified estimate rather than a precise design target.
+    </p>
+  </div>
+
+  <div class="card" id="pu-mech">
+    <h3>Polyurethane Formation</h3>
+    <p class="guide-note">This one has nothing in common with the four mechanisms above. There's no radical and no metal carbene, just a step-growth polyaddition: a nucleophile (an alcohol oxygen lone pair) attacks the electrophilic carbon of an isocyanate, and every new bond simply stitches two existing molecules together. It's addition chemistry, but the growing "chain" is built entirely from these individual addition steps between separate molecules rather than a chain end adding one monomer at a time.</p>
+
+    <div class="mech-scheme">
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species">R&ndash;OH + O=C=N&ndash;R&#8242;</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">&rarr;</span></span>
+          <span class="mech-species"><span class="pn">R&ndash;O&ndash;C(=O)&ndash;NH&ndash;R&#8242;</span></span>
+        </div>
+        <div class="mech-step-name">(urethane formation, nucleophilic addition)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species">HO&ndash;R&Prime;&ndash;OH + <em>n</em> OCN&ndash;R&#8242;&ndash;NCO</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">&rarr;</span></span>
+          <span class="mech-species">[<span class="pn">O&ndash;R&Prime;&ndash;O&ndash;C(=O)&ndash;NH&ndash;R&#8242;&ndash;NH&ndash;C(=O)</span>]<sub>n</sub></span>
+        </div>
+        <div class="mech-step-name">(step-growth polyaddition, repeats)</div>
+      </div>
+    </div>
+
+    <div class="mech-ring-panel">
+      <svg class="mech-ring" width="320" height="170" viewBox="0 0 320 170">
+        <path d="M8,95 Q23,80 38,95 T68,95" fill="none" stroke="var(--text-dim)" stroke-width="2.5"/>
+        <line x1="68" y1="95" x2="94" y2="95" class="bond bond-keep"/>
+        <g class="ring-atom ring-atom-carbon">
+          <circle cx="110" cy="95" r="14" />
+          <text x="110" y="95">O</text>
+        </g>
+        <line x1="124" y1="95" x2="147" y2="95" class="bond bond-keep"/>
+        <g class="ring-atom ring-atom-metal">
+          <circle cx="163" cy="95" r="16" />
+          <text x="163" y="95">C</text>
+        </g>
+        <line x1="158" y1="81" x2="158" y2="52" class="bond bond-keep"/>
+        <line x1="168" y1="81" x2="168" y2="52" class="bond bond-keep"/>
+        <text x="163" y="42" text-anchor="middle" class="ring-substituent">O</text>
+        <line x1="179" y1="95" x2="202" y2="95" class="bond bond-keep"/>
+        <g class="ring-atom ring-atom-carbon">
+          <circle cx="218" cy="95" r="14" />
+          <text x="218" y="95">N</text>
+        </g>
+        <line x1="218" y1="109" x2="218" y2="130" class="bond bond-keep"/>
+        <text x="218" y="144" text-anchor="middle" class="ring-substituent">H</text>
+        <line x1="232" y1="95" x2="255" y2="95" class="bond bond-keep"/>
+        <path d="M255,95 Q270,80 285,95 T312,95" fill="none" stroke="var(--text-dim)" stroke-width="2.5"/>
+        <text x="38" y="130" text-anchor="middle" class="ring-substituent">soft segment</text>
+        <text x="285" y="130" text-anchor="middle" class="ring-substituent">hard segment</text>
+      </svg>
+      <div class="mech-ring-legend">
+        <span><span class="legend-swatch" style="border-top-color:var(--accent);border-top-style:solid;"></span> the carbamate (urethane) carbon</span>
+      </div>
+    </div>
+    <p class="mech-ring-caption">The urethane linkage that forms at every soft segment to hard segment junction. The alcohol oxygen has added across the isocyanate's carbon, which now carries both a carbonyl and an N&ndash;H.</p>
+
+    <p class="guide-note">
+      There's no chain end propagating through hundreds of monomer additions the way there is above. Instead, molecular weight builds through <em>step</em> growth: any two molecules with a free OH and a free NCO can react, at any point in the reaction, so early on the mixture is mostly short oligomers, and high molecular weight only shows up once conversion is very high. This is exactly why the calculator's polyurethane tab is built around a two step recipe instead of a target Mn and DP: cap a polyol with excess diisocyanate first (Step 1), so the free NCO ends are known and controlled, then react that prepolymer against a measured amount of chain extender (Step 2) to build the final hard segment length deliberately, rather than leaving stoichiometry to chance.
+    </p>
+  </div>
+
+  <div class="card" id="emulsion-mech">
+    <h3>Emulsion Polymerization</h3>
+    <p class="guide-note">This isn't a different chain-growth chemistry from FRP above. Once a chain is growing inside a particle, propagation and termination happen exactly the same way they do in bulk. What's different is where and how each chain gets started: the initiator is water soluble and generates radicals in the aqueous phase, not inside the monomer itself, and those radicals have to find and enter a surfactant micelle before a particle even exists.</p>
+
+    <div class="mech-scheme">
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species">S<sub>2</sub>O<sub>8</sub><sup>2&minus;</sup></span>
+          <span class="mech-arrow">
+            <span class="mech-k">k<sub>d</sub></span>
+            <span class="mech-arrow-line">&rarr;</span>
+          </span>
+          <span class="mech-species">2 <span class="radical">SO<sub>4</sub>&bull;<sup>&minus;</sup></span></span>
+        </div>
+        <div class="mech-step-name">(aqueous phase initiator decomposition)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">SO<sub>4</sub>&bull;<sup>&minus;</sup></span> + micelle (monomer swollen)</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">&rarr;</span></span>
+          <span class="mech-species">nucleated particle, <span class="pn">P<sub>1</sub>&bull;</span></span>
+        </div>
+        <div class="mech-step-name">(particle nucleation, Smith-Ewart Interval I)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="pn">P<sub>n</sub>&bull;</span> + monomer (from droplet, via water)</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">&rarr;</span></span>
+          <span class="mech-species"><span class="pn">P<sub>n+1</sub>&bull;</span></span>
+        </div>
+        <div class="mech-step-name">(propagation inside the particle, same as FRP)</div>
+      </div>
+    </div>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="440" height="190" viewBox="0 0 440 190">
+        <text x="10" y="18" class="small dim">continuous water phase</text>
+        <circle cx="70" cy="65" r="26" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="70" cy="150" r="20" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
+        <text x="70" y="105" text-anchor="middle" class="small dim">droplets</text>
+        <circle cx="195" cy="35" r="6" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <circle cx="235" cy="115" r="6" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <circle cx="180" cy="165" r="6" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <circle cx="270" cy="55" r="6" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <circle cx="310" cy="150" r="6" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <line x1="100" y1="70" x2="365" y2="100" stroke="var(--text-dim)" stroke-width="1.5" stroke-dasharray="2,5"/>
+        <circle cx="385" cy="105" r="18" fill="var(--primary)" fill-opacity="0.85" stroke="var(--primary)" stroke-width="2"/>
+        <circle cx="380" cy="100" r="2" fill="var(--card-bg)"/>
+        <circle cx="390" cy="110" r="2" fill="var(--card-bg)"/>
+        <text x="385" y="140" text-anchor="middle" class="small dim">growing particle</text>
+      </svg>
+      <div class="diagram-legend">
+        <span><span class="swatch" style="background:var(--accent);opacity:0.4;"></span> monomer droplet, large and few</span>
+        <span><span class="swatch" style="background:none;border:1.5px solid var(--text-dim);"></span> surfactant micelle, small and empty</span>
+        <span><span class="swatch" style="background:var(--primary);"></span> nucleated particle, growing</span>
+      </div>
+    </div>
+    <p class="diagram-caption">A snapshot of Interval II. Most monomer still sits in a few large droplets; micelles have mostly disappeared into the particles they seeded; each particle is fed by monomer diffusing through the water phase rather than by direct droplet contact.</p>
+
+    <p class="guide-note">
+      Because nucleation is essentially over once the micelles run out, the particle count set during that short window determines the final particle size for the rest of the reaction: the same total polymer volume divided among however many particles got started. That's the whole basis for the calculator's emulsion tab, which estimates that particle count from the surfactant and initiator charge (Smith-Ewart theory) and then reports the final diameter from a simple mass balance. Everything downstream of nucleation (propagation, transfer, termination) is ordinary free radical chemistry; the physics of getting a chain started is the only genuinely new mechanism here.
     </p>
   </div>
 
