@@ -100,8 +100,42 @@
     ["polymer-chain-game.html", "Build a Polymer Chain", "game maze fun"],
     ["whats-new.html", "What's New", "changelog updates"],
     ["founder.html", "About the Founder", "nick pierini bio contact"],
+    ["terms.html", "Terms of Use", "license proprietary copyright rights legal"],
     ["home.html", "Home", "toolkit start"]
   ];
+
+  // ---- Proprietary copyright notice, injected site-wide ----
+  // Keeps a single source of truth for the notice instead of hand-editing
+  // every page footer. Adds a machine-readable <meta name="copyright"> and a
+  // small legal line in the footer (or, on pages without one, at the end of
+  // the body). The year auto-extends from 2025 so it never goes stale.
+  function addLegalNotice() {
+    var startYear = 2025;
+    var now = new Date().getFullYear();
+    var years = now > startYear ? startYear + "–" + now : String(startYear);
+    var notice = "© " + years + " Nicholas Pierini. All rights reserved.";
+
+    if (!document.querySelector('meta[name="copyright"]')) {
+      var meta = document.createElement("meta");
+      meta.name = "copyright";
+      meta.content = notice;
+      document.head.appendChild(meta);
+    }
+
+    if (document.querySelector(".footer-legal")) return;
+    var line = document.createElement("p");
+    line.className = "footer-legal";
+    line.style.cssText = "font-size:0.78rem;opacity:0.7;margin-top:8px;";
+    line.innerHTML = notice + ' PolyTechniques is proprietary. <a href="terms.html">Terms of Use</a>.';
+
+    var footer = document.querySelector("footer.footer");
+    if (footer) {
+      footer.appendChild(line);
+    } else {
+      line.style.cssText += "text-align:center;padding:24px 16px;";
+      document.body.appendChild(line);
+    }
+  }
 
   var palette = null;
   var paletteInput = null;
@@ -220,6 +254,8 @@
   });
 
   document.addEventListener("DOMContentLoaded", function () {
+    addLegalNotice();
+
     var topbar = document.querySelector("header.topbar");
     if (!topbar || topbar.querySelector(".site-nav")) return;
 
