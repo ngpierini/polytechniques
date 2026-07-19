@@ -263,7 +263,8 @@
 
 <script>
 (function () {
-  var CACHE_KEY = 'polytechniques_hot_papers_v2';
+  var CACHE_KEY = 'polytechniques_hot_papers_v3';
+  var PAGE_SIZE = 6;
   var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
   var ACCENTS = ['#5b8def', '#37c98f', '#f2b84b', '#ef6a6a', '#a78bfa', '#4fd1c5'];
 
@@ -345,7 +346,9 @@
       });
     }
     out.sort(function (a, b) { return b.cites - a.cites; });
-    return out.slice(0, 6);
+    // Keep a deep pool, not just one screenful - the Refresh button pages
+    // through it six at a time before going back to the network.
+    return out.slice(0, 48);
   }
 
   function timeAgo(ts) {
@@ -358,6 +361,19 @@
   function hoursLeft(ts) {
     var msLeft = CACHE_TTL_MS - (Date.now() - ts);
     return Math.max(0, Math.ceil(msLeft / 3600000)) + 'h';
+  }
+
+  function pageCaption(cache) {
+    var off = cache.offset || 0;
+    var start = off + 1;
+    var end = Math.min(off + PAGE_SIZE, cache.papers.length);
+    return 'Showing ' + start + '–' + end + ' of ' + cache.papers.length +
+      ' papers from this week · updated ' + timeAgo(cache.timestamp);
+  }
+
+  function currentSlice(cache) {
+    var off = cache.offset || 0;
+    return cache.papers.slice(off, off + PAGE_SIZE);
   }
 
   function renderPapers(papers, captionText) {
@@ -399,7 +415,7 @@
     var url = 'https://api.crossref.org/works?query.bibliographic=' +
       encodeURIComponent('RAFT polymerization ATRP ROMP macromolecular') +
       '&filter=' + encodeURIComponent('type:journal-article,from-pub-date:' + since + ',until-pub-date:' + until) +
-      '&rows=50' +
+      '&rows=100' +
       '&select=' + encodeURIComponent('title,author,container-title,short-container-title,DOI,published,published-online,published-print,is-referenced-by-count');
     // No &sort= param: CrossRef's default relevance ranking keeps the candidate
     // pool on-topic across the week's window; citation-count ranking then
@@ -412,11 +428,12 @@
       var items = (data.message && data.message.items) || [];
       var papers = normalizeItems(items);
       if (!papers.length) throw new Error('no items');
-      localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), papers: papers }));
-      renderPapers(papers, 'Updated just now · next refresh in 24h');
+      var cache = { timestamp: Date.now(), papers: papers, offset: 0 };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+      renderPapers(currentSlice(cache), pageCaption(cache));
     }).catch(function () {
       if (staleCache && staleCache.papers && staleCache.papers.length) {
-        renderPapers(staleCache.papers, 'Showing last saved results · refresh unavailable right now');
+        renderPapers(currentSlice(staleCache), 'Showing last saved results · refresh unavailable right now');
       } else {
         renderPapers(FALLBACK_PAPERS, 'Showing offline picks · live feed unavailable right now');
       }
@@ -434,14 +451,27 @@
   if (refreshBtn) {
     refreshBtn.addEventListener('click', function () {
       if (refreshBtn.disabled) return;
+      var cached = null;
+      try { cached = JSON.parse(localStorage.getItem(CACHE_KEY)); } catch (e) {}
+      var fresh = cached && cached.papers && cached.papers.length &&
+        (Date.now() - cached.timestamp) < CACHE_TTL_MS;
+
+      // Page through the rest of this week's pool before hitting the network
+      // again - the query itself is deterministic, so an immediate refetch
+      // would return the exact same top six.
+      if (fresh && (cached.offset || 0) + PAGE_SIZE < cached.papers.length) {
+        cached.offset = (cached.offset || 0) + PAGE_SIZE;
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(cached)); } catch (e) {}
+        renderPapers(currentSlice(cached), pageCaption(cached));
+        return;
+      }
+
+      // Pool exhausted (or cache stale): pull a fresh batch and start over
       refreshBtn.disabled = true;
       refreshBtn.classList.add('refreshing');
-      // Keep the old results on hand so a failed refresh falls back to them
-      var previous = null;
-      try { previous = JSON.parse(localStorage.getItem(CACHE_KEY)); } catch (e) {}
       try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
       showSkeletons();
-      fetchFresh(previous).then(function () {
+      fetchFresh(cached).then(function () {
         refreshBtn.disabled = false;
         refreshBtn.classList.remove('refreshing');
       });
@@ -452,7 +482,7 @@
     var cached = null;
     try { cached = JSON.parse(localStorage.getItem(CACHE_KEY)); } catch (e) {}
     if (cached && cached.papers && cached.papers.length && (Date.now() - cached.timestamp) < CACHE_TTL_MS) {
-      renderPapers(cached.papers, 'Updated ' + timeAgo(cached.timestamp) + ' · next refresh in ' + hoursLeft(cached.timestamp));
+      renderPapers(currentSlice(cached), pageCaption(cached) + ' · auto-refresh in ' + hoursLeft(cached.timestamp));
       return;
     }
     fetchFresh(cached);
