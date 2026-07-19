@@ -91,6 +91,7 @@
     ["tg-predictor.html", "Tg Predictor", "fox equation glass transition blend"],
     ["recipe-scaling.html", "Recipe Scaling", "scale batch size factor"],
     ["calculator.html#pu", "Polyurethane Calculator", "pu prepolymer capping nco oh isocyanate chain extender hard segment mdi tdi bdo"],
+    ["calculator.html#em", "Emulsion Polymerization Calculator", "sds kps surfactant micelle particle size nucleation smith-ewart raft atrp controlled persulfate latex"],
     ["mechanisms.html", "Polymerization Mechanisms", "atrp raft romp frp scheme controlled radical"],
     ["air-free-technique.html", "Air-Free Reaction Setup", "schlenk line freeze pump thaw degas inert"],
     ["conversion-monitoring.html", "Monitoring Conversion", "aliquot internal standard kinetics nmr"],
