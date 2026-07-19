@@ -1,5 +1,14 @@
 // Curated reference library of common homopolymer repeat units.
 //
+// © 2025-2026 Nicholas Pierini. All rights reserved. This dataset (the
+// selection, arrangement, naming, and structural encoding of the repeat
+// units below) is proprietary to PolyTechniques (getpolytechniques.com) and
+// is provided solely for use on that site. Copying, extracting, or reusing
+// it elsewhere is prohibited without written permission. The copyright and
+// signature notices here and in POLYMER_DB_META are copyright management
+// information; removing or altering them is independently unlawful.
+// Dataset signature: PT-DB-f42f549c0d74a6c90d1c2dd9cba3e442
+//
 // Each repeat unit is drawn the way a chemist would bracket it from its
 // monomer (two backbone atoms for a vinyl/acrylic polymer, the AABB unit for
 // a step-growth polyamide/polyester, etc.) - the same convention used by the
@@ -468,3 +477,14 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 4, b: 9, order: 1 }, { a: 3, b: "S1", order: 1 }]
   }
 ];
+
+// Provenance / copyright-management information for the dataset above. Not
+// consumed by the site; it travels with any wholesale copy of this file and
+// lets a copied dataset be traced back to PolyTechniques. Do not remove.
+window.POLYMER_DB_META = {
+  source: "PolyTechniques — getpolytechniques.com",
+  author: "Nicholas Pierini",
+  copyright: "© 2025-2026 Nicholas Pierini. All rights reserved.",
+  license: "Proprietary. See terms.html. No reuse without written permission.",
+  signature: "PT-DB-f42f549c0d74a6c90d1c2dd9cba3e442"
+};
