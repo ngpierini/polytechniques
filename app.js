@@ -1554,6 +1554,497 @@ function wirePolyurethanePanel() {
 }
 
 /* ---------------------------------------------------------------------
+   Emulsion polymerization
+   Micellar (Smith-Ewart) nucleation: a water-soluble initiator (KPS)
+   generates radicals in the aqueous phase, which are captured by
+   surfactant (SDS) micelles above the CMC to nucleate particles; monomer
+   diffuses in from droplets to feed particle growth. Particle number is
+   the classic Smith-Ewart scaling estimate - an order-of-magnitude
+   planning tool, not a validated prediction. An advanced option layers a
+   RAFT or ATRP mediator on top for a controlled/living particle interior.
+--------------------------------------------------------------------- */
+
+const EM_NA = 6.02214076e23;
+
+const EM_MONOMERS = [
+  { name: "Styrene", mw: 104.15, density: 0.909, polyDensity: 1.05, phiSat: 0.60, kp: 176 },
+  { name: "Methyl methacrylate", mw: 100.12, density: 0.940, polyDensity: 1.18, phiSat: 0.45, kp: 367 },
+  { name: "n-Butyl acrylate", mw: 128.17, density: 0.898, polyDensity: 1.08, phiSat: 0.65, kp: 20000 },
+  { name: "Vinyl acetate", mw: 86.09, density: 0.934, polyDensity: 1.19, phiSat: 0.35, kp: 3000 },
+  { name: "Custom (enter values below)", mw: null, density: null, polyDensity: null, phiSat: null, kp: null },
+];
+
+const EM_SURFACTANTS = [
+  { name: "SDS (sodium dodecyl sulfate)", mw: 288.38, cmc: 8.2, area: 0.40 },
+  { name: "Custom (enter values below)", mw: null, cmc: null, area: null },
+];
+
+const EM_INITIATORS = [
+  { name: "KPS (potassium persulfate)", mw: 270.32 },
+  { name: "Custom (enter MW below)", mw: null },
+];
+
+function emFmt(n, digits) {
+  if (!isFinite(n)) return "n/a";
+  if (n === 0) return "0";
+  const abs = Math.abs(n);
+  if (abs >= 10000 || abs < 1e-3) return n.toExponential(2);
+  if (abs >= 100) return n.toFixed(1);
+  if (abs >= 1) return n.toFixed(digits == null ? 2 : digits);
+  return n.toFixed(3);
+}
+
+function emulsionTemplate() {
+  const opts = (list) => list.map((item, i) => `<option value="${i}">${escapeHtml(item.name)}</option>`).join("");
+  return `
+    <div class="panel-head">
+      <div>
+        <h2>Emulsion Polymerization</h2>
+        <p>Micellar (Smith-Ewart) nucleation with SDS and KPS: predicted particle number and size, with an advanced option for a RAFT or ATRP mediator.</p>
+      </div>
+      <button type="button" class="copy-btn print-btn" onclick="window.print()">&#128424; Print recipe</button>
+    </div>
+
+    ${presetBarHTML("em")}
+
+    <div class="card">
+      <h3>How this works</h3>
+      <p class="guide-note">
+        Surfactant (SDS) above its critical micelle concentration (CMC) self-assembles into micelles; a
+        water-soluble initiator (KPS, potassium persulfate) decomposes thermally in the aqueous phase to generate
+        sulfate radical anions, which are captured by micelles to nucleate particles (Smith-Ewart Interval I).
+        Monomer diffuses from larger, surfactant-stabilized droplets through the water phase to feed the growing
+        particles (Interval II) until the droplets are exhausted (Interval III). Particle number is set almost
+        entirely during nucleation and stays roughly constant afterward, so the final particle size is just the
+        total polymer volume divided among however many particles nucleated.
+      </p>
+      <div class="guide-formula">
+        N &asymp; k (R<sub>i</sub> &divide; &mu;)<sup>0.4</sup> (a<sub>s</sub> &middot; [S])<sup>0.6</sup> &nbsp;&nbsp; (Smith-Ewart, particles per volume of water)
+      </div>
+      <p class="guide-note" style="margin-top:8px;">
+        This is a textbook scaling estimate, not a validated simulation &ndash; treat it as order-of-magnitude and
+        useful for trends (more surfactant &rarr; smaller particles, more initiator &rarr; more particles), not as
+        an exact prediction. Real particle size depends on agitation, addition method (batch vs. monomer-starved
+        feed), electrolyte, trace metals, and impurities, none of which are captured here. Every reference constant
+        below (a<sub>s</sub>, k<sub>p</sub>, &phi;<sub>sat</sub>, the initiator half-life) is editable &ndash; use
+        your own literature or supplier data where you have it.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Recipe</h3>
+      <div class="grid">
+        <div class="field">
+          <label for="em-monomer-select">Monomer</label>
+          <select id="em-monomer-select">${opts(EM_MONOMERS)}</select>
+          <span class="hint">Autofills density, polymer density, saturation swelling, and k<sub>p</sub>; edit freely</span>
+        </div>
+        <div class="field">
+          <label for="em-monomer-mass">Monomer mass (g)</label>
+          <input type="number" id="em-monomer-mass" value="100" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="em-water-mass">Water mass (g)</label>
+          <input type="number" id="em-water-mass" value="300" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="em-conversion">Target conversion (%)</label>
+          <input type="number" id="em-conversion" value="95" step="any" min="1" max="100">
+        </div>
+        <div class="field">
+          <label for="em-surf-select">Surfactant</label>
+          <select id="em-surf-select">${opts(EM_SURFACTANTS)}</select>
+        </div>
+        <div class="field">
+          <label for="em-surf-mass">Surfactant mass (g)</label>
+          <input type="number" id="em-surf-mass" value="3" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="em-init-select">Initiator</label>
+          <select id="em-init-select">${opts(EM_INITIATORS)}</select>
+        </div>
+        <div class="field">
+          <label for="em-init-mass">Initiator mass (g)</label>
+          <input type="number" id="em-init-mass" value="0.3" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="em-temp">Reaction temperature (&deg;C)</label>
+          <input type="number" id="em-temp" value="70" step="any">
+          <span class="hint">Context only &ndash; k<sub>p</sub> and the half-life below should already be at (or near) this temperature</span>
+        </div>
+        <div class="field">
+          <label for="em-half-life">Initiator half-life at this temperature (h)</label>
+          <input type="number" id="em-half-life" value="5" step="any" min="0.01">
+          <span class="hint">From your supplier/literature data at your actual temperature and pH &ndash; this varies a lot and matters a lot</span>
+        </div>
+        <div class="field">
+          <label for="em-f">Initiator efficiency, f</label>
+          <input type="number" id="em-f" value="1" step="any" min="0.01" max="1">
+          <span class="hint">Fraction of radicals generated that successfully initiate; 1 is a common simplifying assumption for aqueous persulfate</span>
+        </div>
+        <div class="field">
+          <label for="em-sek">Smith-Ewart constant, k</label>
+          <select id="em-sek">
+            <option value="0.53">0.53 (Case 2: micelles capture essentially all radicals)</option>
+            <option value="0.37">0.37 (radical capture shared with existing particles)</option>
+          </select>
+        </div>
+      </div>
+      <div class="stat-grid" id="em-stats" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card">
+      <label class="checkbox-row" style="margin-bottom:0;">
+        <input type="checkbox" id="em-mediator-enable">
+        <span>Advanced: add a controlled/living radical mediator (RAFT or ATRP)</span>
+      </label>
+      <div id="em-mediator-body" class="em-mediator-body" hidden style="margin-top:14px;">
+        <div class="grid">
+          <div class="field">
+            <label for="em-mediator-type">Mediator</label>
+            <select id="em-mediator-type">
+              <option value="raft">RAFT agent (CTA)</option>
+              <option value="atrp">ATRP (initiator + Cu catalyst)</option>
+            </select>
+            <span class="hint" id="em-mediator-hint"></span>
+          </div>
+          <div class="field">
+            <label for="em-target-dp">Target DP ([M] : [mediator])</label>
+            <input type="number" id="em-target-dp" value="200" step="any" min="1">
+          </div>
+        </div>
+
+        <div class="grid em-mediator-raft" style="margin-top:12px;">
+          <div class="field">
+            <label for="em-cta-select">RAFT CTA</label>
+            <select id="em-cta-select">${opts(RAFT_CTAS)}</select>
+          </div>
+          <div class="field">
+            <label for="em-cta-mw">CTA MW (g/mol)</label>
+            <input type="number" id="em-cta-mw" value="${RAFT_CTAS[0].mw}" step="any">
+          </div>
+        </div>
+
+        <div class="grid em-mediator-atrp" style="margin-top:12px;">
+          <div class="field">
+            <label for="em-atrp-init-select">Alkyl halide initiator</label>
+            <select id="em-atrp-init-select">${opts(ATRP_INITIATORS)}</select>
+          </div>
+          <div class="field">
+            <label for="em-atrp-init-mw">Initiator MW (g/mol)</label>
+            <input type="number" id="em-atrp-init-mw" value="${ATRP_INITIATORS[0].mw}" step="any">
+          </div>
+          <div class="field">
+            <label for="em-cu-select">Cu source</label>
+            <select id="em-cu-select">${opts(ATRP_CU_SOURCES)}</select>
+          </div>
+          <div class="field">
+            <label for="em-cu-mw">Cu source MW (g/mol)</label>
+            <input type="number" id="em-cu-mw" value="${ATRP_CU_SOURCES[0].mw}" step="any">
+          </div>
+          <div class="field">
+            <label for="em-cu-eq">Cu : initiator ratio</label>
+            <input type="number" id="em-cu-eq" value="1" step="any" min="0">
+          </div>
+          <div class="field">
+            <label for="em-lig-select">Ligand</label>
+            <select id="em-lig-select">${opts(ATRP_LIGANDS)}</select>
+          </div>
+          <div class="field">
+            <label for="em-lig-mw">Ligand MW (g/mol)</label>
+            <input type="number" id="em-lig-mw" value="${ATRP_LIGANDS[0].mw}" step="any">
+          </div>
+          <div class="field">
+            <label for="em-lig-eq">Ligand : Cu ratio</label>
+            <input type="number" id="em-lig-eq" value="1.1" step="any" min="0">
+          </div>
+        </div>
+
+        <div class="stat-grid" id="em-mediator-stats" style="margin-top:16px;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="em-procedure"></div>
+    </div>
+
+    <div class="card">
+      <h3>Reference data</h3>
+      <p class="guide-note">Typical literature values. Always verify against your reagent's COA and your own kinetic data where it exists &ndash; k<sub>p</sub>, half-life, and swelling values here are approximate order-of-magnitude figures, not certified constants.</p>
+      <div class="table-scroll">
+        <table class="recipe">
+          <thead><tr><th>Monomer</th><th>Density (g/mL)</th><th>Polymer density (g/mL)</th><th>&phi;<sub>sat</sub></th><th>k<sub>p</sub> (L/mol/s, ~50&deg;C)</th></tr></thead>
+          <tbody>${EM_MONOMERS.filter((m) => m.mw).map((m) =>
+            `<tr><td>${m.name}</td><td class="num">${m.density}</td><td class="num">${m.polyDensity}</td><td class="num">${m.phiSat}</td><td class="num">${m.kp}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+      <div class="table-scroll" style="margin-top:14px;">
+        <table class="recipe">
+          <thead><tr><th>Surfactant</th><th>MW (g/mol)</th><th>CMC (mmol/L)</th><th>Area/molecule (nm&sup2;)</th></tr></thead>
+          <tbody>${EM_SURFACTANTS.filter((s) => s.mw).map((s) =>
+            `<tr><td>${s.name}</td><td class="num">${s.mw}</td><td class="num">${s.cmc}</td><td class="num">${s.area}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function wireEmulsionPanel() {
+  function toggleMediatorFields() {
+    const type = $("em-mediator-type").value;
+    document.querySelectorAll(".em-mediator-raft").forEach((el) => { el.style.display = type === "raft" ? "" : "none"; });
+    document.querySelectorAll(".em-mediator-atrp").forEach((el) => { el.style.display = type === "atrp" ? "" : "none"; });
+    $("em-mediator-hint").textContent = type === "raft"
+      ? "Ab initio emulsion RAFT: the same KPS above still generates the radicals; a CTA:initiator ratio of roughly 5-10:1 is typical."
+      : "ATRP is normally run as a miniemulsion (pre-homogenized droplets carrying the catalyst), not classical ab initio emulsion - the particle size above assumes micellar nucleation and may not apply; treat it as reflecting the homogenized droplet size instead.";
+  }
+
+  function recalcEmulsion() {
+    const mMonomer = parseFloat($("em-monomer-mass").value);
+    const mWater = parseFloat($("em-water-mass").value);
+    const conversion = parseFloat($("em-conversion").value);
+    const mSurf = parseFloat($("em-surf-mass").value);
+    const mInit = parseFloat($("em-init-mass").value);
+    const halfLifeH = parseFloat($("em-half-life").value);
+    const f = parseFloat($("em-f").value);
+    const k = parseFloat($("em-sek").value);
+
+    const monomerMw = parseFloat($("em-monomer-mw").value);
+    const monomerDensity = parseFloat($("em-monomer-density").value);
+    const polyDensity = parseFloat($("em-poly-density").value);
+    const phiSat = parseFloat($("em-phi-sat").value);
+    const kp = parseFloat($("em-kp").value);
+
+    const surfMw = parseFloat($("em-surf-mw").value);
+    const cmc = parseFloat($("em-cmc").value);
+    const area = parseFloat($("em-area").value);
+    const initMw = parseFloat($("em-init-mw").value);
+
+    const stats = $("em-stats");
+    const bad = [mMonomer, mWater, conversion, mSurf, mInit, halfLifeH, f, k,
+      monomerMw, monomerDensity, polyDensity, phiSat, kp, surfMw, cmc, area, initMw]
+      .some((v) => !isFinite(v));
+    if (bad || mMonomer <= 0 || mWater <= 0 || halfLifeH <= 0) {
+      stats.innerHTML = '<div class="error-msg">Fill in every field (use "Custom" and enter your own values if a reagent isn\'t listed).</div>';
+      $("em-procedure").innerHTML = "";
+      return null;
+    }
+
+    const Vwater = mWater; // cm3, assuming water density 1 g/mL
+
+    // ---- Surfactant: total vs. micellar (above CMC) concentration ----
+    const molSurf = mSurf / surfMw;
+    const sTotalM = molSurf / (Vwater / 1000); // mol/L
+    const sMicellarM = Math.max(sTotalM - cmc / 1000, 0);
+    const belowCmc = sTotalM < cmc / 1000;
+    const sMicellarMolecPerCm3 = sMicellarM * EM_NA / 1000;
+    const areaCm2 = area * 1e-14; // nm^2 -> cm^2
+    const asS = areaCm2 * sMicellarMolecPerCm3; // cm^-1
+
+    // ---- Radical generation rate ----
+    const kd = Math.log(2) / (halfLifeH * 3600); // s^-1
+    const molInit = mInit / initMw;
+    const initM = molInit / (Vwater / 1000); // mol/L
+    const RiMolPerLs = 2 * f * kd * initM;
+    const RiMolecPerCm3s = RiMolPerLs * EM_NA / 1000;
+
+    // ---- Particle growth rate, mu (cm^3/s per particle) ----
+    const MpMolPerL = phiSat * monomerDensity * 1000 / monomerMw; // saturation monomer conc in particle
+    const v1Cm3 = monomerMw / (monomerDensity * EM_NA); // volume of one monomer molecule
+    const mu = kp * MpMolPerL * v1Cm3;
+
+    // ---- Smith-Ewart particle number ----
+    const NperCm3 = k * Math.pow(RiMolecPerCm3s / mu, 0.4) * Math.pow(asS, 0.6);
+    const NperL = NperCm3 * 1000;
+    const totalParticles = NperL * (Vwater / 1000);
+
+    // ---- Final particle size from mass balance ----
+    const massPolymer = mMonomer * (conversion / 100);
+    const volPolymerCm3 = massPolymer / polyDensity;
+    const volPerParticleCm3 = volPolymerCm3 / totalParticles;
+    const diamCm = Math.pow((6 * volPerParticleCm3) / Math.PI, 1 / 3);
+    const diamNm = diamCm * 1e7;
+
+    // ---- Solids content ----
+    const totalCharge = mMonomer + mWater + mSurf + mInit;
+    const solidsPct = ((massPolymer + mSurf) / totalCharge) * 100;
+
+    stats.innerHTML =
+      (belowCmc ? `<div class="stat" style="grid-column:1/-1;"><div class="label">Surfactant vs. CMC</div><div class="value" style="color:var(--danger);font-size:1rem;">Below CMC &ndash; no micelles</div><div class="sub">${emFmt(sTotalM * 1000, 2)} mmol/L total vs. ${emFmt(cmc, 2)} mmol/L CMC. Micellar nucleation doesn't apply here; particle number/size below aren't meaningful.</div></div>` : "") +
+      `<div class="stat"><div class="label">Surfactant available for micelles</div><div class="value">${emFmt(sMicellarM * 1000, 2)}</div><div class="sub">mmol/L, above the ${emFmt(cmc, 2)} mmol/L CMC</div></div>` +
+      `<div class="stat"><div class="label">Radical generation rate, R<sub>i</sub></div><div class="value">${emFmt(RiMolPerLs, 2)}</div><div class="sub">mol radicals / (L&middot;s), k<sub>d</sub> = ${emFmt(kd, 2)} s<sup>-1</sup></div></div>` +
+      `<div class="stat"><div class="label">Predicted particle number</div><div class="value">${emFmt(NperL, 2)}</div><div class="sub">particles/L water &middot; ${emFmt(totalParticles, 2)} total</div></div>` +
+      `<div class="stat"><div class="label">Predicted particle diameter</div><div class="value">${emFmt(diamNm, 1)} nm</div><div class="sub">at ${emFmt(conversion, 1)}% conversion &middot; order-of-magnitude estimate only</div></div>` +
+      `<div class="stat"><div class="label">Solids content</div><div class="value">${emFmt(solidsPct, 1)}%</div><div class="sub">polymer + surfactant, of total charge</div></div>`;
+
+    return { mMonomer, mWater, mSurf, mInit, conversion, monomerName: EM_MONOMERS[parseInt($("em-monomer-select").value, 10)] ? EM_MONOMERS[parseInt($("em-monomer-select").value, 10)].name.replace(/ \(.*$/, "") : "monomer", surfName: EM_SURFACTANTS[parseInt($("em-surf-select").value, 10)] ? EM_SURFACTANTS[parseInt($("em-surf-select").value, 10)].name.replace(/ \(.*$/, "") : "surfactant", initName: EM_INITIATORS[parseInt($("em-init-select").value, 10)] ? EM_INITIATORS[parseInt($("em-init-select").value, 10)].name.replace(/ \(.*$/, "") : "initiator", diamNm, solidsPct };
+  }
+
+  function recalcMediator(base) {
+    const enabled = $("em-mediator-enable").checked;
+    const mediatorStats = $("em-mediator-stats");
+    if (!enabled || !base) { mediatorStats.innerHTML = ""; return null; }
+
+    const type = $("em-mediator-type").value;
+    const targetDP = parseFloat($("em-target-dp").value);
+    const monomerMw = parseFloat($("em-monomer-mw").value);
+    if (!(targetDP > 0) || !isFinite(monomerMw)) { mediatorStats.innerHTML = '<div class="error-msg">Enter a target DP.</div>'; return null; }
+
+    const nMonomer = base.mMonomer / monomerMw;
+    const nMediator = nMonomer / targetDP;
+
+    if (type === "raft") {
+      const ctaMw = parseFloat($("em-cta-mw").value);
+      const ctaName = RAFT_CTAS[parseInt($("em-cta-select").value, 10)].name.replace(/ \(.*$/, "");
+      const mCta = nMediator * ctaMw;
+      const mnFull = targetDP * monomerMw + ctaMw;
+      const mnPred = targetDP * (base.conversion / 100) * monomerMw + ctaMw;
+      mediatorStats.innerHTML =
+        `<div class="stat"><div class="label">${escapeHtml(ctaName)} to charge</div><div class="value">${emFmt(mCta, 3)} g</div><div class="sub">${emFmt(nMediator * 1000, 3)} mmol</div></div>` +
+        `<div class="stat"><div class="label">Target Mn, full conversion</div><div class="value">${emFmt(mnFull, 0)}</div><div class="sub">g/mol</div></div>` +
+        `<div class="stat"><div class="label">Predicted Mn at ${emFmt(base.conversion, 1)}%</div><div class="value">${emFmt(mnPred, 0)}</div><div class="sub">g/mol</div></div>`;
+      return { type, name: ctaName, mass: mCta };
+    }
+
+    const initMw = parseFloat($("em-atrp-init-mw").value);
+    const initName = ATRP_INITIATORS[parseInt($("em-atrp-init-select").value, 10)].name.replace(/ \(.*$/, "");
+    const cuMw = parseFloat($("em-cu-mw").value);
+    const cuName = ATRP_CU_SOURCES[parseInt($("em-cu-select").value, 10)].name.replace(/ \(.*$/, "");
+    const cuEq = parseFloat($("em-cu-eq").value) || 0;
+    const ligMw = parseFloat($("em-lig-mw").value);
+    const ligName = ATRP_LIGANDS[parseInt($("em-lig-select").value, 10)].name.replace(/ \(.*$/, "");
+    const ligEq = parseFloat($("em-lig-eq").value) || 0;
+
+    const mInitiator = nMediator * initMw;
+    const mCu = nMediator * cuEq * cuMw;
+    const mLig = nMediator * cuEq * ligEq * ligMw;
+    const mnFull = targetDP * monomerMw + initMw;
+    const mnPred = targetDP * (base.conversion / 100) * monomerMw + initMw;
+    mediatorStats.innerHTML =
+      `<div class="stat"><div class="label">${escapeHtml(initName)} to charge</div><div class="value">${emFmt(mInitiator, 3)} g</div><div class="sub">${emFmt(nMediator * 1000, 3)} mmol</div></div>` +
+      `<div class="stat"><div class="label">${escapeHtml(cuName)} to charge</div><div class="value">${emFmt(mCu, 3)} g</div><div class="sub">at ${emFmt(cuEq, 2)} : 1 vs. initiator</div></div>` +
+      `<div class="stat"><div class="label">${escapeHtml(ligName)} to charge</div><div class="value">${emFmt(mLig, 3)} g</div><div class="sub">at ${emFmt(ligEq, 2)} : 1 vs. Cu</div></div>` +
+      `<div class="stat"><div class="label">Target Mn, full conversion</div><div class="value">${emFmt(mnFull, 0)}</div><div class="sub">g/mol</div></div>` +
+      `<div class="stat"><div class="label">Predicted Mn at ${emFmt(base.conversion, 1)}%</div><div class="value">${emFmt(mnPred, 0)}</div><div class="sub">g/mol</div></div>`;
+    return { type, name: initName, mass: mInitiator };
+  }
+
+  function renderProcedure(base, mediator) {
+    if (!base) { $("em-procedure").innerHTML = ""; return; }
+    const steps = [
+      `Charge ${emFmt(base.mWater, 1)} g of water and ${emFmt(base.mSurf, 2)} g of ${base.surfName} to the reactor, purge with nitrogen, and heat to the reaction temperature with agitation.`,
+      mediator && mediator.type === "atrp"
+        ? `Pre-homogenize the monomer with the ATRP catalyst system (and a costabilizer such as hexadecane) to form a miniemulsion before charging &ndash; ATRP's hydrophobic catalyst won't redistribute between droplets the way monomer and radicals do in a classical batch charge.`
+        : `Charge ${emFmt(base.mMonomer, 1)} g of monomer to the reactor with continued agitation.`,
+      mediator && mediator.type === "raft"
+        ? `Add ${emFmt(mediator.mass, 3)} g of ${mediator.name} along with the monomer &ndash; it partitions into the organic phase and mediates chain growth once particles nucleate.`
+        : "",
+      `Dissolve the initiator in a small aliquot of water and add it to start the reaction (or feed it in over time for better control of the exotherm).`,
+      `Hold at temperature, monitoring conversion gravimetrically: pull a small aliquot, weigh it, dry to constant mass, and compare the nonvolatile fraction to the theoretical value at full conversion.`,
+      `Once at target conversion, cool the batch and add a shortstop/inhibitor if you need to halt the reaction immediately.`,
+      `Filter the latex through cheesecloth or a 100&ndash;325 mesh screen to remove any coagulum before use.`,
+      `Characterize: particle size by DLS, Mn/&#272; by GPC after breaking the latex and isolating the polymer, and solids content by gravimetric analysis.`,
+    ].filter(Boolean);
+    const mediatorHazard = mediator && mediator.type === "atrp"
+      ? " ATRP catalyst/ligand systems carry their own handling requirements - check the SDS for the copper source and ligand."
+      : (mediator && mediator.type === "raft" ? " RAFT agents are typically strongly colored (yellow/pink/red) and can have a distinct odor - this is normal, not necessarily a sign of decomposition." : "");
+    $("em-procedure").innerHTML = procedureBlock(
+      mediator ? `emulsion, ${mediator.type === "raft" ? "RAFT-mediated" : "ATRP-mediated"}` : "conventional emulsion",
+      steps,
+      false,
+      "Potassium persulfate is a strong oxidizer - keep it away from reducing agents and organics in bulk, and handle per its SDS. Monomers carry standard flammability/inhalation hazards; work in a fume hood with appropriate PPE." + mediatorHazard
+    );
+  }
+
+  function recalcAll() {
+    const base = recalcEmulsion();
+    const mediator = recalcMediator(base);
+    renderProcedure(base, mediator);
+  }
+
+  $("em-monomer-select").addEventListener("change", function () {
+    const mo = EM_MONOMERS[parseInt(this.value, 10)];
+    if (mo && mo.mw != null) {
+      $("em-monomer-mw").value = mo.mw;
+      $("em-monomer-density").value = mo.density;
+      $("em-poly-density").value = mo.polyDensity;
+      $("em-phi-sat").value = mo.phiSat;
+      $("em-kp").value = mo.kp;
+    }
+    recalcAll();
+  });
+  $("em-surf-select").addEventListener("change", function () {
+    const s = EM_SURFACTANTS[parseInt(this.value, 10)];
+    if (s && s.mw != null) { $("em-surf-mw").value = s.mw; $("em-cmc").value = s.cmc; $("em-area").value = s.area; }
+    recalcAll();
+  });
+  $("em-init-select").addEventListener("change", function () {
+    const i = EM_INITIATORS[parseInt(this.value, 10)];
+    if (i && i.mw != null) $("em-init-mw").value = i.mw;
+    recalcAll();
+  });
+
+  $("em-mediator-enable").addEventListener("change", function () {
+    $("em-mediator-body").hidden = !this.checked;
+    recalcAll();
+  });
+  $("em-mediator-type").addEventListener("change", () => { toggleMediatorFields(); recalcAll(); });
+  $("em-cta-select").addEventListener("change", function () {
+    $("em-cta-mw").value = RAFT_CTAS[parseInt(this.value, 10)].mw;
+    recalcAll();
+  });
+  $("em-atrp-init-select").addEventListener("change", function () {
+    $("em-atrp-init-mw").value = ATRP_INITIATORS[parseInt(this.value, 10)].mw;
+    recalcAll();
+  });
+  $("em-cu-select").addEventListener("change", function () {
+    $("em-cu-mw").value = ATRP_CU_SOURCES[parseInt(this.value, 10)].mw;
+    recalcAll();
+  });
+  $("em-lig-select").addEventListener("change", function () {
+    $("em-lig-mw").value = ATRP_LIGANDS[parseInt(this.value, 10)].mw;
+    recalcAll();
+  });
+
+  // Insert hidden fields for the currently-selected monomer/surfactant/initiator's
+  // editable reference values (autofilled by the selects above, but need to
+  // exist in the DOM for recalc to read/write them)
+  const hiddenFieldsHtml = `
+    <div class="grid" style="margin-top:12px;">
+      <div class="field"><label for="em-monomer-mw">Monomer MW (g/mol)</label><input type="number" id="em-monomer-mw" value="${EM_MONOMERS[0].mw}" step="any"></div>
+      <div class="field"><label for="em-monomer-density">Monomer density (g/mL)</label><input type="number" id="em-monomer-density" value="${EM_MONOMERS[0].density}" step="any"></div>
+      <div class="field"><label for="em-poly-density">Polymer density (g/mL)</label><input type="number" id="em-poly-density" value="${EM_MONOMERS[0].polyDensity}" step="any"></div>
+      <div class="field"><label for="em-phi-sat">Saturation swelling, &phi;<sub>sat</sub></label><input type="number" id="em-phi-sat" value="${EM_MONOMERS[0].phiSat}" step="any" min="0.05" max="0.95"></div>
+      <div class="field"><label for="em-kp">k<sub>p</sub> (L/mol/s)</label><input type="number" id="em-kp" value="${EM_MONOMERS[0].kp}" step="any" min="0.1"></div>
+      <div class="field"><label for="em-surf-mw">Surfactant MW (g/mol)</label><input type="number" id="em-surf-mw" value="${EM_SURFACTANTS[0].mw}" step="any"></div>
+      <div class="field"><label for="em-cmc">CMC (mmol/L)</label><input type="number" id="em-cmc" value="${EM_SURFACTANTS[0].cmc}" step="any" min="0"></div>
+      <div class="field"><label for="em-area">Area/molecule (nm&sup2;)</label><input type="number" id="em-area" value="${EM_SURFACTANTS[0].area}" step="any" min="0.01"></div>
+      <div class="field"><label for="em-init-mw">Initiator MW (g/mol)</label><input type="number" id="em-init-mw" value="${EM_INITIATORS[0].mw}" step="any"></div>
+    </div>
+  `;
+  $("em-monomer-select").closest(".card").querySelector(".stat-grid").insertAdjacentHTML("beforebegin", hiddenFieldsHtml);
+
+  ["em-monomer-mass", "em-water-mass", "em-conversion", "em-surf-mass", "em-init-mass",
+   "em-half-life", "em-f", "em-monomer-mw", "em-monomer-density", "em-poly-density",
+   "em-phi-sat", "em-kp", "em-surf-mw", "em-cmc", "em-area", "em-init-mw",
+   "em-target-dp", "em-cta-mw", "em-atrp-init-mw", "em-cu-mw", "em-cu-eq", "em-lig-mw", "em-lig-eq"].forEach((id) => {
+    $(id).addEventListener("input", recalcAll);
+  });
+  $("em-sek").addEventListener("change", recalcAll);
+
+  toggleMediatorFields();
+  recalcAll();
+
+  wirePresetBar("em", () => collectPanelState("em"), (state) => {
+    applyPanelState("em", state, recalcAll);
+    $("em-mediator-body").hidden = !$("em-mediator-enable").checked;
+    toggleMediatorFields();
+  });
+}
+
+/* ---------------------------------------------------------------------
    Block Copolymer builder
 --------------------------------------------------------------------- */
 
@@ -2599,6 +3090,21 @@ function init() {
   appEl.appendChild(puPanel);
 
   wirePolyurethanePanel();
+
+  const emBtn = document.createElement("button");
+  emBtn.className = "tab-btn";
+  emBtn.textContent = "Emulsion";
+  emBtn.dataset.target = "em";
+  emBtn.addEventListener("click", () => switchTab("em"));
+  tabsEl.appendChild(emBtn);
+
+  const emPanel = document.createElement("section");
+  emPanel.className = "panel";
+  emPanel.id = "panel-em";
+  emPanel.innerHTML = emulsionTemplate();
+  appEl.appendChild(emPanel);
+
+  wireEmulsionPanel();
 
   const bcpBtn = document.createElement("button");
   bcpBtn.className = "tab-btn";
