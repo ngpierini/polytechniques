@@ -814,6 +814,7 @@ function renderResults(cfg, core, ctx) {
 
   let secondaryRows = "";
   let secondaryStats = "";
+  let sec = null;
 
   if (cfg.secondary === "atrp") {
     const enable = $(`${id}-cat-enable`).checked;
@@ -830,6 +831,7 @@ function renderResults(cfg, core, ctx) {
       const mLig = nLig * ligMw;
       secondaryRows += `<tr><td>${catName}</td><td class="num">${fmtMol(nCat)}</td><td class="num">${fmtMass(mCat)}</td><td class="num">n/a</td></tr>`;
       secondaryRows += `<tr><td>${ligName}</td><td class="num">${fmtMol(nLig)}</td><td class="num">${fmtMass(mLig)}</td><td class="num">n/a</td></tr>`;
+      sec = { catName, mCat, ligName, mLig };
     }
   } else if (cfg.secondary === "raft") {
     const enable = $(`${id}-cat-enable`).checked;
@@ -840,6 +842,7 @@ function renderResults(cfg, core, ctx) {
       const nInit = core.nX_mol / ratio;
       const mInit = nInit * initMw;
       secondaryRows += `<tr><td>${initName}</td><td class="num">${fmtMol(nInit)}</td><td class="num">${fmtMass(mInit)}</td><td class="num">n/a</td></tr>`;
+      sec = { initName, mInit };
     }
   } else if (cfg.secondary === "romp") {
     const loadingPct = 100 / core.R;
@@ -914,6 +917,7 @@ function renderResults(cfg, core, ctx) {
   ` : "";
 
   const recipeText = buildRecipeText(cfg, core, ctx, monomerName, agentName, secondaryRows);
+  const procedureSteps = techniqueProcedureSteps(cfg, core, ctx, { monomer: monomerName, agent: agentName }, sec);
 
   body.innerHTML = `
     ${statGrid}
@@ -928,6 +932,7 @@ function renderResults(cfg, core, ctx) {
       </tbody>
     </table>
     </div>
+    ${procedureBlock(cfg.label, procedureSteps, false)}
     <div class="actions">
       <button class="copy-btn" id="${id}-copy-btn">Copy recipe as text</button>
     </div>
@@ -960,6 +965,111 @@ function buildRecipeText(cfg, core, ctx, monomerName, agentName, secondaryRowsHT
     lines.push(`Total reaction volume: ${fmtVol(core.volTotalL * 1000)}`);
   }
   return lines.join("\n");
+}
+
+/* ---------------------------------------------------------------------
+   Suggested experimental procedures
+   Rendered under each recipe. These are deliberately generic starting
+   points - the disclaimer below is part of the deliverable, not
+   boilerplate, and must stay attached wherever a procedure is shown
+   (including print).
+--------------------------------------------------------------------- */
+
+function disclaimerHTML() {
+  return `
+    <div class="procedure-disclaimer">
+      <strong>&#9888;&#65039; Safety &amp; disclaimer:</strong> This auto-generated outline is a
+      generic starting point for planning, provided &ldquo;as is&rdquo; without warranty of any
+      kind. It is not a validated procedure, and it knows nothing about the specific hazards
+      of your reagents, solvents, scale, or equipment. Before any lab work: read the SDS for
+      every chemical involved, follow your institution's safety protocols and waste-disposal
+      rules, and have your plan reviewed by someone qualified in your lab. Work in a fume
+      hood with appropriate PPE. PolyTechniques and its author accept no liability for how
+      this information is used.
+    </div>`;
+}
+
+function disclaimerCompactHTML() {
+  return `
+    <div class="procedure-disclaimer procedure-disclaimer-compact">
+      <strong>&#9888;&#65039;</strong> Guidance only, provided &ldquo;as is&rdquo; &ndash; verify against
+      the SDS and your institution's safety protocols before any lab work.
+    </div>`;
+}
+
+function procedureBlock(titleNote, steps, compact) {
+  return `
+    <div class="procedure">
+      <h3 class="procedure-title">Suggested starting procedure${titleNote ? ` <span class="procedure-note">(${titleNote})</span>` : ""}</h3>
+      <ol class="procedure-steps">${steps.map((s) => `<li>${s}</li>`).join("")}</ol>
+      ${compact ? disclaimerCompactHTML() : disclaimerHTML()}
+    </div>`;
+}
+
+function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
+  const monomerAmt = `${fmtMass(core.massM_g)}${ctx.densityM ? ` (${fmtVol(core.massM_g / ctx.densityM)})` : ""} of ${names.monomer}`;
+  const agentAmt = `${fmtMass(core.massX_g)} of ${names.agent}`;
+  const solventStep = core.volTotalL != null
+    ? `Add solvent to a total reaction volume of ${fmtVol(core.volTotalL * 1000)} (roughly ${fmtVol(core.solventVolumeML)} of solvent).`
+    : `Add your reaction solvent now if running in solution (this recipe was calculated without a set volume; bulk is also common).`;
+  const convTarget = fmtNum(core.conversion * 100);
+  const monitorStep = `Pull small aliquots periodically and track conversion against an internal standard (see <a href="conversion-monitoring.html">monitoring conversion</a>); this recipe assumes stopping near ${convTarget}% conversion.`;
+  const workupStep = `Precipitate the polymer into a suitable non-solvent, filter or decant, and dry to constant mass under vacuum.`;
+  const charStep = `Characterize: M<sub>n</sub> and &ETH; by GPC, composition and end groups by NMR.`;
+
+  if (cfg.id === "atrp") {
+    return [
+      `Charge a dry Schlenk flask (or septum-capped vial at small scale) with a stir bar${sec && sec.mCat != null ? `, ${fmtMass(sec.mCat)} of ${sec.catName}, and ${fmtMass(sec.mLig)} of ${sec.ligName}` : " and your copper catalyst / ligand system"}.`,
+      ctx.macroMode
+        ? `Add ${monomerAmt} (inhibitor removed) and ${agentAmt}, dissolved together.`
+        : `Add ${monomerAmt} (inhibitor removed).`,
+      solventStep,
+      `Seal and degas thoroughly &ndash; three freeze-pump-thaw cycles is standard for ATRP (see the <a href="air-free-technique.html">air-free guide</a>), then backfill with inert gas.`,
+      ctx.macroMode
+        ? `Place the flask in a bath preheated to your chosen reaction temperature and stir.`
+        : `Under positive inert pressure, add ${agentAmt} (separately degassed) by syringe, then place the flask in a bath preheated to your chosen reaction temperature.`,
+      monitorStep,
+      `Stop the reaction by cooling and exposing to air (oxidizes the Cu(I) activator).`,
+      `Remove the copper catalyst &ndash; pass a THF or DCM solution of the polymer through a short neutral alumina plug, or stir with an appropriate resin.`,
+      workupStep,
+      charStep,
+    ];
+  }
+  if (cfg.id === "raft") {
+    return [
+      `Charge a flask or septum-capped vial with a stir bar, ${agentAmt}${sec && sec.mInit != null ? `, and ${fmtMass(sec.mInit)} of ${sec.initName}` : `, and your radical initiator (CTA : initiator around 5&nbsp;:&nbsp;1 to 10&nbsp;:&nbsp;1 is typical)`}.`,
+      `Add ${monomerAmt} (inhibitor removal recommended).`,
+      solventStep,
+      `Degas: sparge with nitrogen or argon for 20&ndash;30 min, or freeze-pump-thaw for more rigor (see the <a href="air-free-technique.html">air-free guide</a>).`,
+      `Place in a bath preheated to the initiator's working temperature (60&ndash;70&nbsp;&deg;C is typical for AIBN) and stir.`,
+      monitorStep,
+      `Stop by cooling and exposing to air.`,
+      workupStep + ` A retained thiocarbonylthio end group usually leaves the polymer pale yellow to pink &ndash; that's normal.`,
+      charStep,
+    ];
+  }
+  if (cfg.id === "romp") {
+    return [
+      `In a glovebox, or on a Schlenk line under inert gas, dissolve ${monomerAmt} in dry, degassed solvent (DCM and THF are common). ${core.volTotalL != null ? `Target a total volume near ${fmtVol(core.volTotalL * 1000)}.` : ""}`,
+      `Separately dissolve ${agentAmt} in a small amount of the same dry, degassed solvent.`,
+      `Add the catalyst solution to the stirred monomer solution in one quick portion at room temperature.`,
+      `Monitor conversion &ndash; ROMP of strained monomers is often complete within minutes to an hour (see <a href="conversion-monitoring.html">monitoring conversion</a>).`,
+      `Quench with a large excess of ethyl vinyl ether (roughly 100 equivalents versus catalyst) and stir 15&ndash;30 min to cap the chain ends.`,
+      workupStep,
+      charStep,
+    ];
+  }
+  // FRP
+  return [
+    `Charge a flask with a stir bar, ${monomerAmt} (inhibitor removed), and ${agentAmt}.`,
+    solventStep,
+    `Degas by sparging with nitrogen or argon for 15&ndash;30 min (freeze-pump-thaw for more rigor).`,
+    `Heat to the initiator's decomposition temperature (60&ndash;70&nbsp;&deg;C for AIBN, 70&ndash;85&nbsp;&deg;C for BPO) with stirring.`,
+    monitorStep + ` Watch the exotherm in bulk or concentrated runs &ndash; conventional FRP can autoaccelerate (Trommsdorff effect).`,
+    `Stop by cooling and exposing to air.`,
+    workupStep,
+    charStep,
+  ];
 }
 
 /* ---------------------------------------------------------------------
@@ -1498,6 +1608,25 @@ function renderBcpResults(res) {
     </tr>
   ` : "";
 
+  const bcpSteps = (function () {
+    const first = res.blockResults[0];
+    const steps = [
+      `Set up Block 1 exactly as a normal ${res.cfg.label} run: charge ${fmtMass(res.massX)} of ${res.agentName} plus the catalyst/initiator system from the recipe table, then ${fmtMass(first.massM)}${first.volM != null ? ` (${fmtVol(first.volM)})` : ""} of ${first.name} (inhibitor removed).${res.volTotalL != null ? ` Add solvent to roughly ${fmtVol(res.volTotalL * 1000)}.` : ""}`,
+      `Degas thoroughly (see the <a href="air-free-technique.html">air-free guide</a>) and run at your chosen temperature, tracking conversion by aliquot (see <a href="conversion-monitoring.html">monitoring conversion</a>).`,
+    ];
+    res.blockResults.slice(1).forEach((b, i) => {
+      steps.push(
+        `When Block ${i + 1} reaches its target conversion, pull a sample for GPC/NMR, then add ${fmtMass(b.massM)}${b.volM != null ? ` (${fmtVol(b.volM)})` : ""} of degassed ${b.name} directly to the living reaction. (Alternatively, isolate and purify the intermediate as a ${res.cfg.macroTerm} and start a fresh polymerization &ndash; cleaner blocks, more work.)`
+      );
+    });
+    steps.push(
+      `Chain-end fidelity is everything in sequential addition &ndash; keep conversions per block in the range where the chain ends stay living for your technique, and keep everything rigorously degassed between additions.`,
+      `After the final block, quench as usual for ${res.cfg.label}, precipitate into a suitable non-solvent, filter, and dry under vacuum.`,
+      `Characterize each stage: a clean shift of the whole GPC trace to higher molecular weight after each block, without a residual low-MW shoulder, is the signature of successful chain extension.`
+    );
+    return steps;
+  })();
+
   body.innerHTML = `
     ${statGrid}
     <div class="table-scroll">
@@ -1518,6 +1647,7 @@ function renderBcpResults(res) {
       </tbody>
     </table>
     </div>
+    ${procedureBlock(`sequential ${res.cfg.label}`, bcpSteps, false)}
     <div class="actions">
       <button class="copy-btn" id="bcp-copy-btn">Copy recipe as text</button>
     </div>
@@ -1855,6 +1985,13 @@ function recalcStockPrepare() {
     <div class="stat"><div class="label">Concentration</div><div class="value">${fmtNum(concM)}</div><div class="sub">mol/L</div></div>
     <div class="stat"><div class="label">Volume</div><div class="value">${fmtVol(volL * 1000)}</div></div>
     <div class="stat"><div class="label">Moles</div><div class="value">${fmtMol(massG / mw)}</div></div>
+    ${procedureBlock(null, [
+      `Tare a weighing vessel and weigh out ${fmtMass(massG)} of ${escapeHtml(name)}.`,
+      `Dissolve in roughly 80% of the final solvent volume, stirring until fully dissolved.`,
+      `Transfer quantitatively to a ${fmtVol(volL * 1000)} volumetric flask (or graduated vessel), rinsing the weighing vessel into it.`,
+      `Fill to the mark with solvent, cap, and invert several times to mix.`,
+      `Label with contents, concentration (${fmtNum(concM)} mol/L), solvent, date, and your initials.`,
+    ], true)}
   `;
 }
 
@@ -1873,6 +2010,11 @@ function recalcStockDilute() {
     <div class="stat"><div class="label">Stock volume to use</div><div class="value">${fmtVol(v1)}</div></div>
     <div class="stat"><div class="label">Diluent to add</div><div class="value">${fmtVol(diluent)}</div></div>
     <div class="stat"><div class="label">Final volume</div><div class="value">${fmtVol(v2)}</div></div>
+    ${procedureBlock(null, [
+      `Measure ${fmtVol(v1)} of the stock solution accurately (volumetric pipette or syringe, per the precision you need).`,
+      `Add diluent up to a final volume of ${fmtVol(v2)} &ndash; in a volumetric flask, fill to the mark; then cap and invert to mix.`,
+      `Label the new solution with contents, concentration, solvent, date, and your initials.`,
+    ], true)}
   `;
 }
 
