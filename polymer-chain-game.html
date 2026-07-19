@@ -38,6 +38,15 @@
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="style.css?v=34">
+<style>
+  /* The canvas has a fixed 494x390 internal resolution; let it scale down to
+     fit narrow screens while keeping its aspect ratio and crisp 8-bit pixels. */
+  #game-canvas { max-width: 100%; height: auto; image-rendering: pixelated; }
+  @media (max-width: 560px) {
+    .game-stage { padding: 6px; }
+    .game-controls { gap: 18px; }
+  }
+</style>
 </head>
 <body>
 
