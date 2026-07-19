@@ -68,6 +68,22 @@
     if (!canvas) return;
     var ctx = canvas.getContext('2d');
 
+    // First-visit onboarding hint for the structure editor. Shown until
+    // dismissed once; the flag lives in localStorage.
+    (function () {
+      var KEY = 'polytechniques_editor_hint_dismissed';
+      var hint = document.getElementById('mol-onboarding');
+      var dismiss = document.getElementById('mol-onboarding-dismiss');
+      if (!hint || !dismiss) return;
+      var seen = false;
+      try { seen = localStorage.getItem(KEY) === '1'; } catch (e) {}
+      if (!seen) hint.hidden = false;
+      dismiss.addEventListener('click', function () {
+        hint.hidden = true;
+        try { localStorage.setItem(KEY, '1'); } catch (e) {}
+      });
+    })();
+
     // Size the canvas to fill its card instead of sitting at a fixed 640px
     // with dead space beside it, keeping the same 16:9 aspect ratio. This
     // has to happen before anything else reads canvas.width/height (ring
@@ -1486,8 +1502,25 @@
       renderResults(ranked);
     }
 
+    // After an explicit search action, bring the Results card into view if it
+    // sits below the fold (common on phones, where the editor fills the screen).
+    // Name-search typing intentionally doesn't trigger this - scrolling on
+    // every keystroke would fight the user.
+    function scrollResultsIntoView() {
+      var statusEl = document.getElementById('mol-status');
+      var card = statusEl && statusEl.closest('.card');
+      if (!card) return;
+      var rect = card.getBoundingClientRect();
+      if (rect.top > window.innerHeight - 120) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
     var searchBtn = document.getElementById('mol-search-structure');
-    if (searchBtn) searchBtn.addEventListener('click', runStructureSearch);
+    if (searchBtn) searchBtn.addEventListener('click', function () {
+      runStructureSearch();
+      scrollResultsIntoView();
+    });
 
     var nameInput = document.getElementById('mol-name-search');
     if (nameInput) {
@@ -1582,6 +1615,7 @@
         if (matches.length) {
           if (statusEl) statusEl.textContent = matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ' from the image:';
           renderResults(matches);
+          scrollResultsIntoView();
         }
       }).catch(function () {
         if (ocrStatusEl) ocrStatusEl.textContent = 'Could not read that image.';
