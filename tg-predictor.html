@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=32">
+<link rel="stylesheet" href="style.css?v=33">
 </head>
 <body>
 
@@ -76,13 +76,14 @@
     <h3>Tg calculator</h3>
     <div class="dyn-row-labels">
       <span>Component</span>
-      <span>Homopolymer T<sub>g</sub> (&deg;C)</span>
+      <span id="tg-unit-label">Homopolymer T<sub>g</sub> (&deg;C)</span>
       <span>Weight %</span>
       <span class="dyn-label-spacer"></span>
     </div>
     <div id="tg-rows" class="dyn-rows"></div>
-    <div class="actions" style="justify-content:flex-start; margin-top:6px;">
+    <div class="actions" style="justify-content:flex-start; margin-top:6px; gap:8px;">
       <button type="button" class="copy-btn" id="tg-add-row">+ Add component</button>
+      <button type="button" class="copy-btn" id="tg-unit-toggle" title="Switch between entering Tg values in Celsius and Kelvin">Enter T<sub>g</sub> in K</button>
     </div>
 
     <div class="stat-grid" id="tg-stats" style="margin-top:16px;"></div>
@@ -134,12 +135,22 @@
     { name: "Butyl acrylate", tg: -54, wt: 40 }
   ];
 
+  // Input unit for Tg values: Celsius (default) or Kelvin. Literature REF
+  // values are stored in C; everything converts through toK() for the Fox
+  // equation, so switching units never changes the chemistry.
+  var TG_UNIT_KEY = "polytechniques_tg_unit";
+  var tgUnit = "C";
+  try { tgUnit = localStorage.getItem(TG_UNIT_KEY) === "K" ? "K" : "C"; } catch (e) {}
+  function toK(v) { return tgUnit === "C" ? v + 273.15 : v; }
+  function refDisplay(tgC) { return tgUnit === "C" ? tgC : Number((tgC + 273.15).toFixed(1)); }
+  function unitText() { return tgUnit === "C" ? "°C" : "K"; }
+
   function makeRow(name, tg, wt) {
     var row = document.createElement("div");
     row.className = "dyn-row";
     row.innerHTML =
       '<input type="text" class="tg-name" placeholder="Component name" value="' + (name || "") + '">' +
-      '<input type="number" class="tg-tg" placeholder="Tg (°C)" step="any" value="' + (tg ?? "") + '">' +
+      '<input type="number" class="tg-tg" placeholder="Tg (' + unitText() + ')" step="any" value="' + (tg ?? "") + '">' +
       '<input type="number" class="tg-wt" placeholder="Weight %" step="any" min="0" value="' + (wt ?? "") + '">' +
       '<button type="button" class="dyn-row-remove" aria-label="Remove component">&times;</button>';
     row.querySelector(".dyn-row-remove").addEventListener("click", function () {
@@ -156,11 +167,34 @@
     return row;
   }
 
-  function fillRefTable() {
+  function renderRefRows() {
     var body = document.querySelector("#tg-ref-table tbody");
-    body.innerHTML = REF.map(function (p) {
-      return "<tr><td>" + p.name + "</td><td class=\"num\">" + p.tg + "</td></tr>";
+    body.innerHTML = REF.map(function (p, i) {
+      return "<tr class=\"tg-ref-row\" data-idx=\"" + i + "\" title=\"Click to add as a component\"><td>" + p.name + "</td><td class=\"num\">" + refDisplay(p.tg) + "</td></tr>";
     }).join("");
+    var th = document.querySelector("#tg-ref-table thead th:last-child");
+    if (th) th.textContent = "Typical Tg (" + unitText() + ")";
+  }
+
+  function fillRefTable() {
+    renderRefRows();
+    document.querySelector("#tg-ref-table tbody").addEventListener("click", function (e) {
+      var tr = e.target.closest("tr[data-idx]");
+      if (!tr) return;
+      var p = REF[parseInt(tr.getAttribute("data-idx"), 10)];
+      if (!p) return;
+      // Reuse an empty row if one exists, otherwise add a new one
+      var empty = Array.from(document.querySelectorAll("#tg-rows .dyn-row")).find(function (row) {
+        return !row.querySelector(".tg-name").value.trim() && !row.querySelector(".tg-tg").value;
+      });
+      var row = empty || addRow("", "", "");
+      row.querySelector(".tg-name").value = p.name;
+      row.querySelector(".tg-tg").value = refDisplay(p.tg);
+      recalc();
+      var wt = row.querySelector(".tg-wt");
+      wt.focus();
+      row.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
   }
 
   function recalc() {
@@ -168,10 +202,10 @@
     var comps = [];
     rows.forEach(function (row) {
       var name = row.querySelector(".tg-name").value.trim();
-      var tgC = parseFloat(row.querySelector(".tg-tg").value);
+      var tgRaw = parseFloat(row.querySelector(".tg-tg").value);
       var wt = parseFloat(row.querySelector(".tg-wt").value);
-      if (!name || !isFinite(tgC) || !isFinite(wt) || wt <= 0) return;
-      comps.push({ name: name, tgK: tgC + 273.15, wt: wt });
+      if (!name || !isFinite(tgRaw) || !isFinite(wt) || wt <= 0) return;
+      comps.push({ name: name, tgK: toK(tgRaw), wt: wt });
     });
 
     var stats = $("tg-stats");
@@ -217,8 +251,32 @@
     if (e.target.matches("input")) recalc();
   });
 
-  DEMO.forEach(function (d) { addRow(d.name, d.tg, d.wt); });
+  function refreshUnitUi() {
+    $("tg-unit-label").innerHTML = "Homopolymer T<sub>g</sub> (" + unitText() + ")";
+    $("tg-unit-toggle").innerHTML = "Enter T<sub>g</sub> in " + (tgUnit === "C" ? "K" : "°C");
+    document.querySelectorAll("#tg-rows .tg-tg").forEach(function (inp) {
+      inp.placeholder = "Tg (" + unitText() + ")";
+    });
+    renderRefRows();
+  }
+
+  $("tg-unit-toggle").addEventListener("click", function () {
+    var prev = tgUnit;
+    tgUnit = tgUnit === "C" ? "K" : "C";
+    try { localStorage.setItem(TG_UNIT_KEY, tgUnit); } catch (e) {}
+    // Convert values already typed in so the physical Tg stays the same
+    document.querySelectorAll("#tg-rows .tg-tg").forEach(function (inp) {
+      var v = parseFloat(inp.value);
+      if (!isFinite(v)) return;
+      inp.value = Number((prev === "C" ? v + 273.15 : v - 273.15).toFixed(2));
+    });
+    refreshUnitUi();
+    recalc();
+  });
+
+  DEMO.forEach(function (d) { addRow(d.name, refDisplay(d.tg), d.wt); });
   fillRefTable();
+  refreshUnitUi();
   recalc();
 })();
 </script>

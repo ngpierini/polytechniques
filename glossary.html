@@ -35,7 +35,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=32">
+<link rel="stylesheet" href="style.css?v=33">
 </head>
 <body>
 
@@ -56,6 +56,11 @@
 </header>
 
 <main id="guide">
+
+  <div class="card">
+    <input type="search" id="glossary-search" placeholder="Filter terms&hellip; (press / to focus)" aria-label="Filter glossary terms">
+    <p class="guide-note" id="glossary-count" style="margin:8px 0 0;"></p>
+  </div>
 
   <div class="card">
     <h3>Molecular weight &amp; dispersity</h3>
@@ -226,6 +231,55 @@
   <p>Definitions are simplified for practical lab use, not formal IUPAC definitions.</p>
 </footer>
 
+<script>
+(function () {
+  var input = document.getElementById("glossary-search");
+  var countEl = document.getElementById("glossary-count");
+  if (!input) return;
+
+  // Collect every dt/dd pair and the card it lives in
+  var entries = [];
+  document.querySelectorAll("#guide .glossary-dl dt").forEach(function (dt) {
+    var dd = dt.nextElementSibling;
+    entries.push({
+      dt: dt,
+      dd: dd && dd.tagName === "DD" ? dd : null,
+      text: (dt.textContent + " " + (dd ? dd.textContent : "")).toLowerCase()
+    });
+  });
+
+  function applyFilter() {
+    var q = input.value.trim().toLowerCase();
+    var shown = 0;
+    entries.forEach(function (e) {
+      var hit = !q || e.text.indexOf(q) !== -1;
+      e.dt.hidden = !hit;
+      if (e.dd) e.dd.hidden = !hit;
+      if (hit) shown++;
+    });
+    // Hide any category card whose terms are all filtered out
+    document.querySelectorAll("#guide .card").forEach(function (card) {
+      var dl = card.querySelector(".glossary-dl");
+      if (!dl) return;
+      card.hidden = !dl.querySelector("dt:not([hidden])");
+    });
+    countEl.textContent = q
+      ? (shown + " term" + (shown === 1 ? "" : "s") + " matching “" + input.value.trim() + "”")
+      : "";
+  }
+
+  input.addEventListener("input", applyFilter);
+
+  // Deep link: glossary.html?q=term prefills the filter (used by the
+  // Ctrl+K palette)
+  var q = new URLSearchParams(location.search).get("q");
+  if (q) {
+    input.value = q;
+    applyFilter();
+    input.focus();
+  }
+})();
+</script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
