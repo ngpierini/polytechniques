@@ -1104,6 +1104,16 @@ const PU_DIISOS = [
   { name: "Custom (enter eq wt below)", eq: null, nco: null, note: "" },
 ];
 
+const PU_CATALYSTS = [
+  { name: "None", pct: null, note: "" },
+  { name: "DBTDL (dibutyltin dilaurate)", pct: 0.02, note: "The standard tin gelation catalyst; strongly selective for NCO-OH. Organotin - increasingly regulated" },
+  { name: "Stannous octoate (T-9)", pct: 0.05, note: "Common in castables and foams; less hydrolytically stable than DBTDL" },
+  { name: "DABCO (TEDA, tertiary amine)", pct: 0.1, note: "Amine catalyst; also accelerates the water-NCO side reaction - keep everything rigorously dry" },
+  { name: "Bismuth neodecanoate", pct: 0.1, note: "Lower-toxicity tin alternative with good gelation selectivity" },
+  { name: "Zinc octoate", pct: 0.2, note: "Mild; often paired with an amine or used in tin-free systems" },
+  { name: "Custom (enter wt% below)", pct: null, note: "" },
+];
+
 const PU_EXTENDERS = [
   { name: "1,4-Butanediol (BDO)", eq: 45.06, type: "diol", note: "The workhorse urethane extender" },
   { name: "Ethylene glycol", eq: 31.03, type: "diol", note: "Higher hard-segment density than BDO" },
@@ -1222,6 +1232,16 @@ function polyurethaneTemplate() {
           <input type="number" id="pu-index" value="0.95" step="any" min="0.1" max="1.5">
           <span class="hint">0.90&ndash;1.00 typical; slightly sub-stoichiometric leaves NCO for allophanate/biuret crosslinking on cure</span>
         </div>
+        <div class="field">
+          <label for="pu-cat-select">Cure catalyst (optional)</label>
+          <select id="pu-cat-select">${PU_CATALYSTS.map((c, i) => `<option value="${i}">${escapeHtml(c.name)}</option>`).join("")}</select>
+          <span class="hint" id="pu-cat-note"></span>
+        </div>
+        <div class="field">
+          <label for="pu-cat-pct">Catalyst loading (wt% of final batch)</label>
+          <input type="number" id="pu-cat-pct" value="" step="any" min="0" max="5">
+          <span class="hint">0.01&ndash;0.2 wt% typical; more catalyst = shorter pot life</span>
+        </div>
       </div>
       <div class="stat-grid" id="pu-ext-stats" style="margin-top:16px;"></div>
       <div id="pu-procedure"></div>
@@ -1243,6 +1263,14 @@ function polyurethaneTemplate() {
           <thead><tr><th>Extender</th><th>Eq wt (g/eq)</th><th>Type</th><th>Notes</th></tr></thead>
           <tbody>${PU_EXTENDERS.filter((e) => e.eq).map((e) =>
             `<tr><td>${e.name}</td><td class="num">${e.eq}</td><td>${e.type}</td><td>${e.note}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+      <div class="table-scroll" style="margin-top:14px;">
+        <table class="recipe">
+          <thead><tr><th>Cure catalyst</th><th>Typical loading (wt%)</th><th>Notes</th></tr></thead>
+          <tbody>${PU_CATALYSTS.filter((c) => c.pct).map((c) =>
+            `<tr><td>${c.name}</td><td class="num">${c.pct}</td><td>${c.note}</td></tr>`).join("")}
           </tbody>
         </table>
       </div>
@@ -1312,11 +1340,19 @@ function wirePolyurethanePanel() {
     const mFinal = mPre + mExt;
     const hardSeg = ((mPre * isoMassFraction) + mExt) / mFinal * 100;
 
+    const catSel = PU_CATALYSTS[parseInt($("pu-cat-select").value, 10)] || PU_CATALYSTS[0];
+    const catPct = parseFloat($("pu-cat-pct").value);
+    const useCat = catSel.name !== "None" && isFinite(catPct) && catPct > 0;
+    const mCat = useCat ? (catPct / 100) * mFinal : 0;
+    const catMassText = mCat < 1 ? `${puFmt(mCat * 1000, 1)} mg` : `${puFmt(mCat, 2)} g`;
+    const catShort = catSel.name.replace(/ \(.*$/, "");
+
     extStats.innerHTML =
       `<div class="stat"><div class="label">NCO to consume</div><div class="value">${puFmt(eqNCOavail * 1000, 1)}</div><div class="sub">meq, at ${puFmt(pctNCO, 2)}%NCO (${isFinite(measured) && measured > 0 ? "measured" : "theoretical"})</div></div>` +
       `<div class="stat"><div class="label">Extender to charge</div><div class="value">${puFmt(mExt, 2)} g</div><div class="sub">${puFmt(eqExtNeeded * 1000, 1)} meq at index ${puFmt(index, 2)}</div></div>` +
       `<div class="stat"><div class="label">Final batch mass</div><div class="value">${puFmt(mFinal, 1)} g</div><div class="sub">prepolymer + extender</div></div>` +
       `<div class="stat"><div class="label">Hard segment content</div><div class="value">${puFmt(hardSeg, 1)}%</div><div class="sub">diisocyanate + extender, by mass &middot; soft segment ${puFmt(100 - hardSeg, 1)}%</div></div>` +
+      (useCat ? `<div class="stat"><div class="label">${escapeHtml(catShort)} to charge</div><div class="value">${catMassText}</div><div class="sub">${puFmt(catPct, 3)} wt% of final batch</div></div>` : "") +
       (extSel.type === "amine" ? `<div class="stat"><div class="label">Chemistry note</div><div class="value" style="font-size:0.92rem;">Urea hard segments</div><div class="sub">amine curatives give a urethane-urea; faster reaction, shorter pot life, harder product</div></div>` : "") +
       (extSel.type === "triol" ? `<div class="stat"><div class="label">Chemistry note</div><div class="value" style="font-size:0.92rem;">Crosslinked network</div><div class="sub">f = 3 curative: this is a thermoset formulation, not a linear TPU</div></div>` : "");
 
@@ -1329,16 +1365,20 @@ function wirePolyurethanePanel() {
       `React at 70&ndash;80 &deg;C under dry N<sub>2</sub> for 2&ndash;3 h (aliphatic isocyanates are slower and may need a tin catalyst such as DBTDL at 0.01&ndash;0.05 wt%).`,
       `Follow the capping reaction by in-line IR: watch the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> decay as the polyol OH is consumed (the urethane carbonyl grows in at ~1700&ndash;1730 cm<sup>&minus;1</sup>). The step is done when the NCO band plateaus at the level corresponding to the theoretical ${puFmt(theoNCO, 2)}% free NCO &ndash; quantify against your calibration and enter the measured value in Step 2. Store any unused prepolymer under dry inert gas &ndash; it is moisture-reactive.`,
       `For chain extension: warm ${puFmt(mPre, 1)} g of prepolymer to 60&ndash;80 &deg;C to lower viscosity, and degas under vacuum until bubble-free.`,
+      ...(useCat ? [`Pre-dissolve ${catMassText} of ${shortName(catSel.name)} in the chain extender (or dose it into the degassed prepolymer just before extension). At ${puFmt(catPct, 3)} wt%, expect the pot life to shorten noticeably &ndash; run a small trial batch first.`] : []),
       `Add ${puFmt(mExt, 2)} g of ${shortName(extSel.name)}${extSel.type === "amine" ? " (melt MOCA at ~110 &deg;C first if using it)" : ""} and mix rapidly but thoroughly for 1&ndash;2 min, avoiding air entrainment.${extSel.type === "amine" ? " Amine curatives react fast &ndash; know your pot life before you scale up." : ""}`,
       `Degas briefly if pot life allows, then cast into preheated, release-coated molds.`,
       `Cure (typical: 100 &deg;C for 16 h for aromatic systems; adjust to your chemistry). If the IR probe survives your cure setup, the extension/cure can be followed the same way &ndash; the 2270 cm<sup>&minus;1</sup> NCO band decaying to baseline is your endpoint. Post-cure/condition about a week at room temperature before testing.`,
       `Characterize: hardness and tensile after conditioning; confirm full NCO consumption by the absence of the 2270 cm<sup>&minus;1</sup> band; DSC/DMA for the soft-segment T<sub>g</sub> and hard-segment transitions.`,
     ];
+    const catHazard = useCat && /DBTDL|octoate|neodecanoate/i.test(catSel.name)
+      ? " Organotin and organometallic catalysts (DBTDL, stannous octoate, bismuth/zinc carboxylates) carry their own handling precautions - avoid skin contact and check your SDS, particularly for organotins."
+      : "";
     $("pu-procedure").innerHTML = procedureBlock(
       "two-step prepolymer route",
       puSteps,
       false,
-      "Diisocyanates are potent respiratory and skin sensitizers &ndash; handle them only with proper engineering controls (fume hood, sealed transfers), and note that MOCA is a suspected human carcinogen subject to strict occupational limits."
+      "Diisocyanates are potent respiratory and skin sensitizers &ndash; handle them only with proper engineering controls (fume hood, sealed transfers), and note that MOCA is a suspected human carcinogen subject to strict occupational limits." + catHazard
     );
   }
 
@@ -1358,14 +1398,21 @@ function wirePolyurethanePanel() {
     $("pu-ext-note").textContent = e ? e.note : "";
     recalcPu();
   });
+  $("pu-cat-select").addEventListener("change", function () {
+    const c = PU_CATALYSTS[parseInt(this.value, 10)];
+    if (c) $("pu-cat-pct").value = c.pct != null ? c.pct : "";
+    $("pu-cat-note").textContent = c ? c.note : "";
+    recalcPu();
+  });
   $("pu-prepoly-mass").addEventListener("input", () => { prepolyMassDirty = true; });
 
   ["pu-ohn", "pu-f", "pu-polyol-mass", "pu-iso-eq", "pu-ratio",
-   "pu-prepoly-mass", "pu-nco-measured", "pu-ext-eq", "pu-index"].forEach((id) => {
+   "pu-prepoly-mass", "pu-nco-measured", "pu-ext-eq", "pu-index", "pu-cat-pct"].forEach((id) => {
     $(id).addEventListener("input", recalcPu);
   });
 
   $("pu-ext-note").textContent = PU_EXTENDERS[0].note;
+  $("pu-cat-note").textContent = PU_CATALYSTS[0].note;
   recalcPu();
 
   wirePresetBar("pu", () => collectPanelState("pu"), (state) => applyPanelState("pu", state, recalcPu));
