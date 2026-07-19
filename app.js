@@ -1077,7 +1077,7 @@ function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
    Step 1 caps a polyol with excess diisocyanate at a set NCO:OH ratio;
    step 2 doses a chain extender against the prepolymer's %NCO. All the
    arithmetic is equivalents-based, and step 2 accepts a measured %NCO
-   (ASTM D2572 titration) in place of the theoretical value.
+   (e.g. from in-line IR against a calibration) in place of the theoretical value.
 --------------------------------------------------------------------- */
 
 const PU_NCO_MW = 42.02; // molecular weight of one NCO group
@@ -1144,10 +1144,10 @@ function polyurethaneTemplate() {
         First, <strong>cap</strong> a hydroxyl-terminated polyol with an excess of diisocyanate so every chain end
         becomes an isocyanate (the NCO:OH ratio, typically 1.6&ndash;2.2:1, sets how much free NCO remains). Second,
         <strong>chain extend</strong> the NCO-terminated prepolymer with a short diol or diamine, building the hard
-        segments and driving molecular weight up. In practice, <strong>titrate the real %NCO</strong> of your
-        prepolymer (dibutylamine back-titration, ASTM D2572) before extending &ndash; side reactions, moisture, and
-        polyol batch variation all pull the real value below theory, and Step 2 accepts your measured value for
-        exactly that reason.
+        segments and driving molecular weight up. In practice, <strong>measure the real %NCO</strong> of your
+        prepolymer before extending &ndash; follow the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> by in-line IR
+        and quantify against a calibration. Side reactions, moisture, and polyol batch variation all pull the real
+        value below theory, and Step 2 accepts your measured value for exactly that reason.
       </p>
       <div class="guide-formula">
         Polyol eq wt = 56100 &divide; OH# &nbsp;|&nbsp; Diisocyanate eq wt = 4202 &divide; %NCO &nbsp;|&nbsp; %NCO<sub>prepolymer</sub> = 4202 &times; (eq NCO &minus; eq OH) &divide; total mass
@@ -1205,7 +1205,7 @@ function polyurethaneTemplate() {
         <div class="field">
           <label for="pu-nco-measured">%NCO of prepolymer (measured, optional)</label>
           <input type="number" id="pu-nco-measured" value="" step="any" min="0">
-          <span class="hint">Leave blank to use the Step 1 theoretical value. Titrate for real work (ASTM D2572)</span>
+          <span class="hint">Leave blank to use the Step 1 theoretical value. For real work, quantify from your in-line IR calibration</span>
         </div>
         <div class="field">
           <label for="pu-ext-select">Chain extender / curative</label>
@@ -1284,7 +1284,7 @@ function wirePolyurethanePanel() {
       `<div class="stat"><div class="label">Polyol eq wt</div><div class="value">${puFmt(eqwtPolyol, 1)}</div><div class="sub">g/eq OH &middot; Mn &asymp; ${puFmt(polyolMn, 0)} g/mol at f = ${puFmt(f, 2)}</div></div>` +
       `<div class="stat"><div class="label">OH equivalents</div><div class="value">${puFmt(eqOH * 1000, 1)}</div><div class="sub">meq, from ${puFmt(mPolyol, 1)} g polyol</div></div>` +
       `<div class="stat"><div class="label">Diisocyanate to charge</div><div class="value">${puFmt(mIso, 2)} g</div><div class="sub">${puFmt(eqNCO * 1000, 1)} meq NCO at ${puFmt(ratio, 2)} : 1</div></div>` +
-      `<div class="stat"><div class="label">Theoretical %NCO</div><div class="value">${puFmt(theoNCO, 2)}%</div><div class="sub">of ${puFmt(mPrepTotal, 1)} g prepolymer &middot; titrate to confirm</div></div>` +
+      `<div class="stat"><div class="label">Theoretical %NCO</div><div class="value">${puFmt(theoNCO, 2)}%</div><div class="sub">of ${puFmt(mPrepTotal, 1)} g prepolymer &middot; confirm by in-line IR</div></div>` +
       `<div class="stat"><div class="label">Idealized capped adduct Mn</div><div class="value">${puFmt(idealMn, 0)}</div><div class="sub">g/mol${ratio < 2 ? " &middot; ratio &lt; 2: real Mn runs higher from chain coupling" : " &middot; real prepolymer also contains free diisocyanate"}</div></div>`;
 
     // Keep step 2's default mass in sync until the user edits it
@@ -1327,12 +1327,12 @@ function wirePolyurethanePanel() {
       `Dry ${puFmt(mPolyol, 1)} g of ${shortName(polyolSel.name)} at 80&ndash;100 &deg;C under vacuum (&lt;1&nbsp;torr) for 1&ndash;2&nbsp;h, until bubbling stops. Residual water consumes NCO and generates CO<sub>2</sub> bubbles in the final part.`,
       `Cool to 60&ndash;70 &deg;C and blanket with dry nitrogen. Charge ${puFmt(mIso, 2)} g of ${shortName(isoSel.name)} with stirring.`,
       `React at 70&ndash;80 &deg;C under dry N<sub>2</sub> for 2&ndash;3 h (aliphatic isocyanates are slower and may need a tin catalyst such as DBTDL at 0.01&ndash;0.05 wt%).`,
-      `Titrate %NCO (dibutylamine back-titration, ASTM D2572). Proceed when it reaches the theoretical ${puFmt(theoNCO, 2)}% (or plateaus just below it). Store any unused prepolymer under dry inert gas &ndash; it is moisture-reactive.`,
+      `Follow the capping reaction by in-line IR: watch the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> decay as the polyol OH is consumed (the urethane carbonyl grows in at ~1700&ndash;1730 cm<sup>&minus;1</sup>). The step is done when the NCO band plateaus at the level corresponding to the theoretical ${puFmt(theoNCO, 2)}% free NCO &ndash; quantify against your calibration and enter the measured value in Step 2. Store any unused prepolymer under dry inert gas &ndash; it is moisture-reactive.`,
       `For chain extension: warm ${puFmt(mPre, 1)} g of prepolymer to 60&ndash;80 &deg;C to lower viscosity, and degas under vacuum until bubble-free.`,
       `Add ${puFmt(mExt, 2)} g of ${shortName(extSel.name)}${extSel.type === "amine" ? " (melt MOCA at ~110 &deg;C first if using it)" : ""} and mix rapidly but thoroughly for 1&ndash;2 min, avoiding air entrainment.${extSel.type === "amine" ? " Amine curatives react fast &ndash; know your pot life before you scale up." : ""}`,
       `Degas briefly if pot life allows, then cast into preheated, release-coated molds.`,
-      `Cure (typical: 100 &deg;C for 16 h for aromatic systems; adjust to your chemistry), then post-cure/condition about a week at room temperature before testing.`,
-      `Characterize: hardness and tensile after conditioning; confirm full NCO consumption by the disappearance of the 2270 cm<sup>&minus;1</sup> band in FTIR; DSC/DMA for the soft-segment T<sub>g</sub> and hard-segment transitions.`,
+      `Cure (typical: 100 &deg;C for 16 h for aromatic systems; adjust to your chemistry). If the IR probe survives your cure setup, the extension/cure can be followed the same way &ndash; the 2270 cm<sup>&minus;1</sup> NCO band decaying to baseline is your endpoint. Post-cure/condition about a week at room temperature before testing.`,
+      `Characterize: hardness and tensile after conditioning; confirm full NCO consumption by the absence of the 2270 cm<sup>&minus;1</sup> band; DSC/DMA for the soft-segment T<sub>g</sub> and hard-segment transitions.`,
     ];
     $("pu-procedure").innerHTML = procedureBlock(
       "two-step prepolymer route",
