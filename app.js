@@ -975,10 +975,10 @@ function buildRecipeText(cfg, core, ctx, monomerName, agentName, secondaryRowsHT
    (including print).
 --------------------------------------------------------------------- */
 
-function disclaimerHTML() {
+function disclaimerHTML(extraLead) {
   return `
     <div class="procedure-disclaimer">
-      <strong>&#9888;&#65039; Safety &amp; disclaimer:</strong> This auto-generated outline is a
+      <strong>&#9888;&#65039; Safety &amp; disclaimer:</strong> ${extraLead ? extraLead + " " : ""}This auto-generated outline is a
       generic starting point for planning, provided &ldquo;as is&rdquo; without warranty of any
       kind. It is not a validated procedure, and it knows nothing about the specific hazards
       of your reagents, solvents, scale, or equipment. Before any lab work: read the SDS for
@@ -997,12 +997,12 @@ function disclaimerCompactHTML() {
     </div>`;
 }
 
-function procedureBlock(titleNote, steps, compact) {
+function procedureBlock(titleNote, steps, compact, extraLead) {
   return `
     <div class="procedure">
       <h3 class="procedure-title">Suggested starting procedure${titleNote ? ` <span class="procedure-note">(${titleNote})</span>` : ""}</h3>
       <ol class="procedure-steps">${steps.map((s) => `<li>${s}</li>`).join("")}</ol>
-      ${compact ? disclaimerCompactHTML() : disclaimerHTML()}
+      ${compact ? disclaimerCompactHTML() : disclaimerHTML(extraLead)}
     </div>`;
 }
 
@@ -1070,6 +1070,305 @@ function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
     workupStep,
     charStep,
   ];
+}
+
+/* ---------------------------------------------------------------------
+   Polyurethane (two-step prepolymer route)
+   Step 1 caps a polyol with excess diisocyanate at a set NCO:OH ratio;
+   step 2 doses a chain extender against the prepolymer's %NCO. All the
+   arithmetic is equivalents-based, and step 2 accepts a measured %NCO
+   (ASTM D2572 titration) in place of the theoretical value.
+--------------------------------------------------------------------- */
+
+const PU_NCO_MW = 42.02; // molecular weight of one NCO group
+const PU_KOH = 56100;    // mg KOH per mol, for OH-number conversion
+
+const PU_POLYOLS = [
+  { name: "PTMEG 2000", ohn: 56.1, f: 2 },
+  { name: "PTMEG 1000", ohn: 112.2, f: 2 },
+  { name: "PPG 2000", ohn: 56.1, f: 2 },
+  { name: "PPG 1000", ohn: 112.2, f: 2 },
+  { name: "PCL diol 2000", ohn: 56.1, f: 2 },
+  { name: "Polyester adipate diol 2000", ohn: 56.1, f: 2 },
+  { name: "PEG 1000", ohn: 112.2, f: 2 },
+  { name: "HTPB (R-45 type)", ohn: 46.6, f: 2.4 },
+  { name: "Custom (enter OH# below)", ohn: null, f: null },
+];
+
+const PU_DIISOS = [
+  { name: "MDI (4,4'-)", eq: 125.13, nco: 33.6, note: "Solid, melts ~40 °C; handle melted under dry N₂" },
+  { name: "TDI (80/20)", eq: 87.08, nco: 48.3, note: "High vapor pressure - serious inhalation hazard" },
+  { name: "IPDI", eq: 111.14, nco: 37.8, note: "Aliphatic, UV-stable products; slow - usually catalyzed" },
+  { name: "HDI", eq: 84.10, nco: 50.0, note: "Aliphatic; monomer is volatile and hazardous" },
+  { name: "H12MDI (Desmodur W)", eq: 131.18, nco: 32.0, note: "Aliphatic, low viscosity" },
+  { name: "Custom (enter eq wt below)", eq: null, nco: null, note: "" },
+];
+
+const PU_EXTENDERS = [
+  { name: "1,4-Butanediol (BDO)", eq: 45.06, type: "diol", note: "The workhorse urethane extender" },
+  { name: "Ethylene glycol", eq: 31.03, type: "diol", note: "Higher hard-segment density than BDO" },
+  { name: "1,6-Hexanediol", eq: 59.09, type: "diol", note: "Softer hard segments, better hydrolysis resistance" },
+  { name: "Glycerol", eq: 30.70, type: "triol", note: "f = 3: crosslinker, not a linear extender" },
+  { name: "Trimethylolpropane (TMP)", eq: 44.72, type: "triol", note: "f = 3: crosslinker, not a linear extender" },
+  { name: "MOCA (diamine)", eq: 133.58, type: "amine", note: "Forms urea hard segments (urethane-urea). Suspected human carcinogen - strict handling controls" },
+  { name: "DETDA / Ethacure 100 (diamine)", eq: 89.14, type: "amine", note: "Liquid aromatic diamine, fast - short pot life" },
+  { name: "Custom (enter eq wt below)", eq: null, type: "diol", note: "" },
+];
+
+function puFmt(n, digits) {
+  if (!isFinite(n)) return "n/a";
+  if (n === 0) return "0";
+  const abs = Math.abs(n);
+  if (abs >= 10000) return n.toFixed(0);
+  if (abs >= 100) return n.toFixed(1);
+  if (abs >= 1) return n.toFixed(digits == null ? 2 : digits);
+  return n.toFixed(3);
+}
+
+function polyurethaneTemplate() {
+  const opts = (list) => list.map((item, i) => `<option value="${i}">${escapeHtml(item.name)}</option>`).join("");
+  return `
+    <div class="panel-head">
+      <div>
+        <h2>Polyurethane</h2>
+        <p>Two-step prepolymer route: cap a polyol with excess diisocyanate, then chain extend the %NCO prepolymer.</p>
+      </div>
+      <button type="button" class="copy-btn print-btn" onclick="window.print()">&#128424; Print recipe</button>
+    </div>
+
+    ${presetBarHTML("pu")}
+
+    <div class="card">
+      <h3>How this works</h3>
+      <p class="guide-note">
+        First, <strong>cap</strong> a hydroxyl-terminated polyol with an excess of diisocyanate so every chain end
+        becomes an isocyanate (the NCO:OH ratio, typically 1.6&ndash;2.2:1, sets how much free NCO remains). Second,
+        <strong>chain extend</strong> the NCO-terminated prepolymer with a short diol or diamine, building the hard
+        segments and driving molecular weight up. In practice, <strong>titrate the real %NCO</strong> of your
+        prepolymer (dibutylamine back-titration, ASTM D2572) before extending &ndash; side reactions, moisture, and
+        polyol batch variation all pull the real value below theory, and Step 2 accepts your measured value for
+        exactly that reason.
+      </p>
+      <div class="guide-formula">
+        Polyol eq wt = 56100 &divide; OH# &nbsp;|&nbsp; Diisocyanate eq wt = 4202 &divide; %NCO &nbsp;|&nbsp; %NCO<sub>prepolymer</sub> = 4202 &times; (eq NCO &minus; eq OH) &divide; total mass
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Step 1 &ndash; Prepolymer (capping)</h3>
+      <div class="grid">
+        <div class="field">
+          <label for="pu-polyol-select">Polyol</label>
+          <select id="pu-polyol-select">${opts(PU_POLYOLS)}</select>
+          <span class="hint">Autofills OH number and functionality; edit freely</span>
+        </div>
+        <div class="field">
+          <label for="pu-ohn">OH number (mg KOH/g)</label>
+          <input type="number" id="pu-ohn" value="56.1" step="any" min="0.1">
+          <span class="hint">From the polyol's COA. Eq wt = 56100 &divide; OH#</span>
+        </div>
+        <div class="field">
+          <label for="pu-f">Functionality (OH per chain)</label>
+          <input type="number" id="pu-f" value="2" step="any" min="1">
+          <span class="hint">2 for a diol; HTPB is often ~2.2&ndash;2.5</span>
+        </div>
+        <div class="field">
+          <label for="pu-polyol-mass">Polyol mass (g)</label>
+          <input type="number" id="pu-polyol-mass" value="100" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="pu-iso-select">Diisocyanate</label>
+          <select id="pu-iso-select">${opts(PU_DIISOS)}</select>
+        </div>
+        <div class="field">
+          <label for="pu-iso-eq">Diisocyanate eq wt (g/eq NCO)</label>
+          <input type="number" id="pu-iso-eq" value="125.13" step="any" min="1">
+          <span class="hint">= 4202 &divide; %NCO of the isocyanate</span>
+        </div>
+        <div class="field">
+          <label for="pu-ratio">NCO : OH capping ratio</label>
+          <input type="number" id="pu-ratio" value="2.0" step="any" min="1">
+          <span class="hint">1.6&ndash;2.2 typical. Below ~2, some chain coupling during capping is unavoidable; at 2+ more free diisocyanate remains</span>
+        </div>
+      </div>
+      <div class="stat-grid" id="pu-prep-stats" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card">
+      <h3>Step 2 &ndash; Chain extension</h3>
+      <div class="grid">
+        <div class="field">
+          <label for="pu-prepoly-mass">Prepolymer mass to extend (g)</label>
+          <input type="number" id="pu-prepoly-mass" value="" step="any" min="0">
+          <span class="hint">Defaults to the full Step 1 batch; edit if extending a portion</span>
+        </div>
+        <div class="field">
+          <label for="pu-nco-measured">%NCO of prepolymer (measured, optional)</label>
+          <input type="number" id="pu-nco-measured" value="" step="any" min="0">
+          <span class="hint">Leave blank to use the Step 1 theoretical value. Titrate for real work (ASTM D2572)</span>
+        </div>
+        <div class="field">
+          <label for="pu-ext-select">Chain extender / curative</label>
+          <select id="pu-ext-select">${opts(PU_EXTENDERS)}</select>
+          <span class="hint" id="pu-ext-note"></span>
+        </div>
+        <div class="field">
+          <label for="pu-ext-eq">Extender eq wt (g/eq)</label>
+          <input type="number" id="pu-ext-eq" value="45.06" step="any" min="1">
+          <span class="hint">MW &divide; number of reactive OH/NH<sub>2</sub> groups</span>
+        </div>
+        <div class="field">
+          <label for="pu-index">Extender index (eq OH/NH per eq NCO)</label>
+          <input type="number" id="pu-index" value="0.95" step="any" min="0.1" max="1.5">
+          <span class="hint">0.90&ndash;1.00 typical; slightly sub-stoichiometric leaves NCO for allophanate/biuret crosslinking on cure</span>
+        </div>
+      </div>
+      <div class="stat-grid" id="pu-ext-stats" style="margin-top:16px;"></div>
+      <div id="pu-procedure"></div>
+    </div>
+
+    <div class="card">
+      <h3>Reference data</h3>
+      <p class="guide-note">Typical values for common building blocks. Always use the certificate of analysis for your actual lot &ndash; OH number and %NCO vary batch to batch, and that variation is exactly why measured %NCO beats theoretical for the extension step.</p>
+      <div class="table-scroll">
+        <table class="recipe">
+          <thead><tr><th>Diisocyanate</th><th>Eq wt (g/eq)</th><th>%NCO</th><th>Notes</th></tr></thead>
+          <tbody>${PU_DIISOS.filter((d) => d.eq).map((d) =>
+            `<tr><td>${d.name}</td><td class="num">${d.eq}</td><td class="num">${d.nco}</td><td>${d.note}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+      <div class="table-scroll" style="margin-top:14px;">
+        <table class="recipe">
+          <thead><tr><th>Extender</th><th>Eq wt (g/eq)</th><th>Type</th><th>Notes</th></tr></thead>
+          <tbody>${PU_EXTENDERS.filter((e) => e.eq).map((e) =>
+            `<tr><td>${e.name}</td><td class="num">${e.eq}</td><td>${e.type}</td><td>${e.note}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function wirePolyurethanePanel() {
+  let prepolyMassDirty = false;
+
+  function recalcPu() {
+    const ohn = parseFloat($("pu-ohn").value);
+    const f = parseFloat($("pu-f").value);
+    const mPolyol = parseFloat($("pu-polyol-mass").value);
+    const eqIso = parseFloat($("pu-iso-eq").value);
+    const ratio = parseFloat($("pu-ratio").value);
+    const prepStats = $("pu-prep-stats");
+
+    if (!(ohn > 0) || !(f >= 1) || !(mPolyol > 0) || !(eqIso > 0) || !(ratio >= 1)) {
+      prepStats.innerHTML = '<div class="error-msg">Enter an OH number, functionality &ge; 1, polyol mass, diisocyanate eq wt, and an NCO:OH ratio &ge; 1.</div>';
+      $("pu-ext-stats").innerHTML = "";
+      $("pu-procedure").innerHTML = "";
+      return;
+    }
+
+    // ---- Step 1: capping ----
+    const eqwtPolyol = PU_KOH / ohn;
+    const polyolMn = eqwtPolyol * f;
+    const eqOH = mPolyol / eqwtPolyol;
+    const eqNCO = eqOH * ratio;
+    const mIso = eqNCO * eqIso;
+    const mPrepTotal = mPolyol + mIso;
+    const freeNCOeq = eqNCO - eqOH;
+    const theoNCO = (PU_NCO_MW * freeNCOeq / mPrepTotal) * 100;
+    const isoMassFraction = mIso / mPrepTotal;
+    const idealMn = polyolMn + f * (2 * eqIso);
+
+    prepStats.innerHTML =
+      `<div class="stat"><div class="label">Polyol eq wt</div><div class="value">${puFmt(eqwtPolyol, 1)}</div><div class="sub">g/eq OH &middot; Mn &asymp; ${puFmt(polyolMn, 0)} g/mol at f = ${puFmt(f, 2)}</div></div>` +
+      `<div class="stat"><div class="label">OH equivalents</div><div class="value">${puFmt(eqOH * 1000, 1)}</div><div class="sub">meq, from ${puFmt(mPolyol, 1)} g polyol</div></div>` +
+      `<div class="stat"><div class="label">Diisocyanate to charge</div><div class="value">${puFmt(mIso, 2)} g</div><div class="sub">${puFmt(eqNCO * 1000, 1)} meq NCO at ${puFmt(ratio, 2)} : 1</div></div>` +
+      `<div class="stat"><div class="label">Theoretical %NCO</div><div class="value">${puFmt(theoNCO, 2)}%</div><div class="sub">of ${puFmt(mPrepTotal, 1)} g prepolymer &middot; titrate to confirm</div></div>` +
+      `<div class="stat"><div class="label">Idealized capped adduct Mn</div><div class="value">${puFmt(idealMn, 0)}</div><div class="sub">g/mol${ratio < 2 ? " &middot; ratio &lt; 2: real Mn runs higher from chain coupling" : " &middot; real prepolymer also contains free diisocyanate"}</div></div>`;
+
+    // Keep step 2's default mass in sync until the user edits it
+    if (!prepolyMassDirty) $("pu-prepoly-mass").value = puFmt(mPrepTotal, 2);
+    $("pu-nco-measured").placeholder = `${puFmt(theoNCO, 2)} (theoretical)`;
+
+    // ---- Step 2: chain extension ----
+    const mPre = parseFloat($("pu-prepoly-mass").value);
+    const measured = parseFloat($("pu-nco-measured").value);
+    const pctNCO = isFinite(measured) && measured > 0 ? measured : theoNCO;
+    const eqExt = parseFloat($("pu-ext-eq").value);
+    const index = parseFloat($("pu-index").value);
+    const extStats = $("pu-ext-stats");
+    const extSel = PU_EXTENDERS[parseInt($("pu-ext-select").value, 10)] || PU_EXTENDERS[0];
+
+    if (!(mPre > 0) || !(pctNCO > 0) || !(eqExt > 0) || !(index > 0)) {
+      extStats.innerHTML = '<div class="error-msg">Enter a prepolymer mass, a %NCO &gt; 0, an extender eq wt, and an index.</div>';
+      $("pu-procedure").innerHTML = "";
+      return;
+    }
+
+    const eqNCOavail = (mPre * pctNCO / 100) / PU_NCO_MW;
+    const eqExtNeeded = eqNCOavail * index;
+    const mExt = eqExtNeeded * eqExt;
+    const mFinal = mPre + mExt;
+    const hardSeg = ((mPre * isoMassFraction) + mExt) / mFinal * 100;
+
+    extStats.innerHTML =
+      `<div class="stat"><div class="label">NCO to consume</div><div class="value">${puFmt(eqNCOavail * 1000, 1)}</div><div class="sub">meq, at ${puFmt(pctNCO, 2)}%NCO (${isFinite(measured) && measured > 0 ? "measured" : "theoretical"})</div></div>` +
+      `<div class="stat"><div class="label">Extender to charge</div><div class="value">${puFmt(mExt, 2)} g</div><div class="sub">${puFmt(eqExtNeeded * 1000, 1)} meq at index ${puFmt(index, 2)}</div></div>` +
+      `<div class="stat"><div class="label">Final batch mass</div><div class="value">${puFmt(mFinal, 1)} g</div><div class="sub">prepolymer + extender</div></div>` +
+      `<div class="stat"><div class="label">Hard segment content</div><div class="value">${puFmt(hardSeg, 1)}%</div><div class="sub">diisocyanate + extender, by mass &middot; soft segment ${puFmt(100 - hardSeg, 1)}%</div></div>` +
+      (extSel.type === "amine" ? `<div class="stat"><div class="label">Chemistry note</div><div class="value" style="font-size:0.92rem;">Urea hard segments</div><div class="sub">amine curatives give a urethane-urea; faster reaction, shorter pot life, harder product</div></div>` : "") +
+      (extSel.type === "triol" ? `<div class="stat"><div class="label">Chemistry note</div><div class="value" style="font-size:0.92rem;">Crosslinked network</div><div class="sub">f = 3 curative: this is a thermoset formulation, not a linear TPU</div></div>` : "");
+
+    const isoSel = PU_DIISOS[parseInt($("pu-iso-select").value, 10)] || PU_DIISOS[0];
+    const polyolSel = PU_POLYOLS[parseInt($("pu-polyol-select").value, 10)] || PU_POLYOLS[0];
+    const shortName = (s) => s.replace(/ \(.*$/, "");
+    const puSteps = [
+      `Dry ${puFmt(mPolyol, 1)} g of ${shortName(polyolSel.name)} at 80&ndash;100 &deg;C under vacuum (&lt;1&nbsp;torr) for 1&ndash;2&nbsp;h, until bubbling stops. Residual water consumes NCO and generates CO<sub>2</sub> bubbles in the final part.`,
+      `Cool to 60&ndash;70 &deg;C and blanket with dry nitrogen. Charge ${puFmt(mIso, 2)} g of ${shortName(isoSel.name)} with stirring.`,
+      `React at 70&ndash;80 &deg;C under dry N<sub>2</sub> for 2&ndash;3 h (aliphatic isocyanates are slower and may need a tin catalyst such as DBTDL at 0.01&ndash;0.05 wt%).`,
+      `Titrate %NCO (dibutylamine back-titration, ASTM D2572). Proceed when it reaches the theoretical ${puFmt(theoNCO, 2)}% (or plateaus just below it). Store any unused prepolymer under dry inert gas &ndash; it is moisture-reactive.`,
+      `For chain extension: warm ${puFmt(mPre, 1)} g of prepolymer to 60&ndash;80 &deg;C to lower viscosity, and degas under vacuum until bubble-free.`,
+      `Add ${puFmt(mExt, 2)} g of ${shortName(extSel.name)}${extSel.type === "amine" ? " (melt MOCA at ~110 &deg;C first if using it)" : ""} and mix rapidly but thoroughly for 1&ndash;2 min, avoiding air entrainment.${extSel.type === "amine" ? " Amine curatives react fast &ndash; know your pot life before you scale up." : ""}`,
+      `Degas briefly if pot life allows, then cast into preheated, release-coated molds.`,
+      `Cure (typical: 100 &deg;C for 16 h for aromatic systems; adjust to your chemistry), then post-cure/condition about a week at room temperature before testing.`,
+      `Characterize: hardness and tensile after conditioning; confirm full NCO consumption by the disappearance of the 2270 cm<sup>&minus;1</sup> band in FTIR; DSC/DMA for the soft-segment T<sub>g</sub> and hard-segment transitions.`,
+    ];
+    $("pu-procedure").innerHTML = procedureBlock(
+      "two-step prepolymer route",
+      puSteps,
+      false,
+      "Diisocyanates are potent respiratory and skin sensitizers &ndash; handle them only with proper engineering controls (fume hood, sealed transfers), and note that MOCA is a suspected human carcinogen subject to strict occupational limits."
+    );
+  }
+
+  $("pu-polyol-select").addEventListener("change", function () {
+    const p = PU_POLYOLS[parseInt(this.value, 10)];
+    if (p && p.ohn != null) { $("pu-ohn").value = p.ohn; $("pu-f").value = p.f; }
+    recalcPu();
+  });
+  $("pu-iso-select").addEventListener("change", function () {
+    const d = PU_DIISOS[parseInt(this.value, 10)];
+    if (d && d.eq != null) $("pu-iso-eq").value = d.eq;
+    recalcPu();
+  });
+  $("pu-ext-select").addEventListener("change", function () {
+    const e = PU_EXTENDERS[parseInt(this.value, 10)];
+    if (e && e.eq != null) $("pu-ext-eq").value = e.eq;
+    $("pu-ext-note").textContent = e ? e.note : "";
+    recalcPu();
+  });
+  $("pu-prepoly-mass").addEventListener("input", () => { prepolyMassDirty = true; });
+
+  ["pu-ohn", "pu-f", "pu-polyol-mass", "pu-iso-eq", "pu-ratio",
+   "pu-prepoly-mass", "pu-nco-measured", "pu-ext-eq", "pu-index"].forEach((id) => {
+    $(id).addEventListener("input", recalcPu);
+  });
+
+  $("pu-ext-note").textContent = PU_EXTENDERS[0].note;
+  recalcPu();
+
+  wirePresetBar("pu", () => collectPanelState("pu"), (state) => applyPanelState("pu", state, recalcPu));
 }
 
 /* ---------------------------------------------------------------------
@@ -2104,6 +2403,21 @@ function init() {
 
   TYPES.forEach((cfg) => wirePanel(cfg));
 
+  const puBtn = document.createElement("button");
+  puBtn.className = "tab-btn";
+  puBtn.textContent = "Polyurethane";
+  puBtn.dataset.target = "pu";
+  puBtn.addEventListener("click", () => switchTab("pu"));
+  tabsEl.appendChild(puBtn);
+
+  const puPanel = document.createElement("section");
+  puPanel.className = "panel";
+  puPanel.id = "panel-pu";
+  puPanel.innerHTML = polyurethaneTemplate();
+  appEl.appendChild(puPanel);
+
+  wirePolyurethanePanel();
+
   const bcpBtn = document.createElement("button");
   bcpBtn.className = "tab-btn";
   bcpBtn.textContent = "Block Copolymer";
@@ -2188,6 +2502,15 @@ function init() {
         restoredFromHash = true;
       }
     } catch (e) { /* malformed hash - ignore */ }
+  }
+
+  // A bare #tabid hash (e.g. calculator.html#pu) deep-links to that tab
+  if (!restoredFromHash) {
+    const hashTab = location.hash.replace("#", "");
+    if (hashTab && document.getElementById(`panel-${hashTab}`)) {
+      switchTab(hashTab);
+      restoredFromHash = true;
+    }
   }
 
   // Otherwise reopen on the technique the user was last working in
