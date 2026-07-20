@@ -517,23 +517,50 @@
       });
       atoms.forEach(function (a) {
         var hasLabel = a.el !== 'C';
+        var labelRight = 6;
         if (hasLabel) {
+          // Condensed journal-style labels: heteroatoms carry their implicit
+          // hydrogens (OH, NH2, SH...) using the same valence rules as the
+          // molecular-weight readout, so the drawing and the math agree.
+          var h = 0;
+          if (a.el !== '*') {
+            var v = effectiveValence(a);
+            if (v != null) {
+              var used = 0;
+              bonds.forEach(function (b) { if (b.a === a.id || b.b === a.id) used += b.order; });
+              h = Math.max(0, v - used);
+            }
+          }
           ctx.font = '600 15px Arial, Helvetica, sans-serif';
-          var label = a.el;
-          var tw = ctx.measureText(label).width;
+          var wEl = ctx.measureText(a.el).width;
+          ctx.font = '600 13px Arial, Helvetica, sans-serif';
+          var wH = h > 0 ? ctx.measureText('H').width : 0;
+          ctx.font = '600 10px Arial, Helvetica, sans-serif';
+          var wSub = h > 1 ? ctx.measureText(String(h)).width : 0;
           ctx.fillStyle = bgColor;
-          ctx.fillRect(a.x - tw / 2 - 3, a.y - 9, tw + 6, 18);
+          ctx.fillRect(a.x - wEl / 2 - 3, a.y - 9, wEl + wH + wSub + 6, 18);
           ctx.fillStyle = elColor(a.el);
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText(label, a.x, a.y + 1);
+          ctx.font = '600 15px Arial, Helvetica, sans-serif';
+          ctx.fillText(a.el, a.x, a.y + 1);
+          if (h > 0) {
+            ctx.textAlign = 'left';
+            ctx.font = '600 13px Arial, Helvetica, sans-serif';
+            ctx.fillText('H', a.x + wEl / 2 + 0.5, a.y + 1);
+            if (h > 1) {
+              ctx.font = '600 10px Arial, Helvetica, sans-serif';
+              ctx.fillText(String(h), a.x + wEl / 2 + wH + 1, a.y + 5);
+            }
+          }
+          labelRight = wEl / 2 + wH + wSub + 3;
         }
         if (a.charge) {
           var sign = a.charge > 0 ? '+' : '−';
           var mag = Math.abs(a.charge);
           var chargeLabel = (mag > 1 ? mag : '') + sign;
           ctx.font = '700 11px Arial, Helvetica, sans-serif';
-          var ccx = a.x + (hasLabel ? 11 : 6), ccy = a.y - (hasLabel ? 10 : 8);
+          var ccx = a.x + (hasLabel ? labelRight + 1 : 6), ccy = a.y - (hasLabel ? 10 : 8);
           var cw = ctx.measureText(chargeLabel).width;
           ctx.fillStyle = bgColor;
           ctx.fillRect(ccx - 1, ccy - 7, cw + 2, 12);
@@ -628,6 +655,14 @@
     // neutral valence. Everything else is taken as drawn, explicit bonds only.
     var IMPLICIT_H_VALENCE = { H: 1, B: 3, C: 4, N: 3, O: 2, F: 1, Si: 4, P: 3, S: 2, Cl: 1, Br: 1, I: 1 };
 
+    // Monoisotopic masses (most abundant isotope) for the exact-mass readout.
+    // Covers the organic subset; a structure containing anything else simply
+    // omits the exact mass rather than reporting a wrong one.
+    var MONO_MASS = {
+      H: 1.007825, B: 11.009305, C: 12, N: 14.003074, O: 15.994915, F: 18.998403,
+      Si: 27.976927, P: 30.973762, S: 31.972071, Cl: 34.968853, Br: 78.918338, I: 126.904473
+    };
+
     function effectiveValence(a) {
       var v = IMPLICIT_H_VALENCE[a.el];
       if (v == null) return null;
@@ -645,7 +680,10 @@
     // * chain-end marker - never becomes a hydrogen, so highlighting a repeat
     // unit reports the true mass of what sits inside the brackets.
     function fragmentMass(list) {
+      var inSet = {};
+      list.forEach(function (a) { if (a.el !== '*') inSet[a.id] = true; });
       var counts = {}, mass = 0, hTotal = 0, unknown = null, real = 0;
+      var mono = 0, monoOk = true, openOrders = 0;
       list.forEach(function (a) {
         if (a.el === '*') return;
         real++;
@@ -653,19 +691,62 @@
         if (m == null) { unknown = a.el; return; }
         counts[a.el] = (counts[a.el] || 0) + 1;
         mass += m;
+        if (MONO_MASS[a.el] != null) mono += MONO_MASS[a.el]; else monoOk = false;
         var v = effectiveValence(a);
+        var used = 0;
+        bonds.forEach(function (b) {
+          if (b.a !== a.id && b.b !== a.id) return;
+          used += b.order;
+          // A bond leaving the set (to an unselected atom or a * chain end)
+          // stands in for a hydrogen in the ring/double-bond arithmetic below.
+          var other = b.a === a.id ? b.b : b.a;
+          if (!inSet[other]) openOrders += b.order;
+        });
         if (v != null) {
-          var used = 0;
-          bonds.forEach(function (b) {
-            if (b.a === a.id || b.b === a.id) used += b.order;
-          });
           var h = Math.max(0, v - used);
           hTotal += h;
           mass += h * ATOMIC_MASS.H;
+          mono += h * MONO_MASS.H;
         }
       });
       if (hTotal) counts.H = (counts.H || 0) + hTotal;
-      return { counts: counts, mass: mass, atoms: real, unknown: unknown };
+
+      // Degree of unsaturation (rings + pi bonds inside the fragment). Open
+      // connections count as hydrogens so a repeat unit's two chain-end bonds
+      // don't masquerade as a ring. Only computed when every element present
+      // has a conventional slot in the formula.
+      var TETRA = { C: 1, Si: 1 }, TRI = { N: 1, P: 1, B: 1 }, MONO_V = { F: 1, Cl: 1, Br: 1, I: 1, H: 1 }, DIV = { O: 1, S: 1 };
+      var dou = null, douOk = real > 0;
+      var c4 = 0, n3 = 0, x1 = 0, hLike = (counts.H || 0) + openOrders;
+      Object.keys(counts).forEach(function (el) {
+        if (el === 'H') return;
+        if (TETRA[el]) c4 += counts[el];
+        else if (TRI[el]) n3 += counts[el];
+        else if (MONO_V[el]) x1 += counts[el];
+        else if (!DIV[el]) douOk = false;
+      });
+      if (douOk) {
+        dou = (2 * c4 + 2 + n3 - hLike - x1) / 2;
+        if (dou < 0 || dou !== Math.round(dou)) dou = null;
+      }
+
+      return {
+        counts: counts, mass: mass, atoms: real, unknown: unknown,
+        exact: (monoOk && real > 0) ? mono : null, dou: dou
+      };
+    }
+
+    // Elemental analysis line: C and H first (the EA convention), then the
+    // rest alphabetically, as mass percentages.
+    function elementalAnalysis(counts, mass) {
+      if (!mass) return '';
+      var seq = [];
+      if (counts.C) seq.push('C');
+      if (counts.H) seq.push('H');
+      Object.keys(counts).filter(function (k) { return k !== 'C' && k !== 'H'; }).sort().forEach(function (k) { seq.push(k); });
+      return seq.map(function (el) {
+        return el + ' ' + (100 * counts[el] * ATOMIC_MASS[el] / mass).toFixed(2) + '%';
+      }).join(', ');
     }
 
     // Hill order: carbon, then hydrogen, then everything else alphabetically.
@@ -725,8 +806,16 @@
         massReadout.textContent = label + ': no mass data for element ' + res.unknown + '.';
         return;
       }
+      var extra = [];
+      if (res.exact != null) extra.push('exact ' + res.exact.toFixed(4));
+      if (res.dou != null) extra.push('DoU ' + res.dou);
+      var ea = elementalAnalysis(res.counts, res.mass);
+      if (ea) extra.push(ea);
+      var extraHtml = extra.length
+        ? ' <span style="color:var(--text-dim);font-size:0.85em;">&middot; ' + extra.join(' &middot; ') + '</span>'
+        : '';
       massReadout.innerHTML = label + ': ' + formatFormula(res.counts) +
-        ' &middot; <strong>' + res.mass.toFixed(2) + ' g/mol</strong>' + hint;
+        ' &middot; <strong>' + res.mass.toFixed(2) + ' g/mol</strong>' + extraHtml + hint;
     }
     // Dashed preview of where the pending ring will land - atom-fused,
     // edge-fused onto a bond, or freestanding - so the scroll-wheel rotation
@@ -1685,6 +1774,167 @@
           Math.round(r.sim * 100) + '% similar</div>' + polymerCard(r.p) + '</div>';
       }).join('');
     }
+
+    // ---------- SMILES in/out and structure clean-up ----------
+    // Both directions ride on RDKit: paste a SMILES and it lands on the canvas
+    // with computed 2D coordinates; copy turns the canvas back into a
+    // canonical SMILES or InChI for pasting into PubChem, SciFinder, or a
+    // manuscript. Clean-up rewrites the current drawing's coordinates with
+    // RDKit's ideal geometry, ChemDraw-style.
+    function parseMolblockToEditor(mb) {
+      var lines = mb.split('\n');
+      if (lines.length < 4) return null;
+      var nA = parseInt(lines[3].slice(0, 3), 10), nB = parseInt(lines[3].slice(3, 6), 10);
+      if (isNaN(nA) || isNaN(nB) || lines.length < 4 + nA + nB) return null;
+      var rawAtoms = [], rawBonds = [], charges = {};
+      for (var i = 0; i < nA; i++) {
+        var L = lines[4 + i];
+        rawAtoms.push({ x: parseFloat(L.slice(0, 10)), y: parseFloat(L.slice(10, 20)), el: L.slice(31, 34).trim() });
+      }
+      for (var j = 0; j < nB; j++) {
+        var Lb = lines[4 + nA + j];
+        rawBonds.push({ a: parseInt(Lb.slice(0, 3), 10), b: parseInt(Lb.slice(3, 6), 10), order: parseInt(Lb.slice(6, 9), 10) });
+      }
+      lines.forEach(function (L) {
+        if (L.indexOf('M  CHG') !== 0) return;
+        var n = parseInt(L.slice(6, 9), 10) || 0;
+        for (var k = 0; k < n; k++) {
+          var ai = parseInt(L.slice(9 + k * 8, 13 + k * 8), 10);
+          var q = parseInt(L.slice(13 + k * 8, 17 + k * 8), 10);
+          if (!isNaN(ai) && !isNaN(q)) charges[ai] = q;
+        }
+      });
+      return { atoms: rawAtoms, bonds: rawBonds, charges: charges };
+    }
+
+    // Canvas placement for parsed molblock coordinates: scale so the median
+    // bond matches the editor's bond length (clamped so the whole structure
+    // fits), center it, and flip y (molblock y points up, canvas y down).
+    function fitParsedCoords(parsed) {
+      var lens = parsed.bonds.map(function (b) {
+        var p = parsed.atoms[b.a - 1], q = parsed.atoms[b.b - 1];
+        return Math.sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
+      }).filter(function (l) { return l > 0.01; }).sort(function (x, y) { return x - y; });
+      var unit = lens.length ? lens[Math.floor(lens.length / 2)] : 1.5;
+      var scale = BOND_LEN / unit;
+      var xs = parsed.atoms.map(function (a) { return a.x; });
+      var ys = parsed.atoms.map(function (a) { return a.y; });
+      var w = Math.max.apply(null, xs) - Math.min.apply(null, xs);
+      var h = Math.max.apply(null, ys) - Math.min.apply(null, ys);
+      if (w > 0) scale = Math.min(scale, (canvas.width - 70) / w);
+      if (h > 0) scale = Math.min(scale, (canvas.height - 70) / h);
+      var cx0 = (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2;
+      var cy0 = (Math.min.apply(null, ys) + Math.max.apply(null, ys)) / 2;
+      return parsed.atoms.map(function (a) {
+        return {
+          x: canvas.width / 2 + (a.x - cx0) * scale,
+          y: canvas.height / 2 - (a.y - cy0) * scale
+        };
+      });
+    }
+
+    var smilesStatusEl = document.getElementById('mol-smiles-status');
+    function smilesNote(msg) { if (smilesStatusEl) smilesStatusEl.textContent = msg; }
+
+    function importSmiles() {
+      var input = document.getElementById('mol-smiles-input');
+      var text = input && input.value.trim();
+      if (!text) { smilesNote('Paste a SMILES string first, e.g. CC(c1ccccc1) for a polystyrene backbone.'); return; }
+      smilesNote(rdkitPromise ? 'Reading structure…' : 'Loading the chemistry engine (about 7 MB, one time; it stays cached)…');
+      ensureRDKit().then(function (RDKit) {
+        var mol = null;
+        try { mol = RDKit.get_mol(text); } catch (e) { mol = null; }
+        if (!mol) { smilesNote('That SMILES could not be parsed. Check for unbalanced rings or brackets.'); return; }
+        var mb = null;
+        try { mol.convert_to_kekule_form(); } catch (e1) {}
+        try { mb = mol.get_new_coords(); } catch (e2) {}
+        if (!mb) { try { mb = mol.get_molblock(); } catch (e3) {} }
+        mol.delete();
+        var parsed = mb && parseMolblockToEditor(mb);
+        if (!parsed || !parsed.atoms.length) { smilesNote('That SMILES could not be converted to a drawing.'); return; }
+        if (parsed.bonds.some(function (b) { return b.order > 3; })) {
+          smilesNote('The aromatic form could not be kekulized; try writing the SMILES in Kekulé form (C1=CC=CC=C1).');
+          return;
+        }
+        var pos = fitParsedCoords(parsed);
+        snapshot();
+        atoms = []; bonds = []; bracket = null; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
+        var made = parsed.atoms.map(function (ra, i) { return addAtom(ra.el || 'C', pos[i].x, pos[i].y); });
+        parsed.bonds.forEach(function (rb) { addBond(made[rb.a - 1].id, made[rb.b - 1].id, rb.order); });
+        Object.keys(parsed.charges).forEach(function (idx) {
+          var at = made[parseInt(idx, 10) - 1];
+          if (at) at.charge = parsed.charges[idx];
+        });
+        draw();
+        smilesNote('Loaded. Add neighbor stubs and drag the Bracket tool over the repeat unit to search.');
+      }).catch(function () { smilesNote('The chemistry engine could not load. Check your connection and try again.'); });
+    }
+
+    function copyCanvasAs(kind, btn) {
+      if (!atoms.length) { smilesNote('Draw a structure first.'); return; }
+      smilesNote(rdkitPromise ? '' : 'Loading the chemistry engine (about 7 MB, one time)…');
+      ensureRDKit().then(function (RDKit) {
+        var mol = molFrom(RDKit, molblockFrom(atoms, bonds));
+        if (!mol) { smilesNote('The drawing could not be interpreted as a molecule.'); return; }
+        var out = null;
+        try { out = kind === 'inchi' ? mol.get_inchi() : mol.get_smiles(); } catch (e) {}
+        mol.delete();
+        if (!out) { smilesNote('Conversion failed. Check the structure for impossible valences.'); return; }
+        var flash = function () {
+          var orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(function () { btn.textContent = orig; }, 1200);
+          smilesNote('');
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(out).then(flash, function () { smilesNote(out); });
+        } else {
+          smilesNote(out);
+        }
+      }).catch(function () { smilesNote('The chemistry engine could not load.'); });
+    }
+
+    function cleanUpStructure() {
+      if (!atoms.length) { smilesNote('Draw a structure first.'); return; }
+      smilesNote(rdkitPromise ? 'Cleaning up…' : 'Loading the chemistry engine (about 7 MB, one time)…');
+      ensureRDKit().then(function (RDKit) {
+        var mol = molFrom(RDKit, molblockFrom(atoms, bonds));
+        if (!mol) { smilesNote('The drawing could not be interpreted, so it was left as it is.'); return; }
+        var mb = null;
+        try { mb = mol.get_new_coords(); } catch (e) {}
+        mol.delete();
+        var parsed = mb && parseMolblockToEditor(mb);
+        if (!parsed || parsed.atoms.length !== atoms.length) {
+          smilesNote('Clean-up failed; the drawing was left unchanged.');
+          return;
+        }
+        // molblockFrom writes atoms in array order and RDKit preserves it, so
+        // the new coordinates map back onto the same atoms: ids, bonds,
+        // charges, and stereo marks all survive.
+        var pos = fitParsedCoords(parsed);
+        snapshot();
+        atoms.forEach(function (a, i) { a.x = pos[i].x; a.y = pos[i].y; });
+        var hadBracket = !!bracket;
+        bracket = null;   // the geometry it framed no longer exists
+        draw();
+        smilesNote(hadBracket
+          ? 'Structure cleaned up. The bracket was cleared; drag it over the repeat unit again.'
+          : 'Structure cleaned up.');
+      }).catch(function () { smilesNote('The chemistry engine could not load.'); });
+    }
+
+    (function wireSmilesRow() {
+      var loadBtn = document.getElementById('mol-smiles-load');
+      var input = document.getElementById('mol-smiles-input');
+      var copySmi = document.getElementById('mol-copy-smiles');
+      var copyInchi = document.getElementById('mol-copy-inchi');
+      var cleanBtn = document.getElementById('mol-cleanup');
+      if (loadBtn) loadBtn.addEventListener('click', importSmiles);
+      if (input) input.addEventListener('keydown', function (e) { if (e.key === 'Enter') importSmiles(); });
+      if (copySmi) copySmi.addEventListener('click', function () { copyCanvasAs('smiles', copySmi); });
+      if (copyInchi) copyInchi.addEventListener('click', function () { copyCanvasAs('inchi', copyInchi); });
+      if (cleanBtn) cleanBtn.addEventListener('click', cleanUpStructure);
+    })();
 
     function runStructureSearch() {
       var statusEl = document.getElementById('mol-status');
