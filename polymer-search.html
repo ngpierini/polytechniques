@@ -70,7 +70,7 @@
         Draw a little more than one repeat unit, the way you'd sketch a few units of a chain in a paper: a stub of the neighboring unit on each side, then your actual repeat unit in the middle, then drag the bracket tool over just the middle part. The bracket tool needs a real bond crossing each edge to know where the chain keeps going, so it won't work if the whole drawing is inside the bracket. Try the load example buttons below to see the pattern before drawing your own.
       </p>
       <p class="guide-note">
-        Matching is exact: the drawn structure needs the same atoms and bonds as a library entry, not just a similar one, so drawing the repeat unit at the same size convention as the worked examples matters more than it would with a fuzzy search.
+        Matching is graph based: your drawing is compared by its atoms and bonds, not by how it is laid out on the canvas, so the same repeat unit drawn at a different angle or size still matches. When nothing in the library is identical, the search falls back to ranking the closest structures by chemical similarity (Morgan fingerprints, the same idea behind similarity search in the big chemistry databases) with a percentage on each suggestion. The matching engine (RDKit, about 7 MB) loads the first time you run a structure search and stays cached after that.
       </p>
       <p class="guide-note">
         This is a small, hand curated reference set, not an exhaustive registry like SciFinder or PubChem: it currently covers common addition, step growth, and ring opening homopolymers. Branched and crosslinked repeat units, and copolymers, aren't matched yet. Tg and Tm values shown are typical literature figures for reference only.
@@ -280,7 +280,7 @@
 
 <script src="polymer-data.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="polymer-search.js?v=45"></script>
+<script src="polymer-search.js?v=46"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });

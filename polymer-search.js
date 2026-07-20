@@ -1589,6 +1589,103 @@
       resultsEl.innerHTML = list.map(polymerCard).join('');
     }
 
+    // ---------- RDKit-powered graph matching ----------
+    // The WL-hash comparison above is instant but strictly all-or-nothing.
+    // RDKit (self-hosted WASM build, ~7 MB) adds two things: canonical-SMILES
+    // identity as a second opinion, and Morgan-fingerprint Tanimoto similarity
+    // so a close-but-not-identical drawing surfaces its nearest neighbors
+    // instead of a crude element-count ranking. Loaded lazily on the first
+    // structure search so name-searchers never pay for it.
+    var rdkitPromise = null;
+    var rdkitLib = null;
+    var FP_OPTS = JSON.stringify({ radius: 2, nBits: 1024 });
+
+    function ensureRDKit() {
+      if (rdkitPromise) return rdkitPromise;
+      rdkitPromise = new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = 'vendor/RDKit_minimal.js';
+        s.onload = function () {
+          window.initRDKitModule({ locateFile: function (f) { return 'vendor/' + f; } }).then(resolve, reject);
+        };
+        s.onerror = function () { reject(new Error('RDKit script failed to load')); };
+        document.head.appendChild(s);
+      }).catch(function (e) {
+        rdkitPromise = null;   // allow a retry on the next search
+        throw e;
+      });
+      return rdkitPromise;
+    }
+
+    function padCol(v, w) { var s = String(v); while (s.length < w) s = ' ' + s; return s; }
+
+    // Minimal V2000 molblock from editor- or library-format atoms and bonds.
+    // Library entries carry no coordinates; zeros are fine, only the topology
+    // matters here. Charges ride in M CHG lines; * chain ends parse as dummy
+    // atoms, which is exactly the chemistry they represent.
+    function molblockFrom(atomList, bondList) {
+      var idx = {};
+      atomList.forEach(function (a, i) { idx[a.id] = i + 1; });
+      var mb = '\n  PolyTech\n\n' + padCol(atomList.length, 3) + padCol(bondList.length, 3) +
+        '  0  0  0  0  0  0  0  0999 V2000\n';
+      atomList.forEach(function (a) {
+        var x = ((a.x || 0) / 40).toFixed(4), y = (-(a.y || 0) / 40).toFixed(4);
+        mb += padCol(x, 10) + padCol(y, 10) + padCol('0.0000', 10) + ' ' +
+          (a.el + '   ').slice(0, 3) + ' 0  0  0  0  0  0  0  0  0  0  0  0\n';
+      });
+      bondList.forEach(function (b) {
+        mb += padCol(idx[b.a], 3) + padCol(idx[b.b], 3) + padCol(b.order, 3) + '  0\n';
+      });
+      atomList.forEach(function (a) {
+        if (a.charge) mb += 'M  CHG  1' + padCol(idx[a.id], 4) + padCol(a.charge, 4) + '\n';
+      });
+      mb += 'M  END\n';
+      return mb;
+    }
+
+    function molFrom(RDKit, mb) {
+      var mol = null;
+      try { mol = RDKit.get_mol(mb); } catch (e) { mol = null; }
+      if (!mol) {
+        try { mol = RDKit.get_mol(mb, JSON.stringify({ sanitize: false })); } catch (e2) { mol = null; }
+      }
+      return mol;
+    }
+
+    function tanimoto(fp1, fp2) {
+      var inter = 0, uni = 0;
+      for (var i = 0; i < fp1.length; i++) {
+        var a = fp1.charCodeAt(i) === 49, b = fp2.charCodeAt(i) === 49;
+        if (a && b) inter++;
+        if (a || b) uni++;
+      }
+      return uni ? inter / uni : 0;
+    }
+
+    function prepRdkitLibrary(RDKit) {
+      if (rdkitLib) return rdkitLib;
+      rdkitLib = [];
+      (window.POLYMER_DB || []).forEach(function (p) {
+        var mol = molFrom(RDKit, molblockFrom(p.atoms, p.bonds));
+        if (!mol) return;
+        try {
+          rdkitLib.push({ p: p, smiles: mol.get_smiles(), fp: mol.get_morgan_fp(FP_OPTS) });
+        } catch (e) {}
+        mol.delete();
+      });
+      return rdkitLib;
+    }
+
+    function renderRanked(ranked) {
+      var resultsEl = document.getElementById('mol-results');
+      if (!resultsEl) return;
+      resultsEl.innerHTML = ranked.map(function (r) {
+        return '<div class="mol-sim-item">' +
+          '<div style="font-size:0.8rem;color:var(--text-dim);margin:10px 0 2px;">' +
+          Math.round(r.sim * 100) + '% similar</div>' + polymerCard(r.p) + '</div>';
+      }).join('');
+    }
+
     function runStructureSearch() {
       var statusEl = document.getElementById('mol-status');
       if (!statusEl) return;
@@ -1611,7 +1708,6 @@
         return;
       }
       var hash = wlHash(sub.atoms, sub.bonds);
-      var profile = elementProfile(sub.atoms);
       var db = window.POLYMER_DB || [];
       var exact = db.filter(function (p) { return p.hash === hash; });
       if (exact.length) {
@@ -1619,11 +1715,52 @@
         renderResults(exact);
         return;
       }
-      var ranked = db.map(function (p) {
-        return { p: p, d: profileDistance(profile, p.profile) };
-      }).sort(function (x, y) { return x.d - y.d; }).slice(0, 5).map(function (r) { return r.p; });
-      statusEl.textContent = 'No exact match in the reference library. Closest by composition:';
-      renderResults(ranked);
+
+      // The old element-composition ranking, kept as the fallback when the
+      // matching engine can't load (first visit offline, blocked wasm).
+      function compositionFallback(message) {
+        var profile = elementProfile(sub.atoms);
+        var ranked = db.map(function (p) {
+          return { p: p, d: profileDistance(profile, p.profile) };
+        }).sort(function (x, y) { return x.d - y.d; }).slice(0, 5).map(function (r) { return r.p; });
+        statusEl.textContent = message;
+        renderResults(ranked);
+      }
+
+      statusEl.textContent = rdkitPromise
+        ? 'No instant match. Comparing structures…'
+        : 'No instant match. Loading the structure-matching engine (about 7 MB, one time; it stays cached)…';
+      ensureRDKit().then(function (RDKit) {
+        var mol = molFrom(RDKit, molblockFrom(sub.atoms, sub.bonds));
+        if (!mol) {
+          compositionFallback('The drawing could not be interpreted as a molecule. Closest by composition:');
+          return;
+        }
+        var smiles = null, fp = null;
+        try {
+          smiles = mol.get_smiles();
+          fp = mol.get_morgan_fp(FP_OPTS);
+        } catch (e) {}
+        mol.delete();
+        if (!smiles || !fp) {
+          compositionFallback('The drawing could not be interpreted as a molecule. Closest by composition:');
+          return;
+        }
+        var lib = prepRdkitLibrary(RDKit);
+        var identical = lib.filter(function (e) { return e.smiles === smiles; });
+        if (identical.length) {
+          statusEl.textContent = 'Exact match found:';
+          renderResults(identical.map(function (e) { return e.p; }));
+          return;
+        }
+        var ranked = lib.map(function (e) {
+          return { p: e.p, sim: tanimoto(fp, e.fp) };
+        }).sort(function (x, y) { return y.sim - x.sim; }).slice(0, 5);
+        statusEl.textContent = 'No exact match in the reference library. Closest structures by similarity:';
+        renderRanked(ranked);
+      }).catch(function () {
+        compositionFallback('The structure-matching engine could not load. Closest by element composition:');
+      });
     }
 
     // After an explicit search action, bring the Results card into view if it
