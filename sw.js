@@ -3,7 +3,7 @@
 // connection; anything not pre-cached is fetched from the network and
 // cached for next time. Bump CACHE_NAME whenever the pre-cache list below
 // changes so old clients pick up the new set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v18";
+const CACHE_NAME = "polytechniques-v19";
 
 const PRECACHE_URLS = [
   "home.html",
