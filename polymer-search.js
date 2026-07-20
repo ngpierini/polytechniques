@@ -603,6 +603,130 @@
         ctx.restore();
       }
       if (mode === 'ring' && pendingRing && ringHoverPos) drawRingGhost(primary);
+      updateMassReadout();
+    }
+
+    // ---- Molecular weight readout -----------------------------------------
+    // Standard atomic weights (IUPAC 2021, abridged to 5 significant figures);
+    // radioactive elements carry the mass number of their most stable isotope.
+    // Covers everything the periodic-table picker offers.
+    var ATOMIC_MASS = {
+      H: 1.008, He: 4.0026, Li: 6.94, Be: 9.0122, B: 10.81, C: 12.011, N: 14.007, O: 15.999, F: 18.998, Ne: 20.180,
+      Na: 22.990, Mg: 24.305, Al: 26.982, Si: 28.085, P: 30.974, S: 32.06, Cl: 35.45, Ar: 39.95,
+      K: 39.098, Ca: 40.078, Sc: 44.956, Ti: 47.867, V: 50.942, Cr: 51.996, Mn: 54.938, Fe: 55.845, Co: 58.933,
+      Ni: 58.693, Cu: 63.546, Zn: 65.38, Ga: 69.723, Ge: 72.630, As: 74.922, Se: 78.971, Br: 79.904, Kr: 83.798,
+      Rb: 85.468, Sr: 87.62, Y: 88.906, Zr: 91.224, Nb: 92.906, Mo: 95.95, Tc: 97, Ru: 101.07, Rh: 102.91,
+      Pd: 106.42, Ag: 107.87, Cd: 112.41, In: 114.82, Sn: 118.71, Sb: 121.76, Te: 127.60, I: 126.90, Xe: 131.29,
+      Cs: 132.91, Ba: 137.33, La: 138.91, Ce: 140.12, Pr: 140.91, Nd: 144.24, Pm: 145, Sm: 150.36, Eu: 151.96,
+      Gd: 157.25, Tb: 158.93, Dy: 162.50, Ho: 164.93, Er: 167.26, Tm: 168.93, Yb: 173.05, Lu: 174.97,
+      Hf: 178.49, Ta: 180.95, W: 183.84, Re: 186.21, Os: 190.23, Ir: 192.22, Pt: 195.08, Au: 196.97, Hg: 200.59,
+      Tl: 204.38, Pb: 207.2, Bi: 208.98, Po: 209, At: 210, Rn: 222, Fr: 223, Ra: 226, Ac: 227, Th: 232.04,
+      Pa: 231.04, U: 238.03
+    };
+
+    // Elements that get implicit hydrogens in a skeletal drawing, with their
+    // neutral valence. Everything else is taken as drawn, explicit bonds only.
+    var IMPLICIT_H_VALENCE = { H: 1, B: 3, C: 4, N: 3, O: 2, F: 1, Si: 4, P: 3, S: 2, Cl: 1, Br: 1, I: 1 };
+
+    function effectiveValence(a) {
+      var v = IMPLICIT_H_VALENCE[a.el];
+      if (v == null) return null;
+      var q = a.charge || 0;
+      if (!q) return v;
+      // Carbocations and carbanions both drop one H per unit of charge; for
+      // heteroatoms the usual organic convention is valence + charge (N+ makes
+      // four bonds, O- makes one).
+      if (a.el === 'C') return Math.max(0, v - Math.abs(q));
+      return Math.max(0, v + q);
+    }
+
+    // Formula and average molecular weight of a set of atoms. Any valence a
+    // drawn bond consumes - including bonds that leave the set, or run to a
+    // * chain-end marker - never becomes a hydrogen, so highlighting a repeat
+    // unit reports the true mass of what sits inside the brackets.
+    function fragmentMass(list) {
+      var counts = {}, mass = 0, hTotal = 0, unknown = null, real = 0;
+      list.forEach(function (a) {
+        if (a.el === '*') return;
+        real++;
+        var m = ATOMIC_MASS[a.el];
+        if (m == null) { unknown = a.el; return; }
+        counts[a.el] = (counts[a.el] || 0) + 1;
+        mass += m;
+        var v = effectiveValence(a);
+        if (v != null) {
+          var used = 0;
+          bonds.forEach(function (b) {
+            if (b.a === a.id || b.b === a.id) used += b.order;
+          });
+          var h = Math.max(0, v - used);
+          hTotal += h;
+          mass += h * ATOMIC_MASS.H;
+        }
+      });
+      if (hTotal) counts.H = (counts.H || 0) + hTotal;
+      return { counts: counts, mass: mass, atoms: real, unknown: unknown };
+    }
+
+    // Hill order: carbon, then hydrogen, then everything else alphabetically.
+    function formatFormula(counts) {
+      var seq = [];
+      if (counts.C) seq.push('C');
+      if (counts.H) seq.push('H');
+      Object.keys(counts).filter(function (k) { return k !== 'C' && k !== 'H'; }).sort().forEach(function (k) { seq.push(k); });
+      return seq.map(function (k) {
+        return k + (counts[k] > 1 ? '<sub>' + counts[k] + '</sub>' : '');
+      }).join('');
+    }
+
+    var massReadout = document.getElementById('mol-mass-readout');
+    function updateMassReadout() {
+      if (!massReadout) return;
+      var sel = selectedGroup.filter(function (a) { return a.el !== '*'; });
+      var whole = atoms.filter(function (a) { return a.el !== '*'; });
+      var target, label, hint = '';
+      var dim = ' style="color:var(--text-dim);font-size:0.85em;"';
+      if (sel.length) {
+        // A live selection wins: weigh exactly what is highlighted.
+        target = sel;
+        label = 'Highlighted fragment';
+        hint = ' <span' + dim + '>(bonds crossing the selection edge count as connections, not H)</span>';
+      } else if (bracket && whole.length) {
+        // With a bracket down, report what the search itself would treat as
+        // the repeat unit: the atoms inside the bracket, with bonds crossing
+        // its edge as chain continuations. The whole sketch rides along in
+        // the hint so the neighbor-stub drawing convention doesn't mislead.
+        var bx1 = Math.min(bracket.x1, bracket.x2), bx2 = Math.max(bracket.x1, bracket.x2);
+        var by1 = Math.min(bracket.y1, bracket.y2), by2 = Math.max(bracket.y1, bracket.y2);
+        var interior = whole.filter(function (a) { return a.x >= bx1 && a.x <= bx2 && a.y >= by1 && a.y <= by2; });
+        if (interior.length) {
+          target = interior;
+          label = 'Repeat unit (in bracket)';
+          var wholeRes = fragmentMass(whole);
+          if (!wholeRes.unknown && whole.length > interior.length) {
+            hint = ' <span' + dim + '>whole sketch: ' + formatFormula(wholeRes.counts) + ' &middot; ' + wholeRes.mass.toFixed(2) + ' g/mol</span>';
+          }
+        } else {
+          target = whole;
+          label = 'Structure';
+        }
+      } else if (whole.length) {
+        // Explicit * chain-end markers (library-loaded structures) already
+        // delimit the repeat unit; otherwise it is just a drawing.
+        target = whole;
+        label = whole.length !== atoms.length ? 'Repeat unit' : 'Structure';
+      } else {
+        massReadout.hidden = true;
+        return;
+      }
+      var res = fragmentMass(target);
+      massReadout.hidden = false;
+      if (res.unknown) {
+        massReadout.textContent = label + ': no mass data for element ' + res.unknown + '.';
+        return;
+      }
+      massReadout.innerHTML = label + ': ' + formatFormula(res.counts) +
+        ' &middot; <strong>' + res.mass.toFixed(2) + ' g/mol</strong>' + hint;
     }
     // Dashed preview of where the pending ring will land - atom-fused,
     // edge-fused onto a bond, or freestanding - so the scroll-wheel rotation

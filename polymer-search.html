@@ -208,6 +208,7 @@
             <div class="mol-tip"><dt>Escape</dt><dd>Release the current chain without adding another atom.</dd></div>
             <div class="mol-tip"><dt>Hover + letter key</dt><dd>Relabel the hovered atom instantly, in any mode. N, O, F apply right away; C, S, B briefly wait in case a second letter completes Cl, Si, or Br.</dd></div>
             <div class="mol-tip"><dt>Shift+click</dt><dd>Relabel an atom to the selected element without adding a bond.</dd></div>
+            <div class="mol-tip"><dt>Molecular weight</dt><dd>The bar under the canvas shows the formula and molar mass of whatever you draw, implicit hydrogens included. Highlight atoms with the Select tool to weigh just that fragment.</dd></div>
             <div class="mol-tip"><dt>Grid icon</dt><dd>Pick any element from the periodic table.</dd></div>
           </dl>
         </div>
@@ -217,6 +218,7 @@
     <div class="game-stage mol-canvas-box">
       <canvas id="mol-canvas" width="640" height="360"></canvas>
     </div>
+    <div id="mol-mass-readout" class="guide-note" style="margin:8px 0 0;" hidden></div>
     <div class="mol-toolbar-row" style="margin-top:10px;">
       <div class="mol-tool-cluster">
         <span class="mol-toolbar-label">Examples</span>
@@ -278,7 +280,7 @@
 
 <script src="polymer-data.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="polymer-search.js?v=43"></script>
+<script src="polymer-search.js?v=45"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
