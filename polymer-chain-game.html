@@ -46,6 +46,27 @@
     .game-stage { padding: 6px; }
     .game-controls { gap: 18px; }
   }
+  /* Collapsible info cards: the header row is the toggle, with a chevron that
+     rotates when open. list-style/marker rules hide the default triangle. */
+  .game-fold summary {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    user-select: none;
+  }
+  .game-fold summary::-webkit-details-marker { display: none; }
+  .game-fold summary h3 { margin: 0; }
+  .game-fold summary::after {
+    content: "\25B8";
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    transition: transform 0.15s ease;
+  }
+  .game-fold[open] summary::after { transform: rotate(90deg); }
+  .game-fold[open] summary { margin-bottom: 10px; }
+  .game-fold summary:hover h3 { color: var(--primary); }
 </style>
 </head>
 <body>
@@ -137,8 +158,8 @@
     </div>
   </div>
 
-  <div class="card">
-    <h3>How to play</h3>
+  <details class="card game-fold">
+    <summary><h3>How to play</h3></summary>
     <ul class="guide-list">
       <li>Move with the arrow keys or WASD, or use the on screen pad. Every bead you touch attaches to your growing chain, drawn as the beaded strand trailing behind you. Only the most recently added stretch is shown, tapering off into solution, so you're always looking at one chain rather than a tangle. The full count is in the HUD.</li>
       <li>Collect every bead in the maze to win the level. There's no rush, but the clock is running if you want to compare runs.</li>
@@ -154,10 +175,10 @@
       <li>On a phone you can swipe anywhere on the board to steer instead of using the pad.</li>
       <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly, on every level.</li>
     </ul>
-  </div>
+  </details>
 
-  <div class="card">
-    <h3>The chemistry behind the joke</h3>
+  <details class="card game-fold">
+    <summary><h3>The chemistry behind the joke</h3></summary>
     <p class="guide-note">
       This is a light hearted spin on a real problem in radical polymerization. A propagating chain is a radical, and radicals are indiscriminately reactive: several everyday species can intercept one before it finishes growing.
     </p>
@@ -169,7 +190,7 @@
       <li><strong>Initiators</strong> are the molecules that kick a radical polymerization off in the first place, splitting into fresh radicals that start new chains. Grabbing one here is a nod to that burst of reactivity: for a moment your chain end is the aggressor and the terminators are the ones running for cover.</li>
       <li><strong>Heat</strong> speeds you up for the same reason it speeds up a real polymerization: raising the temperature raises the rate constant for propagation, so chains grow faster. In practice it cuts both ways, since initiator decomposition and termination speed up too, which is why a hotter reaction usually gives you a lower molecular weight.</li>
     </ul>
-  </div>
+  </details>
 
 </main>
 
