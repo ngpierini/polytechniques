@@ -351,7 +351,7 @@
 
   var beadPresent, player, enemies, path, beadTotal, beadEaten, state, tickTimer, startTime, elapsed, deathReason, ticksElapsed, lastTickTime, animFrame;
   var levelStartTime, deathPos, deathParticles, pendingAdvance;
-  var lives, powerTicksRemaining, initiators, heatSpot, heatUntil, wasHeated;
+  var lives, powerTicksRemaining, initiators, heatSpot, heatUntil, wasHeated, subTicks, lastWorldTime;
   var DEATH_DURATION_MS = 1100;
   var READY_MS = 900;
 
@@ -466,6 +466,8 @@
     heatSpot = placeHeat();
     heatUntil = 0;
     wasHeated = false;
+    subTicks = 0;
+    lastWorldTime = Date.now();
     powerTicksRemaining = 0;
     path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
     elapsed = 0;
@@ -492,6 +494,8 @@
     powerTicksRemaining = 0;
     heatUntil = 0;
     wasHeated = false;
+    subTicks = 0;
+    lastWorldTime = Date.now();
     lastTickTime = Date.now();
     levelStartTime = Date.now();
     startTime = Date.now();
@@ -565,12 +569,23 @@
   }
 
   function tick() {
-    ticksElapsed++;
+    subTicks++;
     lastTickTime = Date.now();
 
-    if (powerTicksRemaining > 0) {
-      powerTicksRemaining--;
-      if (powerTicksRemaining === 0) refreshStatus();
+    // While heated the timer fires twice as often, but only the player acts on
+    // every firing. Everything else (ticksElapsed and so every timer keyed to
+    // it: cage releases, the chase grace period, the initiator countdown, cage
+    // return times) advances on alternate firings, so heat speeds up the player
+    // and strictly nothing else.
+    var worldStep = !heatActive() || subTicks % 2 === 0;
+
+    if (worldStep) {
+      ticksElapsed++;
+      lastWorldTime = Date.now();
+      if (powerTicksRemaining > 0) {
+        powerTicksRemaining--;
+        if (powerTicksRemaining === 0) refreshStatus();
+      }
     }
 
     // Heat runs on wall clock, so drop back to the normal tick rate the moment
@@ -625,9 +640,7 @@
       beginTicking();
     }
 
-    // Heated ticks come twice as fast, so let the enemies act on every second
-    // one. That keeps their real speed unchanged while the player doubles.
-    if (!heatActive() || ticksElapsed % 2 === 0) {
+    if (worldStep) {
       enemies.forEach(function (e) {
         e.prevR = e.r;
         e.prevC = e.c;
@@ -719,9 +732,13 @@
     animFrame = requestAnimationFrame(frameLoop);
   }
 
+  // The player interpolates over its own (possibly halved) tick period while
+  // the enemies interpolate over the unchanged world step, so they keep gliding
+  // smoothly at normal speed even when the player is heated.
   function frameLoop() {
-    var t = Math.min(1, (Date.now() - lastTickTime) / effectiveTickMs());
-    render(t);
+    var tp = Math.min(1, (Date.now() - lastTickTime) / effectiveTickMs());
+    var te = Math.min(1, (Date.now() - lastWorldTime) / params.tickMs);
+    render(tp, te);
     if (state === "playing") animFrame = requestAnimationFrame(frameLoop);
   }
 
@@ -744,7 +761,7 @@
     if (animFrame) cancelAnimationFrame(animFrame);
     (function deathFrameLoop() {
       var t = (Date.now() - deathStart) / DEATH_DURATION_MS;
-      render(1, Math.min(1, t));
+      render(1, 1, Math.min(1, t));
       if (t < 1) {
         animFrame = requestAnimationFrame(deathFrameLoop);
       } else if (lives > 0) {
@@ -1038,8 +1055,9 @@
     drawCuteFace(ox, oy, "#0b3b32", powered || hot ? "smile" : "smirk", "#7fe3c8");
   }
 
-  function render(t, deathT) {
+  function render(t, enemyT, deathT) {
     if (t == null) t = 1;
+    if (enemyT == null) enemyT = t;
     ctx.fillStyle = "#07070f";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1082,8 +1100,8 @@
     });
 
     enemies.forEach(function (e) {
-      var er = lerp(e.prevR, e.r, t);
-      var ec = lerp(e.prevC, e.c, t);
+      var er = lerp(e.prevR, e.r, enemyT);
+      var ec = lerp(e.prevC, e.c, enemyT);
       var ex = cx(ec), ey = cy(er);
       if (!e.free) ey += Math.round(Math.sin(Date.now() / 220 + e.slotIndex * 1.7) * 2);
       drawEnemy(e, ex, ey);
