@@ -132,7 +132,7 @@
   <div class="card">
     <h3>How to play</h3>
     <ul class="guide-list">
-      <li>Move with the arrow keys or WASD, or use the on screen pad. Every bead you touch attaches to your growing chain, drawn as the beaded trail behind you.</li>
+      <li>Move with the arrow keys or WASD, or use the on screen pad. Every bead you touch attaches to your growing chain, drawn as the beaded strand trailing behind you. Only the most recently added stretch is shown, tapering off into solution, so you're always looking at one chain rather than a tangle. The full count is in the HUD.</li>
       <li>Collect every bead in the maze to win the level. There's no rush, but the clock is running if you want to compare runs.</li>
       <li>Ten levels, each with its own maze, tighter corridors and quicker enemies as you climb. Clear level 10 to finish the polymer for good.</li>
       <li>Enemies start held in a cage at the center of the maze and release one by one after a brief pause, mimicking a classic maze chase game. The longer a level runs, the more of them are loose.</li>
@@ -174,6 +174,7 @@
   var POWER_TICKS = 45;
   var CAGE_RETURN_TICKS = 16;
   var INITIATOR_COUNT = 4;
+  var CHAIN_TAIL = 22;      // repeat units of chain drawn behind the chain end
   // What the chain end turns into when each terminator catches it. O₂ gives the
   // rusty peroxy color, the inhibitor a dead aromatic purple, the CTA the amber
   // of a transferred chain, a rival radical the pink of a combined pair.
@@ -1180,13 +1181,21 @@
       headY = cy(lerp(player.prevR, player.r, t));
     }
 
+    // Only the growing end of the chain is drawn. Tracing the player's whole
+    // route made every backtrack cross itself until the maze read as one big
+    // crosslinked gel; showing a fixed length of the most recent segment keeps
+    // it legible as a single linear chain, tapering off into solution behind
+    // the chain end. The full count still lives in the HUD.
     if (path.length > 1) {
+      var start = Math.max(0, path.length - CHAIN_TAIL);
       var wig = [];
-      for (var i = 0; i < path.length; i++) {
+      for (var i = start; i < path.length; i++) {
         var pt = path[i];
         var prev = path[i - 1] || pt, next = path[i + 1] || pt;
         var vx = cx(next.c) - cx(prev.c), vy = cy(next.r) - cy(prev.r);
         var len = Math.sqrt(vx * vx + vy * vy) || 1;
+        // keyed to the absolute index so the wiggle doesn't shimmer as the
+        // drawn window slides along the chain
         var amp = Math.sin(i * 0.8 - Date.now() / 260) * 2;
         amp = Math.round(amp / 2) * 2;
         var isHead = (i === path.length - 1) && headX !== null;
@@ -1195,40 +1204,49 @@
         if (isHead) amp = 0;
         wig.push({ x: Math.round(baseX + (-vy / len) * amp), y: Math.round(baseY + (vx / len) * amp) });
       }
-      ctx.strokeStyle = "rgba(150,235,210,0.45)";
-      ctx.lineWidth = 5;
+
+      var segs = wig.length - 1;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
-      ctx.beginPath();
-      ctx.moveTo(wig[0].x, wig[0].y);
-      for (var w1 = 1; w1 < wig.length; w1++) ctx.lineTo(wig[w1].x, wig[w1].y);
-      ctx.stroke();
-      ctx.strokeStyle = "#bdfced";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(wig[0].x, wig[0].y);
-      for (var w2 = 1; w2 < wig.length; w2++) ctx.lineTo(wig[w2].x, wig[w2].y);
-      ctx.stroke();
+      for (var s = 0; s < segs; s++) {
+        var a = segs < 2 ? 1 : s / (segs - 1);   // 0 at the far tail, 1 at the chain end
+        ctx.globalAlpha = 0.12 + 0.88 * a;
+        ctx.strokeStyle = "rgba(150,235,210,0.45)";
+        ctx.lineWidth = 2 + 3 * a;
+        ctx.beginPath();
+        ctx.moveTo(wig[s].x, wig[s].y);
+        ctx.lineTo(wig[s + 1].x, wig[s + 1].y);
+        ctx.stroke();
+        ctx.strokeStyle = "#bdfced";
+        ctx.lineWidth = 1 + a;
+        ctx.beginPath();
+        ctx.moveTo(wig[s].x, wig[s].y);
+        ctx.lineTo(wig[s + 1].x, wig[s + 1].y);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
 
-      var paletteIdx = 0, lastBeadIdx = -1;
+      var lastBeadIdx = -1;
       for (var b = 0; b < path.length; b++) if (path[b].bead) lastBeadIdx = b;
-      for (var j = 0; j < path.length; j++) {
+      for (var j = start; j < path.length; j++) {
         if (!path[j].bead) continue;
-        var col = PALETTE[paletteIdx % PALETTE.length];
-        paletteIdx++;
-        var bx = wig[j].x, by = wig[j].y;
+        var col = PALETTE[j % PALETTE.length];
+        var bx = wig[j - start].x, by = wig[j - start].y;
+        var fade = segs < 2 ? 1 : Math.min(1, 0.12 + 0.88 * ((j - start) / segs));
         // the freshly attached unit pops on, then settles
         var half = 4;
         if (j === lastBeadIdx && lastBeadAt) {
           var pop = Math.max(0, 1 - (Date.now() - lastBeadAt) / 190);
           half = Math.round(4 + pop * 3);
         }
+        ctx.globalAlpha = fade;
         ctx.fillStyle = "#08131a";
         ctx.fillRect(bx - half - 1, by - half - 1, half * 2 + 2, half * 2 + 2);
         ctx.fillStyle = col;
         ctx.fillRect(bx - half, by - half, half * 2, half * 2);
         ctx.fillStyle = "rgba(255,255,255,0.6)";
         ctx.fillRect(bx - half, by - half, 2, 2);
+        ctx.globalAlpha = 1;
       }
     }
 
