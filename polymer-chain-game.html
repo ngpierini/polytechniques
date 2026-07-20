@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Build a Polymer Chain: PolyTechniques</title>
-<meta name="description" content="Build a polymer chain the right way in this quick interactive game, a hands-on way to learn skeletal formula conventions for repeat units, across 10 levels of increasing difficulty.">
+<meta name="description" content="Build a polymer chain the right way in this quick interactive game, a hands-on way to learn skeletal formula conventions for repeat units, across 25 levels of increasing difficulty.">
 <link rel="canonical" href="https://getpolytechniques.com/polymer-chain-game.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="PolyTechniques">
@@ -54,7 +54,7 @@
   <div class="topbar-inner topbar-row">
     <div>
       <h1>Build a Polymer Chain</h1>
-      <p class="subtitle">Collect every monomer bead before your radical gets terminated, across 10 levels of increasing 8-bit maze mayhem</p>
+      <p class="subtitle">Collect every monomer bead before your radical gets terminated, across 25 levels of increasing 8-bit maze mayhem</p>
     </div>
     <div class="guide-links">
       <button class="theme-toggle-btn" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
@@ -142,7 +142,7 @@
     <ul class="guide-list">
       <li>Move with the arrow keys or WASD, or use the on screen pad. Every bead you touch attaches to your growing chain, drawn as the beaded strand trailing behind you. Only the most recently added stretch is shown, tapering off into solution, so you're always looking at one chain rather than a tangle. The full count is in the HUD.</li>
       <li>Collect every bead in the maze to win the level. There's no rush, but the clock is running if you want to compare runs.</li>
-      <li>Ten levels, each named for a real polymer and tinted to match, from easygoing polyethylene up to Kevlar. Every maze is its own symmetric layout, and the pace and the hunting sharpen as you climb. Clear level 10 to finish the polymer for good.</li>
+      <li>Twenty-five levels, each named for a real polymer and tinted to match. Act one climbs from easygoing polyethylene to Kevlar; act two eases off briefly, then works up through the engineering plastics and super fibers to carbyne, the theoretical linear-carbon chain that closes the game. Every maze is its own symmetric layout, and the pace and the hunting sharpen as you climb.</li>
       <li>From level 3 on, side openings in the outer wall are <strong>tunnels</strong>: walk off one edge and you reappear on the far side. Only the chain end fits through, so a tunnel is a guaranteed escape from anything on your tail.</li>
       <li>Enemies start held in a cage at the center of the maze and release one by one after a brief pause, mimicking a classic maze chase game. The longer a level runs, the more of them are loose.</li>
       <li>You have <strong>3 lives</strong>. Touching an enemy costs one life. Your chain end disintegrates, then you respawn at the start with the beads you already collected still counted. Lose all three and the game is over.</li>
@@ -210,7 +210,7 @@
   };
   var currentDifficulty = "normal";
 
-  // Ten levels of increasing difficulty: tighter/denser mazes (lower loopFactor
+  // Twenty-five levels of increasing difficulty: tighter/denser mazes (lower loopFactor
   // means fewer extra loops carved into the base maze, so corridors stay narrow),
   // faster ticks, more aggressive chasing, and more enemies released from the cage.
   var LEVELS = [
@@ -249,7 +249,44 @@
     { name: "PEEK", wall: { face: "#8c6d1f", hi: "#b9973f", lo: "#544108" }, tunnels: [3, 11],
       tickMs: 143, chaseChance: 0.41, graceTicks: 19, enemyCount: 4, loopFactor: 0.66 },
     { name: "Kevlar", wall: { face: "#b8940f", hi: "#ddbe43", lo: "#735a06" }, tunnels: [3, 7, 11],
-      tickMs: 136, chaseChance: 0.45, graceTicks: 17, enemyCount: 4, loopFactor: 0.64 }
+      tickMs: 136, chaseChance: 0.45, graceTicks: 17, enemyCount: 4, loopFactor: 0.64 },
+    // --- Act two. Kevlar was the act-one boss, so 11 opens with a little
+    // relief before the climb resumes through the engineering plastics into
+    // the super-fibers. Carbyne, the theoretical linear-carbon chain and the
+    // strongest known 1D material, is the mythic finale.
+    { name: "ABS", wall: { face: "#c25a1e", hi: "#e8854a", lo: "#7a3610" }, tunnels: [7],
+      tickMs: 158, chaseChance: 0.33, graceTicks: 24, enemyCount: 3, loopFactor: 0.74 },
+    { name: "PET", wall: { face: "#1e8a78", hi: "#4ab8a4", lo: "#10554a" }, tunnels: [3, 11],
+      tickMs: 154, chaseChance: 0.35, graceTicks: 22, enemyCount: 3, loopFactor: 0.72 },
+    { name: "Silicone", wall: { face: "#a6788f", hi: "#cfa3ba", lo: "#684a59" }, tunnels: [3, 7, 11],
+      tickMs: 150, chaseChance: 0.30, graceTicks: 25, enemyCount: 3, loopFactor: 0.76 },
+    { name: "Polyurethane", wall: { face: "#7a8a1e", hi: "#a6b84a", lo: "#4a5510" }, tunnels: [3, 11],
+      tickMs: 148, chaseChance: 0.35, graceTicks: 23, enemyCount: 4, loopFactor: 0.70 },
+    { name: "PLA", wall: { face: "#3a9a3f", hi: "#6cc871", lo: "#206425" }, tunnels: [3, 11],
+      tickMs: 146, chaseChance: 0.40, graceTicks: 20, enemyCount: 4, loopFactor: 0.70 },
+    { name: "PVDF", wall: { face: "#6f5a94", hi: "#9c87c2", lo: "#423358" }, tunnels: [3, 11],
+      tickMs: 142, chaseChance: 0.40, graceTicks: 21, enemyCount: 4, loopFactor: 0.68 },
+    { name: "PAN", wall: { face: "#35455e", hi: "#5f7189", lo: "#1d2939" }, tunnels: [7],
+      tickMs: 140, chaseChance: 0.47, graceTicks: 16, enemyCount: 4, loopFactor: 0.68 },
+    { name: "PPS", wall: { face: "#9a4a28", hi: "#c87954", lo: "#602c16" }, tunnels: [3, 11],
+      tickMs: 138, chaseChance: 0.45, graceTicks: 18, enemyCount: 4, loopFactor: 0.66 },
+    { name: "Polysulfone", wall: { face: "#8a6a3a", hi: "#b8996a", lo: "#554020" }, tunnels: [3, 11],
+      tickMs: 136, chaseChance: 0.46, graceTicks: 17, enemyCount: 4, loopFactor: 0.66 },
+    { name: "Ultem", wall: { face: "#b87a1e", hi: "#dda44a", lo: "#734a10" }, tunnels: [3, 11],
+      tickMs: 134, chaseChance: 0.47, graceTicks: 16, enemyCount: 4, loopFactor: 0.64 },
+    { name: "Nomex", wall: { face: "#a83232", hi: "#d16a6a", lo: "#661c1c" }, tunnels: [3, 7, 11],
+      tickMs: 132, chaseChance: 0.45, graceTicks: 18, enemyCount: 4, loopFactor: 0.64 },
+    { name: "Vectran", wall: { face: "#a08a4a", hi: "#c8b478", lo: "#64542a" }, tunnels: [3, 11],
+      tickMs: 130, chaseChance: 0.52, graceTicks: 14, enemyCount: 4, loopFactor: 0.62 },
+    { name: "Dyneema", wall: { face: "#5a8ab0", hi: "#8ab4d8", lo: "#345670" }, tunnels: [3, 7, 11],
+      tickMs: 128, chaseChance: 0.52, graceTicks: 14, enemyCount: 4, loopFactor: 0.62 },
+    { name: "Zylon", wall: { face: "#6e5a14", hi: "#9a8438", lo: "#3f330a" }, tunnels: [3, 11],
+      tickMs: 126, chaseChance: 0.50, graceTicks: 15, enemyCount: 4, loopFactor: 0.60 },
+    // The finale gets one lone tunnel and the fewest loops of any level. The
+    // bot rates it near Nomex, but Nomex hands the player three tunnels while
+    // carbyne offers one, so in human terms this is decisively the hardest.
+    { name: "Carbyne", wall: { face: "#33333f", hi: "#6a6a78", lo: "#16161d" }, tunnels: [7],
+      tickMs: 114, chaseChance: 0.66, graceTicks: 8, enemyCount: 4, loopFactor: 0.52 }
   ];
   var currentLevel = 1;
   var params = null;
@@ -1650,7 +1687,7 @@
   render();
   showOverlay(
     "Build a Polymer Chain",
-    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical. You get 3 lives per game. Grab a flashing initiator ring to turn the enemies edible for a few seconds and knock them back to the cage, or the flame for a 10 second speed boost. Ten levels named for real polymers, from polyethylene to Kevlar, all rendered in 8-bit.",
+    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical. You get 3 lives per game. Grab a flashing initiator ring to turn the enemies edible for a few seconds and knock them back to the cage, or the flame for a 10 second speed boost. Twenty-five levels named for real polymers, from polyethylene to carbyne, all rendered in 8-bit.",
     "Start polymerizing"
   );
 })();
