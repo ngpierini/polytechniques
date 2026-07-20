@@ -174,6 +174,15 @@
   var POWER_TICKS = 45;
   var CAGE_RETURN_TICKS = 16;
   var INITIATOR_COUNT = 4;
+  // What the chain end turns into when each terminator catches it. O₂ gives the
+  // rusty peroxy color, the inhibitor a dead aromatic purple, the CTA the amber
+  // of a transferred chain, a rival radical the pink of a combined pair.
+  var DEATH_TINTS = {
+    "O₂": { core: "#b5651d", spark: "#e8a13c" },
+    "Inh": { core: "#6b4a9c", spark: "#c0a3f0" },
+    "CTA": { core: "#a8791f", spark: "#f0cf80" },
+    "R•": { core: "#b34a7d", spark: "#f0a3c8" }
+  };
   var HEAT_MS = 10000;      // heat boost lasts 10 seconds of wall clock
   var HEAT_TICK_MUL = 0.5;  // player ticks twice as fast; enemies move every other tick
 
@@ -352,6 +361,7 @@
   var beadPresent, player, enemies, path, beadTotal, beadEaten, state, tickTimer, startTime, elapsed, deathReason, ticksElapsed, lastTickTime, animFrame;
   var levelStartTime, deathPos, deathParticles, pendingAdvance;
   var lives, powerTicksRemaining, initiators, heatSpot, heatUntil, wasHeated, subTicks, lastWorldTime;
+  var deathTint, lastBeadAt;
   var DEATH_DURATION_MS = 1100;
   var READY_MS = 900;
 
@@ -468,6 +478,8 @@
     wasHeated = false;
     subTicks = 0;
     lastWorldTime = Date.now();
+    lastBeadAt = 0;
+    deathTint = null;
     powerTicksRemaining = 0;
     path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
     elapsed = 0;
@@ -617,6 +629,7 @@
       beadPresent[player.r][player.c] = false;
       beadEaten++;
       ateHere = true;
+      lastBeadAt = Date.now();
       $("game-score").textContent = beadEaten + " / " + beadTotal;
     }
     path.push({ r: player.r, c: player.c, bead: ateHere });
@@ -750,6 +763,7 @@
     updateLivesHud();
     deathPos = { r: player.r, c: player.c };
     deathParticles = [];
+    deathTint = DEATH_TINTS[hit.name] || DEATH_TINTS["R•"];
     var n = 14;
     for (var i = 0; i < n; i++) {
       var ang = (Math.PI * 2 * i) / n + (Math.random() - 0.5) * 0.3;
@@ -862,17 +876,36 @@
     ctx.fillRect(mx - ps, my - 2 * ps, ps, ps);
   }
 
-  // Shared cute face: big sparkly eyes plus a mood-specific mouth. Used by the
-  // player and every terminator so the whole cast reads as one friendly set.
-  function drawCuteFace(mx, my, eye, mouth, cheeks) {
+  // Everyone blinks on their own slightly offset cycle, so the cast never
+  // blinks in unison. Two frames: open, or a closed happy line.
+  function isBlinking(seed) {
+    var cycle = 2600 + (seed % 4) * 420;
+    return (Date.now() + seed * 617) % cycle < 120;
+  }
+
+  // Shared cute face: white eyes with a pupil that looks where the character is
+  // paying attention, plus a mood-specific mouth. Used by the player and every
+  // terminator so the whole cast reads as one friendly set. The gaze is what
+  // telegraphs an enemy's intent: locked on you means it is hunting.
+  function drawCuteFace(mx, my, eye, mouth, cheeks, lookX, lookY, seed) {
     var ps = 2;
     var eyeY = my - 2 * ps;
-    ctx.fillStyle = eye;
-    ctx.fillRect(mx - 3 * ps, eyeY, 2 * ps, 2 * ps);
-    ctx.fillRect(mx + ps, eyeY, 2 * ps, 2 * ps);
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(mx - 3 * ps, eyeY, ps, ps);
-    ctx.fillRect(mx + ps, eyeY, ps, ps);
+    var lxE = mx - 3 * ps, rxE = mx + ps;
+
+    if (isBlinking(seed || 0)) {
+      ctx.fillStyle = eye;
+      ctx.fillRect(lxE, eyeY + ps, 2 * ps, ps);
+      ctx.fillRect(rxE, eyeY + ps, 2 * ps, ps);
+    } else {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(lxE, eyeY, 2 * ps, 2 * ps);
+      ctx.fillRect(rxE, eyeY, 2 * ps, 2 * ps);
+      var pupX = lookX > 0 ? ps : 0;
+      var pupY = lookY > 0 ? ps : 0;
+      ctx.fillStyle = eye;
+      ctx.fillRect(lxE + pupX, eyeY + pupY, ps, ps);
+      ctx.fillRect(rxE + pupX, eyeY + pupY, ps, ps);
+    }
 
     if (cheeks) {
       ctx.fillStyle = cheeks;
@@ -966,8 +999,21 @@
       return;
     }
 
-    // A little idle bob so the cast feels alive.
+    // A two-frame waddle so the cast feels alive without extra sprite art.
     var bob = Math.sin(Date.now() / 260 + e.slotIndex) > 0 ? 0 : ps;
+
+    // Gaze telegraphs intent: a hunting terminator stares straight at you, an
+    // idle one lets its eyes wander.
+    var lookX = 0, lookY = 0;
+    if (e.free && ticksElapsed >= params.graceTicks && player) {
+      lookX = player.c > e.c ? 1 : player.c < e.c ? -1 : 0;
+      lookY = player.r > e.r ? 1 : player.r < e.r ? -1 : 0;
+    } else {
+      var wander = Math.floor(Date.now() / 700 + e.slotIndex * 3) % 4;
+      lookX = wander === 1 ? 1 : wander === 3 ? -1 : 0;
+      lookY = wander === 0 ? -1 : wander === 2 ? 1 : 0;
+    }
+    var seed = e.slotIndex + 1;
 
     if (e.name === "O₂") {
       // dioxygen: two bonded spheres sharing one face
@@ -976,11 +1022,11 @@
       ctx.fillStyle = "#c0392b";
       ctx.fillRect(mx - ps, my - bob - ps, ps, ps);
       ctx.fillRect(mx - ps, my - bob + ps, ps, ps);
-      drawCuteFace(mx, my - bob, "#4a0d0d", "smile", "#ff9d9d");
+      drawCuteFace(mx, my - bob, "#4a0d0d", "smile", "#ff9d9d", lookX, lookY, seed);
     } else if (e.name === "Inh") {
       // inhibitor: an aromatic-ring token, and a bit of a grump about it
       drawSprite(INH_DIAMOND, ex, ey - bob, e.color);
-      drawCuteFace(mx, my - bob, "#2a1550", "grump", "#d0b3ff");
+      drawCuteFace(mx, my - bob, "#2a1550", "grump", "#d0b3ff", lookX, lookY, seed);
     } else if (e.name === "CTA") {
       // chain transfer agent: a sphere with a reactive hand-off tail, and a sly look
       drawPixelDisc(ex, ey - bob, 5, e.color);
@@ -989,7 +1035,7 @@
       ctx.fillRect(mx + 5 * ps, my - bob - 2 * ps, ps, ps);
       ctx.fillStyle = "#fff3d6";
       ctx.fillRect(mx + 6 * ps, my - bob - 3 * ps, ps, ps);
-      drawCuteFace(mx, my - bob, "#4a3000", "smirk", "#ffd98a");
+      drawCuteFace(mx, my - bob, "#4a3000", "smirk", "#ffd98a", lookX, lookY, seed);
     } else {
       // rival radical R•: a sphere with an unpaired-electron spark on a stub bond
       drawPixelDisc(ex, ey - bob, 5, e.color);
@@ -997,24 +1043,47 @@
       ctx.fillRect(mx + 4 * ps, my - bob - 4 * ps, ps, ps);
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(mx + 5 * ps, my - bob - 5 * ps, ps, ps);
-      drawCuteFace(mx, my - bob, "#5a0e33", "oh", "#ffb3d9");
+      drawCuteFace(mx, my - bob, "#5a0e33", "oh", "#ffb3d9", lookX, lookY, seed);
     }
   }
 
+  // Death happens in two beats. First the chain end reacts with whatever caught
+  // it and takes on that adduct's color (a carbon radical meeting O₂ really does
+  // become a peroxy radical), then the dead chain crumbles apart.
   function drawDeath(t) {
-    var fade = Math.max(0, 1 - t);
+    var tint = deathTint || DEATH_TINTS["R•"];
     var cxp = cx(deathPos.c), cyp = cy(deathPos.r);
-    var R = Math.round(6 * fade);
+    var REACT = 0.35;
+
+    if (t < REACT) {
+      // beat one: recoil and shift to the adduct color
+      var k = t / REACT;
+      drawPixelDisc(cxp, cyp, 5, k < 0.5 ? "#ffffff" : tint.core);
+      var ps = 2, ox = Math.round(cxp / ps) * ps, oy = Math.round(cyp / ps) * ps;
+      ctx.fillStyle = tint.spark;
+      var ring = (4 + Math.floor(k * 3)) * ps;
+      ctx.fillRect(ox, oy - ring, ps, ps);
+      ctx.fillRect(ox, oy + ring, ps, ps);
+      ctx.fillRect(ox - ring, oy, ps, ps);
+      ctx.fillRect(ox + ring, oy, ps, ps);
+      drawCuteFace(ox, oy, "#2a0f0f", "oh", null, 0, 0, 99);
+      return;
+    }
+
+    // beat two: the quenched chain end breaks up
+    var f = (t - REACT) / (1 - REACT);
+    var fade = Math.max(0, 1 - f);
+    var R = Math.round(5 * fade);
     if (R > 0) {
-      ctx.fillStyle = "#e8fff6";
+      ctx.fillStyle = tint.core;
       ctx.fillRect(cxp - R, cyp - R, R * 2, R * 2);
     }
     deathParticles.forEach(function (p) {
-      var x = Math.round(cxp + p.vx * t * 46);
-      var y = Math.round(cyp + p.vy * t * 46);
+      var x = Math.round(cxp + p.vx * f * 46);
+      var y = Math.round(cyp + p.vy * f * 46);
       var s = Math.max(0, Math.round(p.r * fade));
       if (s <= 0) return;
-      ctx.fillStyle = (x + y) % 4 === 0 ? "#8fffe0" : "#e8fff6";
+      ctx.fillStyle = (x + y) % 4 === 0 ? tint.spark : tint.core;
       ctx.fillRect(x - s, y - s, s * 2, s * 2);
     });
   }
@@ -1035,24 +1104,35 @@
 
     drawPixelDisc(px, py, 5, powered ? "#a9ffe9" : "#e8fff6");
 
-    // pulsing spark pixels around the radical
-    var d = (6 + Math.floor(Date.now() / 120) % 2) * ps;
+    // Two-frame spark twinkle: the reactive sparks alternate between the
+    // orthogonal and diagonal positions instead of just pulsing outward.
+    var frame = Math.floor(Date.now() / 110) % 2;
+    var d = 6 * ps;
     ctx.fillStyle = hot ? "#fff6d6" : powered ? "#5ff2c8" : "#8fffe0";
-    ctx.fillRect(ox, oy - d, ps, ps);
-    ctx.fillRect(ox, oy + d, ps, ps);
-    ctx.fillRect(ox - d, oy, ps, ps);
-    ctx.fillRect(ox + d, oy, ps, ps);
+    if (frame === 0) {
+      ctx.fillRect(ox, oy - d, ps, ps);
+      ctx.fillRect(ox, oy + d, ps, ps);
+      ctx.fillRect(ox - d, oy, ps, ps);
+      ctx.fillRect(ox + d, oy, ps, ps);
+    } else {
+      var q = 4 * ps;
+      ctx.fillRect(ox - q, oy - q, ps, ps);
+      ctx.fillRect(ox + q, oy - q, ps, ps);
+      ctx.fillRect(ox - q, oy + q, ps, ps);
+      ctx.fillRect(ox + q, oy + q, ps, ps);
+    }
 
     // a brighter leading spark in the direction of travel
+    var vdx = 0, vdy = 0;
     if (dir) {
-      var vdx = dir === "left" ? -1 : dir === "right" ? 1 : 0;
-      var vdy = dir === "up" ? -1 : dir === "down" ? 1 : 0;
+      vdx = dir === "left" ? -1 : dir === "right" ? 1 : 0;
+      vdy = dir === "up" ? -1 : dir === "down" ? 1 : 0;
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(ox + vdx * 8 * ps, oy + vdy * 8 * ps, ps, ps);
     }
 
-    // a happy little face, grinning wider while a power-up is running
-    drawCuteFace(ox, oy, "#0b3b32", powered || hot ? "smile" : "smirk", "#7fe3c8");
+    // a happy little face looking where it is headed, grinning wider on a power-up
+    drawCuteFace(ox, oy, "#0b3b32", powered || hot ? "smile" : "smirk", "#7fe3c8", vdx, vdy, 0);
   }
 
   function render(t, enemyT, deathT) {
@@ -1076,28 +1156,57 @@
     if (initiators) initiators.forEach(function (p) { drawInitiator(cx(p.c), cy(p.r)); });
     if (heatSpot) drawHeat(cx(heatSpot.c), cy(heatSpot.r));
 
+    // The growing chain is both the score and the point of the game, so it gets
+    // the visual budget: a chunky backbone that undulates like a real chain in
+    // solution, with each repeat unit a fat colored bead. The wiggle is
+    // quantized to whole pixels to stay true to the 8-bit look.
     if (path.length > 1) {
-      ctx.strokeStyle = "rgba(180,240,220,0.5)";
-      ctx.lineWidth = 2;
-      ctx.lineJoin = "miter";
-      ctx.lineCap = "butt";
-      ctx.beginPath();
-      ctx.moveTo(cx(path[0].c), cy(path[0].r));
-      for (var i = 1; i < path.length; i++) ctx.lineTo(cx(path[i].c), cy(path[i].r));
-      ctx.stroke();
-    }
-
-    var paletteIdx = 0;
-    path.forEach(function (p) {
-      if (p.bead) {
-        var bx = Math.round(cx(p.c)), by = Math.round(cy(p.r));
-        ctx.fillStyle = PALETTE[paletteIdx % PALETTE.length];
-        paletteIdx++;
-        ctx.fillRect(bx - 3, by - 3, 6, 6);
-        ctx.fillStyle = "rgba(255,255,255,0.5)";
-        ctx.fillRect(bx - 3, by - 3, 2, 2);
+      var wig = [];
+      for (var i = 0; i < path.length; i++) {
+        var pt = path[i];
+        var prev = path[i - 1] || pt, next = path[i + 1] || pt;
+        var vx = cx(next.c) - cx(prev.c), vy = cy(next.r) - cy(prev.r);
+        var len = Math.sqrt(vx * vx + vy * vy) || 1;
+        var amp = Math.sin(i * 0.8 - Date.now() / 260) * 2;
+        amp = Math.round(amp / 2) * 2;
+        wig.push({ x: Math.round(cx(pt.c) + (-vy / len) * amp), y: Math.round(cy(pt.r) + (vx / len) * amp) });
       }
-    });
+      ctx.strokeStyle = "rgba(150,235,210,0.45)";
+      ctx.lineWidth = 5;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(wig[0].x, wig[0].y);
+      for (var w1 = 1; w1 < wig.length; w1++) ctx.lineTo(wig[w1].x, wig[w1].y);
+      ctx.stroke();
+      ctx.strokeStyle = "#bdfced";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(wig[0].x, wig[0].y);
+      for (var w2 = 1; w2 < wig.length; w2++) ctx.lineTo(wig[w2].x, wig[w2].y);
+      ctx.stroke();
+
+      var paletteIdx = 0, lastBeadIdx = -1;
+      for (var b = 0; b < path.length; b++) if (path[b].bead) lastBeadIdx = b;
+      for (var j = 0; j < path.length; j++) {
+        if (!path[j].bead) continue;
+        var col = PALETTE[paletteIdx % PALETTE.length];
+        paletteIdx++;
+        var bx = wig[j].x, by = wig[j].y;
+        // the freshly attached unit pops on, then settles
+        var half = 4;
+        if (j === lastBeadIdx && lastBeadAt) {
+          var pop = Math.max(0, 1 - (Date.now() - lastBeadAt) / 190);
+          half = Math.round(4 + pop * 3);
+        }
+        ctx.fillStyle = "#08131a";
+        ctx.fillRect(bx - half - 1, by - half - 1, half * 2 + 2, half * 2 + 2);
+        ctx.fillStyle = col;
+        ctx.fillRect(bx - half, by - half, half * 2, half * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.6)";
+        ctx.fillRect(bx - half, by - half, 2, 2);
+      }
+    }
 
     enemies.forEach(function (e) {
       var er = lerp(e.prevR, e.r, enemyT);
