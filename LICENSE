@@ -34,6 +34,12 @@ NOT PERMITTED without prior written permission from the copyright holder
 "PolyTechniques" and the PolyTechniques mark are used to identify this
 project and are not licensed for use by others.
 
+THIRD-PARTY COMPONENTS
+Files under the /vendor directory are redistributed third-party software
+(currently the RDKit cheminformatics engine, BSD 3-Clause) and are not
+covered by this license; they remain under their own licenses as noted in
+/vendor/README.md.
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. THE CALCULATORS AND
