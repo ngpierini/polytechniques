@@ -208,7 +208,9 @@
             <div class="mol-tip"><dt>Escape</dt><dd>Release the current chain without adding another atom.</dd></div>
             <div class="mol-tip"><dt>Hover + letter key</dt><dd>Relabel the hovered atom instantly, in any mode. N, O, F apply right away; C, S, B briefly wait in case a second letter completes Cl, Si, or Br.</dd></div>
             <div class="mol-tip"><dt>Shift+click</dt><dd>Relabel an atom to the selected element without adding a bond.</dd></div>
-            <div class="mol-tip"><dt>Molecular weight</dt><dd>The bar under the canvas shows the formula and molar mass of whatever you draw, implicit hydrogens included. Highlight atoms with the Select tool to weigh just that fragment.</dd></div>
+            <div class="mol-tip"><dt>Molecular weight</dt><dd>The bar under the canvas shows the formula, molar mass, exact mass, degree of unsaturation, and elemental analysis of whatever you draw, implicit hydrogens included. Highlight atoms with the Select tool to weigh just that fragment.</dd></div>
+            <div class="mol-tip"><dt>SMILES</dt><dd>Paste a SMILES below the canvas and Load draws it with clean geometry. Copy SMILES / Copy InChI turn your drawing into a string ready for PubChem, SciFinder, or a manuscript.</dd></div>
+            <div class="mol-tip"><dt>Clean up</dt><dd>The &#10024; button redraws your sketch with ideal bond lengths and angles, keeping atoms, bonds, and charges exactly as you placed them.</dd></div>
             <div class="mol-tip"><dt>Grid icon</dt><dd>Pick any element from the periodic table.</dd></div>
           </dl>
         </div>
@@ -240,6 +242,18 @@
         <svg viewBox="0 0 20 20" width="15" height="15" style="vertical-align:-2px;margin-right:4px;"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="13" y1="13" x2="17.5" y2="17.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Search this structure
       </button>
     </div>
+    <div class="mol-toolbar-row" style="margin-top:8px;">
+      <div class="mol-tool-cluster" style="flex:1 1 260px;">
+        <input type="text" id="mol-smiles-input" placeholder="Paste a SMILES, e.g. CC(c1ccccc1)&hellip;" style="flex:1;min-width:160px;" aria-label="SMILES input">
+        <button type="button" id="mol-smiles-load" class="copy-btn">Load SMILES</button>
+      </div>
+      <div class="mol-tool-cluster">
+        <button type="button" id="mol-copy-smiles" class="copy-btn" title="Copy the drawn structure as canonical SMILES">Copy SMILES</button>
+        <button type="button" id="mol-copy-inchi" class="copy-btn" title="Copy the drawn structure as an InChI string">Copy InChI</button>
+        <button type="button" id="mol-cleanup" class="copy-btn" title="Redraw the structure with ideal geometry">&#10024; Clean up</button>
+      </div>
+    </div>
+    <div id="mol-smiles-status" class="guide-note" style="margin:6px 0 0;font-size:0.82rem;"></div>
     <div id="mol-periodic-overlay" class="mol-modal-overlay" hidden>
       <div class="mol-modal-card">
         <div class="mol-modal-head">
@@ -280,7 +294,7 @@
 
 <script src="polymer-data.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="polymer-search.js?v=46"></script>
+<script src="polymer-search.js?v=47"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
