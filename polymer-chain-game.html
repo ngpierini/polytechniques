@@ -142,7 +142,8 @@
     <ul class="guide-list">
       <li>Move with the arrow keys or WASD, or use the on screen pad. Every bead you touch attaches to your growing chain, drawn as the beaded strand trailing behind you. Only the most recently added stretch is shown, tapering off into solution, so you're always looking at one chain rather than a tangle. The full count is in the HUD.</li>
       <li>Collect every bead in the maze to win the level. There's no rush, but the clock is running if you want to compare runs.</li>
-      <li>Ten levels, each with its own maze, tighter corridors and quicker enemies as you climb. Clear level 10 to finish the polymer for good.</li>
+      <li>Ten levels, each named for a real polymer and tinted to match, from easygoing polyethylene up to Kevlar. Every maze is its own symmetric layout, and the pace and the hunting sharpen as you climb. Clear level 10 to finish the polymer for good.</li>
+      <li>From level 3 on, side openings in the outer wall are <strong>tunnels</strong>: walk off one edge and you reappear on the far side. Only the chain end fits through, so a tunnel is a guaranteed escape from anything on your tail.</li>
       <li>Enemies start held in a cage at the center of the maze and release one by one after a brief pause, mimicking a classic maze chase game. The longer a level runs, the more of them are loose.</li>
       <li>You have <strong>3 lives</strong>. Touching an enemy costs one life. Your chain end disintegrates, then you respawn at the start with the beads you already collected still counted. Lose all three and the game is over.</li>
       <li>Grab an <strong>initiator</strong>, the flashing hollow ring, to flip the tables for a few seconds. Enemies are quenched and edible, and running into one sends it straight back to the cage instead of ending your life. Four initiators sit in the corners of each maze, one per corner.</li>
@@ -226,16 +227,29 @@
     // Levels 4 and 5 dip in chaseChance on purpose: a third hunter arrives at 4
     // and that alone is a large jump in pressure, so the chase eases to absorb
     // it before resuming its climb.
-    { tickMs: 190, chaseChance: 0.22, graceTicks: 32, enemyCount: 2, loopFactor: 0.84 },
-    { tickMs: 185, chaseChance: 0.25, graceTicks: 30, enemyCount: 2, loopFactor: 0.81 },
-    { tickMs: 180, chaseChance: 0.28, graceTicks: 28, enemyCount: 2, loopFactor: 0.78 },
-    { tickMs: 174, chaseChance: 0.25, graceTicks: 31, enemyCount: 3, loopFactor: 0.76 },
-    { tickMs: 168, chaseChance: 0.29, graceTicks: 27, enemyCount: 3, loopFactor: 0.74 },
-    { tickMs: 162, chaseChance: 0.36, graceTicks: 23, enemyCount: 3, loopFactor: 0.72 },
-    { tickMs: 156, chaseChance: 0.39, graceTicks: 21, enemyCount: 3, loopFactor: 0.70 },
-    { tickMs: 148, chaseChance: 0.42, graceTicks: 20, enemyCount: 4, loopFactor: 0.68 },
-    { tickMs: 140, chaseChance: 0.46, graceTicks: 18, enemyCount: 4, loopFactor: 0.66 },
-    { tickMs: 132, chaseChance: 0.50, graceTicks: 16, enemyCount: 4, loopFactor: 0.64 }
+    // Each level is named for a real polymer, roughly in order of how tough the
+    // material (and the level) is, and tints the maze walls to match. tunnels
+    // lists rows whose side openings wrap around to the far edge.
+    { name: "Polyethylene", wall: { face: "#2a53c4", hi: "#5b83e6", lo: "#16307a" }, tunnels: [],
+      tickMs: 190, chaseChance: 0.22, graceTicks: 32, enemyCount: 2, loopFactor: 0.84 },
+    { name: "Polypropylene", wall: { face: "#1f7a45", hi: "#43a86e", lo: "#0f4a27" }, tunnels: [],
+      tickMs: 185, chaseChance: 0.25, graceTicks: 30, enemyCount: 2, loopFactor: 0.81 },
+    { name: "Polystyrene", wall: { face: "#6a41b8", hi: "#9670dd", lo: "#3d2373" }, tunnels: [7],
+      tickMs: 180, chaseChance: 0.28, graceTicks: 28, enemyCount: 2, loopFactor: 0.78 },
+    { name: "PVC", wall: { face: "#4a6478", hi: "#7c94a6", lo: "#2b3c49" }, tunnels: [7],
+      tickMs: 176, chaseChance: 0.23, graceTicks: 33, enemyCount: 3, loopFactor: 0.76 },
+    { name: "PMMA", wall: { face: "#0f7f8c", hi: "#3fadb9", lo: "#084b54" }, tunnels: [7],
+      tickMs: 168, chaseChance: 0.31, graceTicks: 25, enemyCount: 3, loopFactor: 0.74 },
+    { name: "Nylon 6,6", wall: { face: "#b85c3a", hi: "#dd8a68", lo: "#733420" }, tunnels: [3, 11],
+      tickMs: 162, chaseChance: 0.32, graceTicks: 24, enemyCount: 3, loopFactor: 0.72 },
+    { name: "PTFE", wall: { face: "#5a6472", hi: "#8b95a3", lo: "#343c47" }, tunnels: [3, 11],
+      tickMs: 156, chaseChance: 0.35, graceTicks: 22, enemyCount: 3, loopFactor: 0.70 },
+    { name: "Polycarbonate", wall: { face: "#3946a8", hi: "#6a76d1", lo: "#1f2866" }, tunnels: [3, 11],
+      tickMs: 150, chaseChance: 0.38, graceTicks: 21, enemyCount: 4, loopFactor: 0.68 },
+    { name: "PEEK", wall: { face: "#8c6d1f", hi: "#b9973f", lo: "#544108" }, tunnels: [3, 11],
+      tickMs: 143, chaseChance: 0.41, graceTicks: 19, enemyCount: 4, loopFactor: 0.66 },
+    { name: "Kevlar", wall: { face: "#b8940f", hi: "#ddbe43", lo: "#735a06" }, tunnels: [3, 7, 11],
+      tickMs: 136, chaseChance: 0.45, graceTicks: 17, enemyCount: 4, loopFactor: 0.64 }
   ];
   var currentLevel = 1;
   var params = null;
@@ -288,7 +302,7 @@
   // (loopFactor fraction) to create the looping arcade-maze corridors instead
   // of a bare spanning tree. The cage block is carved separately and joined to
   // the rest of the maze through exactly one door.
-  function generateMaze(seed, loopFactor) {
+  function generateMaze(seed, loopFactor, tunnelRows) {
     var rng = mulberry32(seed);
     var wallGrid = [];
     for (var r = 0; r < ROWS; r++) {
@@ -350,6 +364,71 @@
     var openCount = Math.floor(edgeWalls.length * loopFactor);
     for (var k = 0; k < openCount; k++) wallGrid[edgeWalls[k][0]][edgeWalls[k][1]] = false;
 
+    // Mirror the left half onto the right. DFS mazes read as random noise;
+    // every memorable arcade maze is left-right symmetric, and mirroring is
+    // what makes a generated layout look designed. The cage is symmetric about
+    // the center column, but its geometry is re-asserted to be explicit.
+    for (var mr = 0; mr < ROWS; mr++) {
+      for (var mc = 0; mc < (COLS - 1) / 2; mc++) {
+        wallGrid[mr][COLS - 1 - mc] = wallGrid[mr][mc];
+      }
+    }
+    CAGE_FORCED_OPEN.forEach(function (w) { wallGrid[w[0]][w[1]] = false; });
+    CAGE_FORCED_WALL.forEach(function (w) { wallGrid[w[0]][w[1]] = true; });
+
+    // Mirroring can strand cells: a cell whose only route to the start ran
+    // through the overwritten right half loses it (the pocket above the cage
+    // door is the classic casualty). Repair by flooding from the start and,
+    // while anything is unreached, opening one wall between an unreached cell
+    // and a reached one, mirrored to keep the symmetry.
+    function flood() {
+      var seen = [];
+      for (var r = 0; r < ROWS; r++) { seen[r] = []; for (var c = 0; c < COLS; c++) seen[r][c] = false; }
+      var queue = [[PLAYER_START.r, PLAYER_START.c]], head = 0;
+      seen[PLAYER_START.r][PLAYER_START.c] = true;
+      while (head < queue.length) {
+        var cur = queue[head++];
+        [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (d) {
+          var nr = cur[0] + d[0], nc = cur[1] + d[1];
+          if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !wallGrid[nr][nc] && !isCageInterior(nr, nc) && !seen[nr][nc]) {
+            seen[nr][nc] = true;
+            queue.push([nr, nc]);
+          }
+        });
+      }
+      return seen;
+    }
+    for (var guard = 0; guard < 50; guard++) {
+      var seen = flood();
+      var fixed = false;
+      for (var rr = 1; rr < ROWS - 1 && !fixed; rr++) {
+        for (var cc2 = 1; cc2 < COLS - 1 && !fixed; cc2++) {
+          if (wallGrid[rr][cc2] || isCageInterior(rr, cc2) || seen[rr][cc2]) continue;
+          var dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+          for (var di = 0; di < 4; di++) {
+            var wr2 = rr + dirs[di][0], wc2 = cc2 + dirs[di][1];
+            var fr = rr + 2 * dirs[di][0], fc = cc2 + 2 * dirs[di][1];
+            if (fr < 1 || fr >= ROWS - 1 || fc < 1 || fc >= COLS - 1) continue;
+            if (!wallGrid[wr2][wc2] || isForcedCage(wr2, wc2)) continue;
+            if (wallGrid[fr][fc] || isCageInterior(fr, fc) || !seen[fr][fc]) continue;
+            wallGrid[wr2][wc2] = false;
+            wallGrid[wr2][COLS - 1 - wc2] = false;
+            fixed = true;
+            break;
+          }
+        }
+      }
+      if (!fixed) break;
+    }
+
+    // Side tunnels: open both border cells on the listed rows. Stepping off
+    // either end wraps to the far edge. The mouths connect inward through the
+    // adjacent odd-column node, which the carve always leaves open.
+    (tunnelRows || []).forEach(function (tr) {
+      wallGrid[tr][0] = false;
+      wallGrid[tr][COLS - 1] = false;
+    });
+
     return wallGrid;
   }
 
@@ -382,9 +461,16 @@
 
   var wall = generateMaze(1000, LEVELS[0].loopFactor);
 
+  function isTunnelMouth(r, c) {
+    return (c === 0 || c === COLS - 1) && currentTunnels.indexOf(r) !== -1;
+  }
+
   function cellValid(r, c, isPlayer) {
     if (r < 0 || r >= ROWS || c < 0 || c >= COLS || wall[r][c]) return false;
     if (isPlayer && isCageInterior(r, c)) return false;
+    // Tunnels are the player's escape hatch: only the slim chain end slips
+    // through, so terminators will not follow you in.
+    if (!isPlayer && isTunnelMouth(r, c)) return false;
     return true;
   }
 
@@ -392,6 +478,7 @@
   var levelStartTime, deathPos, deathParticles, pendingAdvance;
   var lives, powerTicksRemaining, initiators, heatSpot, heatUntil, wasHeated, subTicks, lastWorldTime;
   var deathTint, lastBeadAt, points, eatChain, popups;
+  var levelName = LEVELS[0].name, wallPalette = LEVELS[0].wall, currentTunnels = [];
 
   // Best time per level, kept per difficulty since hard mode is a different run.
   function loadBests() {
@@ -453,12 +540,17 @@
     currentLevel = levelNum;
     applyParamsForCurrentLevel();
     var def = LEVELS[levelNum - 1];
-    wall = generateMaze(1000 + levelNum * 97, def.loopFactor);
+    levelName = def.name;
+    wallPalette = def.wall;
+    currentTunnels = def.tunnels || [];
+    wall = generateMaze(1000 + levelNum * 97, def.loopFactor, currentTunnels);
     if (!verifyConnectivity(wall)) {
       console.warn("Maze connectivity check failed for level " + levelNum + ", regenerating with a fallback seed.");
-      wall = generateMaze(5000 + levelNum, Math.min(0.95, def.loopFactor + 0.3));
+      wall = generateMaze(5000 + levelNum, Math.min(0.95, def.loopFactor + 0.3), currentTunnels);
     }
     $("game-level").textContent = currentLevel + " / " + LEVELS.length;
+    var levelStat = $("game-level").parentElement.querySelector(".label");
+    if (levelStat) levelStat.textContent = "Level · " + levelName;
   }
 
   function spawnEnemies() {
@@ -620,6 +712,18 @@
     player.nextDir = d;
   }
 
+  // Where a move in direction dirName would put the player, or null if blocked.
+  // On a tunnel row, stepping off either border cell wraps to the far edge.
+  function playerDest(dirName) {
+    var d = DIRS[dirName];
+    var nr = player.r + d.dr, nc = player.c + d.dc;
+    if (d.dc !== 0 && currentTunnels.indexOf(player.r) !== -1) {
+      if (nc < 0) nc = COLS - 1;
+      else if (nc >= COLS) nc = 0;
+    }
+    return cellValid(nr, nc, true) ? { r: nr, c: nc } : null;
+  }
+
   var OPPOSITE = { up: "down", down: "up", left: "right", right: "left" };
 
   // Where each terminator is trying to get to. The chemistry writes the
@@ -764,17 +868,20 @@
 
     player.prevR = player.r;
     player.prevC = player.c;
-    if (player.nextDir) {
-      var nd = DIRS[player.nextDir];
-      if (cellValid(player.r + nd.dr, player.c + nd.dc, true)) {
-        player.dir = player.nextDir;
-      }
+    if (player.nextDir && playerDest(player.nextDir)) {
+      player.dir = player.nextDir;
     }
     if (player.dir) {
-      var d = DIRS[player.dir];
-      if (cellValid(player.r + d.dr, player.c + d.dc, true)) {
-        player.r += d.dr;
-        player.c += d.dc;
+      var dest = playerDest(player.dir);
+      if (dest) {
+        player.r = dest.r;
+        player.c = dest.c;
+        // A wrap teleports across the board; snap prev so the render doesn't
+        // sweep the sprite (and the chain) across every column in between.
+        if (Math.abs(player.c - player.prevC) > 1) {
+          player.prevR = player.r;
+          player.prevC = player.c;
+        }
       }
     }
 
@@ -855,9 +962,9 @@
               : " New best: " + elapsed.toFixed(1) + "s, beating " + prevBest.toFixed(1) + "s.")
           : " You finished in " + elapsed.toFixed(1) + "s, best is " + prevBest.toFixed(1) + "s.";
         showOverlay(
-          "Level " + currentLevel + " complete!",
+          "Level " + currentLevel + ": " + levelName + " complete!",
           "M" + "ₙ" + " reached " + formatMass(beadEaten) + " for " + points.toLocaleString() + " points." + timeNote +
-            " On to level " + (currentLevel + 1) + " of " + LEVELS.length + ".",
+            " On to level " + (currentLevel + 1) + " of " + LEVELS.length + ": " + LEVELS[currentLevel].name + ".",
           "Next level"
         );
       } else {
@@ -999,24 +1106,30 @@
   function cx(c) { return c * CELL + CELL / 2; }
   function cy(r) { return r * CELL + CELL / 2; }
 
-  // 8-bit beveled wall block: flat blue face with a lighter top-left highlight
-  // and a darker bottom-right shadow, the classic pixel-art raised-tile look.
+  // 8-bit beveled wall block: flat face with a lighter top-left highlight and a
+  // darker bottom-right shadow, the classic pixel-art raised-tile look. The
+  // colors come from the level's polymer palette, so each level has its own
+  // identity at a glance.
   function drawWall(gx, gy) {
-    ctx.fillStyle = "#2a53c4";
+    ctx.fillStyle = wallPalette.face;
     ctx.fillRect(gx, gy, CELL, CELL);
-    ctx.fillStyle = "#5b83e6";
+    ctx.fillStyle = wallPalette.hi;
     ctx.fillRect(gx, gy, CELL, 2);
     ctx.fillRect(gx, gy, 2, CELL);
-    ctx.fillStyle = "#16307a";
+    ctx.fillStyle = wallPalette.lo;
     ctx.fillRect(gx, gy + CELL - 2, CELL, 2);
     ctx.fillRect(gx + CELL - 2, gy, 2, CELL);
   }
 
   function drawBeadPixel(x, y) {
     var bx = Math.round(x), by = Math.round(y);
-    ctx.fillStyle = "#8fb8ff";
+    // The last few beads blink so the endgame is a hunt with a beacon rather
+    // than a sweep of every corridor you already cleared.
+    var scarce = beadTotal - beadEaten <= 10;
+    var bright = scarce && Math.floor(Date.now() / 250) % 2 === 0;
+    ctx.fillStyle = bright ? "#ffffff" : "#8fb8ff";
     ctx.fillRect(bx - 2, by - 2, 4, 4);
-    ctx.fillStyle = "#d6e6ff";
+    ctx.fillStyle = bright ? "#8fb8ff" : "#d6e6ff";
     ctx.fillRect(bx - 2, by - 2, 2, 2);
   }
 
@@ -1376,6 +1489,9 @@
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       for (var s = 0; s < segs; s++) {
+        // A tunnel wrap puts consecutive path cells on opposite edges; drawing
+        // that segment would smear the chain across the whole board.
+        if (Math.abs(path[start + s].c - path[start + s + 1].c) > 1) continue;
         var a = segs < 2 ? 1 : s / (segs - 1);   // 0 at the far tail, 1 at the chain end
         ctx.globalAlpha = 0.12 + 0.88 * a;
         ctx.strokeStyle = "rgba(150,235,210,0.45)";
@@ -1458,6 +1574,11 @@
       ctx.fillText("INITIATE!", canvas.width / 2 + 1, cy(PLAYER_START.r) + 43);
       ctx.fillStyle = "#ffe14d";
       ctx.fillText("INITIATE!", canvas.width / 2, cy(PLAYER_START.r) + 42);
+      ctx.font = "bold 12px 'Courier New', monospace";
+      ctx.fillStyle = "#000";
+      ctx.fillText(levelName.toUpperCase(), canvas.width / 2 + 1, cy(PLAYER_START.r) + 59);
+      ctx.fillStyle = wallPalette.hi;
+      ctx.fillText(levelName.toUpperCase(), canvas.width / 2, cy(PLAYER_START.r) + 58);
       ctx.textAlign = "start";
     }
   }
@@ -1529,7 +1650,7 @@
   render();
   showOverlay(
     "Build a Polymer Chain",
-    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical. You get 3 lives per game. Grab a flashing initiator ring to turn the enemies edible for a few seconds and knock them back to the cage, or the flame for a 10 second speed boost. Ten levels, all rendered in 8-bit.",
+    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical. You get 3 lives per game. Grab a flashing initiator ring to turn the enemies edible for a few seconds and knock them back to the cage, or the flame for a 10 second speed boost. Ten levels named for real polymers, from polyethylene to Kevlar, all rendered in 8-bit.",
     "Start polymerizing"
   );
 })();
