@@ -517,6 +517,16 @@
     beginTicking();
   }
 
+  // A terminator counts as having caught the player if they end the step on the
+  // same cell, or if they walked straight through each other by swapping cells.
+  // Without the swap test a head-on pass reads as a near miss and the enemy
+  // appears to glide harmlessly over the chain end.
+  function touchedPlayer(e) {
+    if (e.r === player.r && e.c === player.c) return true;
+    return e.r === player.prevR && e.c === player.prevC &&
+           e.prevR === player.r && e.prevC === player.c;
+  }
+
   function sendToCage(e) {
     var slot = ENEMY_SLOTS[e.slotIndex];
     e.r = slot.r; e.c = slot.c; e.prevR = slot.r; e.prevC = slot.c;
@@ -663,7 +673,7 @@
 
     var collided = [];
     for (var ci = 0; ci < enemies.length; ci++) {
-      if (enemies[ci].free && enemies[ci].r === player.r && enemies[ci].c === player.c) collided.push(enemies[ci]);
+      if (enemies[ci].free && touchedPlayer(enemies[ci])) collided.push(enemies[ci]);
     }
     if (collided.length) {
       if (powerTicksRemaining > 0) {
@@ -1160,6 +1170,16 @@
     // the visual budget: a chunky backbone that undulates like a real chain in
     // solution, with each repeat unit a fat colored bead. The wiggle is
     // quantized to whole pixels to stay true to the 8-bit look.
+    // The chain must end exactly at the chain end, never run ahead of it. The
+    // last path entry is the cell the player is moving *into*, so while that
+    // move is still interpolating we pin the final vertex to the player's drawn
+    // position instead of the destination cell.
+    var headX = null, headY = null;
+    if (state !== "dying") {
+      headX = cx(lerp(player.prevC, player.c, t));
+      headY = cy(lerp(player.prevR, player.r, t));
+    }
+
     if (path.length > 1) {
       var wig = [];
       for (var i = 0; i < path.length; i++) {
@@ -1169,7 +1189,11 @@
         var len = Math.sqrt(vx * vx + vy * vy) || 1;
         var amp = Math.sin(i * 0.8 - Date.now() / 260) * 2;
         amp = Math.round(amp / 2) * 2;
-        wig.push({ x: Math.round(cx(pt.c) + (-vy / len) * amp), y: Math.round(cy(pt.r) + (vx / len) * amp) });
+        var isHead = (i === path.length - 1) && headX !== null;
+        var baseX = isHead ? headX : cx(pt.c);
+        var baseY = isHead ? headY : cy(pt.r);
+        if (isHead) amp = 0;
+        wig.push({ x: Math.round(baseX + (-vy / len) * amp), y: Math.round(baseY + (vx / len) * amp) });
       }
       ctx.strokeStyle = "rgba(150,235,210,0.45)";
       ctx.lineWidth = 5;
