@@ -88,8 +88,16 @@
         <div class="value" id="game-score">0 / 0</div>
       </div>
       <div class="stat">
+        <div class="label">M<sub>n</sub></div>
+        <div class="value" id="game-mn" style="font-size:1rem;">0 g/mol</div>
+      </div>
+      <div class="stat">
+        <div class="label">Points</div>
+        <div class="value" id="game-points">0</div>
+      </div>
+      <div class="stat">
         <div class="label">Time</div>
-        <div class="value" id="game-time">0.0s</div>
+        <div class="value" id="game-time" style="font-size:1rem;">0.0s</div>
       </div>
       <div class="stat">
         <div class="label">Lives</div>
@@ -139,6 +147,10 @@
       <li>You have <strong>3 lives</strong>. Touching an enemy costs one life. Your chain end disintegrates, then you respawn at the start with the beads you already collected still counted. Lose all three and the game is over.</li>
       <li>Grab an <strong>initiator</strong>, the flashing hollow ring, to flip the tables for a few seconds. Enemies are quenched and edible, and running into one sends it straight back to the cage instead of ending your life. Four initiators sit in the corners of each maze, one per corner.</li>
       <li>Grab the <strong>heat</strong>, the flickering flame, for a 10 second speed boost. You move at double pace while the terminators carry on at their usual speed, which is the easiest way to clear a stubborn stretch of maze. There's only one per level, somewhere in the middle, so spend it well.</li>
+      <li>Each terminator hunts differently, so watch which one is closing in. <strong>O&#8322;</strong> comes straight at you. The <strong>inhibitor</strong> ignores you and squats on the densest patch of unreacted monomer, so the beads it is guarding cost the most to reach. The <strong>chain transfer agent</strong> aims at where you are heading rather than where you are, and will cut you off if you hold a straight line. The <strong>rival radical</strong> mirrors your position across the maze and tends to arrive head on.</li>
+      <li>Their eyes give them away: a hunter that has locked onto you is looking right at you, while one that is still wandering has its eyes elsewhere. None of them can turn around in a corridor, so once one commits you know where it must come out.</li>
+      <li>Points come from repeat units, and from quenching terminators while an initiator is running. Each one caught in the same window is worth double the last, up to four, so clearing several on one ring is where the score is.</li>
+      <li>On a phone you can swipe anywhere on the board to steer instead of using the pad.</li>
       <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly, on every level.</li>
     </ul>
   </div>
@@ -175,6 +187,10 @@
   var CAGE_RETURN_TICKS = 16;
   var INITIATOR_COUNT = 4;
   var CHAIN_TAIL = 22;      // repeat units of chain drawn behind the chain end
+  var UNIT_MASS = 104.15;   // g/mol per repeat unit (styrene), for the Mn readout
+  var POINTS_PER_UNIT = 10;
+  var EAT_BASE = 200;       // first quenched terminator eaten in a power window
+  var BEST_KEY = "polytechniques_game_best";
   // What the chain end turns into when each terminator catches it. O₂ gives the
   // rusty peroxy color, the inhibitor a dead aromatic purple, the CTA the amber
   // of a transferred chain, a rival radical the pink of a combined pair.
@@ -197,16 +213,29 @@
   // means fewer extra loops carved into the base maze, so corridors stay narrow),
   // faster ticks, more aggressive chasing, and more enemies released from the cage.
   var LEVELS = [
-    { tickMs: 190, chaseChance: 0.45, graceTicks: 26, enemyCount: 2, loopFactor: 0.85 },
-    { tickMs: 182, chaseChance: 0.50, graceTicks: 24, enemyCount: 2, loopFactor: 0.75 },
-    { tickMs: 174, chaseChance: 0.54, graceTicks: 22, enemyCount: 3, loopFactor: 0.65 },
-    { tickMs: 167, chaseChance: 0.58, graceTicks: 20, enemyCount: 3, loopFactor: 0.56 },
-    { tickMs: 160, chaseChance: 0.62, graceTicks: 18, enemyCount: 3, loopFactor: 0.48 },
-    { tickMs: 153, chaseChance: 0.66, graceTicks: 16, enemyCount: 3, loopFactor: 0.40 },
-    { tickMs: 146, chaseChance: 0.70, graceTicks: 14, enemyCount: 3, loopFactor: 0.32 },
-    { tickMs: 139, chaseChance: 0.75, graceTicks: 12, enemyCount: 4, loopFactor: 0.24 },
-    { tickMs: 131, chaseChance: 0.80, graceTicks: 10, enemyCount: 4, loopFactor: 0.16 },
-    { tickMs: 122, chaseChance: 0.86, graceTicks: 8, enemyCount: 4, loopFactor: 0.09 }
+    // chaseChance is deliberately much lower than it was before the terminators
+    // got real targeting. A greedy step toward the player wastes most of its
+    // moves in a maze; aiming at a considered target (an intercept point, a
+    // bead cluster, a mirrored position) converges far faster, and refusing to
+    // reverse means they commit to a corridor instead of dithering. The same
+    // number now applies a great deal more pressure, so it had to come down.
+    // Difficulty now comes from speed, hunter count and chase commitment rather
+    // than from starving the maze of loops. Dead ends made deaths feel like bad
+    // luck (cornered with nowhere to go) instead of a mistake, so loopFactor
+    // stays high everywhere and only eases off gently.
+    // Levels 4 and 5 dip in chaseChance on purpose: a third hunter arrives at 4
+    // and that alone is a large jump in pressure, so the chase eases to absorb
+    // it before resuming its climb.
+    { tickMs: 190, chaseChance: 0.22, graceTicks: 32, enemyCount: 2, loopFactor: 0.84 },
+    { tickMs: 185, chaseChance: 0.25, graceTicks: 30, enemyCount: 2, loopFactor: 0.81 },
+    { tickMs: 180, chaseChance: 0.28, graceTicks: 28, enemyCount: 2, loopFactor: 0.78 },
+    { tickMs: 174, chaseChance: 0.25, graceTicks: 31, enemyCount: 3, loopFactor: 0.76 },
+    { tickMs: 168, chaseChance: 0.29, graceTicks: 27, enemyCount: 3, loopFactor: 0.74 },
+    { tickMs: 162, chaseChance: 0.36, graceTicks: 23, enemyCount: 3, loopFactor: 0.72 },
+    { tickMs: 156, chaseChance: 0.39, graceTicks: 21, enemyCount: 3, loopFactor: 0.70 },
+    { tickMs: 148, chaseChance: 0.42, graceTicks: 20, enemyCount: 4, loopFactor: 0.68 },
+    { tickMs: 140, chaseChance: 0.46, graceTicks: 18, enemyCount: 4, loopFactor: 0.66 },
+    { tickMs: 132, chaseChance: 0.50, graceTicks: 16, enemyCount: 4, loopFactor: 0.64 }
   ];
   var currentLevel = 1;
   var params = null;
@@ -362,7 +391,48 @@
   var beadPresent, player, enemies, path, beadTotal, beadEaten, state, tickTimer, startTime, elapsed, deathReason, ticksElapsed, lastTickTime, animFrame;
   var levelStartTime, deathPos, deathParticles, pendingAdvance;
   var lives, powerTicksRemaining, initiators, heatSpot, heatUntil, wasHeated, subTicks, lastWorldTime;
-  var deathTint, lastBeadAt;
+  var deathTint, lastBeadAt, points, eatChain, popups;
+
+  // Best time per level, kept per difficulty since hard mode is a different run.
+  function loadBests() {
+    try { return JSON.parse(localStorage.getItem(BEST_KEY)) || {}; } catch (e) { return {}; }
+  }
+  function bestKeyFor(level) { return level + ":" + currentDifficulty; }
+  function getBest(level) { return loadBests()[bestKeyFor(level)] || null; }
+  function recordBest(level, seconds) {
+    var all = loadBests();
+    var k = bestKeyFor(level);
+    if (all[k] == null || seconds < all[k]) {
+      all[k] = seconds;
+      try { localStorage.setItem(BEST_KEY, JSON.stringify(all)); } catch (e) {}
+      return true;
+    }
+    return false;
+  }
+
+  function formatMass(units) {
+    var m = units * UNIT_MASS;
+    if (m >= 10000) return (m / 1000).toFixed(1) + "k g/mol";
+    if (m >= 1000) return (m / 1000).toFixed(2) + "k g/mol";
+    return Math.round(m) + " g/mol";
+  }
+
+  function updateScoreHud() {
+    $("game-score").textContent = beadEaten + " / " + beadTotal;
+    $("game-mn").textContent = formatMass(beadEaten);
+    $("game-points").textContent = (points || 0).toLocaleString();
+  }
+
+  function updateTimeHud() {
+    var best = getBest(currentLevel);
+    $("game-time").textContent = elapsed.toFixed(1) + "s" +
+      (best != null ? " · best " + best.toFixed(1) + "s" : "");
+  }
+
+  // Short-lived floating text, for eaten-terminator bonuses.
+  function addPopup(r, c, text) {
+    popups.push({ x: cx(c), y: cy(r), text: text, at: Date.now() });
+  }
   var DEATH_DURATION_MS = 1100;
   var READY_MS = 900;
 
@@ -482,6 +552,8 @@
     lastBeadAt = 0;
     deathTint = null;
     powerTicksRemaining = 0;
+    eatChain = 0;
+    popups = [];
     path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
     elapsed = 0;
     deathReason = null;
@@ -489,8 +561,8 @@
     lastTickTime = Date.now();
     levelStartTime = Date.now();
     pendingAdvance = false;
-    $("game-score").textContent = beadEaten + " / " + beadTotal;
-    $("game-time").textContent = elapsed.toFixed(1) + "s";
+    updateScoreHud();
+    updateTimeHud();
     $("game-status").textContent = "Ready";
     $("game-level").textContent = currentLevel + " / " + LEVELS.length;
     updateLivesHud();
@@ -548,6 +620,57 @@
     player.nextDir = d;
   }
 
+  var OPPOSITE = { up: "down", down: "up", left: "right", right: "left" };
+
+  // Where each terminator is trying to get to. The chemistry writes the
+  // personalities, and between them they cover a maze from four angles:
+  //   O₂   heads straight at you. Diffusion is relentless and everywhere.
+  //   Inh  guards unreacted monomer, so it camps the densest surviving cluster
+  //        of beads rather than chasing. It is area denial, not pursuit.
+  //   CTA  aims several cells ahead of you: it transfers the chain, so it wants
+  //        to be where you are going, not where you have been.
+  //   R•   is another propagating radical doing your job, so it mirrors you
+  //        across the middle of the maze and meets you head on.
+  function enemyTarget(e) {
+    if (e.name === "Inh") {
+      if (e.campTarget && beadPresent[e.campTarget.r] && beadPresent[e.campTarget.r][e.campTarget.c] &&
+          ticksElapsed < e.campUntil) {
+        return e.campTarget;
+      }
+      var best = null, bestScore = -1;
+      for (var r = 1; r < ROWS - 1; r += 2) {
+        for (var c = 1; c < COLS - 1; c += 2) {
+          if (!beadPresent[r][c]) continue;
+          var score = 0;
+          for (var dr = -2; dr <= 2; dr++) {
+            for (var dc = -2; dc <= 2; dc++) {
+              var rr = r + dr, cc = c + dc;
+              if (rr > 0 && rr < ROWS - 1 && cc > 0 && cc < COLS - 1 && beadPresent[rr][cc]) score++;
+            }
+          }
+          if (score > bestScore) { bestScore = score; best = { r: r, c: c }; }
+        }
+      }
+      e.campTarget = best || { r: player.r, c: player.c };
+      e.campUntil = ticksElapsed + 40;
+      return e.campTarget;
+    }
+
+    if (e.name === "CTA") {
+      var d = player.dir ? DIRS[player.dir] : { dr: 0, dc: 0 };
+      var ar = player.r + d.dr * 4, ac = player.c + d.dc * 4;
+      ar = Math.max(1, Math.min(ROWS - 2, ar));
+      ac = Math.max(1, Math.min(COLS - 2, ac));
+      return { r: ar, c: ac };
+    }
+
+    if (e.name === "R•") {
+      return { r: ROWS - 1 - player.r, c: COLS - 1 - player.c };
+    }
+
+    return { r: player.r, c: player.c };
+  }
+
   function moveEnemy(e) {
     var options = [];
     ["up", "down", "left", "right"].forEach(function (name) {
@@ -555,17 +678,37 @@
       if (cellValid(e.r + d.dr, e.c + d.dc, false)) options.push({ name: name, dr: d.dr, dc: d.dc });
     });
     if (!options.length) return;
+
+    // No about-turns. Enemies that can flip 180° on a random roll read as
+    // jittery; forcing them to commit to a corridor until it ends is what makes
+    // them feel purposeful. Reversing is only allowed at a dead end, and when
+    // quenched (they should visibly flee).
+    var forward = options;
+    if (e.dir && !(powerTicksRemaining > 0)) {
+      var noBack = options.filter(function (o) { return o.name !== OPPOSITE[e.dir]; });
+      if (noBack.length) forward = noBack;
+    }
+
     var choice;
     var chaseChance = ticksElapsed < params.graceTicks ? 0 : params.chaseChance;
-    if (Math.random() < chaseChance) {
-      options.sort(function (a, b) {
+    if (powerTicksRemaining > 0) {
+      // quenched: run away from the player instead of toward it
+      forward.sort(function (a, b) {
         var da = Math.abs(e.r + a.dr - player.r) + Math.abs(e.c + a.dc - player.c);
         var db = Math.abs(e.r + b.dr - player.r) + Math.abs(e.c + b.dc - player.c);
+        return db - da;
+      });
+      choice = forward[0];
+    } else if (Math.random() < chaseChance) {
+      var tgt = enemyTarget(e);
+      forward.sort(function (a, b) {
+        var da = Math.abs(e.r + a.dr - tgt.r) + Math.abs(e.c + a.dc - tgt.c);
+        var db = Math.abs(e.r + b.dr - tgt.r) + Math.abs(e.c + b.dc - tgt.c);
         return da - db;
       });
-      choice = options[0];
+      choice = forward[0];
     } else {
-      choice = options[Math.floor(Math.random() * options.length)];
+      choice = forward[Math.floor(Math.random() * forward.length)];
     }
     e.r += choice.dr;
     e.c += choice.dc;
@@ -641,7 +784,8 @@
       beadEaten++;
       ateHere = true;
       lastBeadAt = Date.now();
-      $("game-score").textContent = beadEaten + " / " + beadTotal;
+      points += POINTS_PER_UNIT;
+      updateScoreHud();
     }
     path.push({ r: player.r, c: player.c, bead: ateHere });
 
@@ -650,6 +794,7 @@
         if (initiators[ii].r === player.r && initiators[ii].c === player.c) {
           initiators.splice(ii, 1);
           powerTicksRemaining = POWER_TICKS;
+          eatChain = 0;
           refreshStatus();
           break;
         }
@@ -678,7 +823,16 @@
     }
     if (collided.length) {
       if (powerTicksRemaining > 0) {
-        collided.forEach(sendToCage);
+        collided.forEach(function (e) {
+          // Each terminator quenched within one initiator window is worth
+          // double the last, so clearing several on one ring is the big score.
+          var value = EAT_BASE * Math.pow(2, Math.min(eatChain, 3));
+          eatChain++;
+          points += value;
+          addPopup(e.r, e.c, "+" + value);
+          sendToCage(e);
+        });
+        updateScoreHud();
       } else {
         startDeath(collided[0]);
         return;
@@ -689,13 +843,21 @@
       clearInterval(tickTimer);
       if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
       render(1);
+      var prevBest = getBest(currentLevel);
+      var isBest = recordBest(currentLevel, elapsed);
       if (currentLevel < LEVELS.length) {
         state = "levelComplete";
         pendingAdvance = true;
         $("game-status").textContent = "Level complete";
+        var timeNote = isBest
+          ? (prevBest == null
+              ? " Your first time on this level: " + elapsed.toFixed(1) + "s."
+              : " New best: " + elapsed.toFixed(1) + "s, beating " + prevBest.toFixed(1) + "s.")
+          : " You finished in " + elapsed.toFixed(1) + "s, best is " + prevBest.toFixed(1) + "s.";
         showOverlay(
           "Level " + currentLevel + " complete!",
-          "On to level " + (currentLevel + 1) + " of " + LEVELS.length + ". The maze gets tighter and the chase gets faster from here.",
+          "M" + "ₙ" + " reached " + formatMass(beadEaten) + " for " + points.toLocaleString() + " points." + timeNote +
+            " On to level " + (currentLevel + 1) + " of " + LEVELS.length + ".",
           "Next level"
         );
       } else {
@@ -711,6 +873,7 @@
     // mid-run goes through respawn(), not here. A game over re-loads the same
     // level so the player picks up where they were stuck rather than at level 1.
     lives = LIVES_START;
+    points = 0;
     updateLivesHud();
     loadLevel(state === "won" || state === "idle" ? 1 : currentLevel);
     resetGame();
@@ -750,7 +913,7 @@
     tickTimer = setInterval(function () {
       tick();
       elapsed = (Date.now() - startTime) / 1000;
-      $("game-time").textContent = elapsed.toFixed(1) + "s";
+      updateTimeHud();
     }, effectiveTickMs());
     if (animFrame) cancelAnimationFrame(animFrame);
     animFrame = requestAnimationFrame(frameLoop);
@@ -808,14 +971,18 @@
       $("game-status").textContent = "Complete";
       showOverlay(
         "Full polymer complete! 🎉",
-        "You cleared all " + LEVELS.length + " levels" + modeNote + " in " + elapsed.toFixed(1) + " total seconds. Ð = 1.00, every bead accounted for.",
+        "You cleared all " + LEVELS.length + " levels" + modeNote + " for " + points.toLocaleString() +
+          " points, finishing the last chain at M" + "ₙ" + " " + formatMass(beadEaten) +
+          ". Ð = 1.00, every bead accounted for.",
         "Play again"
       );
     } else {
       $("game-status").textContent = "Game over";
       showOverlay(
         "Out of lives! Terminated by " + deathReason + ".",
-        "All three chains quenched on level " + currentLevel + " of " + LEVELS.length + modeNote + ", the last at " + beadEaten + " of " + beadTotal + " repeat units. Restart this level with a fresh three lives.",
+        "All three chains quenched on level " + currentLevel + " of " + LEVELS.length + modeNote + ", the last at " +
+          beadEaten + " of " + beadTotal + " repeat units (M" + "ₙ" + " " + formatMass(beadEaten) + ") for " +
+          points.toLocaleString() + " points. Restart this level with a fresh three lives.",
         "Try again"
       );
     }
@@ -1266,6 +1433,24 @@
       drawPlayer(cx(pc), cy(pr), player.dir);
     }
 
+    // Bonus text floating up from each quenched terminator.
+    if (popups && popups.length) {
+      ctx.font = "bold 11px 'Courier New', monospace";
+      ctx.textAlign = "center";
+      for (var pi = popups.length - 1; pi >= 0; pi--) {
+        var pu = popups[pi];
+        var age = (Date.now() - pu.at) / 900;
+        if (age >= 1) { popups.splice(pi, 1); continue; }
+        ctx.globalAlpha = 1 - age;
+        ctx.fillStyle = "#000";
+        ctx.fillText(pu.text, pu.x + 1, pu.y - 10 - age * 16 + 1);
+        ctx.fillStyle = "#ffe14d";
+        ctx.fillText(pu.text, pu.x, pu.y - 10 - age * 16);
+      }
+      ctx.globalAlpha = 1;
+      ctx.textAlign = "start";
+    }
+
     if (state === "playing" && levelStartTime && Date.now() - levelStartTime < READY_MS) {
       ctx.font = "bold 18px 'Courier New', monospace";
       ctx.textAlign = "center";
@@ -1291,6 +1476,34 @@
       if (state !== "playing" && state !== "dying") resetGame();
     });
   });
+
+  // Swipe anywhere on the board to steer, which is the natural phone input and
+  // saves reaching for the on screen pad. A short flick is enough; the dominant
+  // axis wins so a sloppy diagonal still does what you meant.
+  (function () {
+    var sx = 0, sy = 0, tracking = false;
+    var MIN_SWIPE = 24;
+    canvas.addEventListener("touchstart", function (ev) {
+      if (!ev.touches.length) return;
+      sx = ev.touches[0].clientX;
+      sy = ev.touches[0].clientY;
+      tracking = true;
+    }, { passive: true });
+    canvas.addEventListener("touchmove", function (ev) {
+      // stop the page scrolling under a steering gesture
+      if (tracking) ev.preventDefault();
+    }, { passive: false });
+    canvas.addEventListener("touchend", function (ev) {
+      if (!tracking) return;
+      tracking = false;
+      var t = ev.changedTouches && ev.changedTouches[0];
+      if (!t) return;
+      var dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < MIN_SWIPE) return;
+      if (Math.abs(dx) > Math.abs(dy)) setNextDir(dx > 0 ? "right" : "left");
+      else setNextDir(dy > 0 ? "down" : "up");
+    }, { passive: true });
+  })();
 
   var KEY_MAP = {
     ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
