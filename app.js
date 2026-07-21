@@ -68,6 +68,97 @@ const RAFT_CTAS = [
   { name: "2-Cyano-2-propyl benzodithioate (CPDB)", mw: 221.32 },
 ];
 
+/* ---------------------------------------------------------------------
+   RAFT agent chooser data, distilled from Moad & Rizzardo (eds.), RAFT
+   Polymerization: Methods, Synthesis and Applications (Wiley-VCH, 2022),
+   ch. 3 (Postma & Skidmore), Table 3.1 and Figure 3.2, and the
+   monomer-class discussions in sections 3.4-3.7.
+--------------------------------------------------------------------- */
+const RAFT_MONOMER_CLASSES = {
+  methacrylate: {
+    label: "Methacrylates (MMA, HEMA, GMA, PEGMA…)", short: "methacrylate",
+    family: "Tertiary more-activated monomer (MAM)", rank: 3,
+    best: "A tertiary-cyanoalkyl R group is required: 2-cyano-2-propyl benzodithioate (CPDB) or the trithiocarbonate CDTPA (4-cyano-4-[(dodecylsulfanylthiocarbonyl)sulfanyl]pentanoic acid).",
+    avoid: "Any agent with a primary or secondary R group (benzyl, CH(CH₃)-based), xanthates, and N,N-dialkyl dithiocarbamates give little or no control.",
+    caveats: "Carboxy-tertiary R groups (DDMAT type) give only partial control over methacrylates; prefer the cyanoalkyl-R agents. Dithiobenzoates are the most hydrolysis-prone class in aqueous or protic media.",
+    conditions: "Solution polymerization at 60–90 °C with an azo initiator is typical.",
+  },
+  methacrylamide: {
+    label: "Methacrylamides (HPMA…)", short: "methacrylamide",
+    family: "Tertiary more-activated monomer (MAM)", rank: 3,
+    best: "Same requirement as methacrylates: tertiary-cyanoalkyl R agents such as CPDB or CDTPA; fewer agents rate as excellent here than for methacrylates.",
+    avoid: "Secondary-R agents, xanthates, and dialkyl dithiocarbamates.",
+    caveats: "Aqueous work favors the acid-functional trithiocarbonates (CDTPA, CPADB) with a water-soluble azo initiator (ACVA).",
+    conditions: "Water or water/alcohol at 60–70 °C with ACVA is common.",
+  },
+  acrylate: {
+    label: "Acrylates (MA, BA, tBA, PEGA…)", short: "acrylate",
+    family: "Secondary more-activated monomer (MAM)", rank: 2,
+    best: "Trithiocarbonates give the best control: DDMAT, DoPAT (2-(dodecylthiocarbonothioylthio)propanoic acid), or CDTPA. Dithiobenzoates also work.",
+    avoid: "Xanthates and N,N-dialkyl dithiocarbamates.",
+    caveats: "Dithiobenzoates cause retardation or inhibition with acrylates at low temperature or high agent concentration; keep temperatures up or switch to a trithiocarbonate.",
+    conditions: "Solution at 60–70 °C with AIBN is typical.",
+  },
+  acrylamide: {
+    label: "Acrylamides (DMA, NIPAM, acrylamide…)", short: "acrylamide",
+    family: "Secondary more-activated monomer (MAM)", rank: 2,
+    best: "Trithiocarbonates (CDTPA, DDMAT, DoPAT) or CPDB; acid-functional agents dissolve well in the aqueous media these monomers favor.",
+    avoid: "Xanthates and dialkyl dithiocarbamates.",
+    caveats: "In water, thiocarbonylthio groups hydrolyze slowly (dithiobenzoates fastest); avoid prolonged heating after conversion plateaus, and avoid primary-amine-containing media entirely (aminolysis kills the chain end).",
+    conditions: "Water or dioxane at 60–70 °C with ACVA or AIBN.",
+  },
+  styrenic: {
+    label: "Styrenics (styrene, 4-methylstyrene…)", short: "styrenic",
+    family: "Secondary more-activated monomer (MAM)", rank: 2,
+    best: "The widest tolerance of any family: dithiobenzoates (CDB, CPDB) and trithiocarbonates (DDMAT, DoPAT, dibenzyl trithiocarbonate for telechelics) all rate excellent.",
+    avoid: "Xanthates and N,N-dialkyl dithiocarbamates.",
+    caveats: "Styrene self-initiates above ~100 °C, so bulk thermal polymerization at 100–110 °C needs no added initiator. RAFT emulsion polymerization of styrene fails with simple ab-initio recipes; use an amphiphilic macro-CTA or feed strategy.",
+    conditions: "Bulk at 100–110 °C (thermal), or 60–80 °C with AIBN.",
+  },
+  vinylester: {
+    label: "Vinyl esters (vinyl acetate, vinyl benzoate…)", short: "vinyl ester",
+    family: "Less-activated monomer (LAM)", rank: 1,
+    best: "Xanthates (O-ethyl xanthates such as Rhodixan A1) or N,N-dialkyl dithiocarbamates (e.g. cyanomethyl methyl(phenyl) dithiocarbamate).",
+    avoid: "Dithiobenzoates and trithiocarbonates inhibit vinyl ester polymerization outright; the poorly stabilized propagating radical adds to them and never fragments back out.",
+    caveats: "The reactive chain end also makes vinyl esters prone to head-to-tail defects; expect somewhat broader dispersities than MAM systems.",
+    conditions: "Bulk or ethyl acetate solution at 60 °C with AIBN.",
+  },
+  vinylamide: {
+    label: "Vinyl amides (NVP, NVC, N-vinylcaprolactam…)", short: "vinyl amide",
+    family: "Less-activated monomer (LAM)", rank: 1,
+    best: "Xanthates or dithiocarbamates, the same classes as vinyl esters.",
+    avoid: "Dithiobenzoates and trithiocarbonates (inhibition).",
+    caveats: "An NVP-terminal chain end hydrolyzes readily in water; aqueous NVP polymerizations work best at ambient temperature with redox initiation instead of hot azo initiators.",
+    conditions: "Solution (dioxane, ethyl acetate) at 60 °C with AIBN, or ambient/redox in water.",
+  },
+};
+
+function raftChooserAdvice(monoKey, blockKey) {
+  const mono = RAFT_MONOMER_CLASSES[monoKey];
+  if (!mono) return "";
+  let html = `
+    <div class="stat" style="margin-top:10px;"><div class="label">Monomer family</div>
+      <div style="font-size:0.9rem;">${mono.family}</div></div>
+    <p class="guide-note"><strong>Use:</strong> ${mono.best}</p>
+    <p class="guide-note"><strong>Avoid:</strong> ${mono.avoid}</p>
+    <p class="guide-note"><strong>Watch out:</strong> ${mono.caveats}</p>
+    <p class="guide-note"><strong>Typical conditions:</strong> ${mono.conditions}</p>`;
+  const block = RAFT_MONOMER_CLASSES[blockKey];
+  if (block) {
+    if (mono.rank >= 2 && block.rank === 1) {
+      html += `<p class="guide-note"><strong>Block order (${mono.label.split(" (")[0]} → ${block.label.split(" (")[0]}):</strong> crossing from a MAM to a LAM defeats every conventional agent: a LAM-capable agent loses control of the MAM and vice versa. Use a switchable N-(4-pyridinyl)-N-methyl dithiocarbamate: polymerize the MAM block first with the agent protonated (add a strong acid such as TsOH), then neutralize and grow the LAM block. The MAM block must come first regardless.</p>`;
+    } else if (mono.rank < block.rank) {
+      html += `<p class="guide-note"><strong>Block order warning:</strong> grow the ${block.short} block <em>first</em>. ${/^[aeiou]/i.test(mono.short) ? "An" : "A"} ${mono.short}-terminal chain is a poor homolytic leaving group against a ${block.short} propagating radical, so chain extension in your stated order gives slow, incomplete reinitiation and a dead-chain shoulder. The general rule: the block whose propagating radical is the better leaving group (methacrylates > acrylates/styrenics > vinyl esters/amides) goes first.</p>`;
+    } else if (mono.rank === 1 && block.rank >= 2) {
+      html += `<p class="guide-note"><strong>Block order warning:</strong> a LAM-first sequence into a MAM does not work: the LAM macro-CTA has a very low transfer constant in MAM polymerization. Make the MAM block first (with a switchable dithiocarbamate if you need control over both).</p>`;
+    } else {
+      html += `<p class="guide-note"><strong>Block order:</strong> this pairing works in the order stated${mono.rank > block.rank ? " (your first block's propagating radical is the better leaving group, which is exactly what a macro-CTA needs)" : ", and either order is workable since the two families have comparable leaving-group ability. Pick an agent rated excellent for both"}.</p>`;
+    }
+  }
+  html += `<p class="guide-note" style="font-size:0.8rem;">Guidance distilled from Moad &amp; Rizzardo (eds.), <em>RAFT Polymerization</em> (Wiley-VCH, 2022), ch. 3, Table 3.1/Fig. 3.2. Classic agents (dithiobenzoates, the common trithiocarbonates, simple xanthates) are off-patent; some newer switchable agents remain under CSIRO licence for commercial use.</p>`;
+  return html;
+}
+
 const RADICAL_INITIATORS = [
   { name: "AIBN", mw: 164.21 },
   { name: "4,4'-Azobis(4-cyanovaleric acid) (V-501 / ACVA)", mw: 280.28 },
@@ -448,6 +539,29 @@ function panelTemplate(cfg) {
       <div id="${id}-results-body"></div>
     </div>
 
+    ${cfg.id === "raft" ? `
+    <div class="card" id="raft-chooser-card">
+      <h3>RAFT agent chooser</h3>
+      <p class="guide-note">Pick your monomer family (and the next block, if you're planning one) for agent-class guidance: what to use, what to avoid, and which block has to come first.</p>
+      <div class="grid">
+        <div class="field">
+          <label for="raft-chooser-monomer">Monomer family</label>
+          <select id="raft-chooser-monomer">
+            <option value="">Choose a family&hellip;</option>
+            ${Object.keys(RAFT_MONOMER_CLASSES).map((k) => `<option value="${k}">${RAFT_MONOMER_CLASSES[k].label}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field">
+          <label for="raft-chooser-block">Next block (optional)</label>
+          <select id="raft-chooser-block">
+            <option value="">No block planned</option>
+            ${Object.keys(RAFT_MONOMER_CLASSES).map((k) => `<option value="${k}">${RAFT_MONOMER_CLASSES[k].label}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+      <div id="raft-chooser-out"></div>
+    </div>` : ""}
+
     <details class="assumptions">
       <summary>Formulas &amp; assumptions</summary>
       <div class="body">
@@ -701,6 +815,16 @@ function wirePanel(cfg) {
     bindDbSelect(el("lig-select"), el("lig-mw"), null, ATRP_LIGANDS, recalc);
   } else if (cfg.secondary === "raft") {
     bindDbSelect(el("cat-select"), el("cat-mw"), null, RADICAL_INITIATORS, recalc);
+    const chooserMono = $("raft-chooser-monomer");
+    const chooserBlock = $("raft-chooser-block");
+    const chooserOut = $("raft-chooser-out");
+    if (chooserMono && chooserBlock && chooserOut) {
+      const updateChooser = () => {
+        chooserOut.innerHTML = chooserMono.value ? raftChooserAdvice(chooserMono.value, chooserBlock.value) : "";
+      };
+      chooserMono.addEventListener("change", updateChooser);
+      chooserBlock.addEventListener("change", updateChooser);
+    }
   }
 
   // macroinitiator toggle
@@ -1037,13 +1161,13 @@ function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
   }
   if (cfg.id === "raft") {
     return [
-      `Charge a flask or septum-capped vial with a stir bar, ${agentAmt}${sec && sec.mInit != null ? `, and ${fmtMass(sec.mInit)} of ${sec.initName}` : `, and your radical initiator (CTA : initiator around 5&nbsp;:&nbsp;1 to 10&nbsp;:&nbsp;1 is typical)`}.`,
-      `Add ${monomerAmt} (inhibitor removal recommended).`,
+      `Charge a flask or septum-capped vial with a stir bar, ${agentAmt}${sec && sec.mInit != null ? `, and ${fmtMass(sec.mInit)} of ${sec.initName}` : `, and your radical initiator (CTA : initiator around 5&nbsp;:&nbsp;1 to 10&nbsp;:&nbsp;1 is typical)`}. Azo initiators are the safe default; peroxides and persulfates can oxidize the thiocarbonylthio group.`,
+      `Add ${monomerAmt} (inhibitor removal recommended). Avoid primary amines anywhere in the system (monomer functionality, solvent, additives): they cleave the CTA chain end by aminolysis.`,
       solventStep,
       `Degas: sparge with nitrogen or argon for 20&ndash;30 min, or freeze-pump-thaw for more rigor (see the <a href="air-free-technique.html">air-free guide</a>).`,
-      `Place in a bath preheated to the initiator's working temperature (60&ndash;70&nbsp;&deg;C is typical for AIBN) and stir.`,
+      `Place in a bath preheated to the initiator's working temperature (60&nbsp;&ndash;&nbsp;70&nbsp;&deg;C is typical for AIBN) and stir.`,
       monitorStep,
-      `Stop by cooling and exposing to air.`,
+      `Stop by cooling and exposing to air. Don't leave the reaction hot long after conversion plateaus; continued radical generation with no monomer left degrades the thiocarbonylthio end groups and accumulates dead chains.`,
       workupStep + ` A retained thiocarbonylthio end group usually leaves the polymer pale yellow to pink, which is normal.`,
       charStep,
     ];
@@ -2145,6 +2269,7 @@ function blockCopolymerTemplate() {
           <li>All blocks share the same population of chains (moles of agent/macroinitiator, set by Block 1's scale), one chain per agent molecule, 100% efficiency assumed.</li>
           <li>Composition (mol%/wt%) is calculated from the target feed ratios, not measured values.</li>
           <li>Solvent/volume is computed for the initial (Block 1) charge only. Later block additions change the total volume but aren't rediluted automatically.</li>
+          <li><strong>Block order matters chemically</strong>, and this calculator doesn't check it. For RAFT (and analogously ATRP), the block whose propagating radical is the better homolytic leaving group must come first: methacrylates/methacrylamides before acrylates, styrenics, or acrylamides, and any of those before vinyl esters/amides. Reversing the order gives slow, incomplete reinitiation off the macro-agent. The RAFT tab's agent chooser flags this for specific pairings.</li>
           <li>See the single technique tabs for assumptions specific to ATRP, RAFT, ROMP, and FRP.</li>
         </ul>
       </div>
