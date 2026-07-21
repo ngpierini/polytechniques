@@ -1175,8 +1175,9 @@ function wireStockPrefInputs(panelId, onChange) {
    itself is on screen, and never appears on the two-column desktop layout. */
 const summaryBar = (function () {
   let bar = null;
-  let observer = null;
-  let watching = null;
+  let card = null;      // the Results card the bar is standing in for
+  let scrollHooked = false;
+  let queued = false;
 
   function setVisible(on) {
     if (!bar) return;
@@ -1184,16 +1185,43 @@ const summaryBar = (function () {
     document.body.classList.toggle("has-calc-summary", on);
   }
 
-  function stopWatching() {
-    if (observer && watching) observer.unobserve(watching);
-    watching = null;
+  // Measured rather than observed. An earlier version drove this from an
+  // IntersectionObserver, which meant visibility was only ever recomputed
+  // when a callback happened to fire: if the bar was left hidden and the
+  // card was already being watched, nothing could bring it back. Reading
+  // the rect is cheap and always tells the truth.
+  function resultsOnScreen() {
+    if (!card) return false;
+    const r = card.getBoundingClientRect();
+    return r.bottom > 0 && r.top < window.innerHeight;
+  }
+
+  function apply() {
+    setVisible(!!card && !resultsOnScreen());
+  }
+
+  function hookScroll() {
+    if (scrollHooked) return;
+    scrollHooked = true;
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; apply(); });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    // rAF is parked while the tab is hidden, so any scrolling that happened
+    // in the meantime never reached apply(). Resync on the way back.
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) apply();
+    });
   }
 
   function refresh() {
     const panel = document.querySelector(".panel.active");
     const tiles = panel ? panel.querySelectorAll(".stat--primary[data-bar]") : [];
     if (!tiles.length || window.matchMedia("(min-width: 1000px)").matches) {
-      stopWatching();
+      card = null;
       setVisible(false);
       return;
     }
@@ -1216,25 +1244,13 @@ const summaryBar = (function () {
       }).join("") +
       `<button type="button" class="csb-jump">Results</button>`;
 
-    const resultsCard = shown[0].closest(".card");
+    card = shown[0].closest(".card");
     bar.querySelector(".csb-jump").addEventListener("click", () => {
-      if (resultsCard) resultsCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (card) card.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
-    if (!("IntersectionObserver" in window)) {
-      setVisible(true);
-      return;
-    }
-    if (!observer) {
-      observer = new IntersectionObserver((entries) => {
-        entries.forEach((e) => setVisible(!e.isIntersecting));
-      }, { threshold: 0 });
-    }
-    if (resultsCard && watching !== resultsCard) {
-      stopWatching();
-      observer.observe(resultsCard);
-      watching = resultsCard;
-    }
+    hookScroll();
+    apply();
   }
 
   return { refresh: refresh };
@@ -2603,6 +2619,7 @@ function blockCopolymerTemplate() {
 
     ${presetBarHTML("bcp")}
 
+    <div class="calc-inputs">
     <div class="card">
       <h3>Technique</h3>
       <div class="grid">
@@ -2673,7 +2690,9 @@ function blockCopolymerTemplate() {
     <div style="margin: -4px 0 4px;">
       <button type="button" class="copy-btn" id="bcp-add-block">+ Add block</button>
     </div>
+    </div><!-- /.calc-inputs -->
 
+    <div class="calc-output">
     <div class="card" id="bcp-results">
       <h3>Results</h3>
       <div id="bcp-results-body"></div>
@@ -2693,6 +2712,7 @@ function blockCopolymerTemplate() {
         </ul>
       </div>
     </details>
+    </div><!-- /.calc-output -->
   `;
 }
 
@@ -3751,6 +3771,7 @@ function init() {
     try { lastTab = localStorage.getItem(LAST_TAB_KEY); } catch (e) {}
     if (lastTab && document.getElementById(`panel-${lastTab}`)) switchTab(lastTab);
   }
+  syncWideLayout();
 }
 
 const LAST_TAB_KEY = "polytechniques_last_calc_tab";
@@ -3759,7 +3780,16 @@ function switchTab(targetId) {
   document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.target === targetId));
   document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.id === `panel-${targetId}`));
   try { localStorage.setItem(LAST_TAB_KEY, targetId); } catch (e) {}
+  syncWideLayout();
   summaryBar.refresh();
+}
+
+// Only panels split into .calc-inputs / .calc-output can use the two-column
+// layout; the rest are a single sequence of cards and must stay one column.
+function syncWideLayout() {
+  const panel = document.querySelector(".panel.active");
+  const wide = !!(panel && panel.querySelector(":scope > .calc-output"));
+  document.body.classList.toggle("calc-wide", wide);
 }
 
 // Crossing the 1000px breakpoint swaps between the sticky two-column layout
