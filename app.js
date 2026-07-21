@@ -469,6 +469,7 @@ function panelTemplate(cfg) {
 
     ${presetBarHTML(id)}
 
+    <div class="calc-inputs">
     <div class="card">
       <h3>${cfg.monomerLabel}</h3>
       <div class="grid">
@@ -572,6 +573,9 @@ function panelTemplate(cfg) {
       </div>
     </div>
 
+    </div><!-- /.calc-inputs -->
+
+    <div class="calc-output">
     <div class="card" id="${id}-results">
       <h3>Results</h3>
       <div id="${id}-results-body"></div>
@@ -606,6 +610,7 @@ function panelTemplate(cfg) {
         <ul>${cfg.assumptions.map((a) => `<li>${a}</li>`).join("")}</ul>
       </div>
     </details>
+    </div><!-- /.calc-output -->
   `;
 }
 
@@ -1155,12 +1160,84 @@ function wireStockPrefInputs(panelId, onChange) {
   modeEl.addEventListener("change", apply);
 }
 
+/* On a phone the answer sits roughly three screens below the inputs, so the
+   two numbers that matter ride along in a fixed bar while you are still
+   editing the recipe. It steps out of the way as soon as the Results card
+   itself is on screen, and never appears on the two-column desktop layout. */
+const summaryBar = (function () {
+  let bar = null;
+  let observer = null;
+  let watching = null;
+
+  function setVisible(on) {
+    if (!bar) return;
+    bar.hidden = !on;
+    document.body.classList.toggle("has-calc-summary", on);
+  }
+
+  function stopWatching() {
+    if (observer && watching) observer.unobserve(watching);
+    watching = null;
+  }
+
+  function refresh() {
+    const panel = document.querySelector(".panel.active");
+    const tiles = panel ? panel.querySelectorAll(".stat--primary[data-bar]") : [];
+    if (!tiles.length || window.matchMedia("(min-width: 1000px)").matches) {
+      stopWatching();
+      setVisible(false);
+      return;
+    }
+
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.className = "calc-summary-bar";
+      bar.hidden = true;
+      document.body.appendChild(bar);
+    }
+
+    const shown = Array.prototype.slice.call(tiles, 0, 2);
+    bar.innerHTML =
+      shown.map((t) => {
+        const v = t.querySelector(".value");
+        return `<div class="csb-item">
+            <div class="csb-label">${escapeHtml(t.dataset.bar)}</div>
+            <div class="csb-value">${escapeHtml(v ? v.textContent : "")}</div>
+          </div>`;
+      }).join("") +
+      `<button type="button" class="csb-jump">Results</button>`;
+
+    const resultsCard = shown[0].closest(".card");
+    bar.querySelector(".csb-jump").addEventListener("click", () => {
+      if (resultsCard) resultsCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    if (!("IntersectionObserver" in window)) {
+      setVisible(true);
+      return;
+    }
+    if (!observer) {
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach((e) => setVisible(!e.isIntersecting));
+      }, { threshold: 0 });
+    }
+    if (resultsCard && watching !== resultsCard) {
+      stopWatching();
+      observer.observe(resultsCard);
+      watching = resultsCard;
+    }
+  }
+
+  return { refresh: refresh };
+})();
+
 function renderResults(cfg, core, ctx) {
   const id = cfg.id;
   const body = $(`${id}-results-body`);
 
   if (core.error) {
     body.innerHTML = `<div class="error-msg">${core.error}</div>`;
+    summaryBar.refresh();
     return;
   }
 
@@ -1233,9 +1310,17 @@ function renderResults(cfg, core, ctx) {
     ? `<td class="num">${fmtVol((core.massM_g / ctx.densityM))}</td>`
     : `<td class="num">n/a</td>`;
 
+  // Hierarchy: the two numbers that answer the question lead, the feed ratio
+  // supports them, and the tiles that are context rather than results
+  // (a literature dispersity range, a concentration you supplied) recede.
   const statGrid = `
     <div class="stat-grid">
-      <div class="stat">
+      <div class="stat stat--primary" data-bar="Predicted Mₙ">
+        <div class="label">Predicted Mₙ at ${fmtNum(core.conversion * 100)}% conv.</div>
+        <div class="value">${fmtNum(core.predictedMn)}</div>
+        <div class="sub">g/mol</div>
+      </div>
+      <div class="stat stat--primary" data-bar="Ratio [M]:[X]">
         <div class="label">Target ratio [M]:[X]</div>
         <div class="value">${fmtNum(core.R)} : 1</div>
         <div class="sub">DP at full conversion</div>
@@ -1245,16 +1330,6 @@ function renderResults(cfg, core, ctx) {
         <div class="value">${fmtNum(core.theoreticalMnFull)}</div>
         <div class="sub">g/mol</div>
       </div>
-      <div class="stat">
-        <div class="label">Predicted Mₙ at ${fmtNum(core.conversion * 100)}% conv.</div>
-        <div class="value">${fmtNum(core.predictedMn)}</div>
-        <div class="sub">g/mol</div>
-      </div>
-      <div class="stat" title="${escapeHtml(cfg.dispersityNote)}">
-        <div class="label">Typical Đ (dispersity)</div>
-        <div class="value">${cfg.typicalDj}</div>
-        <div class="sub">literature range, not calculated from this recipe</div>
-      </div>
       ${ctx.macroMode ? `
       <div class="stat">
         <div class="label">New block Mₙ added</div>
@@ -1262,11 +1337,16 @@ function renderResults(cfg, core, ctx) {
         <div class="sub">g/mol, at stated conversion</div>
       </div>` : ""}
       ${core.actualConc != null ? `
-      <div class="stat">
+      <div class="stat stat--muted">
         <div class="label">Monomer concentration</div>
         <div class="value">${fmtNum(core.actualConc)}</div>
         <div class="sub">mol/L</div>
       </div>` : ""}
+      <div class="stat stat--muted" title="${escapeHtml(cfg.dispersityNote)}">
+        <div class="label">Typical Đ (dispersity)</div>
+        <div class="value">${cfg.typicalDj}</div>
+        <div class="sub">literature range, not calculated from this recipe</div>
+      </div>
       ${secondaryStats}
     </div>
   `;
@@ -1337,6 +1417,8 @@ function renderResults(cfg, core, ctx) {
       setTimeout(() => (copyBtn.textContent = "Copy recipe as text"), 1400);
     });
   });
+
+  summaryBar.refresh();
 }
 
 function buildRecipeText(cfg, core, ctx, monomerName, agentName, secondaryRowsHTML, stockComponents, stockPrefs) {
@@ -1411,14 +1493,36 @@ function disclaimerCompactHTML() {
     </div>`;
 }
 
+/* Collapsed by default: the procedure is reference material you read once,
+   not something you rescan on every recalculation, and at ~9 steps plus the
+   safety block it was pushing the numbers off screen. The step count sits in
+   the summary so it still advertises itself. */
 function procedureBlock(titleNote, steps, compact, extraLead) {
   return `
-    <div class="procedure">
-      <h3 class="procedure-title">Suggested starting procedure${titleNote ? ` <span class="procedure-note">(${titleNote})</span>` : ""}</h3>
+    <details class="procedure procedure-fold">
+      <summary>
+        <span class="procedure-title">Suggested starting procedure${titleNote ? ` <span class="procedure-note">(${titleNote})</span>` : ""}</span>
+        <span class="procedure-count">${steps.length} steps</span>
+      </summary>
       <ol class="procedure-steps">${steps.map((s) => `<li>${s}</li>`).join("")}</ol>
       ${compact ? disclaimerCompactHTML() : disclaimerHTML(extraLead)}
-    </div>`;
+    </details>`;
 }
+
+/* A collapsed <details> does not print its contents, and the procedure is
+   exactly the part people carry to the bench. Open everything for printing,
+   then put it back so the screen state is unchanged. */
+(function keepDetailsInPrint() {
+  let reopened = [];
+  window.addEventListener("beforeprint", () => {
+    reopened = Array.prototype.slice.call(document.querySelectorAll("details:not([open])"));
+    reopened.forEach((d) => (d.open = true));
+  });
+  window.addEventListener("afterprint", () => {
+    reopened.forEach((d) => (d.open = false));
+    reopened = [];
+  });
+})();
 
 function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
   const monomerAmt = `${fmtMass(core.massM_g)}${ctx.densityM ? ` (${fmtVol(core.massM_g / ctx.densityM)})` : ""} of ${names.monomer}`;
@@ -3646,6 +3750,16 @@ function switchTab(targetId) {
   document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.target === targetId));
   document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.id === `panel-${targetId}`));
   try { localStorage.setItem(LAST_TAB_KEY, targetId); } catch (e) {}
+  summaryBar.refresh();
+}
+
+// Crossing the 1000px breakpoint swaps between the sticky two-column layout
+// (where the bar is redundant) and the stacked one (where it is the point).
+if (window.matchMedia) {
+  const wide = window.matchMedia("(min-width: 1000px)");
+  const onChange = () => summaryBar.refresh();
+  if (wide.addEventListener) wide.addEventListener("change", onChange);
+  else if (wide.addListener) wide.addListener(onChange);
 }
 
 document.addEventListener("DOMContentLoaded", init);

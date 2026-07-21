@@ -148,6 +148,43 @@ body {
 .panel { display: none; flex-direction: column; gap: 16px; }
 .panel.active { display: flex; }
 
+/* ---------- Calculator two-column layout ----------
+   Single column stacks inputs above results, so on a phone the answer sits
+   three screens below the controls that produce it. Above 1000px the panel
+   becomes two columns with the results column sticky, so a number is always
+   visible while you edit. Inputs and outputs are wrapped in .calc-inputs /
+   .calc-output; the flex panel is switched to grid at that width. */
+@media screen and (min-width: 1000px) {
+  /* Two columns need more room than the single-column reading measure.
+     Scoped to #app so the guide pages keep their narrower text column.
+     screen-only: on paper the sticky column and its max-height would clip. */
+  #app { max-width: 1280px; }
+  .panel.active { display: grid; }
+  .panel {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 20px;
+  }
+  .panel > .panel-head,
+  .panel > .preset-bar { grid-column: 1 / -1; }
+  .calc-inputs,
+  .calc-output { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .calc-output {
+    position: sticky;
+    top: 12px;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+}
+/* Below the breakpoint the wrappers are transparent: the cards flow exactly
+   as they did before. */
+@media screen and (max-width: 999px), print {
+  .calc-inputs,
+  .calc-output { display: contents; }
+}
+
 .panel-head { margin-bottom: -4px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .panel-head h2 { margin: 0 0 2px; font-size: 1.15rem; }
 .panel-head p { margin: 0; color: var(--text-dim); font-size: 0.88rem; }
@@ -222,9 +259,83 @@ input[type="number"]:focus, input[type="text"]:focus, input[type="search"]:focus
   border-radius: 8px;
   padding: 12px 14px;
 }
-.stat .label { font-size: 0.74rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
-.stat .value { font-size: 1.25rem; font-weight: 700; color: var(--primary); margin-top: 2px; }
+.stat .label { font-size: 0.78rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
+.stat .value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-top: 2px;
+  /* Tabular figures stop digits shifting width as values recompute. */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
 .stat .sub { font-size: 0.76rem; color: var(--text-dim); margin-top: 1px; }
+
+/* Not every tile is an answer. The headline results get size and a border so
+   the eye lands on them first; context tiles (a literature dispersity range,
+   a concentration you typed in) recede. */
+.stat--primary {
+  background: var(--primary-dim);
+  border: 1px solid var(--primary);
+}
+.stat--primary .value { font-size: 1.75rem; }
+.stat--muted { background: transparent; border: 1px dashed var(--border); }
+.stat--muted .value { font-size: 1.05rem; color: var(--text); font-weight: 600; }
+/* Two fixed columns rather than auto-fit: it keeps the primary pair together
+   on the first row at every width instead of letting the count drift between
+   two and three and stranding a tile on a line of its own. Scoped to the
+   calculator results card so the other pages' stat grids are untouched.
+   (.calc-output is display:contents below 1000px, so this still matches.) */
+.calc-output .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 430px) {
+  .calc-output .stat-grid { grid-template-columns: 1fr; }
+  .stat--primary .value { font-size: 1.5rem; }
+}
+
+/* ---------- Mobile results summary bar ----------
+   On a phone the results card is far below the inputs, so the two numbers
+   that actually answer the question ride along in a pinned bar. Hidden once
+   the sticky results column takes over on wide screens. */
+.calc-summary-bar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 60;
+  display: flex;
+  gap: 10px;
+  padding: 8px 14px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: var(--card-bg);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 10px rgba(16, 24, 40, 0.08);
+}
+.calc-summary-bar .csb-item { flex: 1; min-width: 0; }
+.calc-summary-bar .csb-label {
+  font-size: 0.65rem; color: var(--text-dim); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.02em;
+  /* room for the descender on subscripts like Mₙ, which overflow:hidden clips */
+  line-height: 1.6;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.calc-summary-bar .csb-value {
+  font-size: 1rem; font-weight: 700; color: var(--primary);
+  font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.calc-summary-bar .csb-jump {
+  align-self: center; flex: 0 0 auto;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text);
+  border-radius: 8px; padding: 6px 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
+}
+.calc-summary-bar[hidden] { display: none; }
+@media (min-width: 1000px) { .calc-summary-bar { display: none; } }
+@media print {
+  .calc-summary-bar { display: none !important; }
+  body.has-calc-summary #app { padding-bottom: 0; }
+  /* The fold is a reading affordance; on paper the steps just print. */
+  .procedure-fold > summary::before,
+  .procedure-count { display: none !important; }
+}
+/* Keep the bar from covering the last card. */
+body.has-calc-summary #app { padding-bottom: 72px; }
 
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 table.recipe { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.88rem; }
@@ -1999,6 +2110,37 @@ input.input-invalid {
   color: var(--text-dim);
 }
 .procedure-note { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.procedure-fold > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 0 10px;
+}
+.procedure-fold > summary::-webkit-details-marker { display: none; }
+.procedure-fold > summary::before {
+  content: "\25B8";
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  transition: transform 0.15s ease;
+}
+.procedure-fold[open] > summary::before { transform: rotate(90deg); }
+.procedure-fold > summary .procedure-title {
+  margin: 0;
+  font-weight: 700;
+  flex: 1;
+  min-width: 0;
+}
+.procedure-count {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+.procedure-fold > summary:hover .procedure-title { color: var(--primary); }
 .procedure-steps {
   margin: 0 0 12px;
   padding-left: 22px;
