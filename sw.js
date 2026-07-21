@@ -1,9 +1,11 @@
 // Minimal offline cache for the static PolyTechniques site.
-// Cache-first for same-origin assets so the calculators still work with no
-// connection; anything not pre-cached is fetched from the network and
-// cached for next time. Bump CACHE_NAME whenever the pre-cache list below
-// changes so old clients pick up the new set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v33";
+// Pages are network-first with a cache fallback (their URLs carry no ?v=, so
+// a cache hit would pin the whole deploy); every other same-origin asset is
+// cache-first, since its URL is versioned and a hit is always the right file.
+// Either way the calculators still work with no connection. Bump CACHE_NAME
+// whenever the pre-cache list below changes so old clients pick up the new
+// set instead of serving stale files.
+const CACHE_NAME = "polytechniques-v34";
 
 const PRECACHE_URLS = [
   "home.html",
@@ -56,19 +58,43 @@ self.addEventListener("activate", function (event) {
   self.clients.claim();
 });
 
+function cachePut(req, res) {
+  if (!res || !res.ok) return res;
+  var copy = res.clone();
+  caches.open(CACHE_NAME).then(function (cache) { cache.put(req, copy); });
+  return res;
+}
+
 self.addEventListener("fetch", function (event) {
   var req = event.request;
   if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
 
+  // HTML is the one thing here that carries no ?v= in its own URL, so a
+  // cache-first hit serves the previous deploy's page, which then asks for
+  // the previous deploy's style.css?v=N. Returning visitors stayed a deploy
+  // behind until their second load. Pages go to the network first and fall
+  // back to the cache, which keeps the site usable offline at the bench.
+  var isPage = req.mode === "navigate" || req.destination === "document";
+  if (isPage) {
+    event.respondWith(
+      fetch(req)
+        .then(function (res) { return cachePut(req, res); })
+        .catch(function () {
+          return caches.match(req).then(function (cached) {
+            return cached || caches.match("home.html");
+          });
+        })
+    );
+    return;
+  }
+
+  // Everything else is versioned in its URL, so a cache hit is by definition
+  // the right file and the network round trip is pure latency.
   event.respondWith(
     caches.match(req).then(function (cached) {
-      var network = fetch(req).then(function (res) {
-        if (res && res.ok) {
-          var copy = res.clone();
-          caches.open(CACHE_NAME).then(function (cache) { cache.put(req, copy); });
-        }
-        return res;
-      }).catch(function () { return cached; });
+      var network = fetch(req)
+        .then(function (res) { return cachePut(req, res); })
+        .catch(function () { return cached; });
       return cached || network;
     })
   );
