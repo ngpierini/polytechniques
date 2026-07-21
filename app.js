@@ -994,36 +994,43 @@ function wirePanel(cfg) {
 --------------------------------------------------------------------- */
 
 const STOCK_PREFS_KEY = "polytechniques_stock_prefs";
-const STOCK_MASS_LADDER_MG = [10, 20, 25, 50, 100, 200, 250, 500];
-const STOCK_VOL_LADDER_ML = [1, 2, 5, 10, 20, 25, 50];
+// Round numbers a person would actually weigh out and actually measure into.
+const STOCK_MASS_LADDER_MG = [10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000];
+const STOCK_VOL_LADDER_ML = [0.5, 1, 2, 5, 10, 20, 25, 50, 100];
 
 function getStockPrefs() {
   try {
     const p = JSON.parse(localStorage.getItem(STOCK_PREFS_KEY));
-    if (p && p.minWeighMg > 0 && p.aliquotUL > 0) return p;
+    if (p && p.minWeighMg > 0 && p.aliquotUL > 0) {
+      return { minWeighMg: p.minWeighMg, aliquotUL: p.aliquotUL, mode: p.mode === "all" ? "all" : "auto" };
+    }
   } catch (e) {}
-  return { minWeighMg: 10, aliquotUL: 100 };
+  return { minWeighMg: 10, aliquotUL: 100, mode: "auto" };
 }
 function setStockPrefs(p) {
   try { localStorage.setItem(STOCK_PREFS_KEY, JSON.stringify(p)); } catch (e) {}
 }
 
-/* Returns null when the component can simply be weighed. Otherwise picks a
-   weigh/dissolve/deliver combination, preferring an aliquot near the user's
-   preferred pipette volume, then the smallest stock that achieves it (less
-   wasted reagent). */
-function planStockSolution(massG, prefs) {
+/* Without `force`, returns null when the component can simply be weighed.
+   With `force` (the "work entirely from stocks" mode) it always plans, which
+   means the stock has to scale with the target rather than sitting on the
+   small end of the ladder. Either way it picks a weigh/dissolve/deliver
+   combination landing near the user's preferred pipette volume, preferring
+   the smallest stock that gets there so reagent isn't wasted. */
+function planStockSolution(massG, prefs, force) {
   const targetMg = massG * 1000;
-  if (!(targetMg > 0) || targetMg >= prefs.minWeighMg) return null;
+  if (!(targetMg > 0)) return null;
+  if (!force && targetMg >= prefs.minWeighMg) return null;
   let best = null;
   STOCK_MASS_LADDER_MG.forEach((massMg) => {
-    if (massMg < prefs.minWeighMg) return;
+    if (massMg < prefs.minWeighMg) return;      // must itself be weighable
+    if (massMg < targetMg * 1.25) return;       // draw an aliquot, not the whole lot
     STOCK_VOL_LADDER_ML.forEach((volML) => {
       const aliquotUL = volML * 1000 * (targetMg / massMg);
-      if (aliquotUL < 20) return;              // below reliable pipetting
-      if (aliquotUL > volML * 1000 * 0.8) return; // must be an aliquot, not the lot
+      if (aliquotUL < 20) return;               // below reliable pipetting
+      if (aliquotUL > 5000) return;             // past syringe territory
       const score = Math.abs(Math.log(aliquotUL / prefs.aliquotUL))
-        + 0.20 * Math.log(volML)
+        + 0.20 * Math.log(volML / 0.5)
         + 0.20 * Math.log(massMg / prefs.minWeighMg + 1);
       if (!best || score < best.score) {
         best = { massMg, volML, aliquotUL, concMgML: massMg / volML, score };
@@ -1041,18 +1048,31 @@ function fmtUL(uL) {
    once, so a fixed id here would collide and the preference inputs would
    bind to whichever tab happened to render first. */
 function stockSolutionsHTML(panelId, components, prefs, volTotalL) {
+  const allMode = prefs.mode === "all";
   const plans = [];
+  const neat = [];
   components.forEach((c) => {
-    const plan = planStockSolution(c.massG, prefs);
+    // A neat liquid (density known) is delivered by syringe in all-stocks
+    // mode rather than dissolved, since making a "stock" of it is pointless.
+    if (allMode && c.neatVolML != null) { neat.push(c); return; }
+    const plan = planStockSolution(c.massG, prefs, allMode);
     if (plan) plans.push({ name: c.name, massG: c.massG, plan });
   });
 
   const settings = `
     <div class="grid" style="margin-top:10px;">
       <div class="field">
+        <label for="${panelId}-stock-mode">What to prepare as stocks</label>
+        <select id="${panelId}-stock-mode">
+          <option value="auto"${allMode ? "" : " selected"}>Only what's too small to weigh</option>
+          <option value="all"${allMode ? " selected" : ""}>Every reagent (work entirely from stocks)</option>
+        </select>
+        <span class="hint">${allMode ? "Whole reaction assembled by pipette" : "Default: weigh what you can"}</span>
+      </div>
+      <div class="field">
         <label for="${panelId}-stock-min-weigh">Smallest mass you'll weigh (mg)</label>
         <input type="number" id="${panelId}-stock-min-weigh" value="${prefs.minWeighMg}" step="any" min="0.1">
-        <span class="hint">Anything below this gets a stock solution</span>
+        <span class="hint">${allMode ? "Also the floor for each stock itself" : "Anything below this gets a stock solution"}</span>
       </div>
       <div class="field">
         <label for="${panelId}-stock-aliquot">Preferred aliquot (µL)</label>
@@ -1066,7 +1086,7 @@ function stockSolutionsHTML(panelId, components, prefs, volTotalL) {
       <details class="assumptions" id="${panelId}-stock-solutions">
         <summary>Stock solutions</summary>
         <div class="body">
-          <p class="guide-note">Every component in this recipe is above your weighing threshold of ${fmtNum(prefs.minWeighMg)} mg, so no stock solution is needed. Change the threshold if your balance says otherwise.</p>
+          <p class="guide-note">Every component in this recipe is above your weighing threshold of ${fmtNum(prefs.minWeighMg)} mg, so no stock solution is needed. Switch to "every reagent" below if you'd rather assemble the whole reaction by pipette.</p>
           ${settings}
         </div>
       </details>`;
@@ -1083,20 +1103,36 @@ function stockSolutionsHTML(panelId, components, prefs, volTotalL) {
     </tr>`).join("");
 
   const totalAliquotUL = plans.reduce((s, p) => s + p.plan.aliquotUL, 0);
-  const volNote = volTotalL != null
-    ? ` The aliquots add ${fmtUL(totalAliquotUL)} of solvent in total, which is part of your ${fmtVol(volTotalL * 1000)} reaction volume, not on top of it, so subtract it from the solvent you add separately.`
-    : ` Remember the aliquot brings its own solvent into the reaction.`;
+  const totalAliquotML = totalAliquotUL / 1000;
+
+  let volNote;
+  if (volTotalL == null) {
+    volNote = ` Remember each aliquot brings its own solvent into the reaction.`;
+  } else if (totalAliquotML > volTotalL * 1000) {
+    volNote = ` <strong>The aliquots come to ${fmtUL(totalAliquotUL)}, more than the ${fmtVol(volTotalL * 1000)} reaction volume itself.</strong> Use more concentrated stocks (raise the weighed mass or lower the stock volume), or run at a larger scale.`;
+  } else {
+    volNote = ` The aliquots add ${fmtUL(totalAliquotUL)} of solvent in total, which is part of your ${fmtVol(volTotalL * 1000)} reaction volume, not on top of it, so subtract it from the solvent you add separately.`;
+  }
+
+  const lead = allMode
+    ? `Every reagent below is prepared as a stock solution, so the reaction is assembled entirely by pipette. This costs more solvent and setup time, but it is far more reproducible at small scale and makes parallel screening practical.`
+    : `${plans.length === 1 ? "One component is" : `${plans.length} components are`} below ${fmtNum(prefs.minWeighMg)} mg, too little to weigh accurately. Make ${plans.length === 1 ? "this stock solution" : "these stock solutions"} instead and deliver the aliquot by pipette.`;
+
+  const neatNote = neat.length
+    ? `<p class="guide-note">Added neat by syringe rather than as a stock: ${neat.map((c) => `${c.name} (${fmtVol(c.neatVolML)})`).join(", ")}. Dissolving a bulk liquid in solvent only to redilute it wastes volume you need for the reaction.</p>`
+    : "";
 
   return `
     <div class="card" id="${panelId}-stock-solutions">
       <h3>Stock solutions</h3>
-      <p class="guide-note">${plans.length === 1 ? "One component is" : `${plans.length} components are`} below ${fmtNum(prefs.minWeighMg)} mg, too little to weigh accurately. Make ${plans.length === 1 ? "this stock solution" : "these stock solutions"} instead and deliver the aliquot by pipette.${volNote}</p>
+      <p class="guide-note">${lead}${volNote}</p>
       <div class="table-scroll">
         <table class="recipe recipe-data">
           <thead><tr><th>Component</th><th>Needed</th><th>Weigh</th><th>Dissolve in</th><th>Concentration</th><th>Deliver</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
+      ${neatNote}
       ${settings}
     </div>`;
 }
@@ -1105,16 +1141,18 @@ function stockSolutionsHTML(panelId, components, prefs, volTotalL) {
 function wireStockPrefInputs(panelId, onChange) {
   const minEl = $(`${panelId}-stock-min-weigh`);
   const aliEl = $(`${panelId}-stock-aliquot`);
-  if (!minEl || !aliEl) return;
+  const modeEl = $(`${panelId}-stock-mode`);
+  if (!minEl || !aliEl || !modeEl) return;
   const apply = () => {
     const minWeighMg = parseFloat(minEl.value);
     const aliquotUL = parseFloat(aliEl.value);
     if (!(minWeighMg > 0) || !(aliquotUL > 0)) return;
-    setStockPrefs({ minWeighMg, aliquotUL });
+    setStockPrefs({ minWeighMg, aliquotUL, mode: modeEl.value });
     onChange();
   };
   minEl.addEventListener("change", apply);
   aliEl.addEventListener("change", apply);
+  modeEl.addEventListener("change", apply);
 }
 
 function renderResults(cfg, core, ctx) {
@@ -1249,8 +1287,15 @@ function renderResults(cfg, core, ctx) {
   ` : "";
 
   // The agent can also land below weighing range when targeting a high Mn,
-  // so it goes through the same check. Monomer never does.
+  // so it goes through the same check. The monomer only matters in
+  // all-reagents mode, and carries its neat volume so a liquid can be called
+  // out as syringe-delivered instead of being pointlessly dissolved.
   if (!ctx.macroMode) stockComponents.unshift({ name: agentName, massG: core.massX_g });
+  stockComponents.unshift({
+    name: monomerName,
+    massG: core.massM_g,
+    neatVolML: ctx.densityM ? core.massM_g / ctx.densityM : null,
+  });
 
   const stockPrefs = getStockPrefs();
   const stockHTML = stockSolutionsHTML(id, stockComponents, stockPrefs, core.volTotalL);
@@ -1312,16 +1357,25 @@ function buildRecipeText(cfg, core, ctx, monomerName, agentName, secondaryRowsHT
     lines.push(`Total reaction volume: ${fmtVol(core.volTotalL * 1000)}`);
   }
   if (stockComponents && stockPrefs) {
+    const allMode = stockPrefs.mode === "all";
     const stockLines = [];
+    const neatLines = [];
     stockComponents.forEach((c) => {
-      const plan = planStockSolution(c.massG, stockPrefs);
+      if (allMode && c.neatVolML != null) {
+        neatLines.push(`${c.name}: ${fmtVol(c.neatVolML)} neat by syringe`);
+        return;
+      }
+      const plan = planStockSolution(c.massG, stockPrefs, allMode);
       if (!plan) return;
       stockLines.push(`${c.name}: dissolve ${fmtNum(plan.massMg)} mg in ${fmtNum(plan.volML)} mL (${fmtNum(plan.concMgML)} mg/mL), deliver ${fmtUL(plan.aliquotUL)}`);
     });
     if (stockLines.length) {
       lines.push("");
-      lines.push(`Stock solutions (components below ${fmtNum(stockPrefs.minWeighMg)} mg):`);
+      lines.push(allMode
+        ? "Stock solutions (all reagents):"
+        : `Stock solutions (components below ${fmtNum(stockPrefs.minWeighMg)} mg):`);
       stockLines.forEach((l) => lines.push(`  ${l}`));
+      neatLines.forEach((l) => lines.push(`  ${l}`));
     }
   }
   return lines.join("\n");
