@@ -1714,6 +1714,51 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
   touch-action: none;
   cursor: crosshair;
 }
+/* ---- Structure editor: header + fullscreen ---- */
+.mol-editor-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.mol-editor-head h3 { margin: 0; }
+.mol-fs-btn {
+  display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+  border: 1px solid var(--border); background: var(--card-bg); color: var(--text);
+  border-radius: 8px; padding: 6px 11px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+}
+.mol-fs-btn:hover { border-color: var(--primary); color: var(--primary); }
+.mol-fs-icon { font-size: 1.05rem; line-height: 1; }
+
+/* ---- Structure editor: immersive (fullscreen) drawing ----
+   The toolbars are tall and the canvas was tiny underneath them; immersive
+   mode drops the page chrome and lets the canvas take the whole screen. As
+   with the game this is a fixed-overlay class (works on iOS, unlike the
+   Fullscreen API on non-video elements), plus the real API where available.
+   The canvas backing store is re-fit to the new box in JS, so the drawing
+   stays crisp rather than being scaled up. */
+body.mol-immersive { overflow: hidden; }
+body.mol-immersive #mol-editor-card {
+  position: fixed; inset: 0; z-index: 200;
+  margin: 0; border-radius: 0;
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 8px; box-sizing: border-box; overflow-y: auto;
+}
+body.mol-immersive #mol-editor-card > * { flex: 0 0 auto; }
+/* Grows to fill in portrait (tall canvas), but never shrinks below 200px on a
+   short landscape phone; the card scrolls instead of squashing the drawing. */
+body.mol-immersive #mol-editor-card > .mol-canvas-box {
+  flex: 1 1 auto; min-height: 200px; padding: 0;
+}
+body.mol-immersive #mol-canvas { height: 100%; }
+/* Fold away the reading material to give the canvas the room. */
+body.mol-immersive .mol-onboarding,
+body.mol-immersive #mol-editor-card > .mol-details,
+body.mol-immersive #mol-smiles-status { display: none; }
+/* Keep every toolbar to a single scrollable line so they cost ~40px each
+   instead of wrapping to three rows and squeezing the canvas. */
+body.mol-immersive .mol-toolbar-row {
+  flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: thin; -webkit-overflow-scrolling: touch;
+}
+body.mol-immersive .mol-toolbar-row > .mol-tool-cluster { flex: 0 0 auto; }
+body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
+
 .mol-search-btn { border-color: var(--primary); color: var(--primary); font-weight: 700; margin-left: 6px; display: inline-flex; align-items: center; }
 .mol-export-wrap { position: relative; margin-left: auto; }
 .mol-export-menu {
