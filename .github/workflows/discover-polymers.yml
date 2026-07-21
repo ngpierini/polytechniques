@@ -31,10 +31,13 @@ jobs:
       - name: Run discovery pipeline
         run: node scripts/discover-polymers.js
 
+      - name: Rebuild search index
+        run: npm run build-index
+
       - name: Check for changes
         id: changes
         run: |
-          if git diff --quiet -- polymer-data.js; then
+          if git diff --quiet -- polymer-data.js search-index.json; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -58,5 +61,7 @@ jobs:
           title: 'Automated polymer discovery: new candidates for review'
           body: ${{ steps.summary.outputs.body }}
           branch: automated-polymer-discovery
-          add-paths: polymer-data.js
+          add-paths: |
+            polymer-data.js
+            search-index.json
           labels: automated
