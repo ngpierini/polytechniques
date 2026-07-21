@@ -209,7 +209,8 @@ const TYPES = [
     assumptions: [
       "Theoretical Mn = ([M]₀/[I]₀) × conversion × MW(monomer) + MW(initiator), assuming one growing chain per initiator molecule and 100% initiator efficiency.",
       "Actual Mn will run higher than theoretical if initiator efficiency is below 1, or if termination/transfer occurs.",
-      "Catalyst (Cu source) and ligand amounts are calculated as user set molar equivalents relative to the initiator/chain. Adjust these for ARGET/ICAR/SARA ATRP, which typically use substoichiometric Cu.",
+      "Catalyst (Cu source) and ligand amounts are calculated as user set molar equivalents relative to the initiator/chain. Adjust these for ARGET/ICAR/SARA ATRP, which typically use substoichiometric Cu, often at ppm levels versus monomer.",
+      "Oxygen consumes the Cu(I) activator before it consumes your chains, so the regeneration variants tolerate some air in a sealed vessel at the cost of an inhibition period. That is not the same as an open flask; see the oxygen tolerance section of the air-free guide.",
       "For block copolymers, chain extending from a macroinitiator uses its Mₙ in place of the small molecule initiator's MW, assuming quantitative retention of the halide chain end. Use the Block Copolymer tab to design multiblock sequences.",
     ],
   },
@@ -250,6 +251,7 @@ const TYPES = [
       "Assumes fast, quantitative initiation relative to propagation (living ROMP behavior), one chain per catalyst molecule, and negligible chain transfer.",
       "Catalyst loading is commonly reported in mol% relative to monomer, equal to 100 / target DP.",
       "Chain extending from a preformed macroinitiator (an isolated living chain end) is uncommon for ROMP. Most ROMP block copolymers are made by sequential monomer addition to the same living catalyst without isolating an intermediate. The Block Copolymer tab models that sequential addition case directly.",
+      "Catalyst death, not radical termination, is the practical limit in ROMP, and it is worst under the monomer-starved conditions at the end of a block. Expect clean diblocks but increasing difficulty at triblock and beyond; adding the next monomer before the previous block is fully starved helps.",
     ],
   },
   {
@@ -1229,7 +1231,7 @@ function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
       `Charge a septum-capped vial with a stir bar, ${agentAmt}, and the photocatalyst aliquot. No thermal initiator is used; the radicals come from photoactivation of the CTA itself, which is why end-group fidelity is so high in PET-RAFT.`,
       `Add ${monomerAmt} (inhibitor removal recommended). Avoid primary amines in the system, with one deliberate exception: adding a tertiary amine such as triethylamine enables a reductive quenching cycle that consumes residual oxygen, letting eosin Y systems run without rigorous degassing.`,
       solventStep,
-      `Degas by sparging with nitrogen or argon for 15&ndash;20 min (or rely on the amine route above), keeping the vial shielded from light until you mean to start.`,
+      `Degas by sparging with nitrogen or argon for 15&ndash;20 min, or skip it entirely if you took the amine route: eosin Y with triethylamine polymerizes fully open to air under ordinary blue or green LEDs. Keep the vial shielded from light until you mean to start. See the <a href="air-free-technique.html#oxygen-tolerant">oxygen tolerance guide</a>.`,
       `Irradiate with ${sec.petLight} at room temperature with stirring, positioning the vial a few centimeters from the source. Chain growth only happens while the light is on, so switching it off pauses the polymerization cleanly and switching back on resumes it.`,
       monitorStep,
       `Stop by switching the light off and exposing to air.`,
