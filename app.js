@@ -687,10 +687,17 @@ function $(id) { return document.getElementById(id); }
    Saved recipe presets (generic engine, reused by every tab)
 --------------------------------------------------------------------- */
 
+/* Folded shut: this sat between the panel title and the first input, so the
+   first thing you met was a feature you can only use after you have already
+   used the calculator once. The saved count in the summary is what makes it
+   worth opening, so it is the only thing on show. */
 function presetBarHTML(tabId) {
   return `
-    <div class="card preset-bar">
-      <h3>Saved Recipes</h3>
+    <details class="card preset-bar">
+      <summary>
+        <span class="preset-bar-title">Saved recipes</span>
+        <span class="preset-bar-count" id="${tabId}-preset-count"></span>
+      </summary>
       <div class="preset-row">
         <select id="${tabId}-preset-select" class="preset-select">
           <option value="">Load a saved recipe</option>
@@ -702,7 +709,7 @@ function presetBarHTML(tabId) {
         <input type="text" id="${tabId}-preset-name" class="preset-name-input" placeholder="Name this recipe…">
         <button type="button" class="copy-btn" id="${tabId}-preset-save-btn">Save current as…</button>
       </div>
-    </div>
+    </details>
   `;
 }
 
@@ -776,6 +783,8 @@ function wirePresetBar(tabId, collectFn, applyFn) {
     select.innerHTML = '<option value="">Load a saved recipe</option>' +
       names.map((n) => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join("");
     if (names.includes(current)) select.value = current;
+    const count = $(`${tabId}-preset-count`);
+    if (count) count.textContent = names.length ? `${names.length} saved` : "none yet";
   }
   refreshSelect();
 
