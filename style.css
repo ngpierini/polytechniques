@@ -600,8 +600,9 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
    before the live sections even started, so the papers feed and the trivia
    sat three screens down. The toolkit is tiered instead: the calculator is
    the one featured card, the other calculators keep their descriptions, and
-   the guides drop to one-line rows. Hot Off the Press and the trivia now sit
-   between the tools and the guides rather than at the bottom. */
+   the guides drop to one-line rows. Every page in the site comes first, then
+   the papers feed and the trivia; the tiering is what brings them up, not a
+   reordering that pushes the toolkit down. */
 .home-body {
   max-width: 1080px;
   margin: 40px auto 40px;
