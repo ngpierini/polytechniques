@@ -253,8 +253,71 @@
     }).catch(function () { /* clipboard blocked - do nothing */ });
   });
 
+  // ---- Stack wide result tables into per-row cards on narrow screens ----
+  // A five- or six-column recipe table on a 375px phone can only scroll
+  // sideways, which hides whichever column you were actually reading. Copy
+  // each header onto the cells beneath it so the CSS at <=600px can restack
+  // a row as a labelled card. Doing it here rather than in every table's
+  // markup means the calculator, the reference tables and the other tools
+  // all get it from one place. The .recipe-stackable class is what the CSS
+  // keys off, so a table this never reaches keeps its current behaviour.
+  function labelTableCells(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    var tables = scope.querySelectorAll("table.recipe");
+    for (var t = 0; t < tables.length; t++) {
+      var table = tables[t];
+      var ths = table.querySelectorAll("thead th");
+      // Two columns already fit a 375px screen, and stacking them would turn
+      // a scannable lookup (the Tg reference list) into a column of cards.
+      if (ths.length < 3) continue;
+      var heads = [];
+      for (var h = 0; h < ths.length; h++) heads.push(ths[h].textContent.trim());
+      var rows = table.querySelectorAll("tbody tr");
+      var labelled = 0;
+      for (var r = 0; r < rows.length; r++) {
+        var cells = rows[r].children;
+        // A row that doesn't line up with the header (a spanning summary row)
+        // has no reliable label per cell, so leave it alone.
+        if (cells.length !== heads.length) continue;
+        // "n/a" is a placeholder that costs nothing to skip in a table row but
+        // a whole line once the row is stacked, so flag those cells for the
+        // stacked view to drop, and mark the last one that survives so the
+        // card doesn't end on a dangling separator.
+        var lastKept = null;
+        for (var c = 0; c < cells.length; c++) {
+          var cell = cells[c];
+          if (heads[c] && !cell.hasAttribute("data-label")) cell.setAttribute("data-label", heads[c]);
+          cell.removeAttribute("data-stack-last");
+          var text = cell.textContent.trim().toLowerCase();
+          if (c > 0 && (text === "" || text === "n/a")) cell.setAttribute("data-stack-skip", "");
+          else { cell.removeAttribute("data-stack-skip"); lastKept = cell; }
+        }
+        if (lastKept) lastKept.setAttribute("data-stack-last", "");
+        labelled++;
+      }
+      if (labelled) table.classList.add("recipe-stackable");
+    }
+  }
+
+  // Results tables are re-rendered on every keystroke, so watch for new ones
+  // instead of asking each tool to call in. Batched to one pass per frame.
+  function watchTables() {
+    labelTableCells(document);
+    if (!("MutationObserver" in window)) return;
+    var queued = false;
+    new MutationObserver(function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () {
+        queued = false;
+        labelTableCells(document);
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     addLegalNotice();
+    watchTables();
 
     var topbar = document.querySelector("header.topbar");
     if (!topbar || topbar.querySelector(".site-nav")) return;
