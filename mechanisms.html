@@ -176,7 +176,73 @@
     </div>
 
     <p class="guide-note">
-      Unlike ATRP, RAFT doesn't lower the total radical concentration below a normal FRP level. Termination still happens at roughly the same rate it would without the RAFT agent; it's just a small loss relative to the much larger population of chains cycling through the main equilibrium. Every active chain adds a monomer, then quickly gets "capped" back to a dormant thiocarbonylthio terminated chain while a different chain takes its turn as the radical, so on average, all chains grow in lockstep even though only one is actively propagating at any instant. The <span class="pn">Z</span> group tunes the RAFT agent's reactivity for a given monomer class; the <span class="pn">R</span> group becomes the initial leaving and reinitiating fragment and ends up as the other chain end. The radicals don't have to come from a thermal azo initiator, either: in photoRAFT and PET-RAFT the thiocarbonylthio group is activated directly by light or by a visible-light photocatalyst (metal complexes or even simple organic dyes like eosin Y at parts-per-million loadings), which allows ambient-temperature polymerization, on/off temporal control, and, with the right catalyst system, useful tolerance of residual oxygen.
+      Unlike ATRP, RAFT doesn't lower the total radical concentration below a normal FRP level. Termination still happens at roughly the same rate it would without the RAFT agent; it's just a small loss relative to the much larger population of chains cycling through the main equilibrium. Every active chain adds a monomer, then quickly gets "capped" back to a dormant thiocarbonylthio terminated chain while a different chain takes its turn as the radical, so on average, all chains grow in lockstep even though only one is actively propagating at any instant. The <span class="pn">Z</span> group tunes the RAFT agent's reactivity for a given monomer class; the <span class="pn">R</span> group becomes the initial leaving and reinitiating fragment and ends up as the other chain end. The radicals don't even have to come from a thermal azo initiator; the next section shows the photochemical route.
+    </p>
+  </div>
+
+  <div class="card" id="petraft-mech">
+    <h3>PET-RAFT: Photoinduced Electron Transfer RAFT</h3>
+    <p class="guide-note">The RAFT equilibrium doesn't care where its radicals come from. In PET-RAFT, a visible light photocatalyst (a metal polypyridyl complex, a porphyrin, or an organic dye such as eosin Y at parts per million versus monomer) replaces the thermal initiator entirely: the photoexcited catalyst transfers an electron to the thiocarbonylthio compound, which fragments to release the propagating radical directly from the dormant chain end.</p>
+
+    <div class="mech-scheme">
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species">PC</span>
+          <span class="mech-arrow">
+            <span class="mech-k">h&nu;</span>
+            <span class="mech-arrow-line">→</span>
+          </span>
+          <span class="mech-species">PC*</span>
+        </div>
+        <div class="mech-step-name">(photoexcitation to a long lived excited state)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species">PC* + <span class="pn">P<sub>n</sub></span>–S–C(Z)=S</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species">PC<span class="radical">•</span><sup>+</sup> + [<span class="pn">P<sub>n</sub></span>–S–C(Z)–S]<span class="radical">•</span><sup>&minus;</sup></span>
+        </div>
+        <div class="mech-step-name">(photoinduced electron transfer)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species">[<span class="pn">P<sub>n</sub></span>–S–C(Z)–S]<span class="radical">•</span><sup>&minus;</sup></span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + [S=C(Z)–S]<sup>&minus;</sup></span>
+        </div>
+        <div class="mech-step-name">(fragmentation releases the chain end radical)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + M</span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species"><span class="radical">P<sub>n+1</sub>•</span></span>
+        </div>
+        <div class="mech-step-name">(propagation)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + [S=C(Z)–S]<sup>&minus;</sup> + PC<span class="radical">•</span><sup>+</sup></span>
+          <span class="mech-arrow"><span class="mech-arrow-line">→</span></span>
+          <span class="mech-species"><span class="pn">P<sub>n</sub></span>–S–C(Z)=S + PC</span>
+        </div>
+        <div class="mech-step-name">(deactivation restores the chain end and regenerates the catalyst)</div>
+      </div>
+      <div class="mech-row">
+        <div class="mech-eq">
+          <span class="mech-species"><span class="radical">P<sub>n</sub>•</span> + S=C(Z)–S–<span class="pn">P<sub>m</sub></span></span>
+          <span class="mech-arrow"><span class="mech-arrow-line">⇌</span></span>
+          <span class="mech-species"><span class="pn">P<sub>n</sub></span>–S–C(Z)=S + <span class="radical">P<sub>m</sub>•</span></span>
+        </div>
+        <div class="mech-step-name">(degenerate RAFT transfer continues exactly as in thermal RAFT)</div>
+      </div>
+    </div>
+
+    <p class="guide-note">
+      Three practical consequences follow. Activation only happens while the light is on, so chain growth can be paused and resumed at will; that on/off temporal control is unique to the photochemical methods. The whole polymerization runs at room temperature. And because there is no azo initiator, there are essentially no initiator derived chains: every chain starts and ends on the CTA, which is why PET-RAFT gives such high end group fidelity for block extension. With an added tertiary amine such as triethylamine, eosin Y systems even tolerate residual oxygen through a reductive quenching cycle, allowing polymerization without rigorous degassing. Catalyst choice sets the working wavelength: eosin Y and fluorescein respond to green or blue light, Ru(bpy)&#8323;&#178;&#8314; and fac-Ir(ppy)&#8323; to blue, and porphyrins such as ZnTPP reach into the red. The <a href="calculator.html#raft">calculator's RAFT tab</a> has a PET-RAFT mode that doses the photocatalyst in ppm for you.
+    </p>
+    <p class="guide-note" style="font-size:0.85rem;">
+      Key reference: Xu, Shanmugam, Duong, and Boyer, <em>Polym. Chem.</em> <strong>2015</strong>, 6, 5615 to 5624 (organo-photocatalysts including eosin Y and fluorescein at 10 to 100 ppm for PET-RAFT of methacrylates, including oxygen tolerant operation with triethylamine).
     </p>
   </div>
 
