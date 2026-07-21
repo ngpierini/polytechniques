@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=45">
+<link rel="stylesheet" href="style.css?v=49">
 <style>
   /* The canvas has a fixed 494x390 internal resolution; let it scale down to
      fit narrow screens while keeping its aspect ratio and crisp 8-bit pixels. */
@@ -45,6 +45,94 @@
   @media (max-width: 560px) {
     .game-stage { padding: 6px; }
     .game-controls { gap: 18px; }
+  }
+
+  /* ---- Fullscreen / immersive play ----
+     The board is landscape-shaped and the page chrome eats most of a phone
+     screen, so the play area can take over the whole viewport. This is a
+     plain fixed-overlay class rather than only the Fullscreen API, because
+     iOS Safari does not support that API on non-video elements; where the
+     API does work (Android, desktop) we also call it for the extra room. */
+  .game-play-bar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+  .game-fs-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid var(--border); background: var(--card-bg); color: var(--text);
+    border-radius: 8px; padding: 7px 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  }
+  .game-fs-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .game-fs-icon { font-size: 1.05rem; line-height: 1; }
+
+  .game-rotate-hint { display: none; }
+
+  body.game-immersive { overflow: hidden; }
+  /* The play area becomes the whole screen; grid keeps the board flexible
+     while the HUD and controls take only what they need. */
+  body.game-immersive .game-play {
+    position: fixed; inset: 0; z-index: 200;
+    margin: 0; padding: 8px;
+    background: #0b0f1a;
+    box-sizing: border-box;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas: "hud" "stage" "hint" "controls";
+  }
+  body.game-immersive .game-hud {
+    grid-area: hud; margin: 0;
+    gap: 4px 10px; justify-content: center;
+    padding-right: 96px;  /* clear the exit button pinned top-right */
+  }
+  body.game-immersive .game-hud .stat { flex: 0 0 auto; min-width: 0; }
+  body.game-immersive .game-hud .stat .label { font-size: 0.58rem; margin-bottom: 1px; }
+  body.game-immersive .game-hud .stat .value { font-size: 0.9rem; }
+  body.game-immersive .game-stage {
+    grid-area: stage; min-height: 0; min-width: 0;
+    align-items: center; padding: 0;
+    /* the whole play area is already the dark field, so the stage's own frame
+       would just draw a box around the empty space beside the board */
+    background: transparent; border: none;
+  }
+  body.game-immersive #game-canvas {
+    max-width: 100%; max-height: 100%; width: auto; height: auto;
+  }
+  body.game-immersive .game-rotate-hint {
+    grid-area: hint; display: block; margin: 0;
+    text-align: center; font-size: 0.78rem; color: rgba(255,255,255,0.72);
+  }
+  body.game-immersive .game-controls { grid-area: controls; margin: 0; }
+  body.game-immersive .game-legend { display: none; }
+  body.game-immersive .game-play-bar {
+    position: absolute; top: 8px; right: 8px; z-index: 3; margin: 0;
+  }
+  body.game-immersive .game-fs-btn {
+    background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.3);
+  }
+
+  /* Sideways: a thin HUD strip across the top, then the board fills the lower
+     left and the pad sits to its right. The HUD stays horizontal so it can't
+     dictate the row height (a vertical column of seven stats is taller than a
+     landscape phone and blew the board off screen). */
+  @media (orientation: landscape) {
+    body.game-immersive .game-play {
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto 1fr;
+      grid-template-areas: "hud hud" "stage controls";
+      align-items: stretch;
+      column-gap: 12px;
+    }
+    body.game-immersive .game-hud {
+      flex-direction: row; flex-wrap: wrap;
+      padding-right: 96px;  /* clear the exit button */
+      row-gap: 2px;
+    }
+    body.game-immersive .game-stage { justify-content: center; min-width: 0; }
+    body.game-immersive .game-rotate-hint { display: none; }
+    body.game-immersive .game-controls { align-self: center; justify-content: center; padding: 0 6px; }
+    body.game-immersive .game-dpad {
+      grid-template-columns: 52px 52px 52px;
+      grid-template-rows: 52px 52px 52px;
+    }
   }
   /* Collapsible info cards: the header row is the toggle, with a chevron that
      rotates when open. list-style/marker rules hide the default triangle. */
@@ -99,6 +187,14 @@
       </label>
     </div>
 
+    <div class="game-play" id="game-play">
+    <div class="game-play-bar">
+      <button type="button" class="game-fs-btn" id="game-fs-btn" aria-label="Play fullscreen">
+        <span class="game-fs-icon" aria-hidden="true">&#9974;</span>
+        <span class="game-fs-label">Fullscreen</span>
+      </button>
+    </div>
+
     <div class="game-hud">
       <div class="stat">
         <div class="label">Level</div>
@@ -139,6 +235,10 @@
       </div>
     </div>
 
+    <p class="game-rotate-hint" id="game-rotate-hint" aria-hidden="true">
+      <span aria-hidden="true">&#8635;</span> Turn your phone sideways for a bigger board
+    </p>
+
     <div class="game-controls">
       <div class="game-dpad">
         <button type="button" class="dpad-up" data-dir="up" aria-label="Up">&#9650;</button>
@@ -156,6 +256,7 @@
         <span><span class="dot" style="background:#ff8a3d"></span> Heat (speed boost)</span>
       </div>
     </div>
+    </div><!-- /.game-play -->
   </div>
 
   <details class="card game-fold">
@@ -1711,6 +1812,68 @@
     "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical. You get 3 lives per game. Grab a flashing initiator ring to turn the enemies edible for a few seconds and knock them back to the cage, or the flame for a 10 second speed boost. Twenty-five levels named for real polymers, from polyethylene to carbyne, all rendered in 8-bit.",
     "Start polymerizing"
   );
+})();
+</script>
+
+<script>
+/* Immersive play toggle. The layout is driven by the body.game-immersive
+   class so it works everywhere, including iPhone Safari where the Fullscreen
+   API is not available for non-video elements. Where the API does exist we
+   also request it, purely for the extra chrome-hiding. */
+(function () {
+  var play = document.getElementById("game-play");
+  var btn = document.getElementById("game-fs-btn");
+  if (!play || !btn) return;
+  var label = btn.querySelector(".game-fs-label");
+  var icon = btn.querySelector(".game-fs-icon");
+
+  function fsElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+  function requestFs(el) {
+    var fn = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (fn) { try { fn.call(el); } catch (e) {} }
+  }
+  function exitFs() {
+    var fn = document.exitFullscreen || document.webkitExitFullscreen;
+    if (fn && fsElement()) { try { fn.call(document); } catch (e) {} }
+  }
+
+  function setButton(immersive) {
+    if (label) label.textContent = immersive ? "Exit" : "Fullscreen";
+    // ⤢ expand vs ✕ close
+    if (icon) icon.innerHTML = immersive ? "&#10005;" : "&#9974;";
+    btn.setAttribute("aria-label", immersive ? "Exit fullscreen" : "Play fullscreen");
+  }
+
+  function enter() {
+    document.body.classList.add("game-immersive");
+    setButton(true);
+    requestFs(play);
+  }
+  function leave() {
+    document.body.classList.remove("game-immersive");
+    setButton(false);
+    exitFs();
+  }
+
+  btn.addEventListener("click", function () {
+    if (document.body.classList.contains("game-immersive")) leave();
+    else enter();
+  });
+
+  // If the user leaves the real fullscreen (Escape, system gesture) while
+  // we're immersive, drop back to the page so the two never disagree.
+  function onFsChange() {
+    if (!fsElement() && document.body.classList.contains("game-immersive")) leave();
+  }
+  document.addEventListener("fullscreenchange", onFsChange);
+  document.addEventListener("webkitfullscreenchange", onFsChange);
+
+  // Escape also exits when the Fullscreen API isn't what put us here.
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && document.body.classList.contains("game-immersive")) leave();
+  });
 })();
 </script>
 

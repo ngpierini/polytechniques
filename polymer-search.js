@@ -102,6 +102,70 @@
       }
     })();
 
+    // Re-fit the canvas backing store when its box changes size (window
+    // resize, and entering/leaving the immersive drawing mode). Atoms keep
+    // their absolute pixel coordinates, so shift them by the change in the
+    // canvas centre to keep the drawing where it was rather than letting it
+    // drift off one edge when the canvas grows or shrinks.
+    var refitRaf = 0;
+    function refitCanvas() {
+      var box = canvas.parentElement;
+      if (!box) return;
+      var boxRect = box.getBoundingClientRect();
+      var cs = getComputedStyle(box);
+      var padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      var padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+      var availW = Math.floor(boxRect.width - padX);
+      if (availW < 100) return;
+      var immersive = document.body.classList.contains('mol-immersive');
+      var newW = availW;
+      var newH = immersive
+        ? Math.max(80, Math.floor(boxRect.height - padY))
+        : Math.round(availW * 9 / 16);
+      if (newW === canvas.width && newH === canvas.height) return;
+      var dx = (newW - canvas.width) / 2;
+      var dy = (newH - canvas.height) / 2;
+      canvas.width = newW;
+      canvas.height = newH;
+      for (var i = 0; i < atoms.length; i++) { atoms[i].x += dx; atoms[i].y += dy; }
+      draw();
+    }
+    window.addEventListener('resize', function () {
+      if (refitRaf) return;
+      refitRaf = requestAnimationFrame(function () { refitRaf = 0; refitCanvas(); });
+    });
+
+    // Immersive drawing toggle. Fixed-overlay class (works on iOS, where the
+    // Fullscreen API does not apply to non-video elements) plus the real API
+    // where it exists. refitCanvas runs on each transition so the backing
+    // store matches the new box.
+    (function () {
+      var card = document.getElementById('mol-editor-card');
+      var btn = document.getElementById('mol-fs-btn');
+      if (!card || !btn) return;
+      var label = btn.querySelector('.mol-fs-label');
+      var icon = btn.querySelector('.mol-fs-icon');
+      function fsElement() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
+      function requestFs(el) { var fn = el.requestFullscreen || el.webkitRequestFullscreen; if (fn) { try { fn.call(el); } catch (e) {} } }
+      function exitFs() { var fn = document.exitFullscreen || document.webkitExitFullscreen; if (fn && fsElement()) { try { fn.call(document); } catch (e) {} } }
+      function setButton(on) {
+        if (label) label.textContent = on ? 'Exit' : 'Fullscreen';
+        if (icon) icon.innerHTML = on ? '&#10005;' : '&#9974;';
+        btn.setAttribute('aria-label', on ? 'Exit fullscreen' : 'Draw fullscreen');
+      }
+      function enter() { document.body.classList.add('mol-immersive'); setButton(true); requestFs(card); refitCanvas(); }
+      function leave() { document.body.classList.remove('mol-immersive'); setButton(false); exitFs(); refitCanvas(); }
+      btn.addEventListener('click', function () {
+        if (document.body.classList.contains('mol-immersive')) leave(); else enter();
+      });
+      function onFsChange() { if (!fsElement() && document.body.classList.contains('mol-immersive')) leave(); }
+      document.addEventListener('fullscreenchange', onFsChange);
+      document.addEventListener('webkitfullscreenchange', onFsChange);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && document.body.classList.contains('mol-immersive')) leave();
+      });
+    })();
+
     var atoms = [];
     var bonds = [];
     var nextAtomId = 1;
