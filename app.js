@@ -983,6 +983,140 @@ function wirePanel(cfg) {
   wirePresetBar(id, () => collectPanelState(id), (state) => applyPanelState(id, state, panelRoot._recalc));
 }
 
+/* ---------------------------------------------------------------------
+   Stock solutions
+   Low-loading components (ppm photocatalysts, ARGET-scale copper, the CTA
+   in a high-Mn target) routinely come out at masses no balance can weigh.
+   The fix every bench chemist reaches for is a stock solution, so the
+   calculator does that arithmetic instead of leaving it as an exercise:
+   weigh an amount you actually can, dissolve it in a round volume, and
+   deliver a pipettable aliquot.
+--------------------------------------------------------------------- */
+
+const STOCK_PREFS_KEY = "polytechniques_stock_prefs";
+const STOCK_MASS_LADDER_MG = [10, 20, 25, 50, 100, 200, 250, 500];
+const STOCK_VOL_LADDER_ML = [1, 2, 5, 10, 20, 25, 50];
+
+function getStockPrefs() {
+  try {
+    const p = JSON.parse(localStorage.getItem(STOCK_PREFS_KEY));
+    if (p && p.minWeighMg > 0 && p.aliquotUL > 0) return p;
+  } catch (e) {}
+  return { minWeighMg: 10, aliquotUL: 100 };
+}
+function setStockPrefs(p) {
+  try { localStorage.setItem(STOCK_PREFS_KEY, JSON.stringify(p)); } catch (e) {}
+}
+
+/* Returns null when the component can simply be weighed. Otherwise picks a
+   weigh/dissolve/deliver combination, preferring an aliquot near the user's
+   preferred pipette volume, then the smallest stock that achieves it (less
+   wasted reagent). */
+function planStockSolution(massG, prefs) {
+  const targetMg = massG * 1000;
+  if (!(targetMg > 0) || targetMg >= prefs.minWeighMg) return null;
+  let best = null;
+  STOCK_MASS_LADDER_MG.forEach((massMg) => {
+    if (massMg < prefs.minWeighMg) return;
+    STOCK_VOL_LADDER_ML.forEach((volML) => {
+      const aliquotUL = volML * 1000 * (targetMg / massMg);
+      if (aliquotUL < 20) return;              // below reliable pipetting
+      if (aliquotUL > volML * 1000 * 0.8) return; // must be an aliquot, not the lot
+      const score = Math.abs(Math.log(aliquotUL / prefs.aliquotUL))
+        + 0.20 * Math.log(volML)
+        + 0.20 * Math.log(massMg / prefs.minWeighMg + 1);
+      if (!best || score < best.score) {
+        best = { massMg, volML, aliquotUL, concMgML: massMg / volML, score };
+      }
+    });
+  });
+  return best;
+}
+
+function fmtUL(uL) {
+  return uL >= 1000 ? `${fmtNum(uL / 1000)} mL` : `${fmtNum(uL)} µL`;
+}
+
+/* panelId scopes the DOM ids: every technique panel is in the document at
+   once, so a fixed id here would collide and the preference inputs would
+   bind to whichever tab happened to render first. */
+function stockSolutionsHTML(panelId, components, prefs, volTotalL) {
+  const plans = [];
+  components.forEach((c) => {
+    const plan = planStockSolution(c.massG, prefs);
+    if (plan) plans.push({ name: c.name, massG: c.massG, plan });
+  });
+
+  const settings = `
+    <div class="grid" style="margin-top:10px;">
+      <div class="field">
+        <label for="${panelId}-stock-min-weigh">Smallest mass you'll weigh (mg)</label>
+        <input type="number" id="${panelId}-stock-min-weigh" value="${prefs.minWeighMg}" step="any" min="0.1">
+        <span class="hint">Anything below this gets a stock solution</span>
+      </div>
+      <div class="field">
+        <label for="${panelId}-stock-aliquot">Preferred aliquot (µL)</label>
+        <input type="number" id="${panelId}-stock-aliquot" value="${prefs.aliquotUL}" step="any" min="1">
+        <span class="hint">Aim for a volume your pipette handles well</span>
+      </div>
+    </div>`;
+
+  if (!plans.length) {
+    return `
+      <details class="assumptions" id="${panelId}-stock-solutions">
+        <summary>Stock solutions</summary>
+        <div class="body">
+          <p class="guide-note">Every component in this recipe is above your weighing threshold of ${fmtNum(prefs.minWeighMg)} mg, so no stock solution is needed. Change the threshold if your balance says otherwise.</p>
+          ${settings}
+        </div>
+      </details>`;
+  }
+
+  const rows = plans.map((p) => `
+    <tr>
+      <td>${p.name}</td>
+      <td class="num">${fmtMass(p.massG)}</td>
+      <td class="num">${fmtNum(p.plan.massMg)} mg</td>
+      <td class="num">${fmtNum(p.plan.volML)} mL</td>
+      <td class="num">${fmtNum(p.plan.concMgML)} mg/mL</td>
+      <td class="num"><strong>${fmtUL(p.plan.aliquotUL)}</strong></td>
+    </tr>`).join("");
+
+  const totalAliquotUL = plans.reduce((s, p) => s + p.plan.aliquotUL, 0);
+  const volNote = volTotalL != null
+    ? ` The aliquots add ${fmtUL(totalAliquotUL)} of solvent in total, which is part of your ${fmtVol(volTotalL * 1000)} reaction volume, not on top of it, so subtract it from the solvent you add separately.`
+    : ` Remember the aliquot brings its own solvent into the reaction.`;
+
+  return `
+    <div class="card" id="${panelId}-stock-solutions">
+      <h3>Stock solutions</h3>
+      <p class="guide-note">${plans.length === 1 ? "One component is" : `${plans.length} components are`} below ${fmtNum(prefs.minWeighMg)} mg, too little to weigh accurately. Make ${plans.length === 1 ? "this stock solution" : "these stock solutions"} instead and deliver the aliquot by pipette.${volNote}</p>
+      <div class="table-scroll">
+        <table class="recipe recipe-data">
+          <thead><tr><th>Component</th><th>Needed</th><th>Weigh</th><th>Dissolve in</th><th>Concentration</th><th>Deliver</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      ${settings}
+    </div>`;
+}
+
+/* Re-bound after every render, since the results body is rewritten. */
+function wireStockPrefInputs(panelId, onChange) {
+  const minEl = $(`${panelId}-stock-min-weigh`);
+  const aliEl = $(`${panelId}-stock-aliquot`);
+  if (!minEl || !aliEl) return;
+  const apply = () => {
+    const minWeighMg = parseFloat(minEl.value);
+    const aliquotUL = parseFloat(aliEl.value);
+    if (!(minWeighMg > 0) || !(aliquotUL > 0)) return;
+    setStockPrefs({ minWeighMg, aliquotUL });
+    onChange();
+  };
+  minEl.addEventListener("change", apply);
+  aliEl.addEventListener("change", apply);
+}
+
 function renderResults(cfg, core, ctx) {
   const id = cfg.id;
   const body = $(`${id}-results-body`);
@@ -995,6 +1129,7 @@ function renderResults(cfg, core, ctx) {
   let secondaryRows = "";
   let secondaryStats = "";
   let sec = null;
+  const stockComponents = [];   // everything weighable, checked for tiny masses
 
   if (cfg.secondary === "atrp") {
     const enable = $(`${id}-cat-enable`).checked;
@@ -1012,6 +1147,7 @@ function renderResults(cfg, core, ctx) {
       secondaryRows += `<tr><td>${catName}</td><td class="num">${fmtMol(nCat)}</td><td class="num">${fmtMass(mCat)}</td><td class="num">n/a</td></tr>`;
       secondaryRows += `<tr><td>${ligName}</td><td class="num">${fmtMol(nLig)}</td><td class="num">${fmtMass(mLig)}</td><td class="num">n/a</td></tr>`;
       sec = { catName, mCat, ligName, mLig };
+      stockComponents.push({ name: catName, massG: mCat }, { name: ligName, massG: mLig });
     }
   } else if (cfg.secondary === "raft") {
     const petOn = $(`${id}-pet-toggle`) && $(`${id}-pet-toggle`).checked;
@@ -1024,7 +1160,12 @@ function renderResults(cfg, core, ctx) {
       const nPet = core.nM_mol * ppm / 1e6;
       const mPet = nPet * petMw;
       secondaryRows += `<tr><td>${petName} (photocatalyst)</td><td class="num">${fmtMol(nPet)}</td><td class="num">${fmtMass(mPet)}</td><td class="num">n/a</td></tr>`;
-      sec = { petName, mPet, petPpm: ppm, petLight: petItem ? petItem.light : "an appropriate visible LED" };
+      sec = {
+        petName, mPet, petPpm: ppm,
+        petLight: petItem ? petItem.light : "an appropriate visible LED",
+        petStock: planStockSolution(mPet, getStockPrefs()),
+      };
+      stockComponents.push({ name: `${petName} (photocatalyst)`, massG: mPet });
     } else if ($(`${id}-cat-enable`).checked) {
       const initMw = parseFloat($(`${id}-cat-mw`).value);
       const ratio = parseFloat($(`${id}-cat-ratio`).value) || 1;
@@ -1033,6 +1174,7 @@ function renderResults(cfg, core, ctx) {
       const mInit = nInit * initMw;
       secondaryRows += `<tr><td>${initName}</td><td class="num">${fmtMol(nInit)}</td><td class="num">${fmtMass(mInit)}</td><td class="num">n/a</td></tr>`;
       sec = { initName, mInit };
+      stockComponents.push({ name: initName, massG: mInit });
     }
   } else if (cfg.secondary === "romp") {
     const loadingPct = 100 / core.R;
@@ -1106,7 +1248,14 @@ function renderResults(cfg, core, ctx) {
     </tr>
   ` : "";
 
-  const recipeText = buildRecipeText(cfg, core, ctx, monomerName, agentName, secondaryRows);
+  // The agent can also land below weighing range when targeting a high Mn,
+  // so it goes through the same check. Monomer never does.
+  if (!ctx.macroMode) stockComponents.unshift({ name: agentName, massG: core.massX_g });
+
+  const stockPrefs = getStockPrefs();
+  const stockHTML = stockSolutionsHTML(id, stockComponents, stockPrefs, core.volTotalL);
+
+  const recipeText = buildRecipeText(cfg, core, ctx, monomerName, agentName, secondaryRows, stockComponents, stockPrefs);
   const procedureSteps = techniqueProcedureSteps(cfg, core, ctx, { monomer: monomerName, agent: agentName }, sec);
 
   body.innerHTML = `
@@ -1122,11 +1271,19 @@ function renderResults(cfg, core, ctx) {
       </tbody>
     </table>
     </div>
+    ${stockHTML}
     ${procedureBlock(cfg.label, procedureSteps, false)}
     <div class="actions">
       <button class="copy-btn" id="${id}-copy-btn">Copy recipe as text</button>
     </div>
   `;
+
+  // recalc lives in wirePanel's closure, not here; the panel element carries
+  // a reference to it so the re-render can be triggered from this scope.
+  wireStockPrefInputs(id, () => {
+    const panel = $(`panel-${id}`);
+    if (panel && panel._recalc) panel._recalc();
+  });
 
   const copyBtn = $(`${id}-copy-btn`);
   copyBtn.addEventListener("click", () => {
@@ -1137,7 +1294,7 @@ function renderResults(cfg, core, ctx) {
   });
 }
 
-function buildRecipeText(cfg, core, ctx, monomerName, agentName, secondaryRowsHTML) {
+function buildRecipeText(cfg, core, ctx, monomerName, agentName, secondaryRowsHTML, stockComponents, stockPrefs) {
   const lines = [];
   lines.push(`${cfg.label} recipe, target Mₙ ${fmtNum(core.theoreticalMnFull)} g/mol (ratio ${fmtNum(core.R)}:1)`);
   lines.push(`Predicted Mₙ at ${fmtNum(core.conversion * 100)}% conversion: ${fmtNum(core.predictedMn)} g/mol`);
@@ -1153,6 +1310,19 @@ function buildRecipeText(cfg, core, ctx, monomerName, agentName, secondaryRowsHT
   if (core.volTotalL != null) {
     lines.push(`Solvent (to volume): ${fmtVol(core.solventVolumeML)}`);
     lines.push(`Total reaction volume: ${fmtVol(core.volTotalL * 1000)}`);
+  }
+  if (stockComponents && stockPrefs) {
+    const stockLines = [];
+    stockComponents.forEach((c) => {
+      const plan = planStockSolution(c.massG, stockPrefs);
+      if (!plan) return;
+      stockLines.push(`${c.name}: dissolve ${fmtNum(plan.massMg)} mg in ${fmtNum(plan.volML)} mL (${fmtNum(plan.concMgML)} mg/mL), deliver ${fmtUL(plan.aliquotUL)}`);
+    });
+    if (stockLines.length) {
+      lines.push("");
+      lines.push(`Stock solutions (components below ${fmtNum(stockPrefs.minWeighMg)} mg):`);
+      stockLines.forEach((l) => lines.push(`  ${l}`));
+    }
   }
   return lines.join("\n");
 }
@@ -1227,7 +1397,9 @@ function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
   }
   if (cfg.id === "raft" && sec && sec.petName) {
     return [
-      `Prepare a photocatalyst stock solution: at ${fmtNum(sec.petPpm)} ppm versus monomer you need ${fmtMass(sec.mPet)} of ${sec.petName}, which is far too little to weigh directly. Dissolve a weighable amount in your reaction solvent and deliver the right aliquot by volume.`,
+      sec.petStock
+        ? `Prepare a photocatalyst stock solution: at ${fmtNum(sec.petPpm)} ppm versus monomer you need ${fmtMass(sec.mPet)} of ${sec.petName}, far too little to weigh. Dissolve ${fmtNum(sec.petStock.massMg)} mg in ${fmtNum(sec.petStock.volML)} mL of your reaction solvent (${fmtNum(sec.petStock.concMgML)} mg/mL) and deliver ${fmtUL(sec.petStock.aliquotUL)} of that stock. Stock solutions of the dyes keep for a while in the dark but make them fresh if precision matters.`
+        : `Weigh ${fmtMass(sec.mPet)} of ${sec.petName} (${fmtNum(sec.petPpm)} ppm versus monomer).`,
       `Charge a septum-capped vial with a stir bar, ${agentAmt}, and the photocatalyst aliquot. No thermal initiator is used; the radicals come from photoactivation of the CTA itself, which is why end-group fidelity is so high in PET-RAFT.`,
       `Add ${monomerAmt} (inhibitor removal recommended). Avoid primary amines in the system, with one deliberate exception: adding a tertiary amine such as triethylamine enables a reductive quenching cycle that consumes residual oxygen, letting eosin Y systems run without rigorous degassing.`,
       solventStep,
