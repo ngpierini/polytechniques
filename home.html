@@ -40,7 +40,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=44">
+<link rel="stylesheet" href="style.css?v=45">
 </head>
 <body>
 
@@ -114,38 +114,6 @@
     </div>
   </section>
 
-  <section class="hot-papers">
-    <div class="hot-papers-header">
-      <div>
-        <h2>🔥 Hot Off the Press</h2>
-        <p class="hot-papers-subtitle">Recent polymer papers from the past week, with any early citations surfaced first</p>
-      </div>
-      <div class="hot-papers-controls">
-        <span class="hot-papers-live"><span class="live-dot"></span> Live feed · refreshes every 24h</span>
-        <button type="button" id="hot-papers-refresh" class="hot-papers-refresh" title="Check for new publications now">
-          <span class="refresh-icon" aria-hidden="true">&#10227;</span> Refresh
-        </button>
-      </div>
-    </div>
-    <div id="hot-papers-grid" class="hot-papers-grid">
-      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
-      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
-      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
-      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
-      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
-      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
-    </div>
-    <p class="hot-papers-caption" id="hot-papers-caption"></p>
-  </section>
-
-  <section class="trivia">
-    <div class="trivia-header">
-      <h2>🧠 Daily Polymer Trivia</h2>
-      <p class="trivia-subtitle">One new chemistry question every day. You get three tries.</p>
-    </div>
-    <div class="trivia-card" id="trivia-card"></div>
-  </section>
-
   <section class="home-section">
     <h2 class="home-section-label">Guides &amp; reference</h2>
     <div class="home-list">
@@ -212,6 +180,38 @@
         </span>
       </a>
     </div>
+  </section>
+
+  <section class="hot-papers">
+    <div class="hot-papers-header">
+      <div>
+        <h2>🔥 Hot Off the Press</h2>
+        <p class="hot-papers-subtitle">Recent polymer papers from the past week, with any early citations surfaced first</p>
+      </div>
+      <div class="hot-papers-controls">
+        <span class="hot-papers-live"><span class="live-dot"></span> Live feed · refreshes every 24h</span>
+        <button type="button" id="hot-papers-refresh" class="hot-papers-refresh" title="Check for new publications now">
+          <span class="refresh-icon" aria-hidden="true">&#10227;</span> Refresh
+        </button>
+      </div>
+    </div>
+    <div id="hot-papers-grid" class="hot-papers-grid">
+      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+      <div class="paper-skeleton" aria-hidden="true"><div class="sk-line sk-badge"></div><div class="sk-line sk-title"></div><div class="sk-line sk-title2"></div><div class="sk-line sk-meta"></div></div>
+    </div>
+    <p class="hot-papers-caption" id="hot-papers-caption"></p>
+  </section>
+
+  <section class="trivia">
+    <div class="trivia-header">
+      <h2>🧠 Daily Polymer Trivia</h2>
+      <p class="trivia-subtitle">One new chemistry question every day. You get three tries.</p>
+    </div>
+    <div class="trivia-card" id="trivia-card"></div>
   </section>
 
 </main>
