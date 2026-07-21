@@ -169,6 +169,18 @@ const RADICAL_INITIATORS = [
   { name: "V-50", mw: 271.19 },
 ];
 
+/* PET-RAFT photocatalysts. Loadings are in ppm (molar) versus monomer;
+   organic dyes typically run 10 to 100 ppm, Ir/Ru complexes 1 to 5 ppm
+   (Xu, Shanmugam, Duong, Boyer, Polym. Chem. 2015, 6, 5615). Each entry
+   carries the light source it responds to for the generated procedure. */
+const PET_PHOTOCATALYSTS = [
+  { name: "Eosin Y", mw: 647.89, ppm: 50, light: "green (~530 nm) or blue LED" },
+  { name: "Fluorescein", mw: 332.31, ppm: 50, light: "blue (~460 nm) LED" },
+  { name: "Ru(bpy)₃Cl₂·6H₂O", mw: 748.62, ppm: 5, light: "blue (~460 nm) LED" },
+  { name: "fac-Ir(ppy)₃", mw: 654.78, ppm: 2, light: "blue (~435 nm) LED" },
+  { name: "Zinc tetraphenylporphyrin (ZnTPP)", mw: 678.12, ppm: 100, light: "red (~635 nm) LED" },
+];
+
 const ROMP_CATALYSTS = [
   { name: "Grubbs 1st Generation", mw: 822.96 },
   { name: "Grubbs 2nd Generation", mw: 848.97 },
@@ -218,6 +230,7 @@ const TYPES = [
       "The radical initiator should be present at a low fraction of the CTA (commonly [CTA]/[initiator] ≈ 5 to 10) to keep the fraction of dead, initiator-derived chains small.",
       "Higher [initiator]/[CTA] ratios or long reaction times increase the proportion of chains not bearing a CTA end group.",
       "For block copolymers, chain extending from a macro CTA uses its Mₙ in place of the small molecule CTA's MW, assuming quantitative retention of the thiocarbonylthio chain end. Use the Block Copolymer tab to design multiblock sequences.",
+      "In PET-RAFT mode the photocatalyst is dosed in molar ppm versus monomer and is not consumed; chain count still equals CTA moles, and the Mₙ math is unchanged. With no azo initiator there are essentially no initiator-derived chains.",
     ],
   },
   {
@@ -395,25 +408,48 @@ function panelTemplate(cfg) {
   } else if (cfg.secondary === "raft") {
     secondaryHTML = `
       <div class="card">
-        <h3>Radical coinitiator</h3>
+        <h3>Radical source</h3>
         <label class="checkbox-row">
-          <input type="checkbox" id="${id}-cat-enable" checked>
-          Include a radical initiator in recipe
+          <input type="checkbox" id="${id}-pet-toggle">
+          PET-RAFT: visible light photocatalyst instead of a thermal initiator
         </label>
-        <div id="${id}-cat-fields" class="subsection">
+        <div id="${id}-thermal-wrap">
+          <label class="checkbox-row">
+            <input type="checkbox" id="${id}-cat-enable" checked>
+            Include a radical initiator in recipe
+          </label>
+          <div id="${id}-cat-fields" class="subsection">
+            <div class="grid">
+              <div class="field">
+                <label>Initiator</label>
+                <select id="${id}-cat-select">${optionsHTML(RADICAL_INITIATORS)}</select>
+              </div>
+              <div class="field">
+                <label>Initiator MW (g/mol)</label>
+                <input type="number" id="${id}-cat-mw" value="${RADICAL_INITIATORS[0].mw}" step="any">
+              </div>
+              <div class="field">
+                <label>[CTA] : [Initiator] ratio</label>
+                <input type="number" id="${id}-cat-ratio" value="5" step="any" min="0.01">
+                <span class="hint">Typically 5 to 10</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="${id}-pet-fields" class="subsection" style="display:none;">
           <div class="grid">
             <div class="field">
-              <label>Initiator</label>
-              <select id="${id}-cat-select">${optionsHTML(RADICAL_INITIATORS)}</select>
+              <label>Photocatalyst</label>
+              <select id="${id}-pet-select">${optionsHTML(PET_PHOTOCATALYSTS)}</select>
             </div>
             <div class="field">
-              <label>Initiator MW (g/mol)</label>
-              <input type="number" id="${id}-cat-mw" value="${RADICAL_INITIATORS[0].mw}" step="any">
+              <label>Photocatalyst MW (g/mol)</label>
+              <input type="number" id="${id}-pet-mw" value="${PET_PHOTOCATALYSTS[0].mw}" step="any">
             </div>
             <div class="field">
-              <label>[CTA] : [Initiator] ratio</label>
-              <input type="number" id="${id}-cat-ratio" value="5" step="any" min="0.01">
-              <span class="hint">Typically 5 to 10</span>
+              <label>Loading (ppm vs monomer, molar)</label>
+              <input type="number" id="${id}-pet-ppm" value="${PET_PHOTOCATALYSTS[0].ppm}" step="any" min="0.01">
+              <span class="hint">Organic dyes 10 to 100 ppm; Ir/Ru complexes 1 to 5 ppm</span>
             </div>
           </div>
         </div>
@@ -815,6 +851,24 @@ function wirePanel(cfg) {
     bindDbSelect(el("lig-select"), el("lig-mw"), null, ATRP_LIGANDS, recalc);
   } else if (cfg.secondary === "raft") {
     bindDbSelect(el("cat-select"), el("cat-mw"), null, RADICAL_INITIATORS, recalc);
+    const petToggle = el("pet-toggle");
+    const petSelect = el("pet-select");
+    if (petToggle) {
+      petToggle.addEventListener("change", () => {
+        el("thermal-wrap").style.display = petToggle.checked ? "none" : "";
+        el("pet-fields").style.display = petToggle.checked ? "" : "none";
+        recalc();
+      });
+      // picking a photocatalyst loads both its MW and its typical ppm dose
+      petSelect.addEventListener("change", () => {
+        const item = PET_PHOTOCATALYSTS[Number(petSelect.value)];
+        if (item) {
+          el("pet-mw").value = item.mw;
+          el("pet-ppm").value = item.ppm;
+        }
+        recalc();
+      });
+    }
     const chooserMono = $("raft-chooser-monomer");
     const chooserBlock = $("raft-chooser-block");
     const chooserOut = $("raft-chooser-out");
@@ -958,8 +1012,18 @@ function renderResults(cfg, core, ctx) {
       sec = { catName, mCat, ligName, mLig };
     }
   } else if (cfg.secondary === "raft") {
-    const enable = $(`${id}-cat-enable`).checked;
-    if (enable) {
+    const petOn = $(`${id}-pet-toggle`) && $(`${id}-pet-toggle`).checked;
+    if (petOn) {
+      const petMw = parseFloat($(`${id}-pet-mw`).value);
+      const ppm = parseFloat($(`${id}-pet-ppm`).value) || 0;
+      const petIdx = Number($(`${id}-pet-select`).value);
+      const petItem = PET_PHOTOCATALYSTS[petIdx];
+      const petName = $(`${id}-pet-select`).options[$(`${id}-pet-select`).selectedIndex].text.split(" (")[0];
+      const nPet = core.nM_mol * ppm / 1e6;
+      const mPet = nPet * petMw;
+      secondaryRows += `<tr><td>${petName} (photocatalyst)</td><td class="num">${fmtMol(nPet)}</td><td class="num">${fmtMass(mPet)}</td><td class="num">n/a</td></tr>`;
+      sec = { petName, mPet, petPpm: ppm, petLight: petItem ? petItem.light : "an appropriate visible LED" };
+    } else if ($(`${id}-cat-enable`).checked) {
       const initMw = parseFloat($(`${id}-cat-mw`).value);
       const ratio = parseFloat($(`${id}-cat-ratio`).value) || 1;
       const initName = $(`${id}-cat-select`).options[$(`${id}-cat-select`).selectedIndex].text.split(" (")[0];
@@ -1156,6 +1220,20 @@ function techniqueProcedureSteps(cfg, core, ctx, names, sec) {
       `Stop the reaction by cooling and exposing to air (oxidizes the Cu(I) activator).`,
       `Remove the copper catalyst by passing a THF or DCM solution of the polymer through a short neutral alumina plug, or stirring with an appropriate resin.`,
       workupStep,
+      charStep,
+    ];
+  }
+  if (cfg.id === "raft" && sec && sec.petName) {
+    return [
+      `Prepare a photocatalyst stock solution: at ${fmtNum(sec.petPpm)} ppm versus monomer you need ${fmtMass(sec.mPet)} of ${sec.petName}, which is far too little to weigh directly. Dissolve a weighable amount in your reaction solvent and deliver the right aliquot by volume.`,
+      `Charge a septum-capped vial with a stir bar, ${agentAmt}, and the photocatalyst aliquot. No thermal initiator is used; the radicals come from photoactivation of the CTA itself, which is why end-group fidelity is so high in PET-RAFT.`,
+      `Add ${monomerAmt} (inhibitor removal recommended). Avoid primary amines in the system, with one deliberate exception: adding a tertiary amine such as triethylamine enables a reductive quenching cycle that consumes residual oxygen, letting eosin Y systems run without rigorous degassing.`,
+      solventStep,
+      `Degas by sparging with nitrogen or argon for 15&ndash;20 min (or rely on the amine route above), keeping the vial shielded from light until you mean to start.`,
+      `Irradiate with ${sec.petLight} at room temperature with stirring, positioning the vial a few centimeters from the source. Chain growth only happens while the light is on, so switching it off pauses the polymerization cleanly and switching back on resumes it.`,
+      monitorStep,
+      `Stop by switching the light off and exposing to air.`,
+      workupStep + ` A retained thiocarbonylthio end group usually leaves the polymer pale yellow to pink, which is normal.`,
       charStep,
     ];
   }
