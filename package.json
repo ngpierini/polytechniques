@@ -5,7 +5,9 @@
   "type": "commonjs",
   "scripts": {
     "discover": "node scripts/discover-polymers.js",
-    "check-data": "node scripts/check-polymer-data.js"
+    "check-data": "node scripts/check-polymer-data.js",
+    "build-index": "node scripts/build-search-index.js",
+    "check-index": "node scripts/build-search-index.js --check"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"

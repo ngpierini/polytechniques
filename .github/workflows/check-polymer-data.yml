@@ -10,11 +10,17 @@ on:
   pull_request:
     paths:
       - 'polymer-data.js'
+      - 'polymer-graph.js'
+      - 'search-index.json'
+      - 'scripts/**'
   push:
     branches:
       - main
     paths:
       - 'polymer-data.js'
+      - 'polymer-graph.js'
+      - 'search-index.json'
+      - 'scripts/**'
   workflow_dispatch: {}
 
 jobs:
@@ -28,3 +34,6 @@ jobs:
           node-version: '22'
 
       - run: node scripts/check-polymer-data.js
+
+      # Fails if search-index.json wasn't regenerated after a data change.
+      - run: npm run check-index

@@ -20,43 +20,10 @@ function loadDb() {
   return fn({});
 }
 
-// ---- WL-hash, ported from polymer-search.js so this check has no DOM/browser dependency ----
-function fnv1a(str) {
-  var h = 0x811c9dc5;
-  for (var i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = (h * 0x01000193) >>> 0;
-  }
-  return h.toString(16);
-}
-
-function atomLabel(a) {
-  var chargeSuffix = a.charge ? (a.charge > 0 ? "+" : "") + a.charge : "";
-  return a.el + chargeSuffix;
-}
-
-function wlHash(atoms, bonds, iterations) {
-  iterations = iterations || 4;
-  var adj = {};
-  atoms.forEach(function (a) { adj[a.id] = []; });
-  bonds.forEach(function (b) {
-    if (!adj[b.a] || !adj[b.b]) return;
-    adj[b.a].push({ nb: b.b, order: b.order });
-    adj[b.b].push({ nb: b.a, order: b.order });
-  });
-  var labels = {};
-  atoms.forEach(function (a) { labels[a.id] = atomLabel(a); });
-  for (var it = 0; it < iterations; it++) {
-    var newLabels = {};
-    atoms.forEach(function (a) {
-      var parts = adj[a.id].map(function (e) { return e.order + ":" + labels[e.nb]; }).sort();
-      newLabels[a.id] = fnv1a(labels[a.id] + "|" + parts.join(","));
-    });
-    labels = newLabels;
-  }
-  var finalLabels = atoms.map(function (a) { return labels[a.id]; }).sort();
-  return fnv1a(finalLabels.join("|") + "#" + bonds.length);
-}
+// WL-hash now comes from the shared, DOM-free polymer-graph.js module (the
+// same code the browser and the search-index build use) instead of a copy
+// kept in sync here by hand.
+const { wlHash } = require("../polymer-graph.js");
 
 // Generous max valence per element (bond-order sum), with slack for formal
 // charge. Purpose is to catch obvious mistakes (typo'd bonds, duplicate
