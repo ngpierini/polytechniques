@@ -532,7 +532,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
   position: relative;
   overflow: hidden;
   background: linear-gradient(135deg, #0b1120 0%, #17233f 45%, #0d332f 100%);
-  padding: 72px 24px 48px;
+  padding: 56px 24px 44px;
   text-align: center;
 }
 .polymer-art {
@@ -591,20 +591,42 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
   backdrop-filter: blur(2px);
   text-shadow: 0 1px 2px rgba(0,0,0,0.7);
 }
-.home-links-header {
-  margin: 28px 0 0;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-}
-.home-links-header h2 { margin: 0 0 3px; font-size: 1.25rem; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 2px 10px rgba(0,0,0,0.6); }
-.home-links-header p { margin: 0; font-size: 0.85rem; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 2px 10px rgba(0,0,0,0.6); }
+/* The hero's "Explore the Toolkit" heading was removed: it said the same
+   thing as the section labels immediately below it, and cost a screen's
+   worth of the scroll down to the papers feed. */
 
-.home-links {
+/* ---------- Home page body ----------
+   Fourteen cards of equal weight, each with a full paragraph, ran 1534px
+   before the live sections even started, so the papers feed and the trivia
+   sat three screens down. The toolkit is tiered instead: the calculator is
+   the one featured card, the other calculators keep their descriptions, and
+   the guides drop to one-line rows. Hot Off the Press and the trivia now sit
+   between the tools and the guides rather than at the bottom. */
+.home-body {
   max-width: 1080px;
   margin: 40px auto 40px;
   padding: 0 24px;
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+.home-body > .hot-papers,
+.home-body > .trivia {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.home-section-label {
+  margin: 0 0 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+.home-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
@@ -644,9 +666,94 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
   font-weight: 700;
   margin-bottom: 8px;
 }
-.home-card h2 { margin: 0 0 8px; font-size: 1.15rem; }
+.home-card h2, .home-card h3 { margin: 0 0 8px; font-size: 1.15rem; }
 .home-card p { margin: 0; color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; }
 .home-card-arrow { display: block; margin-top: 16px; font-size: 0.85rem; font-weight: 600; color: var(--card-accent, var(--primary)); }
+
+/* The one card that is the point of the site: laid out across the full
+   width so it reads as the primary action rather than one tile of many. */
+.home-card--feature {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 24px 28px;
+}
+.home-card--feature .home-card-icon { margin-bottom: 0; flex: 0 0 auto; width: 52px; height: 52px; font-size: 1.6rem; }
+.home-card--feature .feature-text { flex: 1; min-width: 0; }
+.home-card--feature h2 { font-size: 1.35rem; }
+.home-card--feature .home-card-arrow { margin-top: 0; flex: 0 0 auto; white-space: nowrap; }
+@media (max-width: 700px) {
+  .home-card--feature { display: block; }
+  .home-card--feature .home-card-icon { margin-bottom: 12px; }
+  .home-card--feature .home-card-arrow { margin-top: 16px; }
+}
+
+/* Guides and the odds and ends: a title and one line each. These were
+   full cards with their own paragraph, which is what made the page long
+   without making any of them easier to choose between. */
+.home-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 10px;
+}
+.home-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--card-accent, var(--primary));
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.home-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 24, 40, 0.12);
+}
+.home-row-icon {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  background: color-mix(in srgb, var(--card-accent, var(--primary)) 16%, transparent);
+}
+.home-row-text { display: block; min-width: 0; }
+.home-row-title { display: block; font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+.home-row-desc { display: block; font-size: 0.82rem; color: var(--text-dim); line-height: 1.45; }
+
+/* One column means the five tool cards stack, and at ~320px each that put
+   the papers feed almost three screens down on a phone. Same cards, laid
+   out like the guide rows: the icon moves inline and the arrow goes, since
+   the whole card is the tap target anyway. No text is dropped. */
+@media (max-width: 700px) {
+  .home-grid { gap: 10px; }
+  .home-grid .home-card {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    align-items: start;
+    column-gap: 12px;
+    padding: 12px 14px;
+    border-top-width: 1px;
+    border-left: 3px solid var(--card-accent, var(--primary));
+    border-radius: 10px;
+  }
+  .home-grid .home-card .home-card-icon {
+    width: 30px; height: 30px;
+    font-size: 1rem;
+    margin-bottom: 0;
+    grid-row: span 2;
+  }
+  .home-grid .home-card h3 { margin: 0 0 2px; font-size: 0.95rem; grid-column: 2; }
+  .home-grid .home-card p { font-size: 0.82rem; line-height: 1.45; grid-column: 2; }
+  .home-grid .home-card .home-card-arrow { display: none; }
+}
 
 .home-footnote {
   max-width: 1080px;
@@ -934,6 +1041,9 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
   margin-bottom: 14px;
 }
 .hero-brand .brand-mark { width: 52px; height: 52px; border-radius: 13px; }
+/* The brand is the page's h1 on home; other pages keep it as a span in the
+   topbar link, so the margin reset has to be here rather than on .brand-name. */
+.hero-brand h1.brand-name { margin: 0; }
 .hero-brand .brand-name {
   font-size: 2.2rem;
   font-weight: 800;
@@ -1534,7 +1644,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
   .topbar, .tabs, .footer, .home-footnote,
   .preset-bar, .guide-links, .theme-toggle-btn, .theme-toggle-fixed,
   .copy-btn, #bcp-add-block, .bcp-remove-block,
-  .hero, .home-links, .hot-papers {
+  .hero, .home-body, .hot-papers {
     display: none !important;
   }
 
