@@ -315,12 +315,48 @@
     }).observe(document.body, { childList: true, subtree: true });
   }
 
+  // ---- Shared topbar chrome (theme toggle + brand/home link) ----
+  // This block was byte-identical in all 16 interior pages; it now lives here
+  // as the single source. The per-page <h1>/subtitle stay in the HTML (they
+  // are real per-page content). theme.js's DOMContentLoaded runs before this
+  // deferred script's, so the button it injects has to have its icon set here
+  // rather than by theme.js's own load-time pass.
+  function injectGuideLinks(topbar) {
+    var inner = topbar.querySelector(".topbar-inner");
+    if (!inner || inner.querySelector(".guide-links")) return;
+    var wrap = document.createElement("div");
+    wrap.className = "guide-links";
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "theme-toggle-btn";
+    btn.setAttribute("aria-label", "Toggle theme");
+    btn.textContent = "🌙"; // 🌙, replaced by updateThemeToggleIcons
+    btn.addEventListener("click", function () {
+      if (typeof window.togglePolyTheme === "function") window.togglePolyTheme();
+    });
+
+    var a = document.createElement("a");
+    a.className = "brand-link";
+    a.href = "home.html";
+    a.innerHTML =
+      '<img src="favicon.svg" alt="" class="brand-mark">' +
+      '<span class="brand-name"><span class="brand-poly">Poly</span>Techniques<sup>&trade;</sup></span>';
+
+    wrap.appendChild(btn);
+    wrap.appendChild(a);
+    inner.appendChild(wrap);
+    if (typeof window.updateThemeToggleIcons === "function") window.updateThemeToggleIcons();
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     addLegalNotice();
     watchTables();
 
     var topbar = document.querySelector("header.topbar");
-    if (!topbar || topbar.querySelector(".site-nav")) return;
+    if (!topbar) return;
+    injectGuideLinks(topbar);
+    if (topbar.querySelector(".site-nav")) return;
 
     var current = (location.pathname.split("/").pop() || "home.html").toLowerCase();
 
