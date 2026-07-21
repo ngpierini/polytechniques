@@ -2023,7 +2023,7 @@
       }
       var hash = wlHash(sub.atoms, sub.bonds);
       var db = window.POLYMER_DB || [];
-      var exact = db.filter(function (p) { return p.hash === hash; });
+      var exact = db.filter(function (p) { return fingerprintOf(p)._hash === hash; });
       if (exact.length) {
         statusEl.textContent = 'Exact match found:';
         renderResults(exact);
@@ -2035,7 +2035,7 @@
       function compositionFallback(message) {
         var profile = elementProfile(sub.atoms);
         var ranked = db.map(function (p) {
-          return { p: p, d: profileDistance(profile, p.profile) };
+          return { p: p, d: profileDistance(profile, fingerprintOf(p)._profile) };
         }).sort(function (x, y) { return x.d - y.d; }).slice(0, 5).map(function (r) { return r.p; });
         statusEl.textContent = message;
         renderResults(ranked);
@@ -2358,12 +2358,37 @@
     var firstModeBtn = document.querySelector('.mol-mode-btn[data-mode="draw"]');
     if (firstModeBtn) firstModeBtn.classList.add('active');
 
-    // Precompute each database entry's hash and element profile using the exact
-    // same functions the editor uses, so the two can never fall out of sync.
-    (window.POLYMER_DB || []).forEach(function (p) {
-      p.hash = wlHash(p.atoms, p.bonds);
-      p.profile = elementProfile(p.atoms);
-    });
+    // Structure fingerprints come from the build-time search index (a lookup)
+    // instead of hashing every entry on load. fingerprintOf falls back to
+    // computing with the exact functions the editor uses, so a missing, stale,
+    // or mismatched index only costs speed, never correctness. The index is
+    // adopted only if its name list matches the loaded library exactly, which
+    // rejects any stale cached copy whose entry set or order has drifted.
+    var SEARCH_INDEX = null;
+    (function loadSearchIndex() {
+      var db = window.POLYMER_DB || [];
+      if (typeof fetch !== "function") return;
+      fetch("search-index.json")
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (idx) {
+          if (!idx || !idx.fingerprints || !Array.isArray(idx.names)) return;
+          if (idx.names.length !== db.length) return;
+          for (var i = 0; i < db.length; i++) {
+            if (idx.names[i] !== db[i].name) return;
+          }
+          SEARCH_INDEX = idx;
+        })
+        .catch(function () { /* offline or blocked: compute on demand */ });
+    })();
+
+    function fingerprintOf(p) {
+      if (p._hash === undefined) {
+        var fp = SEARCH_INDEX && SEARCH_INDEX.fingerprints[p.name];
+        if (fp) { p._hash = fp.hash; p._profile = fp.profile; }
+        else { p._hash = wlHash(p.atoms, p.bonds); p._profile = elementProfile(p.atoms); }
+      }
+      return p;
+    }
 
     draw();
   });
