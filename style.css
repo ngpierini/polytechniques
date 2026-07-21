@@ -155,18 +155,26 @@ body {
    visible while you edit. Inputs and outputs are wrapped in .calc-inputs /
    .calc-output; the flex panel is switched to grid at that width. */
 @media screen and (min-width: 1000px) {
-  /* Two columns need more room than the single-column reading measure.
-     Scoped to #app so the guide pages keep their narrower text column.
+  /* Both the grid and the wider page are gated on body.calc-wide, which
+     app.js sets only while a panel built as inputs + output is showing.
+     Without it, panels whose cards are a single sequence (polyurethane,
+     emulsion, stock solutions) would have those cards auto-placed into two
+     columns: one short card in the left track, one enormous one in the
+     right, and a column of blank space down the rest of the page.
      screen-only: on paper the sticky column and its max-height would clip. */
-  #app { max-width: 1280px; }
-  .panel.active { display: grid; }
-  .panel {
+  body.calc-wide #app { max-width: 1280px; }
+  /* Every grid property stays on .active so nothing leaks to the panels that
+     are still flex columns. align-items: start in particular means "shrink to
+     content width" to a column flex container, which quietly narrowed the
+     cards on the polyurethane, emulsion and stock tabs. */
+  body.calc-wide .panel.active {
+    display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
     align-items: start;
     column-gap: 20px;
   }
-  .panel > .panel-head,
-  .panel > .preset-bar { grid-column: 1 / -1; }
+  body.calc-wide .panel.active > .panel-head,
+  body.calc-wide .panel.active > .preset-bar { grid-column: 1 / -1; }
   .calc-inputs,
   .calc-output { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
   .calc-output {
