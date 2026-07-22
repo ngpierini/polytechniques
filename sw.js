@@ -5,7 +5,7 @@
 // Either way the calculators still work with no connection. Bump CACHE_NAME
 // whenever the pre-cache list below changes so old clients pick up the new
 // set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v40";
+const CACHE_NAME = "polytechniques-v41";
 
 const PRECACHE_URLS = [
   "home.html",
@@ -69,7 +69,11 @@ function cachePut(req, res) {
 
 self.addEventListener("fetch", function (event) {
   var req = event.request;
-  if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+  var url = new URL(req.url);
+  if (req.method !== "GET" || url.origin !== location.origin) return;
+  // Serverless endpoints are live data; caching them would serve stale
+  // results and break the /api/health deployment check.
+  if (url.pathname.indexOf("/api/") === 0) return;
 
   // HTML is the one thing here that carries no ?v= in its own URL, so a
   // cache-first hit serves the previous deploy's page, which then asks for
