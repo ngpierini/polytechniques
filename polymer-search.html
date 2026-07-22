@@ -227,6 +227,10 @@
         <button type="button" class="mol-example-btn copy-btn" data-example="ps">Polystyrene</button>
         <button type="button" class="mol-example-btn copy-btn" data-example="nylon6">Nylon 6</button>
       </div>
+      <div class="mol-tool-cluster">
+        <button type="button" id="mol-photo-btn" class="copy-btn" hidden title="Upload a photo of a structure (from a paper, label, or hand drawing) and have it read into the editor">&#128247; From photo</button>
+        <input type="file" id="mol-photo-input" accept="image/*" hidden>
+      </div>
       <div class="mol-export-wrap">
         <button type="button" id="mol-export-open" class="mol-icon-btn" title="Export this structure as an image" aria-label="Export structure as image">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v10M6 9l4 4 4-4"/><path d="M4 16v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1"/></svg>
@@ -241,6 +245,7 @@
         <svg viewBox="0 0 20 20" width="15" height="15" style="vertical-align:-2px;margin-right:4px;"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="13" y1="13" x2="17.5" y2="17.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Search this structure
       </button>
     </div>
+    <div id="mol-photo-status" class="guide-note" style="margin:6px 0 0;font-size:0.82rem;" hidden></div>
     <div class="mol-toolbar-row" style="margin-top:8px;">
       <div class="mol-tool-cluster" style="flex:1 1 260px;">
         <input type="text" id="mol-smiles-input" placeholder="Paste a SMILES, e.g. CC(c1ccccc1)&hellip;" style="flex:1;min-width:160px;" aria-label="SMILES input">
@@ -293,7 +298,7 @@
 
 <script src="polymer-data.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="polymer-search.js?v=50"></script>
+<script src="polymer-search.js?v=51"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });

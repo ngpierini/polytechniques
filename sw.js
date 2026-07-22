@@ -5,7 +5,7 @@
 // Either way the calculators still work with no connection. Bump CACHE_NAME
 // whenever the pre-cache list below changes so old clients pick up the new
 // set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v41";
+const CACHE_NAME = "polytechniques-v42";
 
 const PRECACHE_URLS = [
   "home.html",
@@ -39,10 +39,26 @@ const PRECACHE_URLS = [
   "apple-touch-icon.png"
 ];
 
+// Cloudflare Pages 308-redirects "home.html" to "home", so a plain addAll
+// would store redirected responses — and Chrome refuses to serve a cached
+// redirected response for a navigation, which would break offline mode.
+// stripRedirect rebuilds the response so the cached copy is a clean 200.
+function stripRedirect(res) {
+  if (!res.redirected) return Promise.resolve(res);
+  return res.blob().then(function (body) {
+    return new Response(body, { status: 200, statusText: "OK", headers: res.headers });
+  });
+}
+
 self.addEventListener("install", function (event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
-      return cache.addAll(PRECACHE_URLS);
+      return Promise.all(PRECACHE_URLS.map(function (u) {
+        return fetch(u).then(function (res) {
+          if (!res.ok) return; // skip rather than fail the whole install
+          return stripRedirect(res).then(function (clean) { return cache.put(u, clean); });
+        }).catch(function () {});
+      }));
     })
   );
   self.skipWaiting();
@@ -63,7 +79,9 @@ self.addEventListener("activate", function (event) {
 function cachePut(req, res) {
   if (!res || !res.ok) return res;
   var copy = res.clone();
-  caches.open(CACHE_NAME).then(function (cache) { cache.put(req, copy); });
+  caches.open(CACHE_NAME).then(function (cache) {
+    stripRedirect(copy).then(function (clean) { cache.put(req, clean); });
+  });
   return res;
 }
 
