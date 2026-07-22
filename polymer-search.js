@@ -2393,3 +2393,98 @@
     draw();
   });
 })();
+
+// ---------- Photo -> structure (AI recognition) ----------
+// Sends a photographed or screenshotted structure to /api/recognize (a
+// Cloudflare Pages Function backed by a vision model) and loads the returned
+// SMILES through the existing Load SMILES flow, so the user always sees the
+// drawn structure and confirms it before searching. The button only appears
+// when /api/health reports the endpoint is deployed and configured, so on a
+// static-only host (or local dev) the feature simply isn't offered.
+(function () {
+  "use strict";
+
+  function init() {
+    var btn = document.getElementById("mol-photo-btn");
+    var input = document.getElementById("mol-photo-input");
+    var status = document.getElementById("mol-photo-status");
+    if (!btn || !input || !status) return;
+
+    function note(msg) {
+      status.textContent = msg;
+      status.hidden = !msg;
+    }
+
+    fetch("api/health")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (h) { if (h && h.ok && h.keyConfigured) btn.hidden = false; })
+      .catch(function () { /* static host: leave the button hidden */ });
+
+    btn.addEventListener("click", function () { input.click(); });
+
+    input.addEventListener("change", function () {
+      var file = input.files && input.files[0];
+      input.value = "";
+      if (!file) return;
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        // Downscale to a 1400px long edge on a white background: photos are
+        // where the payload and token cost live, and line art survives this
+        // easily. JPEG because photographs dominate this path.
+        var scale = Math.min(1, 1400 / Math.max(img.width, img.height));
+        var c = document.createElement("canvas");
+        c.width = Math.max(1, Math.round(img.width * scale));
+        c.height = Math.max(1, Math.round(img.height * scale));
+        var cx = c.getContext("2d");
+        cx.fillStyle = "#ffffff";
+        cx.fillRect(0, 0, c.width, c.height);
+        cx.drawImage(img, 0, 0, c.width, c.height);
+        recognize(c.toDataURL("image/jpeg", 0.9).split(",")[1]);
+      };
+      img.onerror = function () {
+        URL.revokeObjectURL(url);
+        note("That file could not be read as an image.");
+      };
+      img.src = url;
+    });
+
+    function recognize(b64) {
+      btn.disabled = true;
+      note("Reading the structure from your image… this takes a few seconds.");
+      fetch("api/recognize", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ media_type: "image/jpeg", data: b64 }),
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          btn.disabled = false;
+          if (!res || !res.ok) {
+            note((res && res.error) || "Recognition failed. Try again.");
+            return;
+          }
+          if (!res.smiles) {
+            note("No structure could be read. " + (res.reason || "Try a sharper, closer photo."));
+            return;
+          }
+          var smilesInput = document.getElementById("mol-smiles-input");
+          var loadBtn = document.getElementById("mol-smiles-load");
+          if (smilesInput && loadBtn) {
+            smilesInput.value = res.smiles;
+            loadBtn.click();
+          }
+          note("Read with " + (res.confidence || "unknown") + " confidence: " +
+            (res.reason || "") + " Check the drawing carefully before searching.");
+        })
+        .catch(function () {
+          btn.disabled = false;
+          note("Recognition is unreachable right now. Try again in a minute.");
+        });
+    }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
