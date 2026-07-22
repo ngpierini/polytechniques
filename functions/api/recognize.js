@@ -147,12 +147,21 @@ export async function onRequestPost(context) {
   });
 
   if (!apiResp.ok) {
-    // Map provider errors to friendly ones without leaking details.
-    if (apiResp.status === 401) return json(503, { ok: false, error: "Recognition is misconfigured (key rejected)." });
+    // Surface the provider's error type and a truncated message alongside the
+    // friendly text. This carries no secret material and turns "it returned
+    // an error" into something diagnosable (e.g. a credit-balance problem
+    // reads completely differently from a malformed request).
+    let detail = "";
+    try {
+      const errBody = await apiResp.json();
+      const e = errBody && errBody.error;
+      detail = ((e && e.type) || "") + (e && e.message ? ": " + String(e.message).slice(0, 200) : "");
+    } catch (err) {}
+    if (apiResp.status === 401) return json(503, { ok: false, error: "Recognition is misconfigured (key rejected).", detail });
     if (apiResp.status === 429 || apiResp.status === 529) {
-      return json(429, { ok: false, error: "The recognition service is busy. Try again in a minute." });
+      return json(429, { ok: false, error: "The recognition service is busy. Try again in a minute.", detail });
     }
-    return json(502, { ok: false, error: "The recognition service returned an error. Try again." });
+    return json(502, { ok: false, error: "The recognition service returned an error. Try again.", detail });
   }
 
   const result = await apiResp.json();
