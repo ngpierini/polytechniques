@@ -1948,7 +1948,43 @@
     var pubRange = 'anytime';   // remembered across searches so the choice sticks
     var pubToken = 0;
     var lastPubPolymer = null;  // so the range buttons can re-query the same match
-    var pubOffset = 0;          // refresh pages deeper into Crossref's ranking
+    var pubPool = [];           // venue-ranked papers fetched but not yet shown
+    var pubPoolPos = 0;         // next pool index to render
+    var pubFetchOffset = 0;     // Crossref offset of the next page to fetch
+
+    // High-impact journal weighting. Crossref can't rank by venue, so each
+    // fetched page is re-ranked client-side: a paper in a flagship chemistry
+    // or polymer journal floats above same-query hits in lesser-known venues,
+    // while Crossref's own relevance position still breaks ties within a tier
+    // and orders the unweighted remainder. The polymer terms and the date
+    // filter on the query itself are untouched - this only reorders what the
+    // query already returned.
+    var JOURNAL_WEIGHTS = [
+      { m: 'exact', t: 'macromolecules', w: 70 },
+      { m: 'prefix', t: 'journal of the american chemical society', w: 70 },
+      { m: 'prefix', t: 'nature', w: 70 },
+      { m: 'exact', t: 'science', w: 70 },
+      { m: 'prefix', t: 'angewandte chemie', w: 65 },
+      { m: 'prefix', t: 'chemical reviews', w: 65 },
+      { m: 'prefix', t: 'chemical society reviews', w: 65 },
+      { m: 'exact', t: 'acs macro letters', w: 60 },
+      { m: 'exact', t: 'polymer chemistry', w: 60 },
+      { m: 'prefix', t: 'progress in polymer science', w: 60 },
+      { m: 'prefix', t: 'macromolecular rapid communications', w: 55 },
+      { m: 'exact', t: 'biomacromolecules', w: 55 },
+      { m: 'prefix', t: 'advanced materials', w: 50 },
+      { m: 'prefix', t: 'acs applied materials', w: 45 },
+      { m: 'prefix', t: 'journal of polymer science', w: 45 }
+    ];
+    function journalWeight(name) {
+      var j = String(name || '').toLowerCase().trim();
+      if (!j) return 0;
+      for (var i = 0; i < JOURNAL_WEIGHTS.length; i++) {
+        var e = JOURNAL_WEIGHTS[i];
+        if (e.m === 'exact' ? j === e.t : j.indexOf(e.t) === 0) return e.w;
+      }
+      return 0;
+    }
 
     // Crossref wants from-pub-date as YYYY-MM-DD; build it from "days ago".
     function pubFromDate(days) {
@@ -1967,7 +2003,7 @@
 
       var name = polymer.name;
       el.hidden = false;
-      pubOffset = 0;            // a new match starts back at the top papers
+      pubPool = []; pubPoolPos = 0; pubFetchOffset = 0;   // new match: top papers
       // Persistent shell: heading + range control + a results slot that each
       // fetch refills, so re-querying on a range change doesn't rebuild (and
       // re-bind) the buttons under the user's cursor.
@@ -1988,7 +2024,7 @@
           var btn = e.target.closest('.mol-pub-range');
           if (!btn || btn.getAttribute('data-range') === pubRange) return;
           pubRange = btn.getAttribute('data-range');
-          pubOffset = 0;        // a new window restarts at its top papers
+          pubPool = []; pubPoolPos = 0; pubFetchOffset = 0;   // new window: top papers
           filter.querySelectorAll('.mol-pub-range').forEach(function (b) {
             var on = b.getAttribute('data-range') === pubRange;
             b.classList.toggle('active', on);
@@ -1997,14 +2033,14 @@
           fetchPublications(lastPubPolymer);
         });
       }
-      // Refresh pages six deeper into the same relevance-ranked query, so each
-      // press shows papers not seen yet; fetchPublications wraps back to the
-      // top when a page comes back empty.
+      // Refresh shows the next six papers from the venue-ranked pool - no
+      // network needed until the pool runs out, at which point the next
+      // Crossref page is fetched (wrapping to the top when exhausted).
       var refreshBtn = el.querySelector('.mol-pub-refresh');
       if (refreshBtn) {
         refreshBtn.addEventListener('click', function () {
-          pubOffset += 6;
-          fetchPublications(lastPubPolymer);
+          if (pubPoolPos < pubPool.length) renderPubPage();
+          else fetchPublications(lastPubPolymer);
         });
       }
       fetchPublications(polymer);
@@ -2030,11 +2066,14 @@
       var filters = ['type:journal-article'];
       var from = pubFromDate(rangeDef.days);
       if (from) filters.push('from-pub-date:' + from);
+      // Fetch a page of 30 so the venue re-ranking has a real pool to work
+      // with; "New papers" then walks the ranked pool six at a time without
+      // another request until it runs dry.
       var url = 'https://api.crossref.org/works?query.bibliographic=' +
         encodeURIComponent(terms.join(' ')) +
         '&filter=' + encodeURIComponent(filters.join(',')) +
-        '&rows=6' +
-        (pubOffset ? '&offset=' + pubOffset : '') +
+        '&rows=30' +
+        (pubFetchOffset ? '&offset=' + pubFetchOffset : '') +
         '&select=' + encodeURIComponent('title,author,container-title,short-container-title,DOI,published,published-print,published-online');
 
       fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
@@ -2044,8 +2083,8 @@
         // Paged past the end of what Crossref has for this query: wrap back to
         // the top instead of showing an empty page. (Only recurses once - at
         // offset 0 an empty result falls through to the no-results message.)
-        if (!papers.length && pubOffset > 0) {
-          pubOffset = 0;
+        if (!papers.length && pubFetchOffset > 0) {
+          pubFetchOffset = 0;
           fetchPublications(polymer);
           return;
         }
@@ -2056,17 +2095,34 @@
             ' the search links on the match above for a broader or structure-based lookup.</div>';
           return;
         }
-        list.innerHTML = papers.map(function (p) {
-            return '<a class="mol-pub-paper" href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener noreferrer">' +
-              '<span class="mol-pub-paper-title">' + escapeHtml(p.title) + '</span>' +
-              '<span class="mol-pub-paper-meta">' + escapeHtml(p.meta) + '</span>' +
-              '</a>';
-          }).join('') +
-          '<div class="mol-pub-foot guide-note">Matched by name via Crossref. Not a structure-indexed search &mdash; use the PubChem / Patents links above to search by structure.</div>';
+        pubFetchOffset += 30;
+        // Rank the pool: venue weight minus a relevance-position penalty, so a
+        // flagship-journal paper floats up while Crossref's order still breaks
+        // ties and ranks the unweighted remainder.
+        pubPool = papers.map(function (p, i) { return { p: p, s: journalWeight(p.journal) - i * 2, i: i }; })
+          .sort(function (x, y) { return (y.s - x.s) || (x.i - y.i); })
+          .map(function (r) { return r.p; });
+        pubPoolPos = 0;
+        renderPubPage();
       }).catch(function () {
         if (myToken !== pubToken) return;
         list.innerHTML = '<div class="guide-note">Couldn\'t reach the publication index right now. The search links on the match above still work.</div>';
       });
+    }
+
+    // Render the next six papers from the ranked pool into the list slot.
+    function renderPubPage() {
+      var list = document.getElementById('mol-pub-list');
+      if (!list) return;
+      var page = pubPool.slice(pubPoolPos, pubPoolPos + 6);
+      pubPoolPos += page.length;
+      list.innerHTML = page.map(function (p) {
+          return '<a class="mol-pub-paper" href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener noreferrer">' +
+            '<span class="mol-pub-paper-title">' + escapeHtml(p.title) + '</span>' +
+            '<span class="mol-pub-paper-meta">' + escapeHtml(p.meta) + '</span>' +
+            '</a>';
+        }).join('') +
+        '<div class="mol-pub-foot guide-note">Matched by name via Crossref. Not a structure-indexed search &mdash; use the PubChem / Patents links above to search by structure.</div>';
     }
 
     // Crossref metadata can arrive with HTML entities already baked in
@@ -2099,7 +2155,8 @@
         author = (a0.family || a0.name || '') + (it.author.length > 1 ? ' et al.' : '');
       }
       var meta = [author, journal, year].filter(Boolean).join(' · ');
-      return { title: title, meta: meta, url: doi ? 'https://doi.org/' + doi : (it.URL || '#') };
+      // journal rides along raw so journalWeight() can rank by venue.
+      return { title: title, meta: meta, journal: journal, url: doi ? 'https://doi.org/' + doi : (it.URL || '#') };
     }
 
     // ---------- SMILES in/out and structure clean-up ----------
