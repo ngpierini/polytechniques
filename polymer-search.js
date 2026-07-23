@@ -1861,6 +1861,8 @@
     function renderResults(list) {
       var resultsEl = document.getElementById('mol-results');
       if (!resultsEl) return;
+      var idEl = document.getElementById('mol-identify');   // only the no-match path shows it
+      if (idEl) { idEl.hidden = true; idEl.innerHTML = ''; }
       renderPublications(null);   // structure-search paths refill this after
       if (!list.length) { resultsEl.innerHTML = '<p class="guide-note">No matches.</p>'; return; }
       resultsEl.innerHTML = list.map(polymerCard).join('');
@@ -2636,6 +2638,85 @@
       if (cleanBtn) cleanBtn.addEventListener('click', cleanUpStructure);
     })();
 
+    // When a drawing has no library match, name it from its structure via
+    // PubChem. Capping the repeat unit's open ends with H gives a misleading
+    // name (polyethylene's unit caps to "ethane"), so reconstruct the MONOMER:
+    // an addition polymer's two "*" ends sit on adjacent backbone carbons, and
+    // turning that bond into a double bond regenerates the vinyl monomer
+    // (styrene, 2-vinylpyrrolidine, ...), which is what actually names the
+    // polymer. Units whose ends aren't adjacent (condensation/ROP) fall back to
+    // the H-capped fragment. Returns editor-format atoms/bonds plus which case.
+    function monomerLookupStructure(sub) {
+      var stars = sub.atoms.filter(function (a) { return a.el === '*'; });
+      if (stars.length !== 2) return null;
+      var starIds = {}; stars.forEach(function (s) { starIds[s.id] = true; });
+      var nbr = {};
+      sub.bonds.forEach(function (b) {
+        if (starIds[b.a] && !starIds[b.b]) nbr[b.a] = b.b;
+        else if (starIds[b.b] && !starIds[b.a]) nbr[b.b] = b.a;
+      });
+      var n0 = nbr[stars[0].id], n1 = nbr[stars[1].id];
+      var atomsNoStar = sub.atoms.filter(function (a) { return !starIds[a.id]; })
+        .map(function (a) { return { id: a.id, el: a.el, charge: a.charge, x: a.x, y: a.y }; });
+      var bondsNoStar = sub.bonds.filter(function (b) { return !starIds[b.a] && !starIds[b.b]; })
+        .map(function (b) { return { a: b.a, b: b.b, order: b.order }; });
+      var kind = 'fragment';
+      if (n0 != null && n1 != null && n0 !== n1) {
+        var bb = null;
+        bondsNoStar.forEach(function (b) { if ((b.a === n0 && b.b === n1) || (b.a === n1 && b.b === n0)) bb = b; });
+        if (bb && bb.order === 1) { bb.order = 2; kind = 'monomer'; }
+      }
+      return { atoms: atomsNoStar, bonds: bondsNoStar, kind: kind };
+    }
+
+    var identifyToken = 0;
+    function identifyExternally(sub, RDKit) {
+      var el = document.getElementById('mol-identify');
+      var myToken = ++identifyToken;
+      var recon = monomerLookupStructure(sub);
+      if (!el || !recon) { renderPublications(null); return; }
+      var smiles = null;
+      var ex = expandSuperatoms(recon.atoms, recon.bonds);
+      var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
+      if (mol) { try { smiles = mol.get_smiles(); } catch (e) {} mol.delete(); }
+      if (!smiles) { el.hidden = true; el.innerHTML = ''; renderPublications(null); return; }
+
+      el.hidden = false;
+      el.innerHTML = '<div class="mol-id-body guide-note">Identifying this structure in PubChem&hellip;</div>';
+
+      fetch('https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/property/Title,IUPACName/JSON',
+        { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'smiles=' + encodeURIComponent(smiles) })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (myToken !== identifyToken) return;
+          var prop = data && data.PropertyTable && data.PropertyTable.Properties && data.PropertyTable.Properties[0];
+          if (!prop || !prop.CID) { showNoId(el, smiles); renderPublications(null); return; }
+          var title = prop.Title || prop.IUPACName || ('CID ' + prop.CID);
+          var cidUrl = 'https://pubchem.ncbi.nlm.nih.gov/compound/' + prop.CID;
+          var polymerName = recon.kind === 'monomer' ? ('poly(' + title.toLowerCase() + ')') : null;
+          el.innerHTML =
+            '<div class="mol-id-head">Not in the reference library &mdash; identified by structure</div>' +
+            '<div class="mol-id-body">' +
+              (recon.kind === 'monomer'
+                ? 'The monomer of this repeat unit is <a href="' + cidUrl + '" target="_blank" rel="noopener noreferrer"><strong>' + escapeHtml(title) + '</strong></a> (PubChem CID ' + prop.CID + '), so the polymer is likely <strong>' + escapeHtml(polymerName) + '</strong>. Publications below are for that polymer.'
+                : 'The closest compound in PubChem is <a href="' + cidUrl + '" target="_blank" rel="noopener noreferrer"><strong>' + escapeHtml(title) + '</strong></a> (CID ' + prop.CID + ').') +
+            '</div>';
+          renderPublications({ name: polymerName || title, aka: recon.kind === 'monomer' ? [title] : [] });
+        })
+        .catch(function () {
+          if (myToken !== identifyToken) return;
+          showNoId(el, smiles);
+          renderPublications(null);
+        });
+    }
+    function showNoId(el, smiles) {
+      el.hidden = false;
+      el.innerHTML = '<div class="mol-id-head">Not in the reference library</div>' +
+        '<div class="mol-id-body">Couldn’t name this structure automatically. Look it up by structure on ' +
+        '<a href="https://pubchem.ncbi.nlm.nih.gov/#query=' + encodeURIComponent(smiles) +
+        '" target="_blank" rel="noopener noreferrer">PubChem</a>.</div>';
+    }
+
     function runStructureSearch() {
       var statusEl = document.getElementById('mol-status');
       if (!statusEl) return;
@@ -2720,7 +2801,9 @@
         }).sort(function (x, y) { return y.sim - x.sim; }).slice(0, 5);
         statusEl.textContent = 'No exact match in the reference library. Closest structures by similarity:';
         renderRanked(ranked);
-        renderPublications(ranked[0] && ranked[0].p);
+        // Not in the library: name it from its structure via PubChem and search
+        // publications on that, instead of on the weakly-similar local match.
+        identifyExternally(sub, RDKit);
       }).catch(function () {
         compositionFallback('The structure-matching engine could not load. Closest by element composition:');
       });

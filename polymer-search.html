@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=53">
+<link rel="stylesheet" href="style.css?v=54">
 </head>
 <body>
 
@@ -290,6 +290,7 @@
   <div class="card mol-card-in">
     <h3><span class="mol-card-icon mol-card-icon--2">&#127919;</span>Results</h3>
     <p id="mol-status" class="guide-note"></p>
+    <div id="mol-identify" class="mol-identify" hidden></div>
     <div id="mol-results" class="mol-results"></div>
     <div id="mol-publications" class="mol-publications" hidden></div>
     <p class="guide-note" style="margin-top:12px;">Can't find a polymer that should be here? <a href="https://github.com/ngpierini/polytechniques/issues/new?title=Suggest%20a%20polymer%3A%20&amp;labels=polymer-suggestion&amp;body=Polymer%20name%3A%20%0AMonomer(s)%3A%20%0ACAS%20number%20(if%20known)%3A%20%0ASMILES%20or%20structure%20source%20(if%20known)%3A%20%0A" target="_blank" rel="noopener noreferrer">Suggest it on GitHub</a> and it'll be considered for the reference library.</p>
@@ -303,7 +304,7 @@
 
 <script src="polymer-data.js?v=4"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="polymer-search.js?v=79"></script>
+<script src="polymer-search.js?v=80"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
