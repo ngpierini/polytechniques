@@ -831,11 +831,18 @@
       var whole = atoms.filter(function (a) { return a.el !== '*'; });
       var target, label, hint = '';
       var dim = ' style="color:var(--text-dim);font-size:0.85em;"';
+      var starCount = atoms.filter(function (a) { return a.el === '*'; }).length;
       if (sel.length) {
         // A live selection wins: weigh exactly what is highlighted.
         target = sel;
         label = 'Highlighted fragment';
         hint = ' <span' + dim + '>(bonds crossing the selection edge count as connections, not H)</span>';
+      } else if (starCount === 2 && whole.length) {
+        // Two explicit "*" ends already define the repeat unit, so weigh all of
+        // it regardless of the cosmetic bracket's size (the bracket is drawn
+        // small, on the backbone bonds, and would otherwise exclude pendants).
+        target = whole;
+        label = 'Repeat unit';
       } else if (bracket && whole.length) {
         // With a bracket down, report what the search itself would treat as
         // the repeat unit: the atoms inside the bracket, with bonds crossing
@@ -2080,6 +2087,112 @@
     var smilesStatusEl = document.getElementById('mol-smiles-status');
     function smilesNote(msg) { if (smilesStatusEl) smilesStatusEl.textContent = msg; }
 
+    // Lay a linear-backbone repeat unit out the textbook way: the chain between
+    // the two "*" ends runs as a horizontal zigzag, and each pendant drops off
+    // it, so polystyrene reads as a backbone with the phenyl hanging straight
+    // down instead of RDKit's arbitrary fold. Pendant shapes (rings, ester
+    // arms) are lifted straight from RDKit's coordinates and rigidly rotated
+    // onto the backbone, so their geometry stays correct. Returns false when the
+    // repeat unit isn't a simple chain (a ring sits in the backbone, e.g. PET),
+    // so the caller can fall back to orientRepeatUnit. Rewrites parsed.atoms in
+    // place, in the molblock frame fitParsedCoords expects (y up).
+    function layoutRepeatUnit(parsed) {
+      var A = parsed.atoms, BND = parsed.bonds, n = A.length;
+      function sub(p, q) { return { x: p.x - q.x, y: p.y - q.y }; }
+      function nrm(p) { var m = Math.hypot(p.x, p.y) || 1; return { x: p.x / m, y: p.y / m }; }
+      function rot(p, a) { var c = Math.cos(a), s = Math.sin(a); return { x: p.x * c - p.y * s, y: p.x * s + p.y * c }; }
+
+      var stars = [];
+      for (var i = 0; i < n; i++) if (A[i].el === '*') stars.push(i);
+      if (stars.length !== 2) return false;
+      var adj = []; for (i = 0; i < n; i++) adj.push([]);
+      BND.forEach(function (bd) { var a = bd.a - 1, b = bd.b - 1; adj[a].push(b); adj[b].push(a); });
+
+      // Shortest path between the two chain ends is the backbone.
+      var prev = new Array(n).fill(-1), seen = new Array(n).fill(false), q = [stars[0]];
+      seen[stars[0]] = true;
+      while (q.length) {
+        var u = q.shift();
+        if (u === stars[1]) break;
+        adj[u].forEach(function (v) { if (!seen[v]) { seen[v] = true; prev[v] = u; q.push(v); } });
+      }
+      if (!seen[stars[1]]) return false;
+      var backbone = []; for (var c = stars[1]; c !== -1; c = prev[c]) backbone.unshift(c);
+      var isBk = new Array(n).fill(false), posInBk = {};
+      backbone.forEach(function (b, k) { isBk[b] = true; posInBk[b] = k; });
+      // A chord between non-consecutive backbone atoms means a ring rides in the
+      // backbone; hand those to the generic layout instead.
+      var bail = false;
+      BND.forEach(function (bd) {
+        var a = bd.a - 1, b = bd.b - 1;
+        if (isBk[a] && isBk[b] && Math.abs(posInBk[a] - posInBk[b]) !== 1) bail = true;
+      });
+      if (bail) return false;
+
+      var Lb = BOND_LEN, dx = Lb * Math.cos(Math.PI / 6), dyv = Lb * Math.sin(Math.PI / 6);
+      var P = {};                        // index -> {x, y} in a y-down working frame
+      backbone.forEach(function (idx, k) { P[idx] = { x: k * dx, y: (k % 2) * dyv }; });
+      function rd(i) { return { x: A[i].x, y: -A[i].y }; }   // RDKit coords, y-down
+
+      // Everything hanging off a backbone atom (a pendant subtree); null if it
+      // loops back to another backbone atom (a ring bridging the chain).
+      function pendantGroup(start, root) {
+        var stack = [start], group = [], ok = true, ls = {}; ls[start] = true;
+        while (stack.length) {
+          var x = stack.pop(); group.push(x);
+          for (var j = 0; j < adj[x].length; j++) {
+            var v = adj[x][j];
+            if (v === root) continue;
+            if (isBk[v]) { ok = false; continue; }
+            if (!ls[v]) { ls[v] = true; stack.push(v); }
+          }
+        }
+        return ok ? group : null;
+      }
+
+      for (var bi = 0; bi < backbone.length; bi++) {
+        var Bx = backbone[bi];
+        if (A[Bx].el === '*') continue;                 // no pendants on chain ends
+        var gsum = { x: 0, y: 0 };
+        adj[Bx].forEach(function (v) {
+          if (isBk[v]) { var d = nrm(sub(P[v], P[Bx])); gsum.x += d.x; gsum.y += d.y; }
+        });
+        var outward = nrm({ x: -gsum.x, y: -gsum.y });
+        if (!isFinite(outward.x) || (outward.x === 0 && outward.y === 0)) outward = { x: 0, y: 1 };
+        var pend = adj[Bx].filter(function (v) { return !isBk[v]; });
+        var dirs;
+        if (pend.length <= 1) dirs = [outward];
+        else if (pend.length === 2) dirs = [rot(outward, 0.52), rot(outward, -0.52)];
+        else { dirs = []; for (var pk = 0; pk < pend.length; pk++) dirs.push(rot(outward, (pk - (pend.length - 1) / 2) * 0.7)); }
+        for (var pj = 0; pj < pend.length; pj++) {
+          var Q = pend[pj];
+          var group = pendantGroup(Q, Bx);
+          if (group === null) return false;              // ring bridges the backbone
+          var dir = dirs[Math.min(pj, dirs.length - 1)];
+          var vrd = sub(rd(Q), rd(Bx));
+          var rdLen = Math.hypot(vrd.x, vrd.y) || 1;
+          var scale = Lb / rdLen;
+          var rotAng = Math.atan2(dir.y, dir.x) - Math.atan2(vrd.y, vrd.x);
+          var ca = Math.cos(rotAng), sa = Math.sin(rotAng);
+          group.forEach(function (a) {
+            var rel = sub(rd(a), rd(Bx));
+            P[a] = { x: P[Bx].x + (rel.x * ca - rel.y * sa) * scale, y: P[Bx].y + (rel.x * sa + rel.y * ca) * scale };
+          });
+        }
+      }
+      for (i = 0; i < n; i++) if (!P[i]) return false;
+
+      // Mirror so the bulk of the pendants hangs below the chain, matching the
+      // usual polymer drawing (phenyl down, not up).
+      var bkY = 0; backbone.forEach(function (b) { bkY += P[b].y; }); bkY /= backbone.length;
+      var pSum = 0, pCount = 0;
+      for (i = 0; i < n; i++) if (!isBk[i]) { pSum += P[i].y; pCount++; }
+      if (pCount && pSum / pCount < bkY) for (i = 0; i < n; i++) P[i].y = 2 * bkY - P[i].y;
+
+      for (i = 0; i < n; i++) { A[i].x = P[i].x; A[i].y = -P[i].y; }   // back to y-up
+      return true;
+    }
+
     // Orient a two-ended repeat unit so its "*" chain ends lie on a horizontal
     // axis, left end first. RDKit's generic 2D layout can fold the backbone so
     // both ends point the same way (its polystyrene puts both "*" on the right),
@@ -2134,17 +2247,21 @@
       }
       var nA = neighborOf(stars[0]), nB = neighborOf(stars[1]);
       if (!nA || !nB) return null;
-      var crossA = (stars[0].x + nA.x) / 2;
-      var crossB = (stars[1].x + nB.x) / 2;
-      var left = Math.min(crossA, crossB), right = Math.max(crossA, crossB);
-      var xs = core.map(function (a) { return a.x; });
-      var ys = core.map(function (a) { return a.y; });
-      var padX = BOND_LEN * 0.15, padY = BOND_LEN * 0.3;
+      // Each bar sits at the midpoint of a "*"-to-backbone bond, so it crosses
+      // that bond the way a polymer bracket does. The height is deliberately
+      // small: just enough to span the two crossing points (plus a little), so
+      // pendant groups hang below the bracket instead of being boxed in. The
+      // "repeat unit" readout reads the "*" atoms, not this box, so a compact
+      // bracket doesn't change what the unit is.
+      var crossA = { x: (stars[0].x + nA.x) / 2, y: (stars[0].y + nA.y) / 2 };
+      var crossB = { x: (stars[1].x + nB.x) / 2, y: (stars[1].y + nB.y) / 2 };
+      var yc = (crossA.y + crossB.y) / 2;
+      var halfH = Math.max(BOND_LEN * 0.6, Math.abs(crossA.y - crossB.y) / 2 + BOND_LEN * 0.4);
       return {
-        x1: Math.min(left, Math.min.apply(null, xs) - padX),
-        x2: Math.max(right, Math.max.apply(null, xs) + padX),
-        y1: Math.min.apply(null, ys) - padY,
-        y2: Math.max.apply(null, ys) + padY
+        x1: Math.min(crossA.x, crossB.x),
+        x2: Math.max(crossA.x, crossB.x),
+        y1: yc - halfH,
+        y2: yc + halfH
       };
     }
 
@@ -2168,7 +2285,7 @@
           smilesNote('The aromatic form could not be kekulized; try writing the SMILES in Kekulé form (C1=CC=CC=C1).');
           return;
         }
-        orientRepeatUnit(parsed);
+        if (!layoutRepeatUnit(parsed)) orientRepeatUnit(parsed);
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms = []; bonds = []; bracket = null; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
@@ -2217,7 +2334,7 @@
           smilesNote('Could not draw ' + p.name + '. Use the publication links on its card instead.');
           return;
         }
-        orientRepeatUnit(parsed);
+        if (!layoutRepeatUnit(parsed)) orientRepeatUnit(parsed);
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms = []; bonds = []; bracket = null; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
