@@ -705,6 +705,13 @@ window.POLYMER_DB = [
       { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 },
       { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(ethylene disulfide)", aka: ["ethylene polysulfide", "polyethylene disulfide", "Thiokol"],
+    monomer: "1,2-Dichloroethane + sodium disulfide", tg: "-27 °C", tags: ["specialty", "elastomer"],
+    note: "A Thiokol-type polysulfide rubber; the S-S linkages give the solvent and weathering resistance used in sealants. The repeat unit is drawn disulfide-centered (-CH2-S-S-CH2-).",
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "S" }, { id: 3, el: "S" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
   }
 ];
 
