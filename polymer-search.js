@@ -1744,15 +1744,49 @@
       var x1 = Math.min(rect.x1, rect.x2), x2 = Math.max(rect.x1, rect.x2);
       var y1 = Math.min(rect.y1, rect.y2), y2 = Math.max(rect.y1, rect.y2);
       function inside(a) { return a.x >= x1 && a.x <= x2 && a.y >= y1 && a.y <= y2; }
-      var interior = atoms.filter(inside);
       var interiorIds = {};
-      interior.forEach(function (a) { interiorIds[a.id] = true; });
+      atoms.forEach(function (a) { if (inside(a)) interiorIds[a.id] = true; });
+
+      // Pull in pendant groups that hang past the bracket edge but are still
+      // part of the repeat unit - the phenyl of a hand-drawn polystyrene, say,
+      // when the box was dragged tight around the backbone. For each bond
+      // leaving the interior, flood the outside fragment (without re-entering
+      // the interior): a fragment that contains a ring is a side group, so its
+      // atoms are absorbed; an acyclic fragment is a neighbor-unit stub and
+      // stays an open chain end. Only ever pulls in atoms a tight bracket would
+      // otherwise have miscounted as extra ends, so it can't change a search
+      // that already worked.
+      var adj = {};
+      atoms.forEach(function (a) { adj[a.id] = []; });
+      bonds.forEach(function (b) { adj[b.a].push(b.b); adj[b.b].push(b.a); });
+      var absorbed = {};
+      function considerPendant(startId) {
+        if (absorbed[startId] || interiorIds[startId]) return;
+        var seen = {}, stack = [startId], count = 0;
+        seen[startId] = true;
+        while (stack.length) {
+          var u = stack.pop(); count++;
+          adj[u].forEach(function (v) { if (!interiorIds[v] && !seen[v]) { seen[v] = true; stack.push(v); } });
+        }
+        var edges = 0;
+        bonds.forEach(function (b) { if (seen[b.a] && seen[b.b]) edges++; });
+        if (edges >= count) {                 // a connected fragment with a cycle
+          Object.keys(seen).forEach(function (id) { absorbed[id] = true; });
+        }
+      }
+      bonds.forEach(function (b) {
+        if (interiorIds[b.a] && !interiorIds[b.b]) considerPendant(b.b);
+        else if (interiorIds[b.b] && !interiorIds[b.a]) considerPendant(b.a);
+      });
+      function isIn(id) { return !!interiorIds[id] || !!absorbed[id]; }
+
+      var interior = atoms.filter(function (a) { return isIn(a.id); });
       var subAtoms = interior.map(function (a) { return { id: a.id, el: a.el, charge: a.charge }; });
       var subBonds = [];
       var starCount = 0;
       var boundaryCount = 0;
       bonds.forEach(function (b) {
-        var aIn = interiorIds[b.a], bIn = interiorIds[b.b];
+        var aIn = isIn(b.a), bIn = isIn(b.b);
         if (aIn && bIn) {
           subBonds.push({ a: b.a, b: b.b, order: b.order });
         } else if (aIn || bIn) {
@@ -2627,7 +2661,7 @@
       if (sub.boundaryCount !== 2) {
         statusEl.textContent = sub.boundaryCount === 0
           ? 'This looks like a closed structure with no open chain ends inside the bracket. This tool matches linear repeat units with two open ends.'
-          : 'This tool currently matches linear repeat units with exactly two open chain ends (found ' + sub.boundaryCount + '). Branched or crosslinked structures aren’t matched yet.';
+          : 'Found ' + sub.boundaryCount + ' open chain ends inside the bracket; a linear repeat unit has exactly two. If a side group (an ester or alkyl chain) is sticking out past the bracket, enlarge the box to enclose the whole repeat unit. Genuinely branched or crosslinked structures aren’t matched yet.';
         renderResults([]);
         return;
       }
