@@ -606,6 +606,105 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 },
       { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 },
       { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 19, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(ethylene naphthalate)", aka: ["PEN"], monomer: "Ethylene glycol + 2,6-naphthalenedicarboxylic acid",
+    cls: "Step-growth (polyester)", cas: "24968-11-4", tg: "120 °C", tm: "265 °C", tags: ["polyester", "engineering", "fiber"],
+    note: "Stiffer, higher-barrier cousin of PET; the naphthalene ring raises Tg and modulus.",
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "O" },
+      { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" },
+      { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 },
+      { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 7, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 },
+      { a: 12, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(trimethylene terephthalate)", aka: ["PTT", "3GT"], monomer: "1,3-Propanediol + terephthalic acid",
+    cls: "Step-growth (polyester)", cas: "25009-14-3", tg: "45 °C", tm: "228 °C", tags: ["polyester", "fiber"],
+    note: "The 'odd' methylene count gives a kinked chain and good elastic recovery in fibers.",
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" },
+      { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 },
+      { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 8, order: 1 }, { a: 11, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 14, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(p-phenylene terephthalamide)", aka: ["PPTA", "Kevlar", "aramid"], monomer: "p-Phenylenediamine + terephthaloyl chloride",
+    cls: "Step-growth (polyamide)", cas: "24938-64-5", tags: ["polyamide", "fiber", "engineering"],
+    note: "Rigid-rod liquid-crystalline aramid; does not melt (decomposes ~500 °C).",
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
+      { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 2, order: 1 }, { a: 5, b: 8, order: 1 },
+      { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 11, order: 1 }, { a: 14, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(m-phenylene isophthalamide)", aka: ["MPIA", "Nomex", "meta-aramid"], monomer: "m-Phenylenediamine + isophthaloyl chloride",
+    cls: "Step-growth (polyamide)", cas: "24938-60-1", tags: ["polyamide", "fiber"],
+    note: "Meta-linked aramid; flexible chains give flame-resistant fiber rather than high stiffness.",
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
+      { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 2, order: 1 }, { a: 4, b: 8, order: 1 },
+      { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 11, order: 1 }, { a: 13, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(ether sulfone)", aka: ["PES", "PESU"], monomer: "4,4'-Dichlorodiphenyl sulfone + hydroquinone",
+    cas: "25608-63-3", tg: "225 °C", tags: ["engineering"],
+    note: "Amorphous, transparent high-temperature thermoplastic; the sulfone group stiffens the chain.",
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
+      { id: 8, el: "S" }, { id: 9, el: "O" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 2, order: 1 }, { a: 5, b: 8, order: 1 },
+      { a: 8, b: 9, order: 2 }, { a: 8, b: 10, order: 2 }, { a: 8, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 11, order: 1 }, { a: 14, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(ethyl methacrylate)", aka: ["PEMA"], monomer: "Ethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: "9003-42-3", tg: "65 °C", tags: ["acrylic", "coating"],
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    name: "Poly(cyclohexyl methacrylate)", aka: ["PCHMA"], monomer: "Cyclohexyl methacrylate",
+    cls: "Addition (methacrylate)", cas: "25768-50-7", tg: "~92 °C", tags: ["acrylic"],
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" },
+      { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 },
+      { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 7, order: 1 }]
+  },
+  {
+    name: "Poly(2-vinylpyridine)", aka: ["P2VP"], monomer: "2-Vinylpyridine",
+    cls: "Addition (vinyl)", cas: "25014-15-7", tg: "104 °C", tags: ["specialty"],
+    note: "The ring nitrogen makes it pH-responsive and metal-coordinating; a common block-copolymer segment.",
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "N" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 3, order: 1 }]
+  },
+  {
+    name: "Poly(dioxanone)", aka: ["PDO", "PDS", "poly(p-dioxanone)"], monomer: "p-Dioxanone (1,4-dioxan-2-one)",
+    cls: "Ring-opening", cas: "25656-01-1", tg: "-10 °C", tm: "110 °C", tags: ["biodegradable", "biomedical"],
+    note: "The ether oxygen in the backbone gives the flexibility used in monofilament absorbable sutures.",
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(3-hydroxyvalerate)", aka: ["PHV", "P3HV"], monomer: "3-Hydroxyvalerate",
+    cls: "Ring-opening", cas: "26744-04-7", tg: "-15 °C", tm: "108 °C", tags: ["polyester", "biodegradable"],
+    note: "The ethyl-branched PHA; copolymerized with PHB (as PHBV) to toughen it.",
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 2, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(ethylene adipate)", aka: ["PEA"], monomer: "Ethylene glycol + adipic acid",
+    cls: "Step-growth (polyester)", cas: "24938-37-2", tg: "-50 °C", tm: "50 °C", tags: ["polyester", "biodegradable"],
+    note: "Low-melting aliphatic polyester used as a polyol soft segment in polyurethanes.",
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "O" },
+      { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 },
+      { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 11, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(ethylene succinate)", aka: ["PESu"], monomer: "Ethylene glycol + succinic acid",
+    cls: "Step-growth (polyester)", cas: "25569-53-3", tg: "-4 °C", tm: "104 °C", tags: ["polyester", "biodegradable"],
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "O" },
+      { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 },
+      { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: "S1", order: 1 }]
   }
 ];
 
