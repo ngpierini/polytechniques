@@ -561,7 +561,7 @@
     }
 
     function elColor(el) {
-      var colors = { N: '#3b82f6', O: '#ef4444', S: '#eab308', F: '#22c55e', Cl: '#22c55e', Br: '#a16207', I: '#7c3aed', Si: '#f97316', P: '#f97316', B: '#f97316' };
+      var colors = { N: '#3b82f6', NO2: '#3b82f6', O: '#ef4444', S: '#eab308', F: '#22c55e', Cl: '#22c55e', Br: '#a16207', I: '#7c3aed', Si: '#f97316', P: '#f97316', B: '#f97316' };
       return colors[el] || '#111';
     }
 
@@ -595,8 +595,12 @@
               h = Math.max(0, v - used);
             }
           }
-          ctx.font = '600 15px Arial, Helvetica, sans-serif';
-          var wEl = ctx.measureText(a.el).width;
+          // A condensed group label (NO2) draws its digits as subscripts; a
+          // plain element symbol goes through the same path as one segment.
+          var segs = a.el.match(/\d+|\D+/g) || [a.el];
+          var segFont = function (s) { return /^\d/.test(s) ? '600 10px Arial, Helvetica, sans-serif' : '600 15px Arial, Helvetica, sans-serif'; };
+          var wEl = 0;
+          segs.forEach(function (s) { ctx.font = segFont(s); wEl += ctx.measureText(s).width; });
           ctx.font = '600 13px Arial, Helvetica, sans-serif';
           var wH = h > 0 ? ctx.measureText('H').width : 0;
           ctx.font = '600 10px Arial, Helvetica, sans-serif';
@@ -604,12 +608,15 @@
           ctx.fillStyle = bgColor;
           ctx.fillRect(a.x - wEl / 2 - 3, a.y - 9, wEl + wH + wSub + 6, 18);
           ctx.fillStyle = elColor(a.el);
-          ctx.textAlign = 'center';
+          ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
-          ctx.font = '600 15px Arial, Helvetica, sans-serif';
-          ctx.fillText(a.el, a.x, a.y + 1);
+          var lx = a.x - wEl / 2;
+          segs.forEach(function (s) {
+            ctx.font = segFont(s);
+            ctx.fillText(s, lx, a.y + (/^\d/.test(s) ? 5 : 1));
+            lx += ctx.measureText(s).width;
+          });
           if (h > 0) {
-            ctx.textAlign = 'left';
             ctx.font = '600 13px Arial, Helvetica, sans-serif';
             ctx.fillText('H', a.x + wEl / 2 + 0.5, a.y + 1);
             if (h > 1) {
@@ -727,6 +734,12 @@
       Si: 27.976927, P: 30.973762, S: 31.972071, Cl: 34.968853, Br: 78.918338, I: 126.904473
     };
 
+    // Condensed group labels: one drawn vertex standing for a whole group,
+    // structure and charges implicit (Shift+N writes NO2). The composition
+    // feeds the formula/mass readout below; expandSuperatoms() rebuilds the
+    // real atoms for anything RDKit sees (search, SMILES, clean-up).
+    var SUPERATOM_COUNTS = { NO2: { N: 1, O: 2 } };
+
     function effectiveValence(a) {
       var v = IMPLICIT_H_VALENCE[a.el];
       if (v == null) return null;
@@ -751,6 +764,22 @@
       list.forEach(function (a) {
         if (a.el === '*') return;
         real++;
+        // A condensed group vertex contributes its whole composition and no
+        // implicit hydrogens; its bonds still count toward open connections.
+        var group = SUPERATOM_COUNTS[a.el];
+        if (group) {
+          Object.keys(group).forEach(function (el) {
+            counts[el] = (counts[el] || 0) + group[el];
+            mass += ATOMIC_MASS[el] * group[el];
+            mono += MONO_MASS[el] * group[el];
+          });
+          bonds.forEach(function (b) {
+            if (b.a !== a.id && b.b !== a.id) return;
+            var other = b.a === a.id ? b.b : b.a;
+            if (!inSet[other]) openOrders += b.order;
+          });
+          return;
+        }
         var m = ATOMIC_MASS[a.el];
         if (m == null) { unknown = a.el; return; }
         counts[a.el] = (counts[a.el] || 0) + 1;
@@ -1512,22 +1541,26 @@
       draw();
     }
 
-    // Shift+N attaches a whole nitro group instead of relabeling: a new N off
-    // the target atom at the editor's default extension angle, with =O and
-    // -O(-) fanned at 60 degrees either side. Drawn in the charged Lewis form
-    // (N+ single-bonded O-), which both the valence/H-count model and RDKit
-    // treat correctly, rather than a hypervalent N with two double bonds.
-    function attachNitro(a) {
-      var ang = defaultExtendAngle(a);
-      var snapped = Math.round(ang / SNAP_STEP) * SNAP_STEP;
-      var nAtom = addAtom('N', a.x + BOND_LEN * Math.cos(snapped), a.y + BOND_LEN * Math.sin(snapped));
-      nAtom.charge = 1;
-      addBond(a.id, nAtom.id, 1);
-      var o1 = addAtom('O', nAtom.x + BOND_LEN * Math.cos(snapped - Math.PI / 3), nAtom.y + BOND_LEN * Math.sin(snapped - Math.PI / 3));
-      addBond(nAtom.id, o1.id, 2);
-      var o2 = addAtom('O', nAtom.x + BOND_LEN * Math.cos(snapped + Math.PI / 3), nAtom.y + BOND_LEN * Math.sin(snapped + Math.PI / 3));
-      o2.charge = -1;
-      addBond(nAtom.id, o2.id, 1);
+    // Expand condensed group labels into their real atoms and bonds for
+    // anything RDKit sees. Original atoms keep their array positions (an NO2
+    // vertex becomes its nitrogen, charged +1, with =O and -O(-) appended at
+    // the end in the charged Lewis form), so callers that map RDKit output
+    // back by index can still address the originals. Editor state is never
+    // mutated; the canvas keeps the one-vertex label.
+    function expandSuperatoms(atomList, bondList) {
+      var atoms2 = atomList.map(function (a) { return { id: a.id, el: a.el, x: a.x || 0, y: a.y || 0, charge: a.charge }; });
+      var bonds2 = bondList.map(function (b) { return { a: b.a, b: b.b, order: b.order }; });
+      var extra = 0;
+      atoms2.forEach(function (a) {
+        if (a.el !== 'NO2') return;
+        a.el = 'N'; a.charge = 1;
+        var o1 = { id: '_no2a' + extra, el: 'O', x: a.x + 20, y: a.y - 20 };
+        var o2 = { id: '_no2b' + extra, el: 'O', x: a.x + 20, y: a.y + 20, charge: -1 };
+        extra++;
+        atoms2.push(o1, o2);
+        bonds2.push({ a: a.id, b: o1.id, order: 2 }, { a: a.id, b: o2.id, order: 1 });
+      });
+      return { atoms: atoms2, bonds: bonds2 };
     }
     document.addEventListener('keydown', function (evt) {
       if (evt.key === 'Escape') {
@@ -1543,14 +1576,15 @@
       var k = evt.key.toLowerCase();
       if (!/^[a-z]$/.test(k)) return;
 
-      // Shift+N drops a nitro group (-NO2) onto the selection (or the hovered
-      // atom) instead of relabeling it to nitrogen.
+      // Shift+N turns the selection (or the hovered atom) into a condensed
+      // nitro-group vertex: the atom's label becomes NO2, structure and
+      // charges implicit. No extra atoms or bonds are drawn.
       if (evt.shiftKey && k === 'n') {
         var nitroTargets = selectedGroup.length ? selectedGroup : (hoverAtom ? [hoverAtom] : []);
         nitroTargets = nitroTargets.filter(function (t) { return t.el !== '*'; });
         if (nitroTargets.length) {
           snapshot();
-          nitroTargets.forEach(attachNitro);
+          nitroTargets.forEach(function (t) { t.el = 'NO2'; t.charge = 0; });
           draw();
         }
         return;
@@ -2422,7 +2456,8 @@
       if (!atoms.length) { smilesNote('Draw a structure first.'); return; }
       smilesNote(rdkitPromise ? '' : 'Loading the chemistry engine (about 7 MB, one time)…');
       ensureRDKit().then(function (RDKit) {
-        var mol = molFrom(RDKit, molblockFrom(atoms, bonds));
+        var ex = expandSuperatoms(atoms, bonds);
+        var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
         if (!mol) { smilesNote('The drawing could not be interpreted as a molecule.'); return; }
         var out = null;
         try { out = kind === 'inchi' ? mol.get_inchi() : mol.get_smiles(); } catch (e) {}
@@ -2446,19 +2481,22 @@
       if (!atoms.length) { smilesNote('Draw a structure first.'); return; }
       smilesNote(rdkitPromise ? 'Cleaning up…' : 'Loading the chemistry engine (about 7 MB, one time)…');
       ensureRDKit().then(function (RDKit) {
-        var mol = molFrom(RDKit, molblockFrom(atoms, bonds));
+        var ex = expandSuperatoms(atoms, bonds);
+        var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
         if (!mol) { smilesNote('The drawing could not be interpreted, so it was left as it is.'); return; }
         var mb = null;
         try { mb = mol.get_new_coords(); } catch (e) {}
         mol.delete();
         var parsed = mb && parseMolblockToEditor(mb);
-        if (!parsed || parsed.atoms.length !== atoms.length) {
+        if (!parsed || parsed.atoms.length !== ex.atoms.length) {
           smilesNote('Clean-up failed; the drawing was left unchanged.');
           return;
         }
         // molblockFrom writes atoms in array order and RDKit preserves it, so
         // the new coordinates map back onto the same atoms: ids, bonds,
-        // charges, and stereo marks all survive.
+        // charges, and stereo marks all survive. Expanded group atoms sit at
+        // the end of the list, so the first atoms.length entries are the
+        // editor's own atoms; the appended ones are layout-only and dropped.
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms.forEach(function (a, i) { a.x = pos[i].x; a.y = pos[i].y; });
@@ -2539,7 +2577,8 @@
         ? 'No instant match. Comparing structures…'
         : 'No instant match. Loading the structure-matching engine (about 7 MB, one time; it stays cached)…';
       ensureRDKit().then(function (RDKit) {
-        var mol = molFrom(RDKit, molblockFrom(sub.atoms, sub.bonds));
+        var ex = expandSuperatoms(sub.atoms, sub.bonds);
+        var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
         if (!mol) {
           compositionFallback('The drawing could not be interpreted as a molecule. Closest by composition:');
           return;
