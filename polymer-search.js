@@ -1858,38 +1858,104 @@
     // structure-indexed search of the literature (no free API offers that for
     // a polymer repeat unit) — the PubChem/Patents links on the card remain
     // the route for a structure/patent lookup.
+    // Publication time-range options. "Anytime" is the default (broadest, so a
+    // match usually has something to show); the others cap how far back Crossref
+    // may reach via a from-pub-date filter, letting a user pull only what's new.
+    var PUB_RANGES = [
+      { id: 'week', label: 'Last week', days: 7 },
+      { id: 'month', label: 'Last month', days: 30 },
+      { id: 'year', label: 'Last year', days: 365 },
+      { id: 'anytime', label: 'Anytime', days: 0 }
+    ];
+    var pubRange = 'anytime';   // remembered across searches so the choice sticks
     var pubToken = 0;
+    var lastPubPolymer = null;  // so the range buttons can re-query the same match
+
+    // Crossref wants from-pub-date as YYYY-MM-DD; build it from "days ago".
+    function pubFromDate(days) {
+      if (!days) return '';
+      var d = new Date(Date.now() - days * 86400000);
+      return d.getFullYear() + '-' +
+        ('0' + (d.getMonth() + 1)).slice(-2) + '-' +
+        ('0' + d.getDate()).slice(-2);
+    }
+
     function renderPublications(polymer) {
       var el = document.getElementById('mol-publications');
       if (!el) return;
-      var myToken = ++pubToken;                 // ignore any earlier in-flight request
-      if (!polymer || !polymer.name) { el.hidden = true; el.innerHTML = ''; return; }
+      lastPubPolymer = polymer;
+      if (!polymer || !polymer.name) { ++pubToken; el.hidden = true; el.innerHTML = ''; return; }
 
       var name = polymer.name;
       el.hidden = false;
-      el.innerHTML = '<div class="mol-pub-heading">Publications on ' + escapeHtml(name) +
-        '</div><div class="mol-pub-loading guide-note">Finding recent publications&hellip;</div>';
+      // Persistent shell: heading + range control + a results slot that each
+      // fetch refills, so re-querying on a range change doesn't rebuild (and
+      // re-bind) the buttons under the user's cursor.
+      el.innerHTML = '<div class="mol-pub-heading">Publications on ' + escapeHtml(name) + '</div>' +
+        '<div class="mol-pub-filter" role="group" aria-label="Publication date range">' +
+        PUB_RANGES.map(function (r) {
+          return '<button type="button" class="mol-pub-range' + (r.id === pubRange ? ' active' : '') +
+            '" data-range="' + r.id + '"' + (r.id === pubRange ? ' aria-pressed="true"' : ' aria-pressed="false"') +
+            '>' + escapeHtml(r.label) + '</button>';
+        }).join('') +
+        '</div>' +
+        '<div class="mol-pub-list" id="mol-pub-list"></div>';
+
+      var filter = el.querySelector('.mol-pub-filter');
+      if (filter) {
+        filter.addEventListener('click', function (e) {
+          var btn = e.target.closest('.mol-pub-range');
+          if (!btn || btn.getAttribute('data-range') === pubRange) return;
+          pubRange = btn.getAttribute('data-range');
+          filter.querySelectorAll('.mol-pub-range').forEach(function (b) {
+            var on = b.getAttribute('data-range') === pubRange;
+            b.classList.toggle('active', on);
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          });
+          fetchPublications(lastPubPolymer);
+        });
+      }
+      fetchPublications(polymer);
+    }
+
+    function fetchPublications(polymer) {
+      var el = document.getElementById('mol-publications');
+      var list = document.getElementById('mol-pub-list');
+      if (!el || !list || !polymer || !polymer.name) return;
+      var name = polymer.name;
+      var myToken = ++pubToken;                 // ignore any earlier in-flight request
+      var rangeDef = PUB_RANGES.filter(function (r) { return r.id === pubRange; })[0] || PUB_RANGES[3];
+      var rangeLabel = rangeDef.label.toLowerCase();
+      list.innerHTML = '<div class="mol-pub-loading guide-note">Finding publications&hellip;</div>';
 
       // Query the name plus a couple of aliases so an abbreviation-only paper
-      // ("PLA") still surfaces; Crossref ranks by relevance to the joined query.
-      var terms = [name].concat((polymer.aka || []).slice(0, 2));
+      // ("PLA") still surfaces, and anchor on "polymer" so a short common name
+      // ("Nylon 6") ranks polymer-chemistry papers above tangential hits that
+      // merely mention the word. Crossref ranks by relevance to the joined
+      // query rather than filtering, so this nudges order without dropping
+      // papers that don't happen to say "polymer".
+      var terms = [name].concat((polymer.aka || []).slice(0, 2)).concat(['polymer']);
+      var filters = ['type:journal-article'];
+      var from = pubFromDate(rangeDef.days);
+      if (from) filters.push('from-pub-date:' + from);
       var url = 'https://api.crossref.org/works?query.bibliographic=' +
         encodeURIComponent(terms.join(' ')) +
-        '&filter=' + encodeURIComponent('type:journal-article') +
+        '&filter=' + encodeURIComponent(filters.join(',')) +
         '&rows=6' +
         '&select=' + encodeURIComponent('title,author,container-title,short-container-title,DOI,published,published-print,published-online');
 
       fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
-        if (myToken !== pubToken) return;       // a newer search superseded this
+        if (myToken !== pubToken) return;       // a newer request superseded this
         var items = (data && data.message && data.message.items) || [];
         var papers = items.map(normalizePub).filter(function (p) { return p; });
         if (!papers.length) {
-          el.innerHTML = '<div class="mol-pub-heading">Publications on ' + escapeHtml(name) + '</div>' +
-            '<div class="guide-note">No indexed journal articles came back for this name. Use the search links on the match above for a broader or structure-based lookup.</div>';
+          list.innerHTML = '<div class="guide-note">No indexed journal articles came back for ' +
+            (rangeDef.days ? 'the ' + escapeHtml(rangeLabel) : 'this name') +
+            '. ' + (rangeDef.days ? 'Try a wider range, or use' : 'Use') +
+            ' the search links on the match above for a broader or structure-based lookup.</div>';
           return;
         }
-        el.innerHTML = '<div class="mol-pub-heading">Publications on ' + escapeHtml(name) + '</div>' +
-          papers.map(function (p) {
+        list.innerHTML = papers.map(function (p) {
             return '<a class="mol-pub-paper" href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener noreferrer">' +
               '<span class="mol-pub-paper-title">' + escapeHtml(p.title) + '</span>' +
               '<span class="mol-pub-paper-meta">' + escapeHtml(p.meta) + '</span>' +
@@ -1898,8 +1964,7 @@
           '<div class="mol-pub-foot guide-note">Matched by name via Crossref. Not a structure-indexed search &mdash; use the PubChem / Patents links above to search by structure.</div>';
       }).catch(function () {
         if (myToken !== pubToken) return;
-        el.innerHTML = '<div class="mol-pub-heading">Publications on ' + escapeHtml(name) + '</div>' +
-          '<div class="guide-note">Couldn\'t reach the publication index right now. The search links on the match above still work.</div>';
+        list.innerHTML = '<div class="guide-note">Couldn\'t reach the publication index right now. The search links on the match above still work.</div>';
       });
     }
 
