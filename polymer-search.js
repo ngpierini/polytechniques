@@ -2080,6 +2080,74 @@
     var smilesStatusEl = document.getElementById('mol-smiles-status');
     function smilesNote(msg) { if (smilesStatusEl) smilesStatusEl.textContent = msg; }
 
+    // Orient a two-ended repeat unit so its "*" chain ends lie on a horizontal
+    // axis, left end first. RDKit's generic 2D layout can fold the backbone so
+    // both ends point the same way (its polystyrene puts both "*" on the right),
+    // which then collapses a left/right repeat-unit bracket onto a sliver of the
+    // chain. Rotating onto the star-star axis lays the backbone across the
+    // middle with pendants above/below, the way a repeat unit is drawn, so the
+    // bracket spans the whole unit. Mutates parsed.atoms in place; a no-op
+    // unless the drawing has exactly two "*" atoms.
+    function orientRepeatUnit(parsed) {
+      var starIdx = [];
+      parsed.atoms.forEach(function (a, i) { if (a.el === '*') starIdx.push(i); });
+      if (starIdx.length !== 2) return;
+      var s0 = parsed.atoms[starIdx[0]], s1 = parsed.atoms[starIdx[1]];
+      var dx = s1.x - s0.x, dy = s1.y - s0.y;
+      if (Math.sqrt(dx * dx + dy * dy) < 1e-6) return;
+      var ang = Math.atan2(dy, dx), cos = Math.cos(-ang), sin = Math.sin(-ang);
+      var cx = 0, cy = 0;
+      parsed.atoms.forEach(function (a) { cx += a.x; cy += a.y; });
+      cx /= parsed.atoms.length; cy /= parsed.atoms.length;
+      parsed.atoms.forEach(function (a) {
+        var x = a.x - cx, y = a.y - cy;
+        a.x = cx + x * cos - y * sin;
+        a.y = cy + x * sin + y * cos;
+      });
+      // Ensure the first "*" ends up on the left; mirror horizontally if not.
+      if (parsed.atoms[starIdx[0]].x > parsed.atoms[starIdx[1]].x) {
+        parsed.atoms.forEach(function (a) { a.x = 2 * cx - a.x; });
+      }
+    }
+
+    // A repeat unit marked by two "*" chain ends gets a cosmetic bracket. Put
+    // the two vertical bars ON the bonds that leave the unit (each "*"-to-
+    // backbone bond), the way a polymer bracket is drawn, instead of boxing the
+    // atom cloud: a wide pendant group (PNIPAM's isopropylamide, say) otherwise
+    // shoves a bounding box out past the "*" atoms. Each bar starts at its
+    // crossing bond's midpoint, then only moves outward if a pendant atom pokes
+    // past it — so a clean backbone keeps its bars on the bonds while a splayed
+    // ring (polystyrene's phenyl) still ends up fully enclosed. The height spans
+    // the whole unit. Returns null if the drawing isn't a clean two-ended unit,
+    // so the caller leaves the bracket off. Runs after orientRepeatUnit, which
+    // lays the backbone horizontal so pendants fall above/below, not across a bar.
+    function repeatUnitBracket() {
+      var stars = atoms.filter(function (a) { return a.el === '*'; });
+      var core = atoms.filter(function (a) { return a.el !== '*'; });
+      if (stars.length !== 2 || !core.length) return null;
+      function neighborOf(star) {
+        for (var i = 0; i < bonds.length; i++) {
+          if (bonds[i].a === star.id) return atomById(bonds[i].b);
+          if (bonds[i].b === star.id) return atomById(bonds[i].a);
+        }
+        return null;
+      }
+      var nA = neighborOf(stars[0]), nB = neighborOf(stars[1]);
+      if (!nA || !nB) return null;
+      var crossA = (stars[0].x + nA.x) / 2;
+      var crossB = (stars[1].x + nB.x) / 2;
+      var left = Math.min(crossA, crossB), right = Math.max(crossA, crossB);
+      var xs = core.map(function (a) { return a.x; });
+      var ys = core.map(function (a) { return a.y; });
+      var padX = BOND_LEN * 0.15, padY = BOND_LEN * 0.3;
+      return {
+        x1: Math.min(left, Math.min.apply(null, xs) - padX),
+        x2: Math.max(right, Math.max.apply(null, xs) + padX),
+        y1: Math.min.apply(null, ys) - padY,
+        y2: Math.max.apply(null, ys) + padY
+      };
+    }
+
     function importSmiles() {
       var input = document.getElementById('mol-smiles-input');
       var text = input && input.value.trim();
@@ -2100,6 +2168,7 @@
           smilesNote('The aromatic form could not be kekulized; try writing the SMILES in Kekulé form (C1=CC=CC=C1).');
           return;
         }
+        orientRepeatUnit(parsed);
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms = []; bonds = []; bracket = null; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
@@ -2115,16 +2184,9 @@
         // runStructureSearch, which reads the "*" atoms directly). Draw a
         // cosmetic bracket around the core so it reads as a repeat unit rather
         // than an open chain with two loose ends; search does not depend on it.
-        var stars = atoms.filter(function (a) { return a.el === '*'; });
-        var core = atoms.filter(function (a) { return a.el !== '*'; });
-        if (stars.length === 2 && core.length) {
-          var xs = core.map(function (a) { return a.x; });
-          var ys = core.map(function (a) { return a.y; });
-          var pad = BOND_LEN * 0.35;
-          bracket = {
-            x1: Math.min.apply(null, xs) - pad, y1: Math.min.apply(null, ys) - pad,
-            x2: Math.max.apply(null, xs) + pad, y2: Math.max.apply(null, ys) + pad
-          };
+        var rb = repeatUnitBracket();
+        if (rb) {
+          bracket = rb;
           draw();
           smilesNote('Loaded a repeat unit with two attachment points — press Search this structure. Check the drawing first.');
           return;
@@ -2155,6 +2217,7 @@
           smilesNote('Could not draw ' + p.name + '. Use the publication links on its card instead.');
           return;
         }
+        orientRepeatUnit(parsed);
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms = []; bonds = []; bracket = null; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
@@ -2164,17 +2227,8 @@
           var at = made[parseInt(idx, 10) - 1];
           if (at) at.charge = parsed.charges[idx];
         });
-        // Cosmetic repeat-unit bracket around the core atoms (matches SMILES import).
-        var core = atoms.filter(function (a) { return a.el !== '*'; });
-        if (atoms.filter(function (a) { return a.el === '*'; }).length === 2 && core.length) {
-          var xs = core.map(function (a) { return a.x; });
-          var ys = core.map(function (a) { return a.y; });
-          var pad = BOND_LEN * 0.35;
-          bracket = {
-            x1: Math.min.apply(null, xs) - pad, y1: Math.min.apply(null, ys) - pad,
-            x2: Math.max.apply(null, xs) + pad, y2: Math.max.apply(null, ys) + pad
-          };
-        }
+        // Cosmetic repeat-unit bracket on the crossing bonds (matches SMILES import).
+        bracket = repeatUnitBracket();
         draw();
         smilesNote('Loaded ' + p.name + ' into the editor.');
         var editorCard = document.getElementById('mol-editor-card');
