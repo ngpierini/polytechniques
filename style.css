@@ -1833,6 +1833,20 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
 .mol-result-meta { font-size: 0.82rem; margin-top: 4px; }
 .mol-result-props { font-size: 0.82rem; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .mol-result-note { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; font-style: italic; }
+.mol-result-actions { margin-top: 10px; }
+.mol-draw-btn {
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+.mol-draw-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(16, 24, 40, 0.15); filter: brightness(1.05); }
 .mol-pub-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 .mol-pub-label { font-size: 0.72rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.02em; margin-right: 2px; }
 .mol-pub-link {

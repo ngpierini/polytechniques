@@ -1743,6 +1743,13 @@
         '<div class="mol-result-meta">' + escapeHtml(p.monomer || '') + (p.cls ? ' &middot; ' + escapeHtml(p.cls) : '') + '</div>' +
         (props.length ? '<div class="mol-result-props">' + props.join(' &nbsp;&middot;&nbsp; ') + '</div>' : '') +
         (p.note ? '<div class="mol-result-note">' + escapeHtml(p.note) + '</div>' : '') +
+        (p.atoms && p.bonds
+          ? '<div class="mol-result-actions">' +
+              '<button type="button" class="mol-draw-btn" data-poly-name="' + escapeHtml(p.name) +
+              '" title="Load this repeat unit into the editor and pull its publications">' +
+              '&#9998; Draw &amp; find publications</button>' +
+            '</div>'
+          : '') +
         publicationLinks(p) +
         '</div>';
     }
@@ -2125,6 +2132,73 @@
         smilesNote('Loaded. Add neighbor stubs and drag the Bracket tool over the repeat unit to search.');
       }).catch(function () { smilesNote('The chemistry engine could not load. Check your connection and try again.'); });
     }
+
+    // Explore hands the drawing off to the editor: take a library polymer's
+    // repeat-unit graph (its atoms/bonds already carry the two "*" chain ends),
+    // lay it out with RDKit's 2D coordinates, drop it on the canvas with a
+    // repeat-unit bracket, then run the structure search so the publications
+    // panel fills in. Reuses the SMILES-import path's draw/bracket logic; only
+    // the source of the molblock differs (library graph, not a pasted SMILES).
+    function loadPolymerStructure(p) {
+      if (!p || !p.atoms || !p.bonds) return;
+      smilesNote(rdkitPromise ? 'Drawing ' + p.name + '…' : 'Loading the chemistry engine (about 7 MB, one time; it stays cached)…');
+      ensureRDKit().then(function (RDKit) {
+        var mol = molFrom(RDKit, molblockFrom(p.atoms, p.bonds));
+        var mb = null;
+        if (mol) {
+          try { mb = mol.get_new_coords(); } catch (e) {}
+          if (!mb) { try { mb = mol.get_molblock(); } catch (e2) {} }
+          mol.delete();
+        }
+        var parsed = mb && parseMolblockToEditor(mb);
+        if (!parsed || !parsed.atoms.length) {
+          smilesNote('Could not draw ' + p.name + '. Use the publication links on its card instead.');
+          return;
+        }
+        var pos = fitParsedCoords(parsed);
+        snapshot();
+        atoms = []; bonds = []; bracket = null; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
+        var made = parsed.atoms.map(function (ra, i) { return addAtom(ra.el || 'C', pos[i].x, pos[i].y); });
+        parsed.bonds.forEach(function (rb) { addBond(made[rb.a - 1].id, made[rb.b - 1].id, rb.order); });
+        Object.keys(parsed.charges).forEach(function (idx) {
+          var at = made[parseInt(idx, 10) - 1];
+          if (at) at.charge = parsed.charges[idx];
+        });
+        // Cosmetic repeat-unit bracket around the core atoms (matches SMILES import).
+        var core = atoms.filter(function (a) { return a.el !== '*'; });
+        if (atoms.filter(function (a) { return a.el === '*'; }).length === 2 && core.length) {
+          var xs = core.map(function (a) { return a.x; });
+          var ys = core.map(function (a) { return a.y; });
+          var pad = BOND_LEN * 0.35;
+          bracket = {
+            x1: Math.min.apply(null, xs) - pad, y1: Math.min.apply(null, ys) - pad,
+            x2: Math.max.apply(null, xs) + pad, y2: Math.max.apply(null, ys) + pad
+          };
+        }
+        draw();
+        smilesNote('Loaded ' + p.name + ' into the editor.');
+        var editorCard = document.getElementById('mol-editor-card');
+        if (editorCard) editorCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        runStructureSearch();
+      }).catch(function () {
+        smilesNote('The chemistry engine could not load. Check your connection and try again.');
+      });
+    }
+
+    // Every result card (Explore by tag, image OCR, or a similarity hit) carries
+    // a "Draw & find publications" button; one delegated listener handles them
+    // all, since the results list is re-rendered from several code paths.
+    (function wireDrawButtons() {
+      var resultsEl = document.getElementById('mol-results');
+      if (!resultsEl) return;
+      resultsEl.addEventListener('click', function (e) {
+        var btn = e.target.closest && e.target.closest('.mol-draw-btn');
+        if (!btn) return;
+        var name = btn.getAttribute('data-poly-name');
+        var p = (window.POLYMER_DB || []).filter(function (x) { return x.name === name; })[0];
+        if (p) loadPolymerStructure(p);
+      });
+    })();
 
     function copyCanvasAs(kind, btn) {
       if (!atoms.length) { smilesNote('Draw a structure first.'); return; }
