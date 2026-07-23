@@ -1862,6 +1862,18 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
 .mol-pub-link:hover { border-color: var(--primary); text-decoration: underline; }
 
 /* Inline publication listings under a structure match (Crossref by name). */
+.mol-identify {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: 8px;
+  background: var(--card-bg);
+}
+.mol-identify[hidden] { display: none; }
+.mol-id-head { font-size: 0.82rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: 5px; }
+.mol-id-body { font-size: 0.9rem; line-height: 1.45; }
+.mol-id-body a { color: var(--primary); }
 .mol-publications { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
 .mol-publications[hidden] { display: none; }
 .mol-pub-heading { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
