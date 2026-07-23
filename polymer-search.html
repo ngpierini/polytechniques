@@ -206,6 +206,7 @@
           <dl>
             <div class="mol-tip"><dt>Escape</dt><dd>Release the current chain without adding another atom.</dd></div>
             <div class="mol-tip"><dt>Select + letter key</dt><dd>Select an atom (or several) with the Select tool, then press a letter to relabel it. N, O, F apply right away; C, S, B briefly wait in case a second letter completes Cl, Si, or Br. Hovering an atom works too when nothing is selected.</dd></div>
+            <div class="mol-tip"><dt>Shift+N</dt><dd>Attach a nitro group (NO<sub>2</sub>) to the selected or hovered atom.</dd></div>
             <div class="mol-tip"><dt>Shift+click</dt><dd>Relabel an atom to the selected element without adding a bond.</dd></div>
             <div class="mol-tip"><dt>Molecular weight</dt><dd>The bar under the canvas shows the formula, molar mass, exact mass, degree of unsaturation, and elemental analysis of whatever you draw, implicit hydrogens included. Highlight atoms with the Select tool to weigh just that fragment.</dd></div>
             <div class="mol-tip"><dt>SMILES</dt><dd>Paste a SMILES below the canvas and Load draws it with clean geometry. Copy SMILES / Copy InChI turn your drawing into a string ready for PubChem, SciFinder, or a manuscript.</dd></div>
@@ -299,7 +300,7 @@
 
 <script src="polymer-data.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="polymer-search.js?v=70"></script>
+<script src="polymer-search.js?v=71"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });

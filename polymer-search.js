@@ -1511,6 +1511,24 @@
       targets.forEach(function (t) { t.el = el; });
       draw();
     }
+
+    // Shift+N attaches a whole nitro group instead of relabeling: a new N off
+    // the target atom at the editor's default extension angle, with =O and
+    // -O(-) fanned at 60 degrees either side. Drawn in the charged Lewis form
+    // (N+ single-bonded O-), which both the valence/H-count model and RDKit
+    // treat correctly, rather than a hypervalent N with two double bonds.
+    function attachNitro(a) {
+      var ang = defaultExtendAngle(a);
+      var snapped = Math.round(ang / SNAP_STEP) * SNAP_STEP;
+      var nAtom = addAtom('N', a.x + BOND_LEN * Math.cos(snapped), a.y + BOND_LEN * Math.sin(snapped));
+      nAtom.charge = 1;
+      addBond(a.id, nAtom.id, 1);
+      var o1 = addAtom('O', nAtom.x + BOND_LEN * Math.cos(snapped - Math.PI / 3), nAtom.y + BOND_LEN * Math.sin(snapped - Math.PI / 3));
+      addBond(nAtom.id, o1.id, 2);
+      var o2 = addAtom('O', nAtom.x + BOND_LEN * Math.cos(snapped + Math.PI / 3), nAtom.y + BOND_LEN * Math.sin(snapped + Math.PI / 3));
+      o2.charge = -1;
+      addBond(nAtom.id, o2.id, 1);
+    }
     document.addEventListener('keydown', function (evt) {
       if (evt.key === 'Escape') {
         var overlayEl = document.getElementById('mol-periodic-overlay');
@@ -1524,6 +1542,19 @@
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
       var k = evt.key.toLowerCase();
       if (!/^[a-z]$/.test(k)) return;
+
+      // Shift+N drops a nitro group (-NO2) onto the selection (or the hovered
+      // atom) instead of relabeling it to nitrogen.
+      if (evt.shiftKey && k === 'n') {
+        var nitroTargets = selectedGroup.length ? selectedGroup : (hoverAtom ? [hoverAtom] : []);
+        nitroTargets = nitroTargets.filter(function (t) { return t.el !== '*'; });
+        if (nitroTargets.length) {
+          snapshot();
+          nitroTargets.forEach(attachNitro);
+          draw();
+        }
+        return;
+      }
 
       if (comboKey) {
         var combo = comboKey + k;
