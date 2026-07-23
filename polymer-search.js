@@ -1695,6 +1695,17 @@
       return { atoms: subAtoms, bonds: subBonds, boundaryCount: boundaryCount, atomCount: interior.length };
     }
 
+    // A drawing that already carries exactly two "*" attachment points (loaded
+    // from a SMILES, or from photo recognition) is itself the repeat unit with
+    // its open ends marked. Use the whole drawing as the substructure directly,
+    // matching the shape a bracket produces, so no hand-drawn box is needed.
+    function extractFromStars() {
+      var subAtoms = atoms.map(function (a) { return { id: a.id, el: a.el, charge: a.charge }; });
+      var subBonds = bonds.map(function (b) { return { a: b.a, b: b.b, order: b.order }; });
+      var starCount = atoms.filter(function (a) { return a.el === '*'; }).length;
+      return { atoms: subAtoms, bonds: subBonds, boundaryCount: starCount, atomCount: atoms.length - starCount };
+    }
+
     function escapeHtml(s) {
       return String(s).replace(/[&<>"']/g, function (c) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -1845,6 +1856,17 @@
     // canonical SMILES or InChI for pasting into PubChem, SciFinder, or a
     // manuscript. Clean-up rewrites the current drawing's coordinates with
     // RDKit's ideal geometry, ChemDraw-style.
+    // RDKit writes a [*] attachment point as element "R" (also "R#" / "R1"…)
+    // in the molblock. Map those to the editor's own "*" chain-end atom so a
+    // loaded repeat unit uses the same representation as the bracket tool and
+    // the reference database, instead of an unknown element with no mass.
+    // Real two-letter elements starting with R (Rb, Rh, Ru, Re, Ra, Rn, Rf…)
+    // are left alone.
+    function normalizeDummy(el) {
+      if (el === '*' || el === 'R' || el === 'R#' || /^R\d+$/.test(el)) return '*';
+      return el;
+    }
+
     function parseMolblockToEditor(mb) {
       var lines = mb.split('\n');
       if (lines.length < 4) return null;
@@ -1853,7 +1875,7 @@
       var rawAtoms = [], rawBonds = [], charges = {};
       for (var i = 0; i < nA; i++) {
         var L = lines[4 + i];
-        rawAtoms.push({ x: parseFloat(L.slice(0, 10)), y: parseFloat(L.slice(10, 20)), el: L.slice(31, 34).trim() });
+        rawAtoms.push({ x: parseFloat(L.slice(0, 10)), y: parseFloat(L.slice(10, 20)), el: normalizeDummy(L.slice(31, 34).trim()) });
       }
       for (var j = 0; j < nB; j++) {
         var Lb = lines[4 + nA + j];
@@ -1930,6 +1952,25 @@
           if (at) at.charge = parsed.charges[idx];
         });
         draw();
+        // A SMILES with exactly two attachment points is already a repeat unit
+        // with its open ends marked, so it is searchable as-is (see
+        // runStructureSearch, which reads the "*" atoms directly). Draw a
+        // cosmetic bracket around the core so it reads as a repeat unit rather
+        // than an open chain with two loose ends; search does not depend on it.
+        var stars = atoms.filter(function (a) { return a.el === '*'; });
+        var core = atoms.filter(function (a) { return a.el !== '*'; });
+        if (stars.length === 2 && core.length) {
+          var xs = core.map(function (a) { return a.x; });
+          var ys = core.map(function (a) { return a.y; });
+          var pad = BOND_LEN * 0.35;
+          bracket = {
+            x1: Math.min.apply(null, xs) - pad, y1: Math.min.apply(null, ys) - pad,
+            x2: Math.max.apply(null, xs) + pad, y2: Math.max.apply(null, ys) + pad
+          };
+          draw();
+          smilesNote('Loaded a repeat unit with two attachment points — press Search this structure. Check the drawing first.');
+          return;
+        }
         smilesNote('Loaded. Add neighbor stubs and drag the Bracket tool over the repeat unit to search.');
       }).catch(function () { smilesNote('The chemistry engine could not load. Check your connection and try again.'); });
     }
@@ -2003,12 +2044,20 @@
     function runStructureSearch() {
       var statusEl = document.getElementById('mol-status');
       if (!statusEl) return;
-      if (!bracket) {
+      // Explicit "*" attachment points define the repeat unit's ends more
+      // directly than a drawn box, so when the drawing has exactly two of them
+      // (a loaded or recognized repeat unit) search from those and ignore any
+      // cosmetic bracket. Otherwise a hand-drawn bracket marks the unit.
+      var sub;
+      if (atoms.filter(function (a) { return a.el === '*'; }).length === 2) {
+        sub = extractFromStars();
+      } else if (bracket) {
+        sub = extractRepeatUnit(bracket);
+      } else {
         statusEl.textContent = 'Draw a repeat unit, then use the Bracket tool to mark it before searching.';
         renderResults([]);
         return;
       }
-      var sub = extractRepeatUnit(bracket);
       if (sub.atomCount === 0) {
         statusEl.textContent = 'No atoms found inside the bracket. Drag the bracket over your repeat unit backbone.';
         renderResults([]);
