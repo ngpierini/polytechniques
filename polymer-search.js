@@ -1494,18 +1494,21 @@
     canvas.addEventListener('touchmove', function (evt) { evt.preventDefault(); handleMove(getPos(evt)); }, { passive: false });
     canvas.addEventListener('touchend', function (evt) { evt.preventDefault(); handleUp(getPos(evt)); }, { passive: false });
 
-    // Hover-and-type element hotkeys: hover any atom and press a letter key
-    // to relabel it instantly, regardless of the current tool. Unambiguous
-    // letters (n/o/f) apply immediately; c/s/b wait briefly for a second
-    // letter to disambiguate Cl vs C, Si vs S, and Br, falling back to the
+    // Element hotkeys: pick an atom with the Select tool (or a marquee for
+    // several at once) and press a letter key to relabel it - no need to keep
+    // the mouse parked on the atom. Hovering an atom still works as a
+    // fallback when nothing is selected, in any mode. Unambiguous letters
+    // (n/o/f) apply immediately; c/s/b wait briefly for a second letter to
+    // disambiguate Cl vs C, Si vs S, and Br, falling back to the
     // single-letter element if nothing follows in time.
     var HOTKEY_SINGLE = { n: 'N', o: 'O', f: 'F' };
     var HOTKEY_COMBO = { cl: 'Cl', si: 'Si', br: 'Br' };
     var HOTKEY_FALLBACK = { c: 'C', s: 'S' };
     function applyHotkeyElement(el) {
-      if (!hoverAtom) return;
+      var targets = selectedGroup.length ? selectedGroup : (hoverAtom ? [hoverAtom] : []);
+      if (!targets.length) return;
       snapshot();
-      hoverAtom.el = el;
+      targets.forEach(function (t) { t.el = el; });
       draw();
     }
     document.addEventListener('keydown', function (evt) {
@@ -1516,7 +1519,7 @@
         if (selectedGroup.length) { selectedGroup = []; draw(); }
         return;
       }
-      if (!hoverAtom || evt.ctrlKey || evt.metaKey || evt.altKey) return;
+      if ((!hoverAtom && !selectedGroup.length) || evt.ctrlKey || evt.metaKey || evt.altKey) return;
       var target = document.activeElement;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
       var k = evt.key.toLowerCase();

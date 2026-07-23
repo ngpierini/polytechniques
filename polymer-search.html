@@ -112,7 +112,7 @@
       </div>
       <span class="mol-tool-divider"></span>
       <div class="mol-tool-cluster">
-        <button type="button" class="mol-mode-btn" data-mode="select" title="Select: drag a box to select atoms, then drag a selected atom to move the group" aria-label="Select tool">
+        <button type="button" class="mol-mode-btn" data-mode="select" title="Select: click an atom or drag a box to select, then drag to move the group or press an element letter (N, O, C...) to relabel" aria-label="Select tool">
           <svg viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/></svg>
         </button>
         <button type="button" class="mol-mode-btn" data-mode="rotate" title="Rotate: drag to spin the current selection around its center" aria-label="Rotate tool">
@@ -186,7 +186,7 @@
         <div class="mol-tip-group">
           <h5>Edit</h5>
           <dl>
-            <div class="mol-tip"><dt>Select</dt><dd>Drag a box to select atoms, then drag a selected atom to move the whole group.</dd></div>
+            <div class="mol-tip"><dt>Select</dt><dd>Click an atom or drag a box to select, then drag a selected atom to move the whole group &mdash; or press an element letter (N, O, C&hellip;) to relabel the selection.</dd></div>
             <div class="mol-tip"><dt>Rotate</dt><dd>Drag to spin the current selection around its center.</dd></div>
             <div class="mol-tip"><dt>Relabel</dt><dd>Pick an element, then click an atom to change it.</dd></div>
             <div class="mol-tip"><dt>Erase</dt><dd>Click an atom or bond to remove it.</dd></div>
@@ -205,7 +205,7 @@
           <h5>Shortcuts</h5>
           <dl>
             <div class="mol-tip"><dt>Escape</dt><dd>Release the current chain without adding another atom.</dd></div>
-            <div class="mol-tip"><dt>Hover + letter key</dt><dd>Relabel the hovered atom instantly, in any mode. N, O, F apply right away; C, S, B briefly wait in case a second letter completes Cl, Si, or Br.</dd></div>
+            <div class="mol-tip"><dt>Select + letter key</dt><dd>Select an atom (or several) with the Select tool, then press a letter to relabel it. N, O, F apply right away; C, S, B briefly wait in case a second letter completes Cl, Si, or Br. Hovering an atom works too when nothing is selected.</dd></div>
             <div class="mol-tip"><dt>Shift+click</dt><dd>Relabel an atom to the selected element without adding a bond.</dd></div>
             <div class="mol-tip"><dt>Molecular weight</dt><dd>The bar under the canvas shows the formula, molar mass, exact mass, degree of unsaturation, and elemental analysis of whatever you draw, implicit hydrogens included. Highlight atoms with the Select tool to weigh just that fragment.</dd></div>
             <div class="mol-tip"><dt>SMILES</dt><dd>Paste a SMILES below the canvas and Load draws it with clean geometry. Copy SMILES / Copy InChI turn your drawing into a string ready for PubChem, SciFinder, or a manuscript.</dd></div>
@@ -299,7 +299,7 @@
 
 <script src="polymer-data.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="polymer-search.js?v=69"></script>
+<script src="polymer-search.js?v=70"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
