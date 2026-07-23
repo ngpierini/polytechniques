@@ -1847,6 +1847,27 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
 }
 .mol-pub-link:hover { border-color: var(--primary); text-decoration: underline; }
 
+/* Inline publication listings under a structure match (Crossref by name). */
+.mol-publications { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.mol-publications[hidden] { display: none; }
+.mol-pub-heading { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
+.mol-pub-paper {
+  display: block;
+  text-decoration: none;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: 8px;
+  padding: 9px 12px;
+  margin-bottom: 8px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.mol-pub-paper:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16, 24, 40, 0.12); }
+.mol-pub-paper-title { display: block; font-size: 0.88rem; font-weight: 600; line-height: 1.35; color: var(--primary); }
+.mol-pub-paper-meta { display: block; font-size: 0.76rem; color: var(--text-dim); margin-top: 2px; }
+.mol-pub-foot { margin-top: 6px; font-size: 0.76rem; }
+
 .mol-tag-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
 .mol-tag-chip {
   font-size: 0.78rem;

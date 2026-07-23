@@ -1749,6 +1749,7 @@
     function renderResults(list) {
       var resultsEl = document.getElementById('mol-results');
       if (!resultsEl) return;
+      renderPublications(null);   // structure-search paths refill this after
       if (!list.length) { resultsEl.innerHTML = '<p class="guide-note">No matches.</p>'; return; }
       resultsEl.innerHTML = list.map(polymerCard).join('');
     }
@@ -1848,6 +1849,91 @@
           '<div style="font-size:0.8rem;color:var(--text-dim);margin:10px 0 2px;">' +
           Math.round(r.sim * 100) + '% similar</div>' + polymerCard(r.p) + '</div>';
       }).join('');
+    }
+
+    // Once a structure is matched to a named polymer, pull actual publications
+    // for it from Crossref (the same free, keyless, CORS-open source the home
+    // page's feed uses) and list them with DOI links, instead of only offering
+    // "go search" hand-off buttons. This is matched by name, not a true
+    // structure-indexed search of the literature (no free API offers that for
+    // a polymer repeat unit) — the PubChem/Patents links on the card remain
+    // the route for a structure/patent lookup.
+    var pubToken = 0;
+    function renderPublications(polymer) {
+      var el = document.getElementById('mol-publications');
+      if (!el) return;
+      var myToken = ++pubToken;                 // ignore any earlier in-flight request
+      if (!polymer || !polymer.name) { el.hidden = true; el.innerHTML = ''; return; }
+
+      var name = polymer.name;
+      el.hidden = false;
+      el.innerHTML = '<div class="mol-pub-heading">Publications on ' + escapeHtml(name) +
+        '</div><div class="mol-pub-loading guide-note">Finding recent publications&hellip;</div>';
+
+      // Query the name plus a couple of aliases so an abbreviation-only paper
+      // ("PLA") still surfaces; Crossref ranks by relevance to the joined query.
+      var terms = [name].concat((polymer.aka || []).slice(0, 2));
+      var url = 'https://api.crossref.org/works?query.bibliographic=' +
+        encodeURIComponent(terms.join(' ')) +
+        '&filter=' + encodeURIComponent('type:journal-article') +
+        '&rows=6' +
+        '&select=' + encodeURIComponent('title,author,container-title,short-container-title,DOI,published,published-print,published-online');
+
+      fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+        if (myToken !== pubToken) return;       // a newer search superseded this
+        var items = (data && data.message && data.message.items) || [];
+        var papers = items.map(normalizePub).filter(function (p) { return p; });
+        if (!papers.length) {
+          el.innerHTML = '<div class="mol-pub-heading">Publications on ' + escapeHtml(name) + '</div>' +
+            '<div class="guide-note">No indexed journal articles came back for this name. Use the search links on the match above for a broader or structure-based lookup.</div>';
+          return;
+        }
+        el.innerHTML = '<div class="mol-pub-heading">Publications on ' + escapeHtml(name) + '</div>' +
+          papers.map(function (p) {
+            return '<a class="mol-pub-paper" href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener noreferrer">' +
+              '<span class="mol-pub-paper-title">' + escapeHtml(p.title) + '</span>' +
+              '<span class="mol-pub-paper-meta">' + escapeHtml(p.meta) + '</span>' +
+              '</a>';
+          }).join('') +
+          '<div class="mol-pub-foot guide-note">Matched by name via Crossref. Not a structure-indexed search &mdash; use the PubChem / Patents links above to search by structure.</div>';
+      }).catch(function () {
+        if (myToken !== pubToken) return;
+        el.innerHTML = '<div class="mol-pub-heading">Publications on ' + escapeHtml(name) + '</div>' +
+          '<div class="guide-note">Couldn\'t reach the publication index right now. The search links on the match above still work.</div>';
+      });
+    }
+
+    // Crossref metadata can arrive with HTML entities already baked in
+    // (a journal literally containing "&amp;"). Decode to raw text here so the
+    // single escapeHtml at render time doesn't double-encode it. A detached
+    // textarea decodes named/numeric entities without running any markup.
+    var entityDecoder = document.createElement('textarea');
+    function decodeEntities(s) { entityDecoder.innerHTML = String(s); return entityDecoder.value; }
+
+    function normalizePub(it) {
+      if (!it) return null;
+      // Crossref titles carry inline markup (<scp>, <i>, <sub>…); strip the
+      // tags so they read as plain text, and collapse the whitespace left over.
+      var title = decodeEntities((it.title && it.title[0]) || '')
+        .replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      if (!title) return null;
+      var doi = it.DOI || '';
+      // Prefer the full journal name for readability; the short form is often a
+      // cryptic registered abbreviation ("pk"), so only fall back to it.
+      var journal = decodeEntities((it['container-title'] && it['container-title'][0]) ||
+        (it['short-container-title'] && it['short-container-title'][0]) || '');
+      var dateParts =
+        (it.published && it.published['date-parts']) ||
+        (it['published-print'] && it['published-print']['date-parts']) ||
+        (it['published-online'] && it['published-online']['date-parts']) || [[]];
+      var year = dateParts[0] && dateParts[0][0] ? dateParts[0][0] : '';
+      var author = '';
+      if (it.author && it.author.length) {
+        var a0 = it.author[0];
+        author = (a0.family || a0.name || '') + (it.author.length > 1 ? ' et al.' : '');
+      }
+      var meta = [author, journal, year].filter(Boolean).join(' · ');
+      return { title: title, meta: meta, url: doi ? 'https://doi.org/' + doi : (it.URL || '#') };
     }
 
     // ---------- SMILES in/out and structure clean-up ----------
@@ -2076,6 +2162,7 @@
       if (exact.length) {
         statusEl.textContent = 'Exact match found:';
         renderResults(exact);
+        renderPublications(exact[0]);
         return;
       }
 
@@ -2088,6 +2175,7 @@
         }).sort(function (x, y) { return x.d - y.d; }).slice(0, 5).map(function (r) { return r.p; });
         statusEl.textContent = message;
         renderResults(ranked);
+        renderPublications(ranked[0]);
       }
 
       statusEl.textContent = rdkitPromise
@@ -2114,6 +2202,7 @@
         if (identical.length) {
           statusEl.textContent = 'Exact match found:';
           renderResults(identical.map(function (e) { return e.p; }));
+          renderPublications(identical[0].p);
           return;
         }
         var ranked = lib.map(function (e) {
@@ -2121,6 +2210,7 @@
         }).sort(function (x, y) { return y.sim - x.sim; }).slice(0, 5);
         statusEl.textContent = 'No exact match in the reference library. Closest structures by similarity:';
         renderRanked(ranked);
+        renderPublications(ranked[0] && ranked[0].p);
       }).catch(function () {
         compositionFallback('The structure-matching engine could not load. Closest by element composition:');
       });
