@@ -1863,6 +1863,10 @@
       if (!resultsEl) return;
       var idEl = document.getElementById('mol-identify');   // only the no-match path shows it
       if (idEl) { idEl.hidden = true; idEl.innerHTML = ''; }
+      // Restore the publications panel below the results (the no-match path
+      // lifts it up under the identification; put it back for exact/browse).
+      var pubEl = document.getElementById('mol-publications');
+      if (pubEl && resultsEl.nextSibling !== pubEl) resultsEl.parentNode.insertBefore(pubEl, resultsEl.nextSibling);
       renderPublications(null);   // structure-search paths refill this after
       if (!list.length) { resultsEl.innerHTML = '<p class="guide-note">No matches.</p>'; return; }
       resultsEl.innerHTML = list.map(polymerCard).join('');
@@ -2694,6 +2698,11 @@
           var title = prop.Title || prop.IUPACName || ('CID ' + prop.CID);
           var cidUrl = 'https://pubchem.ncbi.nlm.nih.gov/compound/' + prop.CID;
           var polymerName = recon.kind === 'monomer' ? ('poly(' + title.toLowerCase() + ')') : null;
+          // Lift the publications up to sit right under this identification,
+          // ahead of the weak "closest in library" cards, so the search
+          // visibly continues into the papers for the identified polymer.
+          var pubEl = document.getElementById('mol-publications');
+          if (pubEl && el.nextSibling !== pubEl) el.parentNode.insertBefore(pubEl, el.nextSibling);
           el.innerHTML =
             '<div class="mol-id-head">Not in the reference library &mdash; identified by structure</div>' +
             '<div class="mol-id-body">' +
