@@ -1446,8 +1446,11 @@
       // draw, draw-wedge, draw-hash, chain (plain click fallback): a single
       // click on any atom immediately adds a bond off it at a sensible
       // default angle (no need to aim a second click), and arms the new atom
-      // so the next click keeps extending. Clicking a *different*, already
-      // armed atom connects the two directly instead (e.g. to close a ring).
+      // so the next click keeps extending. A click only ever grows from the
+      // atom actually under the cursor - it never bonds back to the previously
+      // armed atom, which silently closed rings the user didn't ask for. To
+      // connect two existing atoms (close a ring on purpose), drag from one
+      // and release on the other.
       // Press Escape to release the current chain without adding another bond.
       // Shift+click just relabels the atom to the selected element instead,
       // without adding anything.
@@ -1455,13 +1458,6 @@
         if (shiftHeld) {
           snapshot();
           a.el = currentEl;
-          draw();
-          return;
-        }
-        if (selectedAtom && selectedAtom !== a) {
-          snapshot();
-          addChainBond(selectedAtom.id, a.id);
-          selectedAtom = a;
           draw();
           return;
         }
