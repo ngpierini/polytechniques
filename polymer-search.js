@@ -1948,6 +1948,7 @@
     var pubRange = 'anytime';   // remembered across searches so the choice sticks
     var pubToken = 0;
     var lastPubPolymer = null;  // so the range buttons can re-query the same match
+    var pubOffset = 0;          // refresh pages deeper into Crossref's ranking
 
     // Crossref wants from-pub-date as YYYY-MM-DD; build it from "days ago".
     function pubFromDate(days) {
@@ -1966,6 +1967,7 @@
 
       var name = polymer.name;
       el.hidden = false;
+      pubOffset = 0;            // a new match starts back at the top papers
       // Persistent shell: heading + range control + a results slot that each
       // fetch refills, so re-querying on a range change doesn't rebuild (and
       // re-bind) the buttons under the user's cursor.
@@ -1976,6 +1978,7 @@
             '" data-range="' + r.id + '"' + (r.id === pubRange ? ' aria-pressed="true"' : ' aria-pressed="false"') +
             '>' + escapeHtml(r.label) + '</button>';
         }).join('') +
+        '<button type="button" class="mol-pub-refresh" title="Show a different set of papers">&#8635; New papers</button>' +
         '</div>' +
         '<div class="mol-pub-list" id="mol-pub-list"></div>';
 
@@ -1985,11 +1988,22 @@
           var btn = e.target.closest('.mol-pub-range');
           if (!btn || btn.getAttribute('data-range') === pubRange) return;
           pubRange = btn.getAttribute('data-range');
+          pubOffset = 0;        // a new window restarts at its top papers
           filter.querySelectorAll('.mol-pub-range').forEach(function (b) {
             var on = b.getAttribute('data-range') === pubRange;
             b.classList.toggle('active', on);
             b.setAttribute('aria-pressed', on ? 'true' : 'false');
           });
+          fetchPublications(lastPubPolymer);
+        });
+      }
+      // Refresh pages six deeper into the same relevance-ranked query, so each
+      // press shows papers not seen yet; fetchPublications wraps back to the
+      // top when a page comes back empty.
+      var refreshBtn = el.querySelector('.mol-pub-refresh');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', function () {
+          pubOffset += 6;
           fetchPublications(lastPubPolymer);
         });
       }
@@ -2020,12 +2034,21 @@
         encodeURIComponent(terms.join(' ')) +
         '&filter=' + encodeURIComponent(filters.join(',')) +
         '&rows=6' +
+        (pubOffset ? '&offset=' + pubOffset : '') +
         '&select=' + encodeURIComponent('title,author,container-title,short-container-title,DOI,published,published-print,published-online');
 
       fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
         if (myToken !== pubToken) return;       // a newer request superseded this
         var items = (data && data.message && data.message.items) || [];
         var papers = items.map(normalizePub).filter(function (p) { return p; });
+        // Paged past the end of what Crossref has for this query: wrap back to
+        // the top instead of showing an empty page. (Only recurses once - at
+        // offset 0 an empty result falls through to the no-results message.)
+        if (!papers.length && pubOffset > 0) {
+          pubOffset = 0;
+          fetchPublications(polymer);
+          return;
+        }
         if (!papers.length) {
           list.innerHTML = '<div class="guide-note">No indexed journal articles came back for ' +
             (rangeDef.days ? 'the ' + escapeHtml(rangeLabel) : 'this name') +
