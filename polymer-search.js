@@ -2160,14 +2160,31 @@
         var outward = nrm({ x: -gsum.x, y: -gsum.y });
         if (!isFinite(outward.x) || (outward.x === 0 && outward.y === 0)) outward = { x: 0, y: 1 };
         var pend = adj[Bx].filter(function (v) { return !isBk[v]; });
-        var dirs;
-        if (pend.length <= 1) dirs = [outward];
-        else if (pend.length === 2) dirs = [rot(outward, 0.52), rot(outward, -0.52)];
-        else { dirs = []; for (var pk = 0; pk < pend.length; pk++) dirs.push(rot(outward, (pk - (pend.length - 1) / 2) * 0.7)); }
+        if (!pend.length) continue;
+        // Collect each pendant's whole subtree up front so direction slots can
+        // be handed out by size.
+        var pgroups = [];
         for (var pj = 0; pj < pend.length; pj++) {
-          var Q = pend[pj];
-          var group = pendantGroup(Q, Bx);
-          if (group === null) return false;              // ring bridges the backbone
+          var g = pendantGroup(pend[pj], Bx);
+          if (g === null) return false;                  // ring bridges the backbone
+          pgroups.push({ atom: pend[pj], group: g });
+        }
+        var dirs;
+        if (pgroups.length === 1) dirs = [outward];
+        else if (pgroups.length === 2) {
+          // Textbook vinyl convention (PMMA): the two substituents on one
+          // backbone carbon sit on opposite sides of the chain, methyl up and
+          // ester down, not fanned to the same side. The bulkier subtree takes
+          // the outward slot; the end-of-layout mirror then settles it below
+          // the chain with the small group pointing up.
+          pgroups.sort(function (a, b) { return b.group.length - a.group.length; });
+          dirs = [outward, { x: -outward.x, y: -outward.y }];
+        } else {
+          dirs = []; for (var pk = 0; pk < pgroups.length; pk++) dirs.push(rot(outward, (pk - (pgroups.length - 1) / 2) * 0.7));
+        }
+        for (pj = 0; pj < pgroups.length; pj++) {
+          var Q = pgroups[pj].atom;
+          var group = pgroups[pj].group;
           var dir = dirs[Math.min(pj, dirs.length - 1)];
           var vrd = sub(rd(Q), rd(Bx));
           var rdLen = Math.hypot(vrd.x, vrd.y) || 1;
