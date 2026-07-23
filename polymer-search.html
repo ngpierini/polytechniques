@@ -57,6 +57,9 @@
     <p class="guide-note">
       Search a curated reference library of common polymers by name, or draw a repeat unit below and search by structure.
     </p>
+    <p class="guide-note">
+      This search is built around the repeat unit itself. The big registries (SciFinder, PubChem, Reaxys) are indexed for discrete small molecules, so a polymer usually lives there as a registry entry filed under its monomer, and their structure search struggles to interpret a drawn repeating backbone with open chain ends. Here the open chain ends are part of the query: matching runs on the graph of the repeat unit, drawn the way you'd sketch it in a paper, with near-misses ranked by chemical similarity. The trade-off is scope. This is a small curated library for identifying and exploring common polymers, not an exhaustive registry; once a match gives you the name, the links on each result hand off to those bigger databases.
+    </p>
     <details class="mol-details">
       <summary>How structure search works, and its limits</summary>
       <p class="guide-note">
@@ -298,7 +301,7 @@
   <p>Reagent data and lab guidance are references for convenience. Always verify against your reagent's COA and your institution's safety protocols.</p>
 </footer>
 
-<script src="polymer-data.js?v=1"></script>
+<script src="polymer-data.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="polymer-search.js?v=74"></script>
 <script>
