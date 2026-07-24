@@ -55,23 +55,42 @@
       window.__calcErrs.push(m + f);
     } catch (_) {}
   });
+  function esc(s) { return String(s).replace(/[<>&]/g, function (c) { return c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&amp;"; }); }
+  function showCalcError() {
+    var tabs = document.getElementById("tabs");
+    var app = document.getElementById("app");
+    var built = tabs && tabs.children.length > 0;
+    if (built && window.__calcErrs.length === 0) return true;   // fully OK, nothing to show
+    if (built) {
+      // UI rendered but the code threw (likely why the controls don't respond):
+      // show a banner above the calculator and leave the UI in place.
+      if (document.getElementById("calc-err-banner")) return false;
+      var b = document.createElement("div");
+      b.id = "calc-err-banner";
+      b.style.cssText = "margin:12px;padding:12px 16px;border:1px solid #d64545;border-radius:8px;background:rgba(214,69,69,0.08);";
+      b.innerHTML = "<strong>The calculator loaded but hit an error, which is likely why the controls don't respond. Please copy this whole message to the site owner:</strong>" +
+        '<code style="display:block;white-space:pre-wrap;margin-top:6px;color:#d64545;font-size:0.85rem;">' + esc(window.__calcErrs.join("\n")) + "</code>" +
+        '<div style="margin-top:6px;font-size:0.8rem;opacity:0.75;">' + esc(navigator.userAgent) + "</div>";
+      if (app && app.parentNode) app.parentNode.insertBefore(b, app); else document.body.insertBefore(b, document.body.firstChild);
+      return false;
+    }
+    // Nothing built at all.
+    var detail = window.__calcErrs.length
+      ? '<pre style="white-space:pre-wrap;color:#d64545;font-size:0.85rem;background:rgba(0,0,0,0.05);padding:10px;border-radius:8px;overflow:auto;">' + esc(window.__calcErrs.join("\n")) + "</pre>"
+      : "<p>No script error was reported, which usually means the code file was blocked or served empty by the network. Try the <a href=\"diagnostics.html\">diagnostics page</a>.</p>";
+    var html = '<div style="max-width:660px;margin:24px auto;padding:16px 20px;border:1px solid #d64545;border-radius:10px;">' +
+      "<h2 style=\"margin-top:0;\">The calculator could not start</h2>" +
+      "<p>Its code loaded but did not run in this browser. The detail below pinpoints why &mdash; please copy it to the site owner:</p>" +
+      detail +
+      "<p>Browser: <code>" + esc(navigator.userAgent) + "</code></p>" +
+      "<p>The other tools (Polymer Search, Dispersity, Copolymer, T<sub>g</sub>, GPC) should still work from the <a href=\"home.html\">home page</a>.</p></div>";
+    var app2 = document.getElementById("app");
+    if (app2) app2.innerHTML = html; else document.body.insertAdjacentHTML("beforeend", html);
+    return false;
+  }
   window.addEventListener("load", function () {
-    setTimeout(function () {
-      var tabs = document.getElementById("tabs");
-      var app = document.getElementById("app");
-      if (tabs && tabs.children.length > 0) return;   // calculator built OK
-      function esc(s) { return String(s).replace(/[<>&]/g, function (c) { return c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&amp;"; }); }
-      var detail = window.__calcErrs.length
-        ? '<pre style="white-space:pre-wrap;color:#d64545;font-size:0.85rem;background:rgba(0,0,0,0.05);padding:10px;border-radius:8px;overflow:auto;">' + esc(window.__calcErrs.join("\n")) + "</pre>"
-        : "<p>No script error was reported, which usually means the code file was blocked or served empty by the network. Try the <a href=\"diagnostics.html\">diagnostics page</a>.</p>";
-      var html = '<div style="max-width:660px;margin:24px auto;padding:16px 20px;border:1px solid #d64545;border-radius:10px;">' +
-        "<h2 style=\"margin-top:0;\">The calculator could not start</h2>" +
-        "<p>Its code loaded but did not run in this browser. The detail below pinpoints why &mdash; please copy it to the site owner:</p>" +
-        detail +
-        "<p>Browser: <code>" + esc(navigator.userAgent) + "</code></p>" +
-        "<p>The other tools (Polymer Search, Dispersity, Copolymer, T<sub>g</sub>, GPC) should still work from the <a href=\"home.html\">home page</a>.</p></div>";
-      if (app) app.innerHTML = html; else document.body.insertAdjacentHTML("beforeend", html);
-    }, 1500);
+    setTimeout(showCalcError, 1500);
+    setTimeout(showCalcError, 4000);   // re-check: an error may fire after the first pass
   });
 })();
 </script>
