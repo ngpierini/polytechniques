@@ -23,7 +23,7 @@ function loadDb() {
 // WL-hash now comes from the shared, DOM-free polymer-graph.js module (the
 // same code the browser and the search-index build use) instead of a copy
 // kept in sync here by hand.
-const { wlHash } = require("../polymer-graph.js");
+const { wlHash, closedHash } = require("../polymer-graph.js");
 
 // Generous max valence per element (bond-order sum), with slack for formal
 // charge. Purpose is to catch obvious mistakes (typo'd bonds, duplicate
@@ -141,6 +141,7 @@ function main() {
   const namesSeen = new Map();
   const casSeen = new Map();
   const hashSeen = new Map();
+  const chashSeen = new Map();
 
   db.forEach(function (entry, idx) {
     checkEntry(entry, idx, errors);
@@ -171,6 +172,17 @@ function main() {
         errors.push("entry #" + idx + " (" + entry.name + "): structure is identical (WL-hash match) to entry #" + hashSeen.get(h) + " - same repeat unit listed twice");
       } else {
         hashSeen.set(h, idx);
+      }
+      // The framing-invariant key must also be unique: a collision here means
+      // two entries are the same polymer cut at different points, which the
+      // open hash above cannot see.
+      const ch = closedHash(entry.atoms, entry.bonds);
+      if (ch == null) {
+        errors.push("entry #" + idx + " (" + entry.name + "): repeat unit could not be closed (closedHash returned null) - malformed chain ends");
+      } else if (chashSeen.has(ch)) {
+        errors.push("entry #" + idx + " (" + entry.name + "): same polymer as entry #" + chashSeen.get(ch) + " cut at a different point (closed-graph hash match)");
+      } else {
+        chashSeen.set(ch, idx);
       }
     }
   });

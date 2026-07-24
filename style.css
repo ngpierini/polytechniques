@@ -1862,6 +1862,14 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
 .mol-pub-link:hover { border-color: var(--primary); text-decoration: underline; }
 
 /* Inline publication listings under a structure match (Crossref by name). */
+.mol-sim-weak { margin-top: 12px; }
+.mol-sim-weak > summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  padding: 6px 0;
+}
+.mol-sim-weak > summary:hover { color: var(--primary); }
 .mol-identify {
   margin: 12px 0;
   padding: 12px 14px;

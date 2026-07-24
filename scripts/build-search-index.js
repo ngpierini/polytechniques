@@ -49,9 +49,12 @@ function build(db) {
   const nameTokens = {};
 
   db.forEach(function (entry, idx) {
-    // structure fingerprint, keyed by name so it survives reordering of the DB
+    // structure fingerprint, keyed by name so it survives reordering of the DB.
+    // chash is the framing-invariant key (closed-graph hash); hash stays as
+    // the open-graph fallback for malformed queries.
     fingerprints[entry.name] = {
       hash: PolymerGraph.wlHash(entry.atoms, entry.bonds),
+      chash: PolymerGraph.closedHash(entry.atoms, entry.bonds),
       profile: PolymerGraph.elementProfile(entry.atoms),
       bondCount: entry.bonds.length
     };
