@@ -160,7 +160,7 @@
     row.className = "dyn-row";
     row.innerHTML =
       '<input type="text" class="scale-name" placeholder="Component name" value="' + (name || "") + '">' +
-      '<input type="number" class="scale-amount" placeholder="Amount" step="any" min="0" value="' + (amount ?? "") + '">' +
+      '<input type="number" class="scale-amount" placeholder="Amount" step="any" min="0" value="' + (amount != null ? amount : "") + '">' +
       '<select class="scale-unit">' + unitOptions(unit || "g") + '</select>' +
       '<button type="button" class="dyn-row-remove" aria-label="Remove component">&times;</button>';
     row.querySelector(".dyn-row-remove").addEventListener("click", function () {

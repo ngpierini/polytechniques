@@ -512,7 +512,7 @@ function panelTemplate(cfg) {
         </div>
         <div class="field">
           <label>Density (g/mL)</label>
-          <input type="number" id="${id}-monomer-density" value="${cfg.monomers[0].density ?? ""}" step="any" placeholder="optional">
+          <input type="number" id="${id}-monomer-density" value="${cfg.monomers[0].density != null ? cfg.monomers[0].density : ""}" step="any" placeholder="optional">
           <span class="hint">Used to compute monomer/solvent volumes</span>
         </div>
       </div>
@@ -795,7 +795,7 @@ function bindDbSelect(selectEl, mwEl, densityEl, list, onChange) {
     if (v === "custom") return;
     const item = list[Number(v)];
     mwEl.value = item.mw;
-    if (densityEl) densityEl.value = item.density ?? "";
+    if (densityEl) densityEl.value = item.density != null ? item.density : "";
     if (onChange) onChange();
   });
 }
@@ -2692,7 +2692,7 @@ function blockCardHTML(idx, monomerSet, isFirst) {
         </div>
         <div class="field">
           <label>Density (g/mL)</label>
-          <input type="number" class="block-monomer-density" value="${monomerSet[0].density ?? ""}" step="any" placeholder="optional">
+          <input type="number" class="block-monomer-density" value="${monomerSet[0].density != null ? monomerSet[0].density : ""}" step="any" placeholder="optional">
         </div>
       </div>
       <div class="field" style="margin:12px 0;">
@@ -3242,10 +3242,10 @@ function applyBcpState(state) {
     scaleRadio.checked = true;
     scaleRadio.dispatchEvent(new Event("change", { bubbles: true }));
   }
-  $("bcp-scale-mass").value = state.scaleMass ?? "";
-  $("bcp-scale-moles").value = state.scaleMoles ?? "";
-  $("bcp-scale-volume").value = state.scaleVolume ?? "";
-  $("bcp-target-conc").value = state.targetConc ?? "";
+  $("bcp-scale-mass").value = state.scaleMass != null ? state.scaleMass : "";
+  $("bcp-scale-moles").value = state.scaleMoles != null ? state.scaleMoles : "";
+  $("bcp-scale-volume").value = state.scaleVolume != null ? state.scaleVolume : "";
+  $("bcp-target-conc").value = state.targetConc != null ? state.targetConc : "";
 
   const monomerSet = state.technique === "romp" ? CYCLIC_MONOMERS : VINYL_MONOMERS;
   $("bcp-blocks").innerHTML = "";
