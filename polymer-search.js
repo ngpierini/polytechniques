@@ -3430,6 +3430,12 @@
         return;
       }
 
+      // Not a known single repeat unit: maybe it's an alternating/periodic
+      // copolymer drawn as one bracket (…A-B-A-B…). If its backbone splits into
+      // 2+ distinct known vinyl monomers, report it as a copolymer.
+      var altCopoly = tryAlternatingDecompose(sub);
+      if (altCopoly) { renderCopolymer(altCopoly.parts, 'alternating'); return; }
+
       // The old element-composition ranking, kept as the fallback when the
       // matching engine can't load (first visit offline, blocked wasm).
       function compositionFallback(message) {
@@ -3553,6 +3559,89 @@
         if (ok) return co[i];
       }
       return null;
+    }
+
+    // Alternating (single-bracket) decomposition: a repeat unit whose all-carbon
+    // backbone splits cleanly into 2-carbon vinyl monomers, each of which is a
+    // known library homopolymer, is an alternating/periodic copolymer of those.
+    // Heavily guarded so it only fires on genuine vinyl-alt-vinyl units and never
+    // on a homopolymer, diene, or ring-opening unit (their halves don't identify).
+    // Returns {parts:[{name,entry,count}...]} with 2+ distinct monomers, else null.
+    function tryAlternatingDecompose(sub) {
+      var atomsL = sub.atoms, bondsL = sub.bonds;
+      var stars = atomsL.filter(function (a) { return a.el === '*'; });
+      if (stars.length !== 2) return null;
+      var byId = {}; atomsL.forEach(function (a) { byId[a.id] = a; });
+      var adj = {}; atomsL.forEach(function (a) { adj[a.id] = []; });
+      bondsL.forEach(function (b) { adj[b.a].push({ id: b.b, order: b.order }); adj[b.b].push({ id: b.a, order: b.order }); });
+      function nbOfStar(s) { return adj[s.id].length ? adj[s.id][0].id : null; }
+      var n0 = nbOfStar(stars[0]), n1 = nbOfStar(stars[1]);
+      if (n0 == null || n1 == null) return null;
+      // Backbone path between the two star neighbours (BFS over non-star atoms).
+      var prev = {}, seen = {}, q = [n0]; seen[n0] = 1; prev[n0] = null;
+      while (q.length) {
+        var u = q.shift(); if (u === n1) break;
+        adj[u].forEach(function (e) { if (byId[e.id].el === '*') return; if (!seen[e.id]) { seen[e.id] = 1; prev[e.id] = u; q.push(e.id); } });
+      }
+      if (!seen[n1]) return null;
+      var path = []; for (var cc = n1; cc != null; cc = prev[cc]) path.unshift(cc);
+      if (path.length < 4 || path.length % 2 !== 0) return null;   // need an even backbone >= 4
+      var onPath = {}; path.forEach(function (id) { onPath[id] = 1; });
+      for (var i = 0; i < path.length; i++) if (byId[path[i]].el !== 'C') return null;   // vinyl backbone only
+      function bondOrder(a, b) { var e = adj[a].filter(function (x) { return x.id === b; })[0]; return e ? e.order : 0; }
+      for (i = 0; i < path.length - 1; i++) if (bondOrder(path[i], path[i + 1]) !== 1) return null;  // no backbone C=C (rules out dienes)
+
+      // Build one monomer sub-unit for the backbone pair (a0,a1): the two carbons
+      // plus their (fully terminating) pendants, capped with a star on each bond
+      // that leaves the pair.
+      function buildMonomer(a0, a1) {
+        var core = {}; core[a0] = 1; core[a1] = 1;
+        [a0, a1].forEach(function (bk) {
+          adj[bk].forEach(function (e) {
+            if (byId[e.id].el === '*' || core[e.id] || onPath[e.id]) return;   // star/backbone -> boundary
+            var st = [e.id], ls = {}; ls[e.id] = 1;
+            var hitsBackbone = false;
+            while (st.length) {
+              var x = st.pop();
+              adj[x].forEach(function (y) {
+                if (byId[y.id].el === '*') return;
+                if (y.id === a0 || y.id === a1) return;            // the pair's own carbons are the attachment, not a hit
+                if (onPath[y.id]) { hitsBackbone = true; return; } // reaching another backbone atom means it isn't a simple pendant
+                if (!ls[y.id]) { ls[y.id] = 1; st.push(y.id); }
+              });
+            }
+            if (!hitsBackbone) Object.keys(ls).forEach(function (id) { core[id] = 1; });
+          });
+        });
+        var mAtoms = [], mBonds = [], sc = 0, bc = 0;
+        Object.keys(core).forEach(function (id) { var a = byId[id]; mAtoms.push({ id: id, el: a.el, charge: a.charge }); });
+        bondsL.forEach(function (b) {
+          var ain = !!core[b.a], bin = !!core[b.b];
+          if (ain && bin) mBonds.push({ a: b.a, b: b.b, order: b.order });
+          else if (ain || bin) { bc++; var inEnd = ain ? b.a : b.b; var sid = 'MS' + (sc++); mAtoms.push({ id: sid, el: '*' }); mBonds.push({ a: inEnd, b: sid, order: b.order }); }
+        });
+        return bc === 2 ? { atoms: mAtoms, bonds: mBonds } : null;
+      }
+
+      var db = window.POLYMER_DB || [];
+      function idMonomer(mon) {
+        if (!mon) return null;
+        var qc = closedHash(mon.atoms, mon.bonds);
+        if (qc == null) return null;
+        return db.filter(function (p) { if (p.type === 'copolymer' || !p.atoms) return false; return fingerprintOf(p)._chash === qc; })[0] || null;
+      }
+
+      // Pair the backbone from the star-defined junction (path[0]/path[1], ...).
+      var entries = [];
+      for (var m = 0; m < path.length / 2; m++) {
+        var e = idMonomer(buildMonomer(path[2 * m], path[2 * m + 1]));
+        if (!e) return null;
+        entries.push(e);
+      }
+      var keys = {}; entries.forEach(function (e) { keys[e.name] = (keys[e.name] || 0) + 1; });
+      var distinct = Object.keys(keys);
+      if (distinct.length < 2) return null;   // all the same -> a homopolymer, not a copolymer
+      return { parts: distinct.map(function (n) { var ent = entries.filter(function (e) { return e.name === n; })[0]; return { name: n, entry: ent, count: keys[n] }; }) };
     }
 
     // Name one unknown block via reconstruction + PubChem (a lean version of
