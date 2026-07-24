@@ -2183,7 +2183,11 @@
       // merely mention the word. Crossref ranks by relevance to the joined
       // query rather than filtering, so this nudges order without dropping
       // papers that don't happen to say "polymer".
-      var terms = [name].concat((polymer.aka || []).slice(0, 2)).concat(['polymer']);
+      // External identification can supply its own query terms (the PubChem
+      // short common name a paper would actually use) instead of a display name.
+      var terms = (polymer.queryTerms && polymer.queryTerms.length
+        ? polymer.queryTerms.slice(0, 3)
+        : [name].concat((polymer.aka || []).slice(0, 2))).concat(['polymer']);
       var filters = ['type:journal-article'];
       var from = pubFromDate(rangeDef.days);
       if (from) filters.push('from-pub-date:' + from);
@@ -2723,81 +2727,439 @@
       if (cleanBtn) cleanBtn.addEventListener('click', cleanUpStructure);
     })();
 
-    // When a drawing has no library match, name it from its structure via
-    // PubChem. Capping the repeat unit's open ends with H gives a misleading
-    // name (polyethylene's unit caps to "ethane"), so reconstruct the MONOMER:
-    // an addition polymer's two "*" ends sit on adjacent backbone carbons, and
-    // turning that bond into a double bond regenerates the vinyl monomer
-    // (styrene, 2-vinylpyrrolidine, ...), which is what actually names the
-    // polymer. Units whose ends aren't adjacent (condensation/ROP) fall back to
-    // the H-capped fragment. Returns editor-format atoms/bonds plus which case.
-    function monomerLookupStructure(sub) {
-      var stars = sub.atoms.filter(function (a) { return a.el === '*'; });
-      if (stars.length !== 2) return null;
-      var starIds = {}; stars.forEach(function (s) { starIds[s.id] = true; });
-      var nbr = {};
-      sub.bonds.forEach(function (b) {
-        if (starIds[b.a] && !starIds[b.b]) nbr[b.a] = b.b;
-        else if (starIds[b.b] && !starIds[b.a]) nbr[b.b] = b.a;
+    // ---------- PubChem helpers: polite queue, synonym ranking, CAS ----------
+    // PubChem hard-caps at 5 requests/second (returns 503, and browsers can't
+    // read its throttling header), so every call goes through one serial queue
+    // with a 220ms floor between requests.
+    var pcChain = Promise.resolve();
+    var pcLastAt = 0;
+    function pcFetch(url, opts) {
+      pcChain = pcChain.then(function () {
+        var wait = Math.max(0, 220 - (Date.now() - pcLastAt));
+        return new Promise(function (res) { setTimeout(res, wait); }).then(function () {
+          pcLastAt = Date.now();
+          return fetch(url, opts);
+        });
       });
-      var n0 = nbr[stars[0].id], n1 = nbr[stars[1].id];
-      var atomsNoStar = sub.atoms.filter(function (a) { return !starIds[a.id]; })
-        .map(function (a) { return { id: a.id, el: a.el, charge: a.charge, x: a.x, y: a.y }; });
-      var bondsNoStar = sub.bonds.filter(function (b) { return !starIds[b.a] && !starIds[b.b]; })
-        .map(function (b) { return { a: b.a, b: b.b, order: b.order }; });
-      var kind = 'fragment';
-      if (n0 != null && n1 != null && n0 !== n1) {
-        var bb = null;
-        bondsNoStar.forEach(function (b) { if ((b.a === n0 && b.b === n1) || (b.a === n1 && b.b === n0)) bb = b; });
-        if (bb && bb.order === 1) { bb.order = 2; kind = 'monomer'; }
-      }
-      return { atoms: atomsNoStar, bonds: bondsNoStar, kind: kind };
+      return pcChain;
     }
 
+    // Synonym ranking: PubChem orders synonyms by depositor frequency, so
+    // POSITION dominates the score; length, systematic-name markers, registry
+    // codes, and non-chemical trade names only nudge or reject. Tuned and
+    // holdout-tested so "2-Vinyl-4,4-dimethylazlactone" beats the oxazolinone
+    // systematic name while "Bisphenol A" and "Nylon 6" survive intact.
+    var PC_REJECT_PREFIX = new RegExp('^(' + [
+      'CHEMBL', 'DTXSID', 'DTXCID', 'SCHEMBL', 'AKOS', 'MFCD', 'EINECS', 'UNII',
+      'NSC', 'BRN', 'ZINC', 'CHEBI', 'RefChem', 'HSDB', 'CCRIS', 'CAS[- ]', 'NCGC',
+      'BDBM', 'Tox21', 'DB\\d{5}', 'LS-\\d', 'STL\\d', 'SY\\d{6}', 'CS-\\d', 'GS-\\d{3,}',
+      'FT-\\d', 'AC1[A-Z0-9]', 'AI3-', 'BRD-', 'EN300', 'WLN', 'InChI', 'UN\\d{4}',
+      'EPA\\b', 'Caswell', 'FEMA', 'RCRA', 'NIOSH', 'USAF', 'MLS\\d', 'SMR\\d',
+      'BSPBio', 'KBio', 'SPECTRUM', 'Oprea\\d', 'PubChem', 'HY-[A-Z]?\\d', 'Q\\d{6,}',
+      'SR-\\d', 'A8\\d{5}', 'J-\\d{6}', 'W-\\d{6}', 'AB\\d{7}', 'BP-\\d{5}', 'DA-\\d{5}',
+      'SB\\d{5}', 'KS-\\d', 'NCI\\d', 'CID\\s?\\d', 'EC[- ]?\\d'
+    ].join('|') + ')', 'i');
+    var PC_REJECT_EXACT = [
+      /^\d+$/,
+      /^\d{2,7}-\d{2}-\d$/,
+      /^\d{3}-\d{3}-\d$/,
+      /^(?=[A-Z0-9]{10}$)(?:[A-Z0-9]*\d){2,}[A-Z0-9]*$/,
+      /^[A-Z]{14}-[A-Z]{10}-[A-Z]$/,
+      /^[A-Z]{2,6}[\s-]?\d{1,6}$/,
+      /^[A-Z]{1,4}-\d{2,}[A-Z]*$/,
+      /^[A-Z]\d{5,}$/,
+      /\bNO\.\s*\d+/i,
+      /\bwaste number\b/i,
+      /^[A-Za-z]{0,3}\d+[A-Za-z]{0,3}$/
+    ];
+    var PC_CHEM_SUFFIX = /(?:ene|ane|yne|ol|one|al|oate|ate|ite|amide|amine|imide|imine|nitrile|cyanide|acid|ester|ether|oxide|lactone|lactam|anhydride|ketone|aldehyde|ide|ine|arin)\b/i;
+    var PC_CHEM_ROOT = /(?:benz|phenyl|vinyl|allyl|acryl|styr|meth|eth|prop|but|pent|hex|hept|oct|non|dec|azlacton|oxazol|silox|glycol|urethan|sulf|chlor|fluor|brom|iod|nitro|hydroxy|carbox|thio|amin|amid|lacton|bisphenol|nylon)/i;
+    function pcLooksChemical(s) { return PC_CHEM_SUFFIX.test(s) || PC_CHEM_ROOT.test(s); }
+    var PC_SIGNALS = [
+      { re: /,\s*[a-z0-9(),'\s-]*-$/i, pts: 70, title: true },
+      { re: /-$|^\s*-/, pts: 40, title: true },
+      { re: /\(\d+\)$/, pts: 40, title: true },
+      { re: /,\s/, pts: 10, title: true },
+      { re: /(?:oxazol|isoxazol|thiazol|imidazol|pyrrolidin|piperidin|pyrimidin|dihydro|tetrahydro|ylidene|ylium|carboxylat|carbonitril|carboxamid)/i, pts: 16, title: true },
+      { re: /\b(?:prop|but|pent|hex|eth|non|oct|dec)-\d/i, pts: 14, title: true },
+      { re: /\d+H-|\(\d+H\)/, pts: 20, title: true },
+      { re: /\d,\d/, pts: 5, title: true },
+      { re: /\((?:[RSEZ]|\d*[RSEZ](?:,\s*\d*[RSEZ])*)\)-/, pts: 22, title: true },
+      { re: /\b(?:alpha|beta|gamma|delta|epsilon|omega|ortho|meta|para|cis|trans|sym|tert|sec)[\s-]/i, pts: 5, title: true },
+      { re: /\b(?:stabilized|inhibited|solution|anhydrous|pure|liquid|gas|technical|grade|compressed|refrigerated|monomer|polymer(?:ized)?|homopolymer|reagent|analytical)\b/i, pts: 26, title: true },
+      { re: /\(\d+CI\)|\[[A-Z]{3,}\]|\bUSP\b|\bJAN\b|\bINN\b|\bBAN\b/i, pts: 45, title: true },
+      { re: /\s[A-Z]{1,4}\d*$/, pts: 38, title: false }   // trade suffix; Title exempt ("Bisphenol A")
+    ];
+    function pcIsJunk(s) {
+      if (!s) return true;
+      var t = String(s).trim();
+      if (t.length < 3 || t.length > 40) return true;
+      if (PC_REJECT_PREFIX.test(t)) return true;
+      for (var i = 0; i < PC_REJECT_EXACT.length; i++) if (PC_REJECT_EXACT[i].test(t)) return true;
+      if (/\d/.test(t) && t === t.toUpperCase() && !/[\s,()]/.test(t) && t.length > 8) return true;
+      return false;
+    }
+    function pcNorm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ''); }
+    var PC_KEEP_UPPER = /^(N|O|S|P|C|R|Z|E|D|L|H)$/;
+    function pcPrettyCase(s) {
+      if (s.replace(/[^A-Za-z]/g, '').length < 4) return s;
+      if (s !== s.toUpperCase()) {
+        return s.replace(/[A-Z]{4,}/g, function (w) { return w[0] + w.slice(1).toLowerCase(); });
+      }
+      return s.toLowerCase().replace(/[A-Za-z]+/g, function (w, off) {
+        if (w.length <= 2 && PC_KEEP_UPPER.test(w.toUpperCase())) return w.toUpperCase();
+        var prev = s[off - 1], prev2 = s[off - 2];
+        var afterNumericHyphen = prev === '-' && (prev2 === undefined || /[\d,]/.test(prev2));
+        return (off === 0 || prev === ' ' || prev === '(' || afterNumericHyphen)
+          ? w[0].toUpperCase() + w.slice(1) : w;
+      });
+    }
+    function pcPickCommonName(synonyms, title) {
+      var seen = {}, cands = [];
+      var tk = title ? pcNorm(title) : null;
+      (synonyms || []).slice(0, 32).forEach(function (raw, i) {
+        var s = String(raw).trim();
+        if (pcIsJunk(s)) return;
+        var k = pcNorm(s);
+        if (!k || seen[k]) return;
+        seen[k] = 1;
+        var isTitle = tk !== null && k === tk;
+        var pts = i * 3.2;
+        PC_SIGNALS.forEach(function (sig) {
+          if (isTitle && !sig.title) return;
+          if (sig.re.test(s)) pts += sig.pts;
+        });
+        pts += Math.max(0, s.length - 14) * 0.95;
+        var words = s.trim().split(/\s+/).length;
+        if (words > 3) pts += (words - 3) * 10;
+        if (/^[a-z]/.test(s) && s === s.toLowerCase() && /\d/.test(s)) pts += 6;
+        if (!pcLooksChemical(s)) pts += 30;
+        if (isTitle) pts -= 10;
+        cands.push({ name: pcPrettyCase(isTitle ? title : s), score: pts });
+      });
+      cands.sort(function (a, b) { return a.score - b.score; });
+      return cands.length ? cands[0].name : (title || null);
+    }
+    // CAS lives only in the synonym list. The regex is anchored on purpose:
+    // EC/EINECS numbers (3-3-1 digits) would otherwise pass, and the check
+    // digit rejects near-miss registry strings.
+    function pcCasCheck(body) {
+      var sum = 0, rev = body.split('').reverse();
+      for (var i = 0; i < rev.length; i++) sum += (i + 1) * Number(rev[i]);
+      return sum % 10;
+    }
+    function pcExtractCAS(synonyms) {
+      for (var i = 0; i < (synonyms || []).length; i++) {
+        var m = /^(\d{2,7})-(\d{2})-(\d)$/.exec(String(synonyms[i]).trim());
+        if (m && pcCasCheck(m[1] + m[2]) === Number(m[3])) return m[0];
+      }
+      return null;
+    }
+
+    // ---------- Monomer reconstruction (validated rule chain) ----------
+    // When a drawing has no library match, reconstruct the most plausible
+    // monomer so PubChem can NAME the polymer, instead of naming an H-capped
+    // fragment (polyethylene's unit caps to "ethane"). Rules, in priority
+    // order, each validated against the whole library plus adversarial cases:
+    //   V vinyl: ends on adjacent atoms -> double that bond (styrene). Guarded
+    //     to C-C/C-O/C-N/C-S pairs (never Si=O for a siloxane) outside rings.
+    //   D diene: ends 3 bonds apart across C-C=C-C -> shift to C=C-C=C
+    //     (butadiene). Ring atoms excluded so poly(p-phenylene) can't misfire.
+    //   R ring-opening: ends 3-7 atoms apart, one end C and the other O/N/S,
+    //     no ring atoms on the path -> close the ring (caprolactone, lactide).
+    //     3-rings with an acyl end (alpha-lactone) or an N-acyl heteroatom
+    //     (2-oxazoline backbones) are refused - both would name confidently
+    //     wrong monomers.
+    //   S condensation: an acyl end plus a heteroatom end -> hydrolytically
+    //     cut every internal ester/amide linkage, cap acyls with OH, and
+    //     report the co-monomer pieces (PET -> ethylene glycol + terephthalic
+    //     acid). The condensate note stays honest: "with loss of water".
+    //   Fragment: everything else (PPS, PEEK, siloxanes) - any rule that
+    //     named these would name them wrongly.
+    var RECON_HETERO = { O: 1, N: 1, S: 1 };
+    var RECON_MAXVAL = { C: 4, N: 3, O: 2, S: 2, Si: 4, P: 3, F: 1, Cl: 1, Br: 1, I: 1 };
+    var RECON_DBL_OK = { 'C|C': 1, 'C|O': 1, 'C|N': 1, 'C|S': 1 };
+
+    function reconPrep(sub) {
+      var stars = sub.atoms.filter(function (a) { return a.el === '*'; });
+      if (stars.length !== 2) return null;
+      var starId = {}; stars.forEach(function (s) { starId[s.id] = true; });
+      var atoms = sub.atoms.filter(function (a) { return !starId[a.id]; })
+        .map(function (a) { return { id: a.id, el: a.el, charge: a.charge }; });
+      var bonds = sub.bonds.filter(function (b) { return !starId[b.a] && !starId[b.b]; })
+        .map(function (b) { return { a: b.a, b: b.b, order: b.order || 1 }; });
+      var nbrOfStar = {};
+      sub.bonds.forEach(function (b) {
+        if (starId[b.a] && !starId[b.b]) nbrOfStar[b.a] = b.b;
+        else if (starId[b.b] && !starId[b.a]) nbrOfStar[b.b] = b.a;
+      });
+      var n0 = nbrOfStar[stars[0].id], n1 = nbrOfStar[stars[1].id];
+      if (n0 == null || n1 == null) return null;
+      var el = {}, adj = {}, valSum = {};
+      atoms.forEach(function (a) { el[a.id] = a.el; adj[a.id] = []; valSum[a.id] = 0; });
+      bonds.forEach(function (b) {
+        adj[b.a].push({ to: b.b, bond: b }); adj[b.b].push({ to: b.a, bond: b });
+        valSum[b.a] += b.order; valSum[b.b] += b.order;
+      });
+      return { atoms: atoms, bonds: bonds, n0: n0, n1: n1, el: el, adj: adj, valSum: valSum };
+    }
+    function reconPath(g, from, to) {
+      var prev = {}, q = [from];
+      prev[from] = null;
+      while (q.length) {
+        var cur = q.shift();
+        if (cur === to) break;
+        g.adj[cur].forEach(function (e) { if (!(e.to in prev)) { prev[e.to] = cur; q.push(e.to); } });
+      }
+      if (!(to in prev)) return null;
+      var path = [], c = to;
+      while (c != null) { path.unshift(c); c = prev[c]; }
+      return path;
+    }
+    function reconBond(g, x, y) {
+      for (var i = 0; i < g.adj[x].length; i++) if (g.adj[x][i].to === y) return g.adj[x][i].bond;
+      return null;
+    }
+    function reconInRing(g, bond) {
+      var seen = {}, q = [bond.a];
+      seen[bond.a] = 1;
+      while (q.length) {
+        var cur = q.shift();
+        for (var i = 0; i < g.adj[cur].length; i++) {
+          var e = g.adj[cur][i];
+          if (e.bond === bond) continue;
+          if (e.to === bond.b) return true;
+          if (!seen[e.to]) { seen[e.to] = 1; q.push(e.to); }
+        }
+      }
+      return false;
+    }
+    function reconRingAtoms(g) {
+      var set = {};
+      g.bonds.forEach(function (b) { if (reconInRing(g, b)) { set[b.a] = 1; set[b.b] = 1; } });
+      return set;
+    }
+    function reconCanAdd(g, id, n) {
+      var m = RECON_MAXVAL[g.el[id]];
+      return m != null && g.valSum[id] + n <= m;
+    }
+    function reconIsAcyl(g, c) {
+      return g.el[c] === 'C' && g.adj[c].some(function (e) { return e.bond.order === 2 && g.el[e.to] === 'O'; });
+    }
+    function reconVinyl(g) {
+      if (g.n0 === g.n1) return null;
+      var bb = reconBond(g, g.n0, g.n1);
+      if (!bb || bb.order !== 1) return null;
+      var pair = [g.el[g.n0], g.el[g.n1]].sort().join('|');
+      if (!RECON_DBL_OK[pair]) return null;
+      if (reconInRing(g, bb)) return null;
+      if (!reconCanAdd(g, g.n0, 1) || !reconCanAdd(g, g.n1, 1)) return null;
+      return { kind: 'vinyl', atoms: g.atoms,
+        bonds: g.bonds.map(function (b) { return b === bb ? { a: b.a, b: b.b, order: 2 } : { a: b.a, b: b.b, order: b.order }; }) };
+    }
+    function reconDiene(g) {
+      if (g.n0 === g.n1) return null;
+      var path = reconPath(g, g.n0, g.n1);
+      if (!path || path.length !== 4) return null;
+      for (var i = 0; i < 4; i++) if (g.el[path[i]] !== 'C') return null;
+      var b1 = reconBond(g, path[0], path[1]), b2 = reconBond(g, path[1], path[2]), b3 = reconBond(g, path[2], path[3]);
+      if (b1.order !== 1 || b2.order !== 2 || b3.order !== 1) return null;
+      var rings = reconRingAtoms(g);
+      for (var j = 0; j < 4; j++) if (rings[path[j]]) return null;
+      if (!reconCanAdd(g, path[0], 1) || !reconCanAdd(g, path[3], 1)) return null;
+      var bonds = g.bonds.map(function (x) { return { a: x.a, b: x.b, order: x.order }; });
+      bonds[g.bonds.indexOf(b1)].order = 2;
+      bonds[g.bonds.indexOf(b2)].order = 1;
+      bonds[g.bonds.indexOf(b3)].order = 2;
+      return { kind: 'diene', atoms: g.atoms, bonds: bonds };
+    }
+    function reconRing(g) {
+      if (g.n0 === g.n1 || reconBond(g, g.n0, g.n1)) return null;
+      var path = reconPath(g, g.n0, g.n1);
+      if (!path) return null;
+      var size = path.length;
+      if (size < 3 || size > 7) return null;    // past 7 the closure names wrong macrocycles
+      var rings = reconRingAtoms(g);
+      for (var i = 0; i < path.length; i++) if (rings[path[i]]) return null;
+      var e0 = g.el[g.n0], e1 = g.el[g.n1];
+      var het = (RECON_HETERO[e0] ? 1 : 0) + (RECON_HETERO[e1] ? 1 : 0);
+      if (het !== 1 || !(e0 === 'C' || e1 === 'C')) return null;
+      if (!reconCanAdd(g, g.n0, 1) || !reconCanAdd(g, g.n1, 1)) return null;
+      if (size === 3 && (reconIsAcyl(g, g.n0) || reconIsAcyl(g, g.n1))) return null;
+      if (size === 3) {
+        var hetEnd = RECON_HETERO[e0] ? g.n0 : g.n1;
+        if (g.adj[hetEnd].some(function (e) { return reconIsAcyl(g, e.to); })) return null;
+      }
+      return { kind: 'ring', atoms: g.atoms,
+        bonds: g.bonds.map(function (x) { return { a: x.a, b: x.b, order: x.order }; }).concat([{ a: g.n0, b: g.n1, order: 1 }]) };
+    }
+    function reconStep(g) {
+      var endAcyl = reconIsAcyl(g, g.n0) ? g.n0 : (reconIsAcyl(g, g.n1) ? g.n1 : null);
+      var endHet = RECON_HETERO[g.el[g.n0]] ? g.n0 : (RECON_HETERO[g.el[g.n1]] ? g.n1 : null);
+      if (endAcyl == null || endHet == null || endAcyl === endHet) return null;
+      var cuts = [];
+      g.bonds.forEach(function (bd) {
+        if (bd.order !== 1) return;
+        var pairs = [[bd.a, bd.b], [bd.b, bd.a]];
+        for (var i = 0; i < 2; i++) {
+          var c = pairs[i][0], h = pairs[i][1];
+          if (reconIsAcyl(g, c) && RECON_HETERO[g.el[h]] && !reconIsAcyl(g, h)) { cuts.push({ bond: bd, acyl: c }); return; }
+        }
+      });
+      var cutSet = {};
+      cuts.forEach(function (c) { cutSet[g.bonds.indexOf(c.bond)] = 1; });
+      var atoms = g.atoms.map(function (a) { return { id: a.id, el: a.el, charge: a.charge }; });
+      var bonds = g.bonds.filter(function (b, i) { return !cutSet[i]; })
+        .map(function (b) { return { a: b.a, b: b.b, order: b.order }; });
+      var n = 0;
+      cuts.forEach(function (c) { var o = '_oh' + (n++); atoms.push({ id: o, el: 'O' }); bonds.push({ a: c.acyl, b: o, order: 1 }); });
+      var oEnd = '_oh' + (n++); atoms.push({ id: oEnd, el: 'O' }); bonds.push({ a: endAcyl, b: oEnd, order: 1 });
+      var adj = {}; atoms.forEach(function (a) { adj[a.id] = []; });
+      bonds.forEach(function (b) { adj[b.a].push(b.b); adj[b.b].push(b.a); });
+      var seen = {}, pieces = [];
+      atoms.forEach(function (a) {
+        if (seen[a.id]) return;
+        var comp = {}, q = [a.id];
+        seen[a.id] = 1; comp[a.id] = 1;
+        while (q.length) {
+          var c = q.shift();
+          adj[c].forEach(function (t) { if (!seen[t]) { seen[t] = 1; comp[t] = 1; q.push(t); } });
+        }
+        pieces.push({
+          atoms: atoms.filter(function (x) { return comp[x.id]; }),
+          bonds: bonds.filter(function (x) { return comp[x.a] && comp[x.b]; })
+        });
+      });
+      return { kind: pieces.length > 1 ? 'comonomers' : 'condensation', pieces: pieces };
+    }
+    function reconstructMonomer(sub) {
+      var g = reconPrep(sub);
+      if (!g) return null;
+      return reconVinyl(g) || reconDiene(g) || reconRing(g) || reconStep(g) ||
+        { kind: 'fragment', atoms: g.atoms, bonds: g.bonds };
+    }
+
+    // ---------- External identification via PubChem ----------
     var identifyToken = 0;
-    function identifyExternally(sub, RDKit) {
-      var el = document.getElementById('mol-identify');
-      var myToken = ++identifyToken;
-      var recon = monomerLookupStructure(sub);
-      if (!el || !recon) { renderPublications(null); return; }
-      var smiles = null;
-      var ex = expandSuperatoms(recon.atoms, recon.bonds);
+    function smilesOf(RDKit, atomList, bondList) {
+      var ex = expandSuperatoms(atomList, bondList);
       var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
-      if (mol) { try { smiles = mol.get_smiles(); } catch (e) {} mol.delete(); }
-      if (!smiles) { el.hidden = true; el.innerHTML = ''; renderPublications(null); return; }
-
-      el.hidden = false;
-      el.innerHTML = '<div class="mol-id-body guide-note">Identifying this structure in PubChem&hellip;</div>';
-
-      fetch('https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/property/Title,IUPACName/JSON',
+      if (!mol) return null;
+      var s = null;
+      try { s = mol.get_smiles(); } catch (e) {}
+      mol.delete();
+      return s;
+    }
+    function pcLookupSmiles(smiles) {
+      return pcFetch('https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/property/Title,IUPACName/JSON',
         { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'smiles=' + encodeURIComponent(smiles) })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (data) {
+          var p = data && data.PropertyTable && data.PropertyTable.Properties && data.PropertyTable.Properties[0];
+          return (p && p.CID) ? { cid: p.CID, title: p.Title || p.IUPACName || ('CID ' + p.CID) } : null;
+        });
+    }
+    function pcSynonyms(cid) {
+      return pcFetch('https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/' + cid + '/synonyms/JSON')
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          var info = data && data.InformationList && data.InformationList.Information && data.InformationList.Information[0];
+          return (info && info.Synonym) || [];
+        });
+    }
+    function pcLink(cid, label) {
+      return '<a href="https://pubchem.ncbi.nlm.nih.gov/compound/' + cid + '" target="_blank" rel="noopener noreferrer"><strong>' + escapeHtml(label) + '</strong></a>';
+    }
+    function liftPublications(el) {
+      // Sit the publications right under the identification, ahead of the
+      // weak "closest in library" cards, so the search visibly continues
+      // into the papers for the identified polymer.
+      var pubEl = document.getElementById('mol-publications');
+      if (pubEl && el.nextSibling !== pubEl) el.parentNode.insertBefore(pubEl, el.nextSibling);
+    }
+
+    function identifyExternally(sub, RDKit) {
+      var el = document.getElementById('mol-identify');
+      var myToken = ++identifyToken;
+      var recon = reconstructMonomer(sub);
+      if (!el || !recon) { renderPublications(null); return; }
+
+      el.hidden = false;
+      el.innerHTML = '<div class="mol-id-body guide-note">Identifying this structure in PubChem&hellip;</div>';
+      var HEAD = '<div class="mol-id-head">Not in the reference library &mdash; identified by structure</div>';
+
+      // Condensation family: name each hydrolysis piece (deduped), report the
+      // co-monomer pair. Titles here are already common names, so the synonym
+      // pass is skipped to stay inside PubChem's rate budget.
+      if (recon.kind === 'comonomers' || recon.kind === 'condensation') {
+        var smilesList = [], seenSmi = {};
+        for (var i = 0; i < recon.pieces.length; i++) {
+          var s = smilesOf(RDKit, recon.pieces[i].atoms, recon.pieces[i].bonds);
+          if (!s) { showNoId(el, ''); renderPublications(null); return; }
+          if (!seenSmi[s]) { seenSmi[s] = 1; smilesList.push(s); }
+        }
+        Promise.all(smilesList.map(pcLookupSmiles)).then(function (hits) {
           if (myToken !== identifyToken) return;
-          var prop = data && data.PropertyTable && data.PropertyTable.Properties && data.PropertyTable.Properties[0];
-          if (!prop || !prop.CID) { showNoId(el, smiles); renderPublications(null); return; }
-          var title = prop.Title || prop.IUPACName || ('CID ' + prop.CID);
-          var cidUrl = 'https://pubchem.ncbi.nlm.nih.gov/compound/' + prop.CID;
-          var polymerName = recon.kind === 'monomer' ? ('poly(' + title.toLowerCase() + ')') : null;
-          // Lift the publications up to sit right under this identification,
-          // ahead of the weak "closest in library" cards, so the search
-          // visibly continues into the papers for the identified polymer.
-          var pubEl = document.getElementById('mol-publications');
-          if (pubEl && el.nextSibling !== pubEl) el.parentNode.insertBefore(pubEl, el.nextSibling);
-          el.innerHTML =
-            '<div class="mol-id-head">Not in the reference library &mdash; identified by structure</div>' +
-            '<div class="mol-id-body">' +
-              (recon.kind === 'monomer'
-                ? 'The monomer of this repeat unit is <a href="' + cidUrl + '" target="_blank" rel="noopener noreferrer"><strong>' + escapeHtml(title) + '</strong></a> (PubChem CID ' + prop.CID + '), so the polymer is likely <strong>' + escapeHtml(polymerName) + '</strong>. Publications below are for that polymer.'
-                : 'The closest compound in PubChem is <a href="' + cidUrl + '" target="_blank" rel="noopener noreferrer"><strong>' + escapeHtml(title) + '</strong></a> (CID ' + prop.CID + ').') +
-            '</div>';
-          renderPublications({ name: polymerName || title, aka: recon.kind === 'monomer' ? [title] : [] });
-        })
-        .catch(function () {
+          hits = hits.filter(function (h) { return h; });
+          if (!hits.length) { showNoId(el, smilesList[0]); renderPublications(null); return; }
+          var names = hits.map(function (h) { return pcPrettyCase(h.title); });
+          var links = hits.map(function (h, j) { return pcLink(h.cid, names[j]); });
+          liftPublications(el);
+          el.innerHTML = HEAD + '<div class="mol-id-body">This repeat unit is consistent with a condensation polymer of ' +
+            links.join(' and ') + ' (with loss of water or another condensate). Publications below cover polymers of ' +
+            (names.length > 1 ? 'this pair' : 'this monomer') + '.</div>';
+          renderPublications({ name: 'polymers of ' + names.join(' + '), aka: [], queryTerms: names });
+        }).catch(function () {
           if (myToken !== identifyToken) return;
-          showNoId(el, smiles);
+          showNoId(el, smilesList[0] || '');
           renderPublications(null);
         });
+        return;
+      }
+
+      // Single-structure kinds: look up the reconstruction, then refine with
+      // the synonym list (short common name + CAS) before naming the polymer.
+      var smiles = smilesOf(RDKit, recon.atoms, recon.bonds);
+      if (!smiles) { el.hidden = true; el.innerHTML = ''; renderPublications(null); return; }
+      var MECH = {
+        vinyl: 'The monomer of this repeat unit is ',
+        diene: 'This repeat unit is consistent with 1,4-polymerization of the diene ',
+        ring: 'This repeat unit is consistent with ring-opening polymerization of ',
+        fragment: 'The closest compound in PubChem is '
+      };
+      pcLookupSmiles(smiles).then(function (hit) {
+        if (myToken !== identifyToken) return;
+        if (!hit) { showNoId(el, smiles); renderPublications(null); return; }
+        if (recon.kind === 'fragment') {
+          liftPublications(el);
+          el.innerHTML = HEAD + '<div class="mol-id-body">' + MECH.fragment + pcLink(hit.cid, pcPrettyCase(hit.title)) +
+            ' (CID ' + hit.cid + '). The linkage chemistry of this backbone can&rsquo;t be reduced to one monomer automatically.</div>';
+          renderPublications({ name: pcPrettyCase(hit.title), aka: [] });
+          return;
+        }
+        pcSynonyms(hit.cid).then(function (syn) {
+          if (myToken !== identifyToken) return;
+          var common = pcPickCommonName(syn, hit.title) || pcPrettyCase(hit.title);
+          var cas = pcExtractCAS(syn);
+          var polyName = 'poly(' + common.toLowerCase() + ')';
+          liftPublications(el);
+          el.innerHTML = HEAD + '<div class="mol-id-body">' + MECH[recon.kind] + pcLink(hit.cid, common) +
+            (cas ? ' (CAS ' + escapeHtml(cas) + ')' : ' (CID ' + hit.cid + ')') +
+            ', so the polymer is likely <strong>' + escapeHtml(polyName) + '</strong>. Publications below are for that polymer.</div>';
+          renderPublications({ name: polyName, aka: [common], queryTerms: [polyName, common] });
+        }).catch(function () {
+          if (myToken !== identifyToken) return;
+          var polyName = 'poly(' + hit.title.toLowerCase() + ')';
+          liftPublications(el);
+          el.innerHTML = HEAD + '<div class="mol-id-body">' + MECH[recon.kind] + pcLink(hit.cid, pcPrettyCase(hit.title)) +
+            ' (CID ' + hit.cid + '), so the polymer is likely <strong>' + escapeHtml(polyName) + '</strong>.</div>';
+          renderPublications({ name: polyName, aka: [hit.title] });
+        });
+      }).catch(function () {
+        if (myToken !== identifyToken) return;
+        showNoId(el, smiles);
+        renderPublications(null);
+      });
     }
     function showNoId(el, smiles) {
       el.hidden = false;
