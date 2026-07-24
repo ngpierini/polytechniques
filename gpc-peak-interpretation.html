@@ -198,6 +198,46 @@
   </div>
 
   <div class="card">
+    <h3>Real column banks people actually run</h3>
+    <p class="guide-note">
+      To make the abstract builder concrete, here are real, currently sold series banks and the window each one targets. Two design philosophies show up. A stack of <em>individual</em> pore sizes concentrates resolution across a defined window and resolves it sharply, which is what you want once you know roughly where your sample sits. A stack of <em>mixed bed</em> columns (each already a blend of pore sizes) trades some of that sharpness for a wide, near-linear calibration and is the safe default for unknowns or broad distributions. A guard column always goes first. The molecular weight ranges below are the manufacturers&rsquo; published <strong>linear operating ranges</strong> in the standard eluent, polystyrene-equivalent for the organic banks and PEG/PEO- or pullulan-equivalent for the aqueous ones. They are the region of shallowest calibration slope, not hard exclusion limits, and the analytical columns are the usual 300 mm length (7.5 mm i.d. for Agilent and Tosoh, 7.8 mm for Waters). Confirm against the current data sheet before you buy.
+    </p>
+
+    <p class="guide-note" style="margin-bottom:6px;"><strong>Organic phase</strong> (THF or chloroform, calibrated with narrow polystyrene standards):</p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>Target</th><th>Three-column bank (after a guard)</th><th>Window (PS-equiv)</th></tr></thead>
+        <tbody>
+          <tr><td>General purpose</td><td>2&times; Agilent PLgel 5 &micro;m MIXED-C</td><td>200 &ndash; 2,000,000</td></tr>
+          <tr><td>General purpose (matched pores)</td><td>Waters Styragel HR&nbsp;3 + HR&nbsp;4 + HR&nbsp;5</td><td>500 &ndash; 4,000,000</td></tr>
+          <tr><td>General purpose (matched pores)</td><td>Tosoh TSKgel G3000H<sub>HR</sub> + G4000H<sub>HR</sub> + G5000H<sub>HR</sub></td><td>~1,000 &ndash; 4,000,000</td></tr>
+          <tr><td>Oligomers &amp; low MW</td><td>3&times; Agilent PLgel 3 &micro;m MIXED-E</td><td>up to ~30,000</td></tr>
+          <tr><td>Oligomers &amp; low MW (matched pores)</td><td>Waters Styragel HR&nbsp;0.5 + HR&nbsp;1 + HR&nbsp;2</td><td>0 &ndash; ~20,000</td></tr>
+          <tr><td>Tighten a defined mid window</td><td>Agilent PLgel 5 &micro;m 500&nbsp;&Aring; + 10&sup3;&nbsp;&Aring; + 10&#8308;&nbsp;&Aring;</td><td>~500 &ndash; 600,000</td></tr>
+          <tr><td>High MW &amp; broad</td><td>3&times; Agilent PLgel 10 &micro;m MIXED-B</td><td>500 &ndash; 10,000,000</td></tr>
+          <tr><td>Very high MW</td><td>Tosoh TSKgel G5000H<sub>HR</sub> + G6000H<sub>HR</sub> + G7000H<sub>HR</sub></td><td>~10,000 &ndash; ~4&times;10&#8312;</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="guide-note" style="margin:12px 0 6px;"><strong>Aqueous phase</strong> (water with salt/buffer, for water-soluble polymers; calibrated with PEG/PEO or pullulan, <em>not</em> polystyrene, which does not dissolve in water and adsorbs to the packing):</p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>Target</th><th>Bank (after a guard)</th><th>Window</th></tr></thead>
+        <tbody>
+          <tr><td>Broad / unknown (mixed bed)</td><td>2&times; Tosoh TSKgel GMPW<sub>XL</sub></td><td>~500 &ndash; 8,000,000</td></tr>
+          <tr><td>General synthetic</td><td>Tosoh TSKgel G3000PW<sub>XL</sub> + G4000PW<sub>XL</sub> + G5000PW<sub>XL</sub></td><td>~1,000 &ndash; ~300,000</td></tr>
+          <tr><td>High MW (shear-gentle 15 &micro;m)</td><td>Agilent PL aquagel-OH 60 + 50 + 40</td><td>~10,000 &ndash; 10,000,000</td></tr>
+          <tr><td>Oligomers &amp; low MW</td><td>Agilent PL aquagel-OH 30 + 20</td><td>~100 &ndash; 60,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note" style="margin-top:10px;">
+      A few patterns worth noticing in the table. The mixed bed banks (PLgel MIXED, TSKgel GM, Styragel HR&nbsp;5E) all cover several decades from a single linear calibration, which is why they are the go-to when you do not yet know the distribution. The matched individual-pore stacks (the Styragel HR and TSKgel G-series rows) cover a narrower window but resolve it more sharply, which is the point of choosing them. And the aqueous ranges are meaningfully lower than they look next to the organic ones, because a PEO or pullulan chain of a given molecular weight is a different hydrodynamic size than a polystyrene chain of the same mass, so the very same column reports a different number depending on the standard, which is exactly the standards-dependence covered next.
+    </p>
+  </div>
+
+  <div class="card">
     <h3>Targeting a molecular weight window: standards, cutoffs, and lab-to-lab spread</h3>
     <p class="guide-note">
       <strong>Modern instruments are sold as banks aimed at a target window.</strong> A GPC configured for polyolefins, for controlled radical products, or for oligomer analysis is really the same hardware with a different set of series columns whose pore sizes bracket the molecular weights the lab expects to run. That is the practical way to think about method setup: decide the window your samples live in, then stack columns whose selectivity overlaps across that window, so the pore volume, and therefore the resolution, is concentrated where your peaks actually elute. Two matched mixed beds give a wide general-purpose window; a bank of individual pore sizes tuned to the target (500 &Aring; + 10&sup3; &Aring; for a 5k&ndash;50k RAFT polymer, 10&#8308; + 10&#8309; &Aring; for a 100k&ndash;1M free radical product) resolves that window more sharply at the cost of everything outside it. The bank builder above shows both behaviors.
