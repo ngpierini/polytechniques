@@ -185,6 +185,34 @@
           }).catch(function () { clearTimeout(t); resolve({ status: "fail", detail: "could not fetch app.js" }); });
         });
     } },
+    { name: "Calculator actually runs (live test)", affects: "Loads the real Calculator in the background and reports exactly why it fails", run: function () {
+        return new Promise(function (resolve) {
+          var iframe = document.createElement("iframe");
+          iframe.style.cssText = "position:absolute;left:-9999px;top:-9999px;width:900px;height:700px;border:0;";
+          iframe.src = "calculator.html?diag=" + (new Date()).getTime();
+          var done = false, fin = function (s, d) { if (!done) { done = true; try { document.body.removeChild(iframe); } catch (_) {} resolve({ status: s, detail: d }); } };
+          iframe.onload = function () {
+            setTimeout(function () {
+              try {
+                var doc = iframe.contentDocument, win = iframe.contentWindow;
+                var tabs = doc && doc.getElementById("tabs");
+                var errs = (win && win.__calcErrs) || [];
+                var built = tabs && tabs.children.length > 0;
+                var selects = doc ? doc.querySelectorAll("#app select") : [];
+                var maxOpts = 0;
+                for (var i = 0; i < selects.length; i++) { if (selects[i].options && selects[i].options.length > maxOpts) maxOpts = selects[i].options.length; }
+                if (built && maxOpts > 3) { fin("ok", "built " + tabs.children.length + " tabs and populated the dropdowns (up to " + maxOpts + " options) — works here"); return; }
+                if (errs.length) { fin("fail", "the calculator threw: " + errs.join("  ||  ")); return; }
+                if (built) { fin("warn", "tabs built but the dropdowns are empty — app.js stopped partway with no error thrown"); return; }
+                fin("fail", "the calculator did not build and threw no error (its code did not execute)");
+              } catch (e) { fin("warn", "couldn't inspect the calculator (" + (e && e.name) + ")"); }
+            }, 4500);
+          };
+          iframe.onerror = function () { fin("fail", "the calculator page did not load"); };
+          setTimeout(function () { fin("fail", "the calculator did not respond (timed out)"); }, 13000);
+          document.body.appendChild(iframe);
+        });
+    } },
     { name: "Site API (/api/health)", affects: "AI photo-to-structure recognition", run: function () { return probe("api/health", true); } },
     { name: "Crossref (publications)", affects: "The live publications search and Hot Off the Press", run: function () { return probe("https://api.crossref.org/works?rows=1", false); } },
     { name: "PubChem", affects: "Naming an unknown drawn structure", run: function () { return probe("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/962/property/Title/JSON", false); } },
@@ -233,6 +261,13 @@
     var extBlocked = externals.filter(function (n) { return st(n) === "fail"; }).length;
     var el = document.getElementById("diag-summary");
     var msg, color = "var(--primary)";
+    var calc = results.filter(function (x) { return x.name.indexOf("Calculator actually runs") === 0; })[0];
+    if (calc && (calc.status === "fail" || calc.status === "warn") && calc.detail && calc.detail.indexOf("works here") === -1) {
+      el.style.borderLeftColor = "var(--danger)";
+      el.innerHTML = "<strong>Reproduced the Calculator failure on this machine. Please copy this whole line to the site owner:</strong><br>" +
+        "<code style=\"display:inline-block;margin-top:6px;font-size:0.85rem;\">" + escapeHtml(calc.detail) + "</code>";
+      return;
+    }
     if (!coreOk) {
       color = "var(--danger)";
       msg = "<strong>The core tools are blocked here.</strong> Canvas drawing or the site's own data files did not load, so the calculators and structure editor can't run on this network/browser. Copy this report and ask your IT team to allow getpolytechniques.com.";
