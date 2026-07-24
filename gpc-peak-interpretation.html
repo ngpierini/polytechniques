@@ -198,6 +198,37 @@
   </div>
 
   <div class="card">
+    <h3>Targeting a molecular weight window: standards, cutoffs, and lab-to-lab spread</h3>
+    <p class="guide-note">
+      <strong>Modern instruments are sold as banks aimed at a target window.</strong> A GPC configured for polyolefins, for controlled radical products, or for oligomer analysis is really the same hardware with a different set of series columns whose pore sizes bracket the molecular weights the lab expects to run. That is the practical way to think about method setup: decide the window your samples live in, then stack columns whose selectivity overlaps across that window, so the pore volume, and therefore the resolution, is concentrated where your peaks actually elute. Two matched mixed beds give a wide general-purpose window; a bank of individual pore sizes tuned to the target (500 &Aring; + 10&sup3; &Aring; for a 5k&ndash;50k RAFT polymer, 10&#8308; + 10&#8309; &Aring; for a 100k&ndash;1M free radical product) resolves that window more sharply at the cost of everything outside it. The bank builder above shows both behaviors.
+    </p>
+    <p class="guide-note">
+      <strong>The standards: polystyrene and PMMA.</strong> Calibration kits are narrow-dispersity standards, usually made anionically, in sets of ten or so spanning roughly 500 to a few million g/mol; you run them, fit log M against elution volume, and every sample is then read against that fit. Polystyrene is the default in THF, toluene, and chloroform: cheap, stable, available in the narrowest dispersities. PMMA standards are the workhorse for polar eluents, DMF, DMAc, and HFIP, where polystyrene is a poor choice because it interacts with the column packing or is not even soluble, which is why polyamides and fluoropolymers run in HFIP are almost always reported against PMMA. The number your software prints is therefore a <em>PS-equivalent</em> or <em>PMMA-equivalent</em> molecular weight: the M a polystyrene or PMMA chain would need to reach the same hydrodynamic size, not the true M of your polymer. The two scales disagree with each other, and both disagree with the true value, by amounts that depend on the chemistry; the <a href="gpc-calibration.html">GPC Convert</a> page translates between scales when Mark&ndash;Houwink parameters are known. Whichever set you use, the standard identity, eluent, and column set belong in every report; a molecular weight without them is not reproducible information.
+    </p>
+    <p class="guide-note">
+      <strong>Cutoffs silently truncate a distribution.</strong> A bank only separates between its total-permeation and exclusion limits, and the calibration fit only spans the standards you actually ran. Three failure modes follow. Chains larger than the exclusion limit are not separated at all: they co-elute in a stack right at the exclusion volume, so a high-M tail or a crosslinked fraction shows up as a sharp spike at the front of the peak, and the M<sub>w</sub> your software integrates under it is capped at whatever the calibration says at that volume, underreporting the true high end and flattering &#272;. At the other end, oligomers and residual monomer crowd into the total-permeation region among solvent and system peaks, where the integration choice decides whether they count, moving M<sub>n</sub> substantially. And in between, software will happily extrapolate a polynomial calibration fit past the last standard you ran; a value read beyond the highest standard is an extrapolation, not a measurement, and third-order fits can bend sharply out there.
+    </p>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="480" height="170" viewBox="0 0 480 170">
+        <line x1="20" y1="130" x2="460" y2="130" stroke="var(--text-dim)" stroke-width="1"/>
+        <line x1="120" y1="24" x2="120" y2="130" stroke="var(--danger)" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text x="120" y="16" text-anchor="middle" class="small" fill="var(--danger)">exclusion limit</text>
+        <path d="M120,130 L120,58 Q126,52 132,70 Q160,20 210,20 Q270,20 330,90 Q380,125 460,130" fill="none" stroke="#5b8def" stroke-width="2.5"/>
+        <path d="M120,130 L120,58 Q112,64 96,90 Q70,112 40,126 L40,130 Z" fill="var(--danger)" fill-opacity="0.22" stroke="var(--danger)" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <text x="72" y="152" text-anchor="middle" class="small dim">true high-M tail (not separated)</text>
+        <text x="150" y="47" text-anchor="start" class="small dim">&larr; stacks up as a spike here</text>
+        <text x="300" y="152" text-anchor="middle" class="small dim">resolved distribution</text>
+      </svg>
+      <p class="diagram-caption">A distribution wider than the bank: everything beyond the exclusion limit co-elutes as a spike at the exclusion volume. The reported curve ends where the column stops separating, not where the polymer does.</p>
+    </div>
+
+    <p class="guide-note">
+      <strong>Expect 10&ndash;20% disagreement between instruments.</strong> Send the same sample to two competent labs and the reported M<sub>w</sub> values routinely come back 10&ndash;20% apart, with M<sub>n</sub> and &#272; spreading even wider, and that is with everyone doing their job properly. The gap is systematic, not sloppiness: different column banks and their band broadening, different standard sets and lots, PS versus PMMA scales, different calibration fit orders, different integration limits, and percent-level flow rate differences all stack in one direction or another. Repeatability on a single instrument, same day and same calibration, is far tighter, a few percent, which is exactly why GPC molecular weights should be treated as comparative numbers. Track trends on one instrument against one calibration, report the full method, and when an absolute number genuinely matters, use light scattering detection or an absolute technique rather than arguing over whose conventional calibration is right.
+    </p>
+  </div>
+
+  <div class="card">
     <h3>Solvent system</h3>
     <p class="guide-note">
       The mobile phase has to fully dissolve your polymer with no aggregation, and it has to be compatible with the column chemistry and detector. THF is the default for many organic soluble polymers because it is a good general solvent, low viscosity, and works cleanly with refractive index detection.
@@ -455,7 +486,7 @@
       Band broadening, meaning peak spreading caused by the instrument itself from tubing, fittings, and column efficiency, varies between instruments and increases the apparent Đ of a narrow sample, so a column and system combination in poor condition can make a genuinely narrow, well controlled polymerization look broader than it is. Flow rate reproducibility, column aging, mobile phase batch variation, and even ambient temperature control all shift retention time calibration in ways that are usually small individually but add up.
     </p>
     <p class="guide-note">
-      None of this means GPC data is unreliable, but it does mean comparing M<sub>n</sub>/M<sub>w</sub>/Đ values across different labs, instruments, or runs months apart on the same instrument should be done cautiously. Relative comparisons, same instrument, same calibration, same day, are far more trustworthy than absolute ones.
+      None of this means GPC data is unreliable, but it does mean comparing M<sub>n</sub>/M<sub>w</sub>/Đ values across different labs, instruments, or runs months apart on the same instrument should be done cautiously. As quantified in the standards-and-cutoffs section above, a 10&ndash;20% spread in reported M<sub>w</sub> between two well-run instruments is normal, not a red flag. Relative comparisons, same instrument, same calibration, same day, are far more trustworthy than absolute ones.
     </p>
   </div>
 
