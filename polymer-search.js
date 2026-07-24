@@ -45,6 +45,52 @@
     return fnv1a(finalLabels.join('|') + '#' + bonds.length);
   }
 
+  // Canonicalize a linear repeat unit by contracting it to its cyclic
+  // quotient: delete the two "*" chain ends and bond the atoms they hung off.
+  // The closed graph depends only on the polymer, not on where the bracket was
+  // drawn, so hashing it makes exact matching framing-invariant - the same
+  // polyester cut at the ester or mid-chain hashes identically. When the two
+  // attachment atoms are already bonded (every vinyl unit, *-CH2-CH2-*) the
+  // closure deliberately ADDS a parallel edge rather than bumping the existing
+  // bond's order: wlHash counts bonds, so the doubled edge keeps polyethylene
+  // distinct from polyacetylene, while merging into the order would conflate a
+  // closure with a pi bond. The closure order is the max of the two stub-bond
+  // orders so a cut through a double bond still lands on the same closed
+  // graph. Returns null for anything that isn't a well-formed two-ended unit;
+  // callers then fall back to the open-graph hash. Mirrors polymer-graph.js.
+  function closeRepeatUnit(atoms, bonds) {
+    var starIds = {};
+    var starCount = 0;
+    atoms.forEach(function (a) {
+      if (a.el === '*') { starIds[a.id] = 1; starCount++; }
+    });
+    if (starCount !== 2) return null;
+    var kept = [], attach = [];
+    for (var i = 0; i < bonds.length; i++) {
+      var b = bonds[i], aS = !!starIds[b.a], bS = !!starIds[b.b];
+      if (aS && bS) return null;
+      if (aS) attach.push({ nb: b.b, order: b.order });
+      else if (bS) attach.push({ nb: b.a, order: b.order });
+      else kept.push({ a: b.a, b: b.b, order: b.order });
+    }
+    if (attach.length !== 2) return null;
+    var outAtoms = [];
+    atoms.forEach(function (a) {
+      if (!starIds[a.id]) outAtoms.push({ id: a.id, el: a.el, charge: a.charge });
+    });
+    kept.push({
+      a: attach[0].nb,
+      b: attach[1].nb,
+      order: Math.max(attach[0].order, attach[1].order)
+    });
+    return { atoms: outAtoms, bonds: kept };
+  }
+
+  function closedHash(atoms, bonds) {
+    var closed = closeRepeatUnit(atoms, bonds);
+    return closed ? wlHash(closed.atoms, closed.bonds) : null;
+  }
+
   function elementProfile(atoms) {
     var p = {};
     atoms.forEach(function (a) { if (a.el !== '*') p[a.el] = (p[a.el] || 0) + 1; });
@@ -60,7 +106,7 @@
     return d;
   }
 
-  window.PolymerGraph = { wlHash: wlHash, elementProfile: elementProfile, profileDistance: profileDistance };
+  window.PolymerGraph = { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, elementProfile: elementProfile, profileDistance: profileDistance };
 
   // ---------- Editor + search UI ----------
   document.addEventListener('DOMContentLoaded', function () {
@@ -1945,28 +1991,63 @@
       return uni ? inter / uni : 0;
     }
 
+    // Drop the "*" chain-end pseudo-atoms (and their bonds) so RDKit sees a
+    // plain capped fragment. Morgan fingerprints computed WITH the dummies
+    // fold "next to a dummy atom" into every environment near a chain end,
+    // which distorts similarity; both the query and every library entry go
+    // through this same strip so the comparison stays apples-to-apples.
+    function stripStars(atomList, bondList) {
+      var starIds = {};
+      atomList.forEach(function (a) { if (a.el === '*') starIds[a.id] = 1; });
+      return {
+        atoms: atomList.filter(function (a) { return !starIds[a.id]; }),
+        bonds: bondList.filter(function (b) { return !starIds[b.a] && !starIds[b.b]; })
+      };
+    }
+
     function prepRdkitLibrary(RDKit) {
       if (rdkitLib) return rdkitLib;
       rdkitLib = [];
       (window.POLYMER_DB || []).forEach(function (p) {
         var mol = molFrom(RDKit, molblockFrom(p.atoms, p.bonds));
         if (!mol) return;
-        try {
-          rdkitLib.push({ p: p, smiles: mol.get_smiles(), fp: mol.get_morgan_fp(FP_OPTS) });
-        } catch (e) {}
-        mol.delete();
+        var smiles = null;
+        try { smiles = mol.get_smiles(); } catch (e) {}
+        // Keep the with-dummies mol alive: substructure search matches against
+        // it, where the dummies correctly act as repeat-unit boundaries.
+        var st = stripStars(p.atoms, p.bonds);
+        var capped = molFrom(RDKit, molblockFrom(st.atoms, st.bonds));
+        var fp = null;
+        if (capped) {
+          try { fp = capped.get_morgan_fp(FP_OPTS); } catch (e2) {}
+          capped.delete();
+        }
+        if (smiles && fp) rdkitLib.push({ p: p, smiles: smiles, fp: fp, mol: mol });
+        else mol.delete();
       });
       return rdkitLib;
     }
 
+    // Similarity threshold below which a library card is more noise than
+    // signal: a 19%-similar polypropylene tells the user nothing about their
+    // azlactone. Weak cards still render, but folded away.
+    var SIM_STRONG = 0.4;
     function renderRanked(ranked) {
       var resultsEl = document.getElementById('mol-results');
       if (!resultsEl) return;
-      resultsEl.innerHTML = ranked.map(function (r) {
+      function card(r) {
         return '<div class="mol-sim-item">' +
           '<div style="font-size:0.8rem;color:var(--text-dim);margin:10px 0 2px;">' +
           Math.round(r.sim * 100) + '% similar</div>' + polymerCard(r.p) + '</div>';
-      }).join('');
+      }
+      var strong = ranked.filter(function (r) { return r.sim >= SIM_STRONG; });
+      var weak = ranked.filter(function (r) { return r.sim < SIM_STRONG; });
+      resultsEl.innerHTML = strong.map(card).join('') +
+        (weak.length
+          ? '<details class="mol-sim-weak"><summary>' +
+            (strong.length ? 'Weaker similarities' : 'No close library structures &mdash; weak similarities') +
+            ' (below ' + Math.round(SIM_STRONG * 100) + '%)</summary>' + weak.map(card).join('') + '</details>'
+          : '');
     }
 
     // Once a structure is matched to a named polymer, pull actual publications
@@ -2755,9 +2836,19 @@
         renderResults([]);
         return;
       }
-      var hash = wlHash(sub.atoms, sub.bonds);
+      // Match on the closed-graph hash so the SAME polymer matches no matter
+      // where the user cut the repeat unit (*-CH2-S-S-CH2-* and
+      // *-CH2-CH2-S-S-* are one polymer, two framings; before this, 186 of
+      // the library's 253 possible reframings failed to exact-match). The
+      // open-graph hash stays as the fallback for anything closeRepeatUnit
+      // can't interpret, which preserves the old behavior exactly there.
+      var qClosed = closedHash(sub.atoms, sub.bonds);
+      var qOpen = wlHash(sub.atoms, sub.bonds);
       var db = window.POLYMER_DB || [];
-      var exact = db.filter(function (p) { return fingerprintOf(p)._hash === hash; });
+      var exact = db.filter(function (p) {
+        var f = fingerprintOf(p);
+        return qClosed != null ? f._chash === qClosed : f._hash === qOpen;
+      });
       if (exact.length) {
         statusEl.textContent = 'Exact match found:';
         renderResults(exact);
@@ -2788,11 +2879,16 @@
           return;
         }
         var smiles = null, fp = null;
-        try {
-          smiles = mol.get_smiles();
-          fp = mol.get_morgan_fp(FP_OPTS);
-        } catch (e) {}
+        try { smiles = mol.get_smiles(); } catch (e) {}
         mol.delete();
+        // Fingerprint the capped (star-stripped) form, matching how the
+        // library fingerprints are computed in prepRdkitLibrary.
+        var exStripped = stripStars(ex.atoms, ex.bonds);
+        var molCapped = molFrom(RDKit, molblockFrom(exStripped.atoms, exStripped.bonds));
+        if (molCapped) {
+          try { fp = molCapped.get_morgan_fp(FP_OPTS); } catch (e1) {}
+          molCapped.delete();
+        }
         if (!smiles || !fp) {
           compositionFallback('The drawing could not be interpreted as a molecule. Closest by composition:');
           return;
@@ -3133,6 +3229,10 @@
         var fp = SEARCH_INDEX && SEARCH_INDEX.fingerprints[p.name];
         if (fp) { p._hash = fp.hash; p._profile = fp.profile; }
         else { p._hash = wlHash(p.atoms, p.bonds); p._profile = elementProfile(p.atoms); }
+        // Framing-invariant key: hash of the closed (cyclic-quotient) graph.
+        // An index built before this field existed simply lacks it, so compute
+        // on demand rather than trusting fp.chash to be present.
+        p._chash = (fp && fp.chash != null) ? fp.chash : closedHash(p.atoms, p.bonds);
       }
       return p;
     }
