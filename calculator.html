@@ -87,10 +87,13 @@
     document.body.insertBefore(b, document.body.firstChild);
     return false;
   }
-  window.addEventListener("load", function () {
-    setTimeout(showCalcError, 2000);
-    setTimeout(showCalcError, 5000);   // re-check: a rejection or late error can arrive after the first pass
-  });
+  // Run on a plain timer, NOT window.load: on a network that blackholes an
+  // external resource (e.g. the analytics script), the load event can be
+  // delayed for minutes, which kept this reporter from ever running and hid the
+  // real error. These fire relative to page parse, after app.js's
+  // DOMContentLoaded init has run (or thrown).
+  setTimeout(showCalcError, 2500);
+  setTimeout(showCalcError, 6000);   // re-check: a rejection or late error can arrive after the first pass
 })();
 </script>
 
