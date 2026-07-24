@@ -105,11 +105,13 @@
       <svg id="cc-chart" class="chart-svg" viewBox="0 0 420 380" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
     <p class="guide-note" style="margin-top:8px;"><strong>Drag or click anywhere on the chart</strong> to move the feed point &ndash; the composition updates live. The dashed diagonal is where copolymer composition equals feed composition. The solid curve is F<sub>1</sub> predicted across the whole feed range; the accent dot marks your current feed. If the curve crosses the diagonal, that crossing (marked in red) is the azeotrope.</p>
+    <p class="guide-note" id="cc-micro" style="margin-top:8px;"></p>
+    <p class="guide-note" style="color:var(--text-dim);">The microstructure above is what the ratios imply for a <em>conventional</em> radical copolymerization. It is an instantaneous, statistical picture: away from the azeotrope the composition drifts as the faster monomer is consumed, so a batch taken to high conversion is really a gradient with a homopolymer-rich tail. Feeding the fast monomer continuously (starved feed) holds it constant, and controlled/living methods (RAFT, ATRP) let you build true blocks or deliberate gradients that the reactivity ratios alone would not give.</p>
   </div>
 
   <div class="card">
     <h3>Reference reactivity ratios</h3>
-    <p class="guide-note">Typical literature values, usually from bulk or solution free radical copolymerization near 60&nbsp;&deg;C. Reactivity ratios are sensitive to temperature, solvent, and the method used to measure them, so treat these as starting points and verify against a primary source for real formulation work.</p>
+    <p class="guide-note">Representative conventional free-radical values near 60&nbsp;&deg;C, each cross-checked against a second source (Polymer Handbook, Odian, or primary literature). Reactivity ratios are sensitive to temperature, solvent, and the fitting method, so treat these as starting points and verify against a primary source for real formulation work. Pick a pair to load its ratios above; the Tendency column is computed from r&#8321;&middot;r&#8322; (hover for the note). Acrylic acid / acrylamide in particular shifts strongly with pH.</p>
     <div class="table-scroll">
       <table class="recipe" id="cc-ref-table">
         <thead><tr><th>Monomer 1</th><th>Monomer 2</th><th>r&#8321;</th><th>r&#8322;</th><th>Tendency</th></tr></thead>
@@ -128,14 +130,44 @@
 (function () {
   function $(id) { return document.getElementById(id); }
 
+  // Representative conventional free-radical values near 60 C, each cross-checked
+  // against a second source (Polymer Handbook / Odian / primary literature).
+  // Reactivity ratios shift with temperature, solvent, and fitting method, so
+  // these are starting points, not exact constants; the notes flag the spread.
   var PAIRS = [
-    { m1: "Styrene", m2: "Methyl methacrylate", r1: 0.52, r2: 0.46, note: "Near ideal, slight styrene preference" },
-    { m1: "Styrene", m2: "Acrylonitrile", r1: 0.40, r2: 0.04, note: "Strong tendency toward alternation" },
-    { m1: "Styrene", m2: "Butyl acrylate", r1: 0.75, r2: 0.20, note: "Moderate alternating tendency" },
-    { m1: "Methyl methacrylate", m2: "Butyl acrylate", r1: 1.80, r2: 0.37, note: "MMA rich copolymer, composition drifts" },
-    { m1: "Vinyl acetate", m2: "Methyl methacrylate", r1: 0.03, r2: 20, note: "Very disparate; strongly MMA rich, blocky MMA" },
-    { m1: "Styrene", m2: "Maleic anhydride", r1: 0.097, r2: 0.001, note: "Close to perfectly alternating" }
+    { m1: "Styrene", m2: "Methyl methacrylate", r1: 0.52, r2: 0.46, note: "Benchmark pair; well agreed (r1 0.46-0.55, r2 0.42-0.50)" },
+    { m1: "Styrene", m2: "Acrylonitrile", r1: 0.40, r2: 0.04, note: "Strong alternating tendency; r2(AN) sometimes 0.08" },
+    { m1: "Styrene", m2: "1,3-Butadiene", r1: 0.58, r2: 1.35, note: "Near-ideal; butadiene slightly favored (SBR)" },
+    { m1: "Styrene", m2: "Maleic anhydride", r1: 0.02, r2: 0.001, note: "Almost perfectly alternating; MAH barely self-adds" },
+    { m1: "Styrene", m2: "Vinyl acetate", r1: 55, r2: 0.01, note: "Hugely disparate; styrene homopolymerizes first" },
+    { m1: "Styrene", m2: "4-Vinylpyridine", r1: 0.60, r2: 0.70, note: "Both < 1; mild cross-preference, azeotrope near 0.43" },
+    { m1: "Methyl methacrylate", m2: "n-Butyl acrylate", r1: 2.2, r2: 0.37, note: "MMA-rich; composition drifts with conversion" },
+    { m1: "Methyl methacrylate", m2: "Vinyl acetate", r1: 20, r2: 0.015, note: "MMA consumed first; strong drift (values vary widely)" },
+    { m1: "Methyl methacrylate", m2: "Acrylonitrile", r1: 1.2, r2: 0.15, note: "MMA modestly favored" },
+    { m1: "Vinyl chloride", m2: "Vinyl acetate", r1: 1.68, r2: 0.23, note: "VC-rich; the classic VC/VAc resin drift" },
+    { m1: "Acrylonitrile", m2: "1,3-Butadiene", r1: 0.04, r2: 0.30, note: "Alternating tendency (NBR); azeotrope near 0.42" },
+    { m1: "Acrylic acid", m2: "Acrylamide", r1: 0.23, r2: 1.33, note: "Strongly pH-dependent; values shown near neutral, ~50 C" },
+    { m1: "Vinylidene chloride", m2: "Vinyl chloride", r1: 3.2, r2: 0.3, note: "r1r2 ~ 1: close to ideal random" },
+    { m1: "Ethylene", m2: "Vinyl acetate", r1: 0.79, r2: 1.4, note: "Near-ideal (EVA); wide spread at high pressure" }
   ];
+
+  // Classify the likely microstructure from the reactivity ratios. The product
+  // r1*r2 is the key parameter: -> 0 alternating, ~1 ideal random, > 1 blocky.
+  function microstructure(r1, r2) {
+    var p = r1 * r2;
+    var drift = (Math.max(r1, r2) > 5 && Math.min(r1, r2) < 0.2);
+    var m;
+    if (r1 > 1 && r2 > 1) m = { label: "Blocky tendency", detail: "each radical prefers its own monomer, so runs of each form (uncommon for radical copolymerization)" };
+    else if (p < 0.05) m = { label: "Alternating", detail: "both radicals strongly prefer the other monomer, so the chain is close to …ABAB…" };
+    else if (p < 0.20) m = { label: "Alternating tendency", detail: "both prefer cross-addition; an azeotropic feed holds the composition constant" };
+    else if (p < 0.75) m = { label: "Statistical", detail: "r₁r₂ below 1 gives a mostly random chain with a mild alternating lean; composition drifts with conversion unless run at the azeotrope" };
+    else if (p <= 1.5) m = { label: "Ideal / near-random", detail: "r₁r₂ ≈ 1: monomers add nearly at random and the sequence is Bernoullian" };
+    else m = { label: "Blocky tendency", detail: "r₁r₂ well above 1: each radical favors its own monomer, giving long same-monomer runs" };
+    if (drift && m.label !== "Blocky tendency") {
+      m = { label: m.label + " + strong drift", detail: "the ratios are very disparate, so the faster monomer is consumed first, giving a gradient/tapered chain with a homopolymer-rich tail. Feed it continuously to hold composition." };
+    }
+    return m;
+  }
 
   function fillPairSelect() {
     var sel = $("cc-pair");
@@ -150,7 +182,9 @@
   function fillRefTable() {
     var body = document.querySelector("#cc-ref-table tbody");
     body.innerHTML = PAIRS.map(function (p) {
-      return "<tr><td>" + p.m1 + "</td><td>" + p.m2 + "</td><td class=\"num\">" + p.r1 + "</td><td class=\"num\">" + p.r2 + "</td><td>" + p.note + "</td></tr>";
+      var t = microstructure(p.r1, p.r2).label;
+      return "<tr><td>" + p.m1 + "</td><td>" + p.m2 + "</td><td class=\"num\">" + p.r1 + "</td><td class=\"num\">" + p.r2 +
+        "</td><td title=\"" + p.note.replace(/"/g, "&quot;") + "\">" + t + "</td></tr>";
     }).join("");
   }
 
@@ -249,11 +283,15 @@
         ? m1 + " is enriched in the copolymer relative to the feed"
         : m2 + " is enriched in the copolymer relative to the feed");
 
+    var micro = microstructure(r1, r2);
     stats.innerHTML =
+      '<div class="stat stat--primary"><div class="label">Likely microstructure</div><div class="value" style="font-size:1.05rem;">' + micro.label + '</div><div class="sub">r&#8321;&middot;r&#8322; = ' + (r1 * r2).toFixed(3) + '</div></div>' +
       '<div class="stat"><div class="label">F&#8321; (' + m1 + ' in copolymer)</div><div class="value">' + F1val.toFixed(3) + '</div><div class="sub">mole fraction</div></div>' +
       '<div class="stat"><div class="label">F&#8322; (' + m2 + ' in copolymer)</div><div class="value">' + (1 - F1val).toFixed(3) + '</div><div class="sub">mole fraction</div></div>' +
       '<div class="stat"><div class="label">Drift at this feed point</div><div class="value" style="font-size:0.92rem;">' + driftNote + '</div></div>' +
       '<div class="stat"><div class="label">Azeotrope (f&#8321; = F&#8321;)</div><div class="value">' + (result.azeo != null ? result.azeo.toFixed(3) : "None in range") + '</div><div class="sub">' + (result.azeo != null ? "constant composition point" : "composition always drifts with conversion") + '</div></div>';
+    var microEl = document.getElementById("cc-micro");
+    if (microEl) microEl.innerHTML = '<strong>' + micro.label + '</strong> &mdash; ' + micro.detail;
   }
 
   $("cc-pair").addEventListener("change", function () {
