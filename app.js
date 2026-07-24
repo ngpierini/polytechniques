@@ -282,6 +282,29 @@ const TYPES = [
 ];
 
 /* ---------------------------------------------------------------------
+   Predicted dispersity (ideal floor)
+--------------------------------------------------------------------- */
+
+// Ideal-model dispersity for the controlled mechanisms, matching the Đ
+// predictor page: Đ = 1 + 1/DPn + C·(2/p − 1), with DPn = ratio × conversion.
+// C is a representative well-matched exchange coefficient per mechanism
+// (RAFT Cex ≈ 30; ATRP with ample deactivator; ROMP fast-initiating ≈ living).
+// This is a lower bound: real Đ runs higher (termination, slow initiation,
+// transfer), which is why the tile is labelled an ideal floor and links to the
+// full predictor. FRP is not a living process, so it has no entry and keeps its
+// literature range instead. DISP_MECH maps each tab to the predictor's own
+// mechanism keys (ROMP has no controlled-radical analog, so it maps to ideal).
+const DISP_C = { atrp: 1e-4, raft: 1 / 30, romp: 0 };
+const DISP_MECH = { atrp: "atrp", raft: "raft", romp: "ideal" };
+
+function predictDispersityFloor(id, R, conv) {
+  if (!(R > 0) || !(conv > 0) || !(id in DISP_C)) return null;
+  const dpn = R * conv;
+  if (!(dpn > 0)) return null;
+  return 1 + 1 / dpn + DISP_C[id] * (2 / conv - 1);
+}
+
+/* ---------------------------------------------------------------------
    Formatting helpers
 --------------------------------------------------------------------- */
 
@@ -1256,9 +1279,27 @@ function renderResults(cfg, core, ctx) {
     ? `<td class="num">${fmtVol((core.massM_g / ctx.densityM))}</td>`
     : `<td class="num">n/a</td>`;
 
+  // Predicted Đ tile. Controlled mechanisms get a live ideal-floor estimate
+  // and a deep link that prefills the target DP and conversion in the full
+  // predictor; FRP keeps its literature range (the feed ratio does not set Đ).
+  const Dfloor = predictDispersityFloor(id, core.R, core.conversion);
+  const dispTile = Dfloor != null
+    ? `
+      <div class="stat stat--muted" title="${escapeHtml("Ideal lower bound from the exchange model. Real Đ usually runs higher (typically " + cfg.typicalDj + "). " + cfg.dispersityNote)}">
+        <div class="label">Predicted Đ (ideal floor)</div>
+        <div class="value">&asymp; ${Dfloor < 1.1 ? Dfloor.toFixed(3) : Dfloor.toFixed(2)}</div>
+        <div class="sub"><a href="dispersity-predictor.html?mech=${DISP_MECH[id]}&dp=${Math.round(core.R)}&conv=${core.conversion.toFixed(2)}">refine for your agent &rarr;</a></div>
+      </div>`
+    : `
+      <div class="stat stat--muted" title="${escapeHtml(cfg.dispersityNote)}">
+        <div class="label">Typical Đ (dispersity)</div>
+        <div class="value">${cfg.typicalDj}</div>
+        <div class="sub">set by kinetics, not the feed ratio</div>
+      </div>`;
+
   // Hierarchy: the two numbers that answer the question lead, the feed ratio
   // supports them, and the tiles that are context rather than results
-  // (a literature dispersity range, a concentration you supplied) recede.
+  // (a predicted dispersity, a concentration you supplied) recede.
   const statGrid = `
     <div class="stat-grid">
       <div class="stat stat--primary" data-bar="Predicted Mₙ">
@@ -1288,11 +1329,7 @@ function renderResults(cfg, core, ctx) {
         <div class="value">${fmtNum(core.actualConc)}</div>
         <div class="sub">mol/L</div>
       </div>` : ""}
-      <div class="stat stat--muted" title="${escapeHtml(cfg.dispersityNote)}">
-        <div class="label">Typical Đ (dispersity)</div>
-        <div class="value">${cfg.typicalDj}</div>
-        <div class="sub">literature range, not calculated from this recipe</div>
-      </div>
+      ${dispTile}
       ${secondaryStats}
     </div>
   `;
