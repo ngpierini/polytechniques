@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator (fresh): PolyTechniques</title>
+<meta name="description" content="Target molecular weight, degree of polymerization, or concentration across ATRP, RAFT, ROMP, and FRP. Includes macroinitiators and a block copolymer recipe builder.">
+<link rel="canonical" href="https://getpolytechniques.com/calculator.html">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Calculator: PolyTechniques">
+<meta property="og:description" content="Target molecular weight, degree of polymerization, or concentration across ATRP, RAFT, ROMP, and FRP. Includes macroinitiators and a block copolymer recipe builder.">
+<meta property="og:url" content="https://getpolytechniques.com/calculator.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Calculator: PolyTechniques">
+<meta name="twitter:description" content="Target Mn, DP, or concentration across ATRP, RAFT, ROMP, and FRP. Macroinitiators and block copolymer builder included.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Polymer Synthesis Calculator",
+  "url": "https://getpolytechniques.com/calculator.html",
+  "description": "Target molecular weight, degree of polymerization, or concentration across ATRP, RAFT, ROMP, and FRP. Includes macroinitiators and a block copolymer recipe builder.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js"></script>
+<script src="nav.js?v=6" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=56">
+</head>
+<body>
+
+<!-- Self-report if app.js fails to build the calculator (e.g. a syntax/runtime
+     error on a specific locked browser). Registered before the deferred app.js
+     so it catches parse and runtime errors; ES5-safe so it runs anywhere. -->
+<script>
+(function () {
+  window.__calcErrs = [];
+  window.addEventListener("error", function (e) {
+    try {
+      var m = (e && (e.message || (e.error && e.error.message))) || "script error";
+      var f = (e && e.filename) ? (" [" + e.filename.split("/").pop() + ":" + (e.lineno || "?") + ":" + (e.colno || "?") + "]") : "";
+      window.__calcErrs.push(m + f);
+    } catch (_) {}
+  });
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      var tabs = document.getElementById("tabs");
+      var app = document.getElementById("app");
+      if (tabs && tabs.children.length > 0) return;   // calculator built OK
+      function esc(s) { return String(s).replace(/[<>&]/g, function (c) { return c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&amp;"; }); }
+      var detail = window.__calcErrs.length
+        ? '<pre style="white-space:pre-wrap;color:#d64545;font-size:0.85rem;background:rgba(0,0,0,0.05);padding:10px;border-radius:8px;overflow:auto;">' + esc(window.__calcErrs.join("\n")) + "</pre>"
+        : "<p>No script error was reported, which usually means the code file was blocked or served empty by the network. Try the <a href=\"diagnostics.html\">diagnostics page</a>.</p>";
+      var html = '<div style="max-width:660px;margin:24px auto;padding:16px 20px;border:1px solid #d64545;border-radius:10px;">' +
+        "<h2 style=\"margin-top:0;\">The calculator could not start</h2>" +
+        "<p>Its code loaded but did not run in this browser. The detail below pinpoints why &mdash; please copy it to the site owner:</p>" +
+        detail +
+        "<p>Browser: <code>" + esc(navigator.userAgent) + "</code></p>" +
+        "<p>The other tools (Polymer Search, Dispersity, Copolymer, T<sub>g</sub>, GPC) should still work from the <a href=\"home.html\">home page</a>.</p></div>";
+      if (app) app.innerHTML = html; else document.body.insertAdjacentHTML("beforeend", html);
+    }, 1500);
+  });
+})();
+</script>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Calculator</h1>
+      <p class="subtitle">Target Mn, target concentrations, and lab recipes for ATRP, RAFT, ROMP &amp; free radical polymerization</p>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs" role="tablist"></nav>
+
+<main id="app"></main>
+
+<footer class="footer">
+  <p>Reagent molecular weights are reference values for convenience. Always verify against your reagent's certificate of analysis before weighing out a real reaction.</p>
+</footer>
+
+<script src="polymer-calc-core.js?v=1" defer></script>
+<script src="app.js?v=39" defer></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
