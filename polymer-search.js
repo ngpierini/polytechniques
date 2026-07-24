@@ -3054,9 +3054,11 @@
           y2: Math.max(b1.y, b2.y, Math.max.apply(null, ringYs)) + 15
         };
       } else if (key === 'nylon6') {
-        var s0 = { x: cx - 190, y: cy + 10 };
+        // Nylon 6 is -[NH-(CH2)5-CO]-: seven chain atoms after the stub
+        // (the N, five CH2, and the carbonyl carbon).
+        var s0 = { x: cx - 210, y: cy + 10 };
         var stubE = addAtom('C', s0.x, s0.y);
-        var angles = [-30, 30, -30, 30, -30, 30];
+        var angles = [-30, 30, -30, 30, -30, 30, -30];
         var prevPos = s0, prevAtom = stubE, chain = [];
         for (var k = 0; k < angles.length; k++) {
           var nextPos = zigzagPos(prevPos, angles[k]);
@@ -3068,7 +3070,11 @@
         }
         var n1 = chain[0];
         var carbonyl = chain[chain.length - 1];
-        var stubFPos = zigzagPos(prevPos, -30);
+        // Continue the zigzag into the stub by alternating off the last chain
+        // angle. Reusing a fixed -30 leaves the stub collinear with the final
+        // chain bond for odd chain lengths, which erases the carbonyl's
+        // trigonal gap and sends its oxygen off along the backbone.
+        var stubFPos = zigzagPos(prevPos, -angles[angles.length - 1]);
         var stubF = addAtom('C', stubFPos.x, stubFPos.y);
         addBond(carbonyl.id, stubF.id, 1);
         // Compute the carbonyl oxygen's position only after both of its
