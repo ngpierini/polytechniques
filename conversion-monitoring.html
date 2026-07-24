@@ -202,8 +202,8 @@
     var row = document.createElement("div");
     row.className = "kin-row";
     row.innerHTML =
-      '<input type="number" class="kin-time" placeholder="Time (min)" step="any" value="' + (t ?? "") + '">' +
-      '<input type="number" class="kin-conv" placeholder="Conversion (%)" step="any" min="0" max="100" value="' + (p ?? "") + '">' +
+      '<input type="number" class="kin-time" placeholder="Time (min)" step="any" value="' + (t != null ? t : "") + '">' +
+      '<input type="number" class="kin-conv" placeholder="Conversion (%)" step="any" min="0" max="100" value="' + (p != null ? p : "") + '">' +
       '<button type="button" class="kin-row-remove" aria-label="Remove point">&times;</button>';
     row.querySelector(".kin-row-remove").addEventListener("click", function () {
       row.remove();

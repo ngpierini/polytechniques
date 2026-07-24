@@ -143,8 +143,8 @@
     row.className = "dyn-row";
     row.innerHTML =
       '<input type="text" class="tg-name" placeholder="Component name" value="' + (name || "") + '">' +
-      '<input type="number" class="tg-tg" placeholder="Tg (' + unitText() + ')" step="any" value="' + (tg ?? "") + '">' +
-      '<input type="number" class="tg-wt" placeholder="Weight %" step="any" min="0" value="' + (wt ?? "") + '">' +
+      '<input type="number" class="tg-tg" placeholder="Tg (' + unitText() + ')" step="any" value="' + (tg != null ? tg : "") + '">' +
+      '<input type="number" class="tg-wt" placeholder="Weight %" step="any" min="0" value="' + (wt != null ? wt : "") + '">' +
       '<button type="button" class="dyn-row-remove" aria-label="Remove component">&times;</button>';
     row.querySelector(".dyn-row-remove").addEventListener("click", function () {
       row.remove();
