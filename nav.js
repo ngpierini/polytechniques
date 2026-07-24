@@ -8,6 +8,7 @@
     ["calculator.html", "🧮 Calculator"],
     ["polymer-search.html", "🔍 Search"],
     ["copolymer-composition.html", "🧬 Copolymer"],
+    ["dispersity-predictor.html", "🎯 Dispersity"],
     ["gpc-calibration.html", "📏 GPC Convert"],
     ["tg-predictor.html", "🌡️ Tg"],
     ["recipe-scaling.html", "⚖️ Scaling"],
@@ -87,6 +88,7 @@
     ["calculator.html", "Calculator", "atrp raft romp frp recipe mn dp block copolymer stock solutions"],
     ["polymer-search.html", "Polymer Search", "structure draw name lookup database repeat unit"],
     ["copolymer-composition.html", "Copolymer Composition", "mayo lewis reactivity ratio azeotrope feed"],
+    ["dispersity-predictor.html", "Dispersity (Đ) Predictor", "dispersity pdi mw mn distribution raft atrp nmp cta cex transfer constant deactivator living controlled radical poisson"],
     ["gpc-calibration.html", "GPC Calibration Converter", "mark houwink polystyrene equivalent molecular weight"],
     ["tg-predictor.html", "Tg Predictor", "fox equation glass transition blend"],
     ["recipe-scaling.html", "Recipe Scaling", "scale batch size factor"],
@@ -413,7 +415,7 @@
   }
 
   // ---- "On this page" sticky jump nav for the long guide pages ----
-  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html"];
+  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html"];
 
   function buildSectionNav(current) {
     if (TOC_PAGES.indexOf(current) === -1) return;
