@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispersity (Đ) Predictor: PolyTechniques</title>
+<meta name="description" content="Predict the dispersity of a controlled radical polymerization from the target DP, conversion, and exchange chemistry. Covers RAFT (Cex), ATRP and NMP (deactivator), and the ideal living limit, with a live molecular-weight distribution.">
+<link rel="canonical" href="https://getpolytechniques.com/dispersity-predictor.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Dispersity (Đ) Predictor: PolyTechniques">
+<meta property="og:description" content="Predict the dispersity of a controlled radical polymerization from target DP, conversion, and the RAFT/ATRP/NMP exchange chemistry, with a live molecular-weight distribution.">
+<meta property="og:url" content="https://getpolytechniques.com/dispersity-predictor.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dispersity (Đ) Predictor: PolyTechniques">
+<meta name="twitter:description" content="Predict Đ for RAFT, ATRP, and NMP from target DP, conversion, and exchange chemistry, with a live molecular-weight distribution.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Dispersity (Đ) Predictor",
+  "url": "https://getpolytechniques.com/dispersity-predictor.html",
+  "description": "Predict the dispersity of a controlled radical polymerization from target DP, conversion, and exchange chemistry (RAFT Cex, ATRP/NMP deactivator), with a live molecular-weight distribution.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js"></script>
+<script src="nav.js?v=6" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=56">
+<style>
+  /* Page-local styling: the mechanism segmented control and the two SVG
+     charts. Everything else reuses the shared classes in style.css. */
+  .disp-seg { display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 14px; }
+  .disp-seg-btn {
+    flex:1 1 auto; min-width:96px; padding:9px 12px; cursor:pointer;
+    font: inherit; font-weight:600; color:var(--text-dim);
+    background:var(--bg); border:1px solid var(--border); border-radius:8px;
+    transition:background .12s, color .12s, border-color .12s;
+  }
+  .disp-seg-btn:hover { color:var(--text); }
+  .disp-seg-btn.is-active {
+    color:#fff; background:var(--primary); border-color:var(--primary);
+  }
+  .disp-cknob { display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+  .disp-cknob label { margin:0; white-space:nowrap; font-weight:600; }
+  .disp-cknob input { max-width:140px; }
+  .disp-breakdown {
+    margin:10px 0 2px; padding:10px 12px; border:1px solid var(--border);
+    border-radius:8px; background:var(--bg); font-size:0.92rem; line-height:1.5;
+  }
+  .disp-breakdown code { font-size:0.95em; }
+  .disp-axis { stroke:var(--text-dim); stroke-width:1; }
+  .disp-grid { stroke:var(--border); stroke-width:1; }
+  .disp-tick { fill:var(--text-dim); font-size:11px; }
+  .disp-axis-label { fill:var(--text-dim); font-size:12px; }
+  .disp-curve { fill:none; stroke:var(--primary); stroke-width:2.4; }
+  .disp-fill { fill:var(--primary); opacity:0.14; }
+  .disp-mark { stroke:var(--accent); stroke-width:1.4; stroke-dasharray:4 3; }
+  .disp-mark-label { fill:var(--accent); font-size:11px; font-weight:600; }
+  .disp-conv-line { fill:none; stroke:var(--primary); stroke-width:2.4; }
+  .disp-now-dot { fill:var(--accent); stroke:var(--card-bg); stroke-width:1.5; }
+  .disp-now-line { stroke:var(--accent); stroke-width:1.2; stroke-dasharray:4 3; }
+  .disp-empty { fill:var(--text-dim); font-size:13px; }
+  @media (max-width:600px){ .disp-seg-btn { min-width:0; padding:9px 8px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Dispersity (Đ) Predictor</h1>
+      <p class="subtitle">What Đ a controlled radical polymerization can reach, from its target DP, conversion, and exchange chemistry</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card" id="disp-tool">
+    <h3>Predict Đ for your reaction</h3>
+    <p class="guide-note">
+      In a reversible-deactivation (living) radical polymerization, dispersity is set by two things: how long the chains are, and how often each growing chain swaps between its active and dormant states. Pick a mechanism, set the target degree of polymerization and conversion, and choose the exchange chemistry (the RAFT agent for your monomer, or the level of catalyst/deactivator for ATRP and NMP). The predicted Đ, its molecular-weight distribution, and how Đ evolves with conversion update as you go.
+    </p>
+
+    <div class="disp-seg" id="disp-mech" role="tablist" aria-label="Polymerization mechanism">
+      <button type="button" class="disp-seg-btn is-active" data-mech="raft" role="tab" aria-selected="true">RAFT</button>
+      <button type="button" class="disp-seg-btn" data-mech="atrp" role="tab" aria-selected="false">ATRP</button>
+      <button type="button" class="disp-seg-btn" data-mech="nmp" role="tab" aria-selected="false">NMP</button>
+      <button type="button" class="disp-seg-btn" data-mech="ideal" role="tab" aria-selected="false">Ideal living</button>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="disp-dp">Target DP ([M]<sub>0</sub> : CTA / initiator)</label>
+        <input type="number" id="disp-dp" min="2" max="100000" step="1" value="200">
+        <span class="hint">Monomer-to-chain-carrier ratio, i.e. the degree of polymerization at full conversion.</span>
+      </div>
+      <div class="field">
+        <label for="disp-mono">Monomer molar mass (g/mol)</label>
+        <input type="number" id="disp-mono" min="1" max="5000" step="0.01" value="100">
+        <span class="hint">Sets the molar-mass axis. M<sub>n</sub> = DP<sub>n</sub> &times; this.</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="disp-conv">Conversion: <span id="disp-conv-val">90%</span></label>
+        <input type="range" id="disp-conv" min="0.02" max="1" step="0.01" value="0.9">
+        <span class="hint" id="disp-dpn-hint"></span>
+      </div>
+
+      <div class="field" id="disp-cex-field">
+        <label for="disp-cex-preset">RAFT agent &amp; monomer pair</label>
+        <select id="disp-cex-preset"></select>
+        <div class="disp-cknob">
+          <label for="disp-cex">C<sub>ex</sub></label>
+          <input type="number" id="disp-cex" min="0.01" max="100000" step="0.01" value="30">
+          <span class="hint" id="disp-cex-range"></span>
+        </div>
+      </div>
+
+      <div class="field" id="disp-c-field" hidden>
+        <label for="disp-c-preset">Control scenario</label>
+        <select id="disp-c-preset"></select>
+        <div class="disp-cknob">
+          <label for="disp-c">C</label>
+          <input type="number" id="disp-c" min="0" max="1000" step="0.0001" value="0.0001">
+          <span class="hint" id="disp-c-note"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-grid" id="disp-stats"></div>
+    <div class="disp-breakdown" id="disp-breakdown"></div>
+    <div id="disp-warnings"></div>
+
+    <div class="chart-wrap">
+      <svg id="disp-mwd-chart" class="chart-svg" viewBox="0 0 560 260" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <p class="diagram-caption">Ideal molecular-weight distribution for this Đ, drawn as an SEC trace (weight fraction vs log M) from a log-normal fit. M<sub>n</sub>, peak M<sub>p</sub>, and M<sub>w</sub> are marked.</p>
+
+    <div class="chart-wrap">
+      <svg id="disp-conv-chart" class="chart-svg" viewBox="0 0 560 240" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <p class="diagram-caption">Predicted Đ across conversion at this target DP. Dispersity falls as the reaction proceeds, the kinetic signature of a reversible-deactivation process. The dot marks your current conversion.</p>
+  </div>
+
+  <div class="card">
+    <h3>How the prediction works</h3>
+    <p class="guide-note">
+      RAFT, ATRP, and NMP all narrow the distribution by the same trick: every chain is repeatedly parked in a dormant state and released, so all chains grow in small, near-equal increments instead of a few chains running away. Moment analysis of that exchange (Litvinenko and M&uuml;ller; Matyjaszewski and Fukuda) gives one equation for all of them:
+    </p>
+    <div class="guide-formula">
+      &#272; = M<sub>w</sub>/M<sub>n</sub> = 1 + 1/DP<sub>n</sub> + C &middot; (2/p &minus; 1)
+    </div>
+    <p class="guide-note">
+      The <strong>1/DP<sub>n</sub></strong> term is the chain-length (Poisson) floor: longer chains give narrower distributions, and it is all that remains for a perfect living system. The <strong>C &middot; (2/p &minus; 1)</strong> term is the cost of finite exchange. The factor (2/p &minus; 1) is identical to (2 &minus; p)/p; it runs to infinity as conversion p approaches zero and falls to exactly 1 at full conversion, which is why Đ is high early and settles as the reaction proceeds. The whole difference between mechanisms is the exchange coefficient <strong>C</strong>:
+    </p>
+    <div class="table-scroll">
+      <table class="recipe">
+        <thead><tr><th>Mechanism</th><th>Exchange coefficient C</th><th>What it means</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>RAFT</strong></td>
+            <td class="num" style="text-align:left;">C = 1 / C<sub>ex</sub></td>
+            <td class="num" style="text-align:left;">C<sub>ex</sub> = k<sub>tr</sub>/k<sub>p</sub> is the transfer constant of the polymeric RAFT agent. A fast, well-matched agent (large C<sub>ex</sub>) makes C small.</td>
+          </tr>
+          <tr>
+            <td><strong>ATRP</strong></td>
+            <td class="num" style="text-align:left;">C = k<sub>p</sub>[R-X]<sub>0</sub> / (k<sub>deact</sub>[X-Cu<sup>II</sup>/L])</td>
+            <td class="num" style="text-align:left;">More deactivator (Cu<sup>II</sup>) or a faster-deactivating ligand shortens each active period, making C small. [R-X]<sub>0</sub> is the initial dormant-chain concentration, not the monomer concentration.</td>
+          </tr>
+          <tr>
+            <td><strong>NMP</strong></td>
+            <td class="num" style="text-align:left;">C = k<sub>p</sub>[R-X]<sub>0</sub> / (k<sub>c</sub>[nitroxide])</td>
+            <td class="num" style="text-align:left;">Same structure as ATRP; the deactivator is free nitroxide (TEMPO, SG1) and k<sub>c</sub> is the coupling rate constant.</td>
+          </tr>
+          <tr>
+            <td><strong>Ideal living</strong></td>
+            <td class="num" style="text-align:left;">C = 0</td>
+            <td class="num" style="text-align:left;">Infinitely fast exchange. Đ = 1 + 1/DP<sub>n</sub>, the Poisson floor and the best any chain-growth process can reach.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      This is the cumulative dispersity of the whole sample, the quantity a GPC actually measures. It assumes a fixed number of chains, uniform and instant initiation, and a constant C, so it predicts the best case. Real Đ sits above it (see the caveats below).
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>RAFT: the transfer constant sets the floor</h3>
+    <p class="guide-note">
+      For RAFT the knob is C<sub>ex</sub>, the exchange (chain-transfer) constant of the polymeric RAFT agent for your monomer. At full conversion the equation collapses to Đ &rarr; 1 + 1/C<sub>ex</sub> for long chains, so C<sub>ex</sub> above roughly 10 is needed for Đ near 1.1, and above ~100 for Đ near 1.05. The match between the RAFT agent's Z group and the monomer class decides C<sub>ex</sub>: more-activated monomers (styrene, (meth)acrylates, acrylamides) need dithiobenzoates or trithiocarbonates; less-activated monomers (vinyl acetate, N-vinylpyrrolidone) need xanthates. Cross a monomer with the wrong agent and C<sub>ex</sub> drops below 1, which the equation turns into a broad distribution.
+    </p>
+    <p class="guide-note" style="margin-bottom:6px;"><strong>Representative C<sub>ex</sub> values.</strong> These vary widely with method, temperature, and solvent, so read them as order-of-magnitude, not precise. For the most active dithiobenzoates a single C<sub>ex</sub> is genuinely ill-defined and spans a wide range.</p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>RAFT agent (Z group)</th><th>Monomer family</th><th>C<sub>ex</sub></th><th>Control</th></tr></thead>
+        <tbody>
+          <tr><td>Trithiocarbonate (DDMAT, CDTPA)</td><td class="num" style="text-align:left;">Acrylates</td><td class="num" style="text-align:left;">~10&ndash;100</td><td class="num" style="text-align:left;">Workhorse; low retardation</td></tr>
+          <tr><td>Trithiocarbonate</td><td class="num" style="text-align:left;">Styrene</td><td class="num" style="text-align:left;">~9&ndash;20</td><td class="num" style="text-align:left;">Good</td></tr>
+          <tr><td>Trithiocarbonate</td><td class="num" style="text-align:left;">Acrylamides (DMA, NIPAM)</td><td class="num" style="text-align:left;">~1&ndash;10</td><td class="num" style="text-align:left;">Good</td></tr>
+          <tr><td>Dithiobenzoate (cumyl)</td><td class="num" style="text-align:left;">Styrene</td><td class="num" style="text-align:left;">~26&ndash;&gt;1000</td><td class="num" style="text-align:left;">Very narrow; can retard</td></tr>
+          <tr><td>Dithiobenzoate (cyano-R, CPDB)</td><td class="num" style="text-align:left;">MMA</td><td class="num" style="text-align:left;">~10&ndash;40</td><td class="num" style="text-align:left;">Good (needs tertiary R)</td></tr>
+          <tr><td>Xanthate / MADIX</td><td class="num" style="text-align:left;">Vinyl acetate</td><td class="num" style="text-align:left;">~10&ndash;26</td><td class="num" style="text-align:left;">Correct match for a LAM</td></tr>
+          <tr><td>Xanthate</td><td class="num" style="text-align:left;">N-vinylpyrrolidone</td><td class="num" style="text-align:left;">~1&ndash;10</td><td class="num" style="text-align:left;">Workable (Đ ~1.2&ndash;1.4)</td></tr>
+          <tr><td>Xanthate <em>on an acrylate</em></td><td class="num" style="text-align:left;">Acrylates</td><td class="num" style="text-align:left;">~0.6&ndash;3.8</td><td class="num" style="text-align:left;">Mismatched; broad</td></tr>
+          <tr><td>Xanthate <em>on styrene / MMA</em></td><td class="num" style="text-align:left;">Styrene, MMA</td><td class="num" style="text-align:left;">&lt;1</td><td class="num" style="text-align:left;">Mismatched; little control</td></tr>
+          <tr><td>Benzyl dithiobenzoate <em>on MMA</em></td><td class="num" style="text-align:left;">MMA</td><td class="num" style="text-align:left;">&lt;1</td><td class="num" style="text-align:left;">Poor R leaving group</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      One failure mode the equation cannot show: a highly active dithiobenzoate on a less-activated monomer such as vinyl acetate. Addition to the RAFT agent is fast, but the intermediate radical is so stabilized that it fragments too slowly, which retards or stops the reaction outright. Control is lost through slow fragmentation, not through a low C<sub>ex</sub>, so no single number describes it.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>ATRP and NMP: the deactivator sets the floor</h3>
+    <p class="guide-note">
+      For ATRP and NMP the exchange coefficient is C = k<sub>p</sub>[R-X]<sub>0</sub> / (k<sub>deact</sub>[deactivator]). More deactivator, or a ligand/nitroxide that deactivates faster, shortens each active burst and narrows the distribution. That is the tension behind low-catalyst methods: ARGET and ICAR ATRP run on parts-per-million copper, which means very little Cu<sup>II</sup> deactivator, a larger C, and a broader product unless something else compensates. The scenarios below give order-of-magnitude values of C for common cases (at ~90% conversion, the exchange term is C &times; 1.22).
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>Scenario</th><th>Deactivator level</th><th>Exchange C</th><th>Đ at ~90%</th></tr></thead>
+        <tbody>
+          <tr><td>Well-controlled normal ATRP (styrene)</td><td class="num" style="text-align:left;">Ample Cu<sup>II</sup> (~10<sup>-2</sup> M)</td><td class="num" style="text-align:left;">~1&times;10<sup>-4</sup></td><td class="num" style="text-align:left;">~1.05&ndash;1.10 (DP-limited)</td></tr>
+          <tr><td>Fast acrylate, modest deactivator</td><td class="num" style="text-align:left;">Cu<sup>II</sup> ~10<sup>-3</sup> M</td><td class="num" style="text-align:left;">~0.03&ndash;0.1</td><td class="num" style="text-align:left;">~1.05&ndash;1.15</td></tr>
+          <tr><td>Low-ppm ARGET / ICAR ATRP (MMA)</td><td class="num" style="text-align:left;">Scarce Cu<sup>II</sup> (~10<sup>-5</sup> M)</td><td class="num" style="text-align:left;">~0.05&ndash;0.2</td><td class="num" style="text-align:left;">~1.1&ndash;1.3</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      NMP behaves the same way with free nitroxide as the deactivator: plenty of persistent nitroxide gives a small C and a narrow product; too little lets chains run long between traps. The predictor exposes C directly for ATRP and NMP so you can dial it between these regimes or enter a value computed from your own rate constants.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Why dispersity falls with conversion</h3>
+    <p class="guide-note">
+      The conversion curve above runs the opposite way to a conventional free-radical polymerization, where Đ is set from the first chains and only broadens. Early in a controlled polymerization the chains are short and have been through few exchange cycles, so both terms in the equation are large and Đ is high. As monomer converts, chains lengthen (1/DP<sub>n</sub> shrinks) and each has cycled many more times ((2/p &minus; 1) shrinks toward 1), so Đ drops and levels off. Watching Đ decrease as conversion climbs is one of the cleaner experimental tests that a system is genuinely living rather than a fast conventional radical process wearing a control agent. The <a href="conversion-monitoring.html">conversion monitoring</a> guide covers how to get the conversion axis from aliquots.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>What this model leaves out</h3>
+    <p class="guide-note">
+      <strong>This is an ideal lower bound. Measured Đ is almost always higher.</strong> The equation is termination-free and assumes uniform, instant initiation and a fixed number of chains, so it cannot see the effects that broaden real samples:
+    </p>
+    <ul class="guide-steps">
+      <li><strong>Radical termination.</strong> Dead chains from combination or disproportionation add high- and low-mass shoulders the ideal form ignores.</li>
+      <li><strong>Slow or incomplete initiation.</strong> A RAFT agent with a low initial transfer constant, or an ATRP initiator that starts unevenly, spreads chain births over a range of conversions and can give early bimodality that the steady-state equation never captures.</li>
+      <li><strong>Chain transfer and backbiting.</strong> Significant for acrylates at high temperature and high conversion, both broaden the product.</li>
+      <li><strong>Loss of chain-end fidelity.</strong> At very high conversion, chain ends die faster than they propagate, so pushing to quantitative conversion trades Đ and end-group integrity for yield.</li>
+      <li><strong>A drifting C.</strong> Monomer depletes and deactivator builds over a run, so the real coefficient is not the single constant used here.</li>
+    </ul>
+    <p class="guide-note">
+      Treat the predicted number as the narrowest Đ the chemistry allows, and a target to design toward, rather than a value you will read off the GPC. When the measured Đ lands well above the prediction, the gap points at which of the effects above is in play.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Where this fits</h3>
+    <p class="guide-note">
+      Set your feed ratios and predicted M<sub>n</sub> on the <a href="calculator.html">calculator</a>, track the reaction with the <a href="conversion-monitoring.html">conversion monitoring</a> guide, then read the real distribution against the <a href="gpc-peak-interpretation.html">GPC peak interpretation</a> guide and convert a polystyrene-equivalent result with the <a href="gpc-calibration.html">GPC calibration converter</a>. The <a href="mechanisms.html">mechanisms</a> guide covers the activation/deactivation and addition/fragmentation steps behind the exchange coefficient, and the <a href="glossary.html">glossary</a> defines Đ, DP, C<sub>ex</sub>, and the rest.
+    </p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Predictions are idealized theoretical lower bounds for controlled/living systems. Real dispersities depend on termination, initiation, transfer, and end-group fidelity, and are generally higher. Verify against your own GPC.</p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+
+  var LN10 = Math.LN10;
+
+  // ---- Preset data ----------------------------------------------------
+  // RAFT: value is Cex (transfer constant). Ranges are display-only.
+  var CEX_PRESETS = [
+    { g: "Well-matched (good control)", items: [
+      { l: "Trithiocarbonate + acrylate (DDMAT, CDTPA)", v: 30, r: "~10–100" },
+      { l: "Trithiocarbonate + styrene", v: 15, r: "~9–20" },
+      { l: "Trithiocarbonate + acrylamide (DMA, NIPAM)", v: 10, r: "~1–10" },
+      { l: "Dithiobenzoate + styrene (cumyl)", v: 50, r: "~26–>1000" },
+      { l: "Dithiobenzoate + MMA (cyano-R, CPDB)", v: 25, r: "~10–40" },
+      { l: "Xanthate (MADIX) + vinyl acetate", v: 26, r: "~10–26" },
+      { l: "Xanthate + N-vinylpyrrolidone", v: 5, r: "~1–10" }
+    ]},
+    { g: "Mismatched (poor control)", items: [
+      { l: "Xanthate + acrylate", v: 1.5, r: "~0.6–3.8" },
+      { l: "Xanthate + styrene", v: 0.58, r: "<1" },
+      { l: "Xanthate + MMA", v: 0.3, r: "<1" },
+      { l: "Benzyl dithiobenzoate + MMA (poor R)", v: 0.5, r: "<1" }
+    ]}
+  ];
+
+  // ATRP / NMP: value is the lumped exchange coefficient C.
+  var C_PRESETS = {
+    atrp: [
+      { l: "Well-controlled normal ATRP (ample Cuᴵᴵ)", v: 0.0001, n: "DP-limited; Đ ~1.05–1.10" },
+      { l: "Fast acrylate, modest deactivator", v: 0.06, n: "Đ ~1.05–1.15 from cycling" },
+      { l: "Low-ppm ARGET / ICAR (scarce Cuᴵᴵ)", v: 0.1, n: "Đ ~1.1–1.3" }
+    ],
+    nmp: [
+      { l: "Well-controlled NMP (ample free nitroxide)", v: 0.002, n: "Illustrative; DP-limited" },
+      { l: "Under-controlled (low nitroxide excess)", v: 0.08, n: "Illustrative; broader" }
+    ]
+  };
+
+  var state = {
+    mech: "raft",
+    dp: 200,
+    mono: 100,
+    conv: 0.9,
+    cex: 30,
+    c: 0.0001
+  };
+
+  // ---- Core math ------------------------------------------------------
+  function coeffC() {
+    if (state.mech === "raft") return state.cex > 0 ? 1 / state.cex : Infinity;
+    if (state.mech === "ideal") return 0;
+    return state.c; // atrp / nmp
+  }
+
+  function dispAt(p, C) {
+    // Đ = 1 + 1/DPn + C*(2/p - 1), DPn = target DP * conversion
+    var dpn = state.dp * p;
+    if (!(dpn > 0)) return null;
+    var poisson = 1 / dpn;
+    var exch = C * (2 / p - 1);
+    return { dpn: dpn, poisson: poisson, exch: exch, D: 1 + poisson + exch };
+  }
+
+  function fmtMass(m) {
+    if (!isFinite(m)) return "n/a";
+    if (m >= 1e6) return (m / 1e6).toFixed(2) + "M";
+    if (m >= 1e3) return (m / 1e3).toFixed(m >= 1e4 ? 0 : 1) + "k";
+    return Math.round(m).toString();
+  }
+
+  // ---- Rendering ------------------------------------------------------
+  function renderStats(res, C) {
+    var mn = res.dpn * state.mono;
+    var mw = res.D * mn;
+    var mp = Math.sqrt(mn * mw);
+    var exchLabel = state.mech === "raft"
+      ? "from Cₑₓ = " + trim(state.cex)
+      : state.mech === "ideal" ? "none (ideal living)" : "from C = " + trim(C);
+
+    $("disp-stats").innerHTML =
+      '<div class="stat"><div class="label">Predicted Đ</div><div class="value">' + res.D.toFixed(res.D < 1.1 ? 3 : 2) + '</div><div class="sub">M<sub>w</sub>/M<sub>n</sub>, ideal lower bound</div></div>' +
+      '<div class="stat"><div class="label">DP<sub>n</sub> at this conversion</div><div class="value">' + Math.round(res.dpn) + '</div><div class="sub">target DP &times; conversion</div></div>' +
+      '<div class="stat"><div class="label">M<sub>n</sub> / M<sub>w</sub></div><div class="value">' + fmtMass(mn) + " / " + fmtMass(mw) + '</div><div class="sub">g/mol (peak M<sub>p</sub> ' + fmtMass(mp) + ')</div></div>' +
+      '<div class="stat"><div class="label">Exchange penalty</div><div class="value">+' + res.exch.toFixed(3) + '</div><div class="sub">' + exchLabel + '</div></div>';
+  }
+
+  function trim(x) {
+    if (x >= 1000) return x.toExponential(0).replace("e+", "×10^");
+    if (x < 0.001) return x.toExponential(0).replace("e-", "×10^-");
+    return String(x);
+  }
+
+  function renderBreakdown(res) {
+    var pctP = res.poisson, pctE = res.exch;
+    $("disp-breakdown").innerHTML =
+      "Đ = 1 + <strong>1/DP<sub>n</sub></strong> (" + pctP.toFixed(3) + ", chain length) + <strong>C&middot;(2/p&minus;1)</strong> (" +
+      pctE.toFixed(3) + ", exchange) = <strong>" + res.D.toFixed(3) + "</strong>. " +
+      (res.exch <= res.poisson
+        ? "Chain length dominates here, so a longer target or higher conversion barely helps; the exchange chemistry is already good enough."
+        : "The exchange term dominates, so faster exchange (a better-matched agent or more deactivator) narrows Đ more than pushing DP or conversion would.");
+  }
+
+  function renderWarnings() {
+    var w = [];
+    if (state.mech === "raft" && state.cex < 2) {
+      w.push("At Cₑₓ below ~2 the RAFT agent barely controls the polymerization: the predicted Đ is broad and the real distribution is often worse and bimodal. This is the mismatched-agent regime.");
+    }
+    if (state.mech === "raft" && state.cex >= 200) {
+      w.push("Very high Cₑₓ (active dithiobenzoates) predicts an almost monodisperse product, but these agents often cause rate retardation the equation cannot show, so the real reaction can be slow.");
+    }
+    if (state.conv >= 0.98) {
+      w.push("Near-quantitative conversion trades chain-end fidelity for yield: real Đ climbs and living character degrades well before the ideal curve suggests.");
+    }
+    var box = $("disp-warnings");
+    if (!w.length) { box.innerHTML = ""; return; }
+    box.innerHTML = w.map(function (t) {
+      return '<p class="guide-note" style="margin:8px 0 0;color:var(--text-dim);"><strong>Note:</strong> ' + t + "</p>";
+    }).join("");
+  }
+
+  // Log-normal SEC trace (weight fraction vs log10 M)
+  function renderMWD(res) {
+    var svg = $("disp-mwd-chart");
+    var W = 560, H = 260, M = { l: 40, r: 16, t: 16, b: 42 };
+    var pw = W - M.l - M.r, ph = H - M.t - M.b;
+    var D = res.D;
+    if (!(D > 1)) {
+      svg.innerHTML = '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" class="disp-empty">Set a valid target DP and conversion</text>';
+      return;
+    }
+    var mn = res.dpn * state.mono;
+    var mw = D * mn;
+    var sigma = Math.sqrt(Math.log(D));           // std dev of ln M
+    var muW = Math.log(mw) - sigma * sigma / 2;    // = ln(Mp)
+    var lnLo = muW - 4 * sigma, lnHi = muW + 4 * sigma;
+    var log10Lo = lnLo / LN10, log10Hi = lnHi / LN10;
+
+    function sx(l10) { return M.l + ((l10 - log10Lo) / (log10Hi - log10Lo)) * pw; }
+    function sy(v) { return M.t + (1 - v) * ph; }  // v in [0,1], peak = 1
+
+    var parts = [];
+    // decade gridlines + ticks
+    var d0 = Math.ceil(log10Lo), d1 = Math.floor(log10Hi);
+    for (var d = d0; d <= d1; d++) {
+      var x = sx(d);
+      parts.push('<line class="disp-grid" x1="' + x + '" y1="' + M.t + '" x2="' + x + '" y2="' + (H - M.b) + '"/>');
+      parts.push('<text class="disp-tick" x="' + x + '" y="' + (H - M.b + 15) + '" text-anchor="middle">10' + sup(d) + '</text>');
+    }
+    // curve
+    var N = 120, path = "", fill = "";
+    for (var i = 0; i <= N; i++) {
+      var l10 = log10Lo + (log10Hi - log10Lo) * (i / N);
+      var lnM = l10 * LN10;
+      var z = (lnM - muW) / sigma;
+      var y = Math.exp(-0.5 * z * z); // normalized to peak 1
+      var px = sx(l10), py = sy(y);
+      path += (i === 0 ? "M" : "L") + px.toFixed(1) + " " + py.toFixed(1) + " ";
+      fill += (i === 0 ? "M" + px.toFixed(1) + " " + sy(0).toFixed(1) + " L" : "L") + px.toFixed(1) + " " + py.toFixed(1) + " ";
+    }
+    fill += "L" + sx(log10Hi).toFixed(1) + " " + sy(0).toFixed(1) + " Z";
+    parts.push('<path class="disp-fill" d="' + fill + '"/>');
+    parts.push('<path class="disp-curve" d="' + path.trim() + '"/>');
+    // axis
+    parts.push('<line class="disp-axis" x1="' + M.l + '" y1="' + (H - M.b) + '" x2="' + (W - M.r) + '" y2="' + (H - M.b) + '"/>');
+    parts.push('<text class="disp-axis-label" x="' + (M.l + pw / 2) + '" y="' + (H - 6) + '" text-anchor="middle">Molecular weight (log scale)</text>');
+    // markers Mn and Mw (staggered so their labels never collide on a narrow peak)
+    markLine(parts, sx(Math.log(mn) / LN10), M, H, "n", -3, "end", M.t + 11);
+    markLine(parts, sx(Math.log(mw) / LN10), M, H, "w", 3, "start", M.t + 25);
+
+    svg.innerHTML = parts.join("");
+  }
+
+  function markLine(parts, x, M, H, sub, dx, anchor, ly) {
+    parts.push('<line class="disp-mark" x1="' + x.toFixed(1) + '" y1="' + M.t + '" x2="' + x.toFixed(1) + '" y2="' + (H - M.b) + '"/>');
+    parts.push('<text class="disp-mark-label" x="' + (x + dx).toFixed(1) + '" y="' + ly + '" text-anchor="' + anchor + '">M<tspan dy="2" font-size="8">' + sub + '</tspan></text>');
+  }
+
+  function sup(n) {
+    var map = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+    return String(n).split("").map(function (c) { return map[c] || c; }).join("");
+  }
+
+  // Đ vs conversion curve
+  function renderConvCurve(C) {
+    var svg = $("disp-conv-chart");
+    var W = 560, H = 240, M = { l: 46, r: 16, t: 16, b: 40 };
+    var pw = W - M.l - M.r, ph = H - M.t - M.b;
+
+    var pts = [];
+    for (var i = 1; i <= 100; i++) {
+      var p = i / 100;
+      var r = dispAt(p, C);
+      if (r && isFinite(r.D)) pts.push({ p: p, D: r.D });
+    }
+    if (pts.length < 2) { svg.innerHTML = ""; return; }
+
+    // y range: zoom to the informative region. Đ diverges as p->0, so cap the
+    // top and let the curve exit through it rather than clamp it into a flat lid.
+    var ref = dispAt(0.30, C);
+    var yTop = Math.max(1.25, Math.min(3.0, (ref ? ref.D : 1.5) * 1.15));
+    var yBot = 1;
+
+    function sx(p) { return M.l + p * pw; }
+    function sy(D) { return M.t + (1 - (Math.max(yBot, Math.min(D, yTop)) - yBot) / (yTop - yBot)) * ph; }
+
+    var parts = [];
+    // y grid
+    var steps = 4;
+    for (var s = 0; s <= steps; s++) {
+      var yv = yBot + (yTop - yBot) * s / steps;
+      var yy = sy(yv);
+      parts.push('<line class="disp-grid" x1="' + M.l + '" y1="' + yy + '" x2="' + (W - M.r) + '" y2="' + yy + '"/>');
+      parts.push('<text class="disp-tick" x="' + (M.l - 6) + '" y="' + (yy + 3) + '" text-anchor="end">' + yv.toFixed(2) + '</text>');
+    }
+    // x ticks
+    [0, 0.25, 0.5, 0.75, 1].forEach(function (p) {
+      parts.push('<text class="disp-tick" x="' + sx(p) + '" y="' + (H - M.b + 15) + '" text-anchor="middle">' + Math.round(p * 100) + '%</text>');
+    });
+    // curve: break the line where Đ runs off the top so it exits through the
+    // upper edge instead of tracing a false flat plateau along it
+    var path = "", pen = false;
+    pts.forEach(function (pt) {
+      if (pt.D > yTop * 1.02) { pen = false; return; }
+      path += (pen ? "L" : "M") + sx(pt.p).toFixed(1) + " " + sy(pt.D).toFixed(1) + " ";
+      pen = true;
+    });
+    parts.push('<line class="disp-axis" x1="' + M.l + '" y1="' + (H - M.b) + '" x2="' + (W - M.r) + '" y2="' + (H - M.b) + '"/>');
+    parts.push('<line class="disp-axis" x1="' + M.l + '" y1="' + M.t + '" x2="' + M.l + '" y2="' + (H - M.b) + '"/>');
+    parts.push('<path class="disp-conv-line" d="' + path.trim() + '"/>');
+    parts.push('<text class="disp-axis-label" x="' + (M.l + pw / 2) + '" y="' + (H - 4) + '" text-anchor="middle">Conversion</text>');
+    parts.push('<text class="disp-axis-label" x="14" y="' + (M.t + ph / 2) + '" text-anchor="middle" transform="rotate(-90 14 ' + (M.t + ph / 2) + ')">Đ</text>');
+    // current p
+    var now = dispAt(state.conv, C);
+    if (now) {
+      var nx = sx(state.conv), ny = sy(now.D);
+      parts.push('<line class="disp-now-line" x1="' + nx.toFixed(1) + '" y1="' + M.t + '" x2="' + nx.toFixed(1) + '" y2="' + (H - M.b) + '"/>');
+      parts.push('<circle class="disp-now-dot" cx="' + nx.toFixed(1) + '" cy="' + ny.toFixed(1) + '" r="4.5"/>');
+    }
+    svg.innerHTML = parts.join("");
+  }
+
+  // ---- Recalc + wiring ------------------------------------------------
+  function recalc() {
+    var C = coeffC();
+    $("disp-conv-val").textContent = Math.round(state.conv * 100) + "%";
+    $("disp-dpn-hint").innerHTML = "DP<sub>n</sub> now &asymp; " + Math.round(state.dp * state.conv) + " (of " + state.dp + " at full conversion).";
+    var res = dispAt(state.conv, C);
+    if (!res) return;
+    renderStats(res, C);
+    renderBreakdown(res);
+    renderWarnings();
+    renderMWD(res);
+    renderConvCurve(C);
+  }
+
+  function buildCexPresets() {
+    var sel = $("disp-cex-preset");
+    sel.innerHTML = "";
+    CEX_PRESETS.forEach(function (grp) {
+      var og = document.createElement("optgroup");
+      og.label = grp.g;
+      grp.items.forEach(function (it) {
+        var o = document.createElement("option");
+        o.value = it.v;
+        o.textContent = it.l + "  (Cₑₓ " + it.v + ")";
+        o.setAttribute("data-range", it.r);
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
+    sel.selectedIndex = 0;
+    applyCexPreset();
+  }
+
+  function applyCexPreset() {
+    var sel = $("disp-cex-preset");
+    var opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+    state.cex = parseFloat(opt.value);
+    $("disp-cex").value = state.cex;
+    $("disp-cex-range").textContent = "typical range " + (opt.getAttribute("data-range") || "");
+  }
+
+  function buildCPresets() {
+    var sel = $("disp-c-preset");
+    var list = C_PRESETS[state.mech] || C_PRESETS.atrp;
+    sel.innerHTML = "";
+    list.forEach(function (it) {
+      var o = document.createElement("option");
+      o.value = it.v;
+      o.textContent = it.l;
+      o.setAttribute("data-note", it.n);
+      sel.appendChild(o);
+    });
+    sel.selectedIndex = 0;
+    applyCPreset();
+  }
+
+  function applyCPreset() {
+    var sel = $("disp-c-preset");
+    var opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+    state.c = parseFloat(opt.value);
+    $("disp-c").value = state.c;
+    $("disp-c-note").textContent = opt.getAttribute("data-note") || "";
+  }
+
+  function switchMech(mech) {
+    state.mech = mech;
+    var btns = document.querySelectorAll("#disp-mech .disp-seg-btn");
+    btns.forEach(function (b) {
+      var on = b.getAttribute("data-mech") === mech;
+      b.classList.toggle("is-active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    $("disp-cex-field").hidden = mech !== "raft";
+    $("disp-c-field").hidden = (mech !== "atrp" && mech !== "nmp");
+    if (mech === "atrp" || mech === "nmp") buildCPresets();
+    recalc();
+  }
+
+  // events
+  document.querySelectorAll("#disp-mech .disp-seg-btn").forEach(function (b) {
+    b.addEventListener("click", function () { switchMech(b.getAttribute("data-mech")); });
+  });
+  $("disp-dp").addEventListener("input", function () {
+    var v = parseFloat(this.value); if (isFinite(v) && v >= 2) state.dp = v; recalc();
+  });
+  $("disp-mono").addEventListener("input", function () {
+    var v = parseFloat(this.value); if (isFinite(v) && v > 0) state.mono = v; recalc();
+  });
+  $("disp-conv").addEventListener("input", function () {
+    var v = parseFloat(this.value); if (isFinite(v)) state.conv = v; recalc();
+  });
+  $("disp-cex-preset").addEventListener("change", function () { applyCexPreset(); recalc(); });
+  $("disp-cex").addEventListener("input", function () {
+    var v = parseFloat(this.value); if (isFinite(v) && v > 0) state.cex = v; recalc();
+  });
+  $("disp-c-preset").addEventListener("change", function () { applyCPreset(); recalc(); });
+  $("disp-c").addEventListener("input", function () {
+    var v = parseFloat(this.value); if (isFinite(v) && v >= 0) state.c = v; recalc();
+  });
+
+  buildCexPresets();
+  recalc();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
