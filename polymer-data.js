@@ -713,6 +713,22 @@ window.POLYMER_DB = [
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "S" }, { id: 3, el: "S" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
   },
+  {
+    name: "Poly(geranyl methacrylate)", aka: ["poly(geraniol methacrylate)", "PGerMA", "geraniol methacrylate polymer"],
+    monomer: "geranyl methacrylate (geraniol methacrylate)", cls: "Addition (methacrylate)",
+    tags: ["acrylic", "methacrylate", "bio-based", "terpene"], verified: false,
+    note: "A bio-based methacrylate: the methacrylate ester of the terpene alcohol geraniol. The pendant geranyl group keeps its two C=C double bonds (2,6-diene), which remain available for post-polymerization crosslinking. Studied for greener coatings and binders. Monomer C14H22O2, ~222.3 g/mol.",
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 14, b: 16, order: 1 }]
+  },
+  {
+    name: "Poly(tetrahydrogeranyl methacrylate)", aka: ["poly(tetrahydrogeraniol methacrylate)", "poly(3,7-dimethyloctyl methacrylate)", "PTHGMA"],
+    monomer: "tetrahydrogeranyl methacrylate (3,7-dimethyloctyl methacrylate)", cls: "Addition (methacrylate)",
+    tags: ["acrylic", "methacrylate", "bio-based", "terpene"], verified: false,
+    note: "The fully hydrogenated version of poly(geranyl methacrylate): the ester of tetrahydrogeraniol (3,7-dimethyl-1-octanol), so the branched C10 pendant is saturated with no residual C=C. A bio-derived, flexible, hydrophobic side group. Monomer C14H26O2, ~226.4 g/mol.",
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 14, b: 16, order: 1 }]
+  },
 
   // ---- Copolymers ----------------------------------------------------------
   // No single repeat unit, so these carry type:"copolymer" and a `components`
