@@ -68,11 +68,19 @@
     var built = tabs && tabs.children.length > 0;
     var hasResults = !!document.querySelector("#app .stat");   // the initial calculation ran
     var errs = window.__calcErrs;
-    if (built && hasResults && errs.length === 0) return true;   // fully working: nothing to show
+    // The monomer dropdown is never disabled by this site's code. If it (or most
+    // dropdowns) are disabled, something on the computer is disabling form fields.
+    var selects = document.querySelectorAll("#app select");
+    var disabledCount = 0, i;
+    for (i = 0; i < selects.length; i++) { if (selects[i].disabled) disabledCount++; }
+    var monomer = document.getElementById("atrp-monomer-select");
+    var externallyDisabled = (monomer && monomer.disabled) || (selects.length > 4 && disabledCount >= selects.length - 3);
+    if (built && hasResults && errs.length === 0 && !externallyDisabled) return true;   // fully working
     if (document.getElementById("calc-err-banner")) return false;
     // Pick the message that matches how far the code got.
     var msg;
-    if (errs.length) msg = "The calculator hit an error, which is likely why the controls don't respond. Copy this whole message to the site owner:";
+    if (externallyDisabled && errs.length === 0) msg = "The calculator loaded correctly, but its dropdowns and fields have been disabled by something on this computer — not by the site (" + disabledCount + " of " + selects.length + " dropdowns are locked, including ones this site never disables). This is almost always endpoint-security or data-loss-prevention (DLP) software, or a browser policy, that blocks typing/selecting on sites it doesn't recognize. The fix is to have your IT team allow getpolytechniques.com. Please send them this note and the browser line below:";
+    else if (errs.length) msg = "The calculator hit an error, which is likely why the controls don't respond. Copy this whole message to the site owner:";
     else if (built) msg = "The calculator drew its controls but did not finish starting up (they won't respond), and no error was thrown. Please send the site owner this note and the browser line below:";
     else msg = "The calculator's code did not run at all. Please send the site owner the browser line below:";
     var b = document.createElement("div");
