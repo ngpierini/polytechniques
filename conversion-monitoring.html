@@ -54,7 +54,7 @@
   <div class="card">
     <h3>Why monitor conversion</h3>
     <p class="guide-note">
-      Conversion is the bridge between the recipe you designed and the polymer you actually get: every "Predicted Mₙ at X% conversion" figure in the calculator is only as good as your knowledge of the real time conversion, <em>p</em>. Tracking it lets you decide when to quench (hit your target Mₙ), catch a stalled reaction early, and, by plotting ln([M]₀/[M]) vs. time, check that the polymerization is behaving as a controlled/living process (a straight line means a roughly constant concentration of propagating chains, the kinetic signature of ATRP/RAFT/ROMP working as intended).
+      Conversion links the recipe you designed to the polymer you actually get: every "Predicted Mₙ at X% conversion" figure in the calculator is only as good as your knowledge of the real time conversion, <em>p</em>. Tracking it lets you decide when to quench (hit your target Mₙ), catch a stalled reaction early, and, by plotting ln([M]₀/[M]) vs. time, check that the polymerization is behaving as a controlled/living process (a straight line means a roughly constant concentration of propagating chains, the kinetic signature of ATRP/RAFT/ROMP working as intended).
     </p>
   </div>
 
@@ -87,10 +87,10 @@
   <div class="card" id="why-internal-standard">
     <h3>Why an internal standard matters</h3>
     <p class="guide-note">
-      The problem: every time you pull an aliquot, you're taking an uncontrolled microvolume that's hard to reproduce. Needle dead volume, viscosity (which climbs as the reaction proceeds), and solvent evaporation during transfer all mean the aliquot's dilution isn't precisely known. If you just integrate the monomer peak on its own and compare it to a separate, earlier spectrum, differences in how much sample you actually dissolved, how much deuterated solvent you added, or the instrument's receiver gain will masquerade as changes in monomer concentration, and the data becomes unreliable.
+      Every time you pull an aliquot, you're taking an uncontrolled microvolume that's hard to reproduce. Needle dead volume, viscosity (which climbs as the reaction proceeds), and solvent evaporation during transfer all mean the aliquot's dilution isn't precisely known. If you just integrate the monomer peak on its own and compare it to a separate, earlier spectrum, differences in how much sample you actually dissolved, how much deuterated solvent you added, or the instrument's receiver gain will masquerade as changes in monomer concentration, and the data becomes unreliable.
     </p>
     <p class="guide-note">
-      The fix: add a small amount of a chemically inert reference compound directly to the bulk reaction mixture <em>before</em> polymerization starts, at a known fixed concentration relative to the monomer. Because it's mixed homogeneously into the whole pot, every aliquot you ever withdraw, no matter its exact volume, contains the standard and the monomer in the same fixed molar ratio as the bulk. The standard doesn't react, so its peak area only tracks how much of the aliquot you happen to be looking at; the monomer peak area tracks both that <em>and</em> how much monomer has been consumed. Dividing one by the other cancels out the aliquot size/dilution/gain uncertainty entirely, leaving a number that only depends on real conversion.
+      Add a small amount of a chemically inert reference compound directly to the bulk reaction mixture <em>before</em> polymerization starts, at a known fixed concentration relative to the monomer. Because it's mixed homogeneously into the whole pot, every aliquot you ever withdraw, no matter its exact volume, contains the standard and the monomer in the same fixed molar ratio as the bulk. The standard doesn't react, so its peak area only tracks how much of the aliquot you happen to be looking at; the monomer peak area tracks both that <em>and</em> how much monomer has been consumed. Dividing one by the other cancels out the aliquot size/dilution/gain uncertainty entirely, leaving a number that only depends on real conversion.
     </p>
     <div class="guide-formula">
       p = 1 &minus; (I<sub>M,t</sub> / I<sub>std,t</sub>) &divide; (I<sub>M,0</sub> / I<sub>std,0</sub>)
