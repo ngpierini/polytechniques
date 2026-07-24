@@ -150,6 +150,18 @@
         }); } },
     { name: "Service worker", affects: "Offline use and faster repeat loads (optional)", run: function () { return { status: ("serviceWorker" in navigator) ? "ok" : "warn", detail: ("serviceWorker" in navigator) ? "available" : "not available" }; } },
     { name: "Same-origin data (this site)", affects: "The site's own data files — required for anything to work", run: function () { return probe("manifest.json", true); } },
+    { name: "External JavaScript files (this site)", affects: "The Calculator and Polymer Search load their code from .js files this way", run: function () {
+        return new Promise(function (resolve) {
+          if (window.PolymerCalcCore) { resolve({ status: "ok", detail: "loaded and ran" }); return; }
+          var done = false, fin = function (s, d) { if (!done) { done = true; resolve({ status: s, detail: d }); } };
+          var sc = document.createElement("script");
+          sc.src = "polymer-calc-core.js?v=1&diag=" + (new Date()).getTime();   // cache-bust so this tests the network, not the cache
+          sc.onload = function () { fin(window.PolymerCalcCore ? "ok" : "fail", window.PolymerCalcCore ? "loaded and ran" : "delivered but did not run"); };
+          sc.onerror = function () { fin("fail", "blocked — external script files are not being delivered on this network"); };
+          setTimeout(function () { fin("fail", "no response (blocked or timed out)"); }, 8000);
+          document.head.appendChild(sc);
+        });
+    } },
     { name: "Site API (/api/health)", affects: "AI photo-to-structure recognition", run: function () { return probe("api/health", true); } },
     { name: "Crossref (publications)", affects: "The live publications search and Hot Off the Press", run: function () { return probe("https://api.crossref.org/works?rows=1", false); } },
     { name: "PubChem", affects: "Naming an unknown drawn structure", run: function () { return probe("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/962/property/Title/JSON", false); } },
@@ -201,6 +213,9 @@
     if (!coreOk) {
       color = "var(--danger)";
       msg = "<strong>The core tools are blocked here.</strong> Canvas drawing or the site's own data files did not load, so the calculators and structure editor can't run on this network/browser. Copy this report and ask your IT team to allow getpolytechniques.com.";
+    } else if (st("External JavaScript files (this site)") === "fail") {
+      color = "var(--danger)";
+      msg = "<strong>This network is blocking the site's separate JavaScript files.</strong> The pages load and the inline tools (dispersity, copolymer composition, T<sub>g</sub>, GPC) run, but the <em>Calculator</em> and <em>Polymer Search</em> load their code from external .js files that are being stripped or blocked here, so they stay read-only. Ask your IT / network team to allow getpolytechniques.com <em>and its .js files</em> (it's a static reference site — no accounts, no data collection). The Copy report button gives you something to attach to that request.";
     } else if (extBlocked >= 3) {
       color = "#b7791f";
       msg = "<strong>The calculators and structure drawing should work; the internet-connected extras are blocked.</strong> This network allowed the site's own files but blocked the outside services, so the publications search, structure naming, photo text-reading, and AI photo recognition won't function. Those degrade on their own and should not stop the calculators, the structure editor, or name/browse search.";
