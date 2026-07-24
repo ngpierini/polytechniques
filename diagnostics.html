@@ -51,6 +51,7 @@
 
   <div class="card">
     <h3>Results</h3>
+    <div class="diag-summary" id="diag-browser" style="border-left-color:var(--text-dim);">Detecting browser&hellip;</div>
     <div class="diag-summary" id="diag-summary">Running tests&hellip;</div>
     <div class="table-scroll">
       <table class="recipe recipe-stackable" id="diag-table">
@@ -86,8 +87,47 @@
 
 <script>
 (function () {
+  // Synchronous, pure-ES5 browser check FIRST, using no Promise/fetch, so it
+  // still renders on a browser too old to run the rest of this page or the site.
+  function detectBrowser(ua) {
+    ua = ua || "";
+    if (/MSIE |Trident\//.test(ua)) return { name: "Internet Explorer (or Edge in “IE mode”)", old: true };
+    var m;
+    if ((m = ua.match(/Edg(?:e|A|iOS)?\/(\d+)/))) return { name: "Microsoft Edge " + m[1], old: parseInt(m[1], 10) < 80 };
+    if ((m = ua.match(/OPR\/(\d+)/))) return { name: "Opera " + m[1], old: parseInt(m[1], 10) < 67 };
+    if ((m = ua.match(/Chrome\/(\d+)/))) return { name: "Chrome " + m[1], old: parseInt(m[1], 10) < 80 };
+    if ((m = ua.match(/Firefox\/(\d+)/))) return { name: "Firefox " + m[1], old: parseInt(m[1], 10) < 74 };
+    if (/Safari/.test(ua) && (m = ua.match(/Version\/(\d+)/))) return { name: "Safari " + m[1], old: parseInt(m[1], 10) < 14 };
+    return { name: "an unrecognized browser", old: false };
+  }
+  (function renderBrowser() {
+    var el = document.getElementById("diag-browser");
+    if (!el) return;
+    var b = detectBrowser(navigator.userAgent);
+    var noPromise = (typeof Promise === "undefined"), noFetch = (typeof fetch === "undefined");
+    if (b.old || noPromise || noFetch) {
+      el.style.borderLeftColor = "var(--danger)";
+      el.innerHTML = "<strong>You appear to be on " + b.name + ", which is too old to run this site's calculators.</strong> " +
+        "Their code uses modern JavaScript" + (noPromise ? " (this browser has no Promise support)" : "") +
+        " that older browsers — including Microsoft Edge opened in “IE mode” — cannot run, which is almost certainly why the tools look read-only. " +
+        "Ask IT to open getpolytechniques.com in normal (not IE-mode) Edge or a current Chrome, or to update the browser.";
+    } else {
+      el.style.borderLeftColor = "var(--accent)";
+      el.innerHTML = "<strong>Browser: " + b.name + ".</strong> Recent enough to run the site's code — so if the tools still don't work, the cause is network or policy, not the browser. See the checks below.";
+    }
+  })();
+
   var TESTS = [
     { name: "JavaScript execution", affects: "Everything interactive on the site", run: function () { return { status: "ok", detail: "running" }; } },
+    { name: "Modern JavaScript (calculators)", affects: "The calculators — their code needs recent JavaScript syntax", run: function () {
+        if (typeof Promise === "undefined" || typeof fetch === "undefined") return { status: "fail", detail: "missing Promise/fetch — browser too old for the calculators" };
+        var ok2020 = true;
+        try { new Function("var o={a:1};return o?.a ?? 0;"); }
+        catch (e) { ok2020 = (e && e.name === "SyntaxError") ? false : "eval-blocked"; }
+        if (ok2020 === false) return { status: "fail", detail: "this browser can't parse the calculators' code (no ES2020 syntax)" };
+        if (ok2020 === "eval-blocked") return { status: "warn", detail: "engine looks modern but script-eval is restricted, so this can't be fully confirmed" };
+        return { status: "ok", detail: "supported" };
+    } },
     { name: "Secure context (HTTPS)", affects: "Storage, service worker, and modern APIs", run: function () { return { status: window.isSecureContext ? "ok" : "warn", detail: window.isSecureContext ? "yes" : "no (page not served over HTTPS)" }; } },
     { name: "Canvas drawing", affects: "The structure editor", run: function () {
         try { var c = document.createElement("canvas"); return { status: c.getContext && c.getContext("2d") ? "ok" : "fail", detail: c.getContext && c.getContext("2d") ? "supported" : "no 2D context" }; }
