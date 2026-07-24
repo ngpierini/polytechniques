@@ -630,7 +630,22 @@
     var v = parseFloat(this.value); if (isFinite(v) && v >= 0) state.c = v; recalc();
   });
 
+  // Deep-link support: the calculator links here with ?mech=&dp=&conv= so a
+  // recipe's target DP and conversion carry straight into the predictor.
+  function applyParams() {
+    try {
+      var q = new URLSearchParams(location.search);
+      var dp = parseFloat(q.get("dp"));
+      if (isFinite(dp) && dp >= 2) { state.dp = dp; $("disp-dp").value = dp; }
+      var cv = parseFloat(q.get("conv"));
+      if (isFinite(cv)) { cv = Math.max(0.02, Math.min(1, cv)); state.conv = cv; $("disp-conv").value = cv; }
+      var m = (q.get("mech") || "").toLowerCase();
+      if (["raft", "atrp", "nmp", "ideal"].indexOf(m) > -1) switchMech(m);
+    } catch (e) {}
+  }
+
   buildCexPresets();
+  applyParams();
   recalc();
 })();
 </script>
