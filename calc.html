@@ -78,12 +78,14 @@
     else msg = "The calculator's code did not run at all. Please send the site owner the browser line below:";
     var b = document.createElement("div");
     b.id = "calc-err-banner";
-    b.style.cssText = "margin:12px;padding:12px 16px;border:1px solid #d64545;border-radius:8px;background:rgba(214,69,69,0.08);";
+    b.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:2147483647;margin:0;padding:14px 18px;" +
+      "background:#fff5f5;color:#2a0a0a;border-bottom:4px solid #d64545;box-shadow:0 3px 12px rgba(0,0,0,0.28);" +
+      "font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-size:0.95rem;line-height:1.4;max-height:80vh;overflow:auto;";
     b.innerHTML = "<strong>" + msg + "</strong>" +
-      (errs.length ? '<code style="display:block;white-space:pre-wrap;margin-top:6px;color:#d64545;font-size:0.85rem;">' + esc(errs.join("\n")) + "</code>" : "") +
-      '<div style="margin-top:6px;font-size:0.8rem;opacity:0.75;">' + esc(navigator.userAgent) + "</div>" +
+      (errs.length ? '<code style="display:block;white-space:pre-wrap;margin-top:6px;color:#b00020;font-size:0.85rem;">' + esc(errs.join("\n")) + "</code>" : "") +
+      '<div style="margin-top:6px;font-size:0.8rem;color:#555;">' + esc(navigator.userAgent) + "</div>" +
       '<div style="margin-top:4px;font-size:0.8rem;">The other tools are on the <a href="home.html">home page</a>.</div>';
-    if (app && app.parentNode) app.parentNode.insertBefore(b, app); else document.body.insertBefore(b, document.body.firstChild);
+    document.body.insertBefore(b, document.body.firstChild);
     return false;
   }
   window.addEventListener("load", function () {
