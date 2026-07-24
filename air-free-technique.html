@@ -153,7 +153,7 @@
         <text x="440" y="72" text-anchor="middle" class="small dim">Sample &amp;</text>
         <text x="440" y="84" text-anchor="middle" class="small dim">quench</text>
       </svg>
-      <p class="diagram-caption">The nine steps above collapse into six phases: everything before degassing sets up an inert headspace, degassing removes dissolved gas, and the catalyst only goes in once the flask is truly ready to run.</p>
+      <p class="diagram-caption">The nine steps above collapse into six phases: everything before degassing sets up an inert headspace, degassing removes dissolved gas, and the catalyst only goes in once the flask is ready to run.</p>
     </div>
   </div>
 
@@ -206,7 +206,7 @@
 
         <text x="240" y="170" text-anchor="middle" class="small dim">then backfill with inert gas on the final cycle instead of reopening to vacuum</text>
       </svg>
-      <p class="diagram-caption">Freeze pump thaw is a loop, not a checklist: each pass through freeze, evacuate, isolate, thaw pulls out a little more dissolved gas, and you can watch it working as the bubbling on thaw gets weaker each time.</p>
+      <p class="diagram-caption">Each pass through freeze, evacuate, isolate, thaw pulls out a little more dissolved gas, and you can watch it working: the bubbling on thaw gets weaker each time.</p>
     </div>
 
     <div class="error-msg" style="margin-top: 12px;">
@@ -261,7 +261,7 @@
   <div class="card" id="oxygen-tolerant">
     <h3>When you can skip degassing: oxygen tolerant methods</h3>
     <p class="guide-note">
-      Everything above assumes you are removing oxygen before you start. A newer body of work instead makes the chemistry consume oxygen while it runs, to the point that some systems polymerize in an open vial on the bench. This is worth knowing about because degassing is usually the slowest, most error prone part of a controlled polymerization, and because the reason each method works tells you exactly how far you can push it.
+      Everything above assumes you are removing oxygen before you start. A newer body of work instead makes the chemistry consume oxygen while it runs, to the point that some systems polymerize in an open vial on the bench. That matters, because degassing is usually the slowest, most error prone part of a controlled polymerization, and because the reason each method works tells you how far you can push it.
     </p>
 
     <h4 style="margin:18px 0 6px;">Why ATRP is more oxygen tolerant than it looks</h4>
@@ -269,15 +269,15 @@
       Oxygen attacks an ATRP two ways: it quenches propagating radicals, and it oxidizes the Cu(I) activator to Cu(II). Both reactions are essentially diffusion controlled, so which one dominates comes down to concentration, and at the ATRP equilibrium there is far more Cu(I) around than there are radicals. Oxygen therefore hits the catalyst first. That is genuinely useful: the catalyst acts as a sacrificial oxygen scavenger and your chains survive. In classical ATRP the damage is permanent, because nothing puts the Cu(II) back. In the regeneration variants (ARGET, ICAR, SARA, eATRP, photoATRP, mechanoATRP) a reducing agent or an external stimulus continuously converts Cu(II) back to Cu(I), so the catalyst keeps scavenging and the polymerization survives a real oxygen load.
     </p>
     <p class="guide-note">
-      The limit is worth stating plainly, because it is where people get burned: this buys you tolerance in a <em>sealed</em> vessel with a finite amount of oxygen, usually at the cost of an inhibition period while the catalyst clears it. It does not generally buy you an open flask. Regeneration has to outrun oxygen diffusing in through the surface, and typically it cannot. Cu(0) powder systems show no conversion at all in an open vessel, and copper wire systems have been run open for 48 hours with no polymer. Minimizing headspace is the cheap practical win here.
+      The limit is where people get burned: this buys you tolerance in a <em>sealed</em> vessel with a finite amount of oxygen, usually at the cost of an inhibition period while the catalyst clears it. It does not generally buy you an open flask. Regeneration has to outrun oxygen diffusing in through the surface, and typically it cannot. Cu(0) powder systems show no conversion at all in an open vessel, and copper wire systems have been run open for 48 hours with no polymer. Minimizing headspace is the cheap practical win here.
     </p>
 
     <h4 style="margin:18px 0 6px;">Enzymatic deoxygenation: genuinely open flask</h4>
     <p class="guide-note">
-      To actually work in an open vessel you need something that destroys oxygen faster than it arrives. Glucose oxidase (GOx) with glucose does exactly that, and it turns ATRP into an open vessel reaction. There is a catch worth understanding rather than memorizing: GOx makes hydrogen peroxide, and H₂O₂ reacts with Cu(I) in a Fenton type reaction to give hydroxyl radicals, which start <em>new</em> chains. The symptom is a molecular weight far below target (roughly five times low when reaching for DP &gt; 200) rather than an obvious failure. Adding sodium pyruvate fixes it by scavenging the peroxide to carbon dioxide, acetate, and water, restoring the expected M<sub>n</sub> and dispersity.
+      To actually work in an open vessel you need something that destroys oxygen faster than it arrives. Glucose oxidase (GOx) with glucose does exactly that, and it turns ATRP into an open vessel reaction. There is a catch: GOx makes hydrogen peroxide, and H₂O₂ reacts with Cu(I) in a Fenton type reaction to give hydroxyl radicals, which start <em>new</em> chains. The symptom is a molecular weight far below target (roughly five times low when reaching for DP &gt; 200) rather than an obvious failure. Adding sodium pyruvate fixes it by scavenging the peroxide to carbon dioxide, acetate, and water, restoring the expected M<sub>n</sub> and dispersity.
     </p>
     <p class="guide-note">
-      Combined with photoATRP, the enzymatic system is not just tolerant but faster: 93% conversion of OEOMA in two hours versus more than five hours for the same reaction without the enzyme, while keeping full light on/off temporal control. It is mild enough that the enzyme's own secondary structure survives, which is why this route is used for grafting from proteins and DNA. A related discovery is that sodium pyruvate under UV, with no enzyme at all, gives an oxygen proof photoATRP that works in both water and organic solvent, avoiding the problem of separating enzyme from product.
+      Combined with photoATRP, the enzymatic system also runs faster: 93% conversion of OEOMA in two hours versus more than five hours for the same reaction without the enzyme, while keeping full light on/off temporal control. It is mild enough that the enzyme's own secondary structure survives, which is why this route is used for grafting from proteins and DNA. A related discovery is that sodium pyruvate under UV, with no enzyme at all, gives an oxygen proof photoATRP that works in both water and organic solvent, avoiding the problem of separating enzyme from product.
     </p>
 
     <h4 style="margin:18px 0 6px;">Oxygen tolerant RAFT</h4>
