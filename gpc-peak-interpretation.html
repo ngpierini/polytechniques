@@ -118,6 +118,86 @@
   </div>
 
   <div class="card">
+    <h3>Column banks in practice</h3>
+    <p class="guide-note">
+      Almost nobody runs analytical GPC on a single column. Two or three columns in series (a column bank) is the standard way to tighten resolution: each column adds its own pore volume, so the same difference in molecular weight is spread across more elution volume. The gain follows a square-root law. Band spreading adds in quadrature while separation volume adds linearly, so n matched columns give roughly &radic;n better resolution for n&times; the run time and n&times; the back pressure. Two matched columns is the workhorse compromise; a third buys about 22% more resolution over two, and going past three is rarely worth the hour-long runs.
+    </p>
+    <p class="guide-note">
+      <strong>Matched banks beat mixed grab-bags.</strong> The columns in a bank only help each other where their selectivity windows overlap. Two identical mixed bed columns double the pore volume across the whole range, which is why 2&times; mixed bed (C/D class) is the default general-purpose bank for synthetic polymers from a few thousand to a couple million g/mol. Stacking individual pore sizes that bracket your sample (100 &Aring; + 500 &Aring; + 10&sup3; &Aring; for oligomers and prepolymers below ~30k; 10&#8308; + 10&#8309; + 10&#8310; &Aring; for high molecular weight work) resolves that region more sharply than any mixed bed, at the cost of a narrower usable window.
+    </p>
+    <p class="guide-note">
+      <strong>A mismatched column is worse than a wasted slot.</strong> A column whose pores are all wrong for your sample (say a 100 &Aring; oligomer column in a bank running 500k material) contributes zero separation for your peaks but still contributes its full share of band broadening, dead volume, and back pressure. Resolution actually drops compared to running without it. The same logic explains the kinked calibration curve of a badly assembled bank: in the molecular weight region where one column has stopped separating and the next has not picked up, the combined curve flattens and everything in that window piles up poorly resolved.
+    </p>
+    <p class="guide-note">
+      <strong>Practical points.</strong> Elution order does not depend on which column comes first; convention runs decreasing pore size downstream, with the guard column always first, where it can sacrifice itself to particulates. Every column you add also adds spreading from the connections, so use short, narrow-bore couplers. When switching solvents on a bank, flush at low flow and be patient: the packing in every column has to re-equilibrate, and a bank holds two or three columns' worth of the old solvent. And calibrate the bank as a whole. A calibration built on one column arrangement is invalid the moment you add, remove, or swap a column.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Try it: build a column bank</h3>
+    <p class="guide-note">
+      Pick up to four columns and watch the combined calibration curve, the separation of a chosen peak pair, and the costs. The model uses typical 300 &times; 7.5 mm analytical columns (polystyrene-equivalent molecular weights, 1 mL/min): each column adds its pore volume where its pores are the right size, band spreading adds in quadrature, and resolution R<sub>s</sub> = &Delta;V<sub>e</sub> / 4&sigma;. Values are representative, not a substitute for a vendor's data sheet; the scaling behavior is the point.
+    </p>
+
+    <div class="grid">
+      <div class="field">
+        <label for="bank-slot-1">Column 1</label>
+        <select id="bank-slot-1"></select>
+      </div>
+      <div class="field">
+        <label for="bank-slot-2">Column 2</label>
+        <select id="bank-slot-2"></select>
+      </div>
+      <div class="field">
+        <label for="bank-slot-3">Column 3</label>
+        <select id="bank-slot-3"></select>
+      </div>
+      <div class="field">
+        <label for="bank-slot-4">Column 4</label>
+        <select id="bank-slot-4"></select>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:4px;">
+      <div class="field">
+        <label>Presets</label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <button type="button" class="copy-btn bank-preset" data-bank="mixC,mixC">2&times; mixed (general)</button>
+          <button type="button" class="copy-btn bank-preset" data-bank="guard,a100,a500,a1e3">Oligomer bank</button>
+          <button type="button" class="copy-btn bank-preset" data-bank="guard,a1e4,a1e5,a1e6">High-MW bank</button>
+          <button type="button" class="copy-btn bank-preset" data-bank="a1e5,a100">Mismatched (see why)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="bank-peak-a">Peak A molecular weight</label>
+        <input type="range" id="bank-peak-a" min="2.3" max="6.8" step="0.05" value="4.7">
+        <span class="hint" id="bank-peak-a-val"></span>
+      </div>
+      <div class="field">
+        <label for="bank-peak-b">Peak B molecular weight</label>
+        <input type="range" id="bank-peak-b" min="2.3" max="6.8" step="0.05" value="5.0">
+        <span class="hint" id="bank-peak-b-val"></span>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <svg id="bank-cal-chart" class="chart-svg" viewBox="0 0 560 300" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <p class="diagram-caption">Combined calibration curve (bold) and each column's own curve (faint). A flat stretch in the bold curve is a dead zone: molecular weights there co-elute.</p>
+
+    <div class="chart-wrap">
+      <svg id="bank-chrom-chart" class="chart-svg" viewBox="0 0 560 240" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <p class="diagram-caption">Simulated chromatogram of the two peaks on this bank. Baseline resolution needs R<sub>s</sub> &ge; 1.5.</p>
+
+    <div class="stat-grid" id="bank-stats"></div>
+    <div id="bank-warnings"></div>
+  </div>
+
+  <div class="card">
     <h3>Solvent system</h3>
     <p class="guide-note">
       The mobile phase has to fully dissolve your polymer with no aggregation, and it has to be compatible with the column chemistry and detector. THF is the default for many organic soluble polymers because it is a good general solvent, low viscosity, and works cleanly with refractive index detection.
@@ -982,6 +1062,263 @@
       analyzeTrace();
     });
   });
+})();
+</script>
+
+<script>
+// ---------- Try it: build a column bank ----------
+// Each column is modeled as elution volume vs log10 M:
+//   Ve(M) = V0 + Vp * f(logM),  f = 1/(1 + exp(k*ln10*(logM - mid)))
+// f runs from 1 (small molecules permeate every pore) to 0 (excluded), so a
+// column separates only where f is falling - its selectivity window. A series
+// bank sums each column's Ve; band spreading adds in quadrature (plus a fixed
+// system term that does NOT grow with the bank, which is why the measured
+// gain runs slightly ahead of the sqrt(n) rule). Rs = dVe / 4*sigma.
+// Numbers are typical of 300 x 7.5 mm organic-phase analytical columns.
+(function () {
+  function $(id) { return document.getElementById(id); }
+  var calSvg = $("bank-cal-chart");
+  if (!calSvg) return;
+
+  var COLS = {
+    none:  { label: "(empty)" },
+    guard: { label: "Guard column",                 V0: 1.2, Vp: 0.4, mid: 4.0, k: 1.0,  bar: 5,  sigma: 0.05 },
+    a100:  { label: "100 Å (oligomer)",        V0: 5.5, Vp: 4.3, mid: 2.7, k: 2.0,  bar: 35, sigma: 0.12 },
+    a500:  { label: "500 Å",                   V0: 5.5, Vp: 4.3, mid: 3.5, k: 2.0,  bar: 35, sigma: 0.12 },
+    a1e3:  { label: "10³ Å",              V0: 5.5, Vp: 4.3, mid: 4.1, k: 2.0,  bar: 35, sigma: 0.12 },
+    a1e4:  { label: "10⁴ Å",              V0: 5.5, Vp: 4.3, mid: 5.0, k: 2.0,  bar: 35, sigma: 0.12 },
+    a1e5:  { label: "10⁵ Å",              V0: 5.5, Vp: 4.3, mid: 5.7, k: 2.0,  bar: 35, sigma: 0.12 },
+    a1e6:  { label: "10⁶ Å",              V0: 5.5, Vp: 4.3, mid: 6.5, k: 2.0,  bar: 35, sigma: 0.12 },
+    mixE:  { label: "Mixed bed, oligomer (E class)", V0: 5.5, Vp: 4.3, mid: 3.3, k: 1.3, bar: 35, sigma: 0.12 },
+    mixC:  { label: "Mixed bed, general (C/D class)", V0: 5.5, Vp: 4.3, mid: 4.6, k: 0.95, bar: 35, sigma: 0.12 },
+    mixB:  { label: "Mixed bed, high MW (A/B class)", V0: 5.5, Vp: 4.3, mid: 5.4, k: 0.85, bar: 35, sigma: 0.12 }
+  };
+  var SIGMA_SYS = 0.06;
+  var LM_MIN = 1.8, LM_MAX = 7.4;
+  var FLOW = 1.0;   // mL/min
+
+  function fCol(c, lm) { return 1 / (1 + Math.exp(c.k * Math.LN10 * (lm - c.mid))); }
+  function veBank(bank, lm) {
+    var v = 0;
+    for (var i = 0; i < bank.length; i++) v += bank[i].V0 + bank[i].Vp * fCol(bank[i], lm);
+    return v;
+  }
+  function veCol(c, lm) { return c.V0 + c.Vp * fCol(c, lm); }
+  function sigmaBank(bank) {
+    var s = SIGMA_SYS * SIGMA_SYS;
+    for (var i = 0; i < bank.length; i++) s += bank[i].sigma * bank[i].sigma;
+    return Math.sqrt(s);
+  }
+  function slopeBank(bank, lm) {
+    var h = 0.01;
+    return (veBank(bank, lm - h) - veBank(bank, lm + h)) / (2 * h);   // mL per decade
+  }
+
+  function currentBank() {
+    var bank = [];
+    for (var i = 1; i <= 4; i++) {
+      var key = $("bank-slot-" + i).value;
+      if (key !== "none") bank.push(COLS[key]);
+    }
+    return bank;
+  }
+
+  function fmtMW(lm) {
+    var m = Math.pow(10, lm);
+    if (m >= 1e6) return (m / 1e6).toPrecision(3) + "M";
+    if (m >= 1e3) return Math.round(m / 100) / 10 + "k";
+    return Math.round(m).toString();
+  }
+
+  // Usable windows: contiguous segments where the local slope is at least a
+  // third of the bank's best. Reported as separate windows, because a
+  // mismatched bank genuinely separates in two disconnected regions with a
+  // dead zone between them - hiding that behind one wide range would lie.
+  function usableWindows(bank) {
+    var best = 0, lm;
+    for (lm = LM_MIN; lm <= LM_MAX; lm += 0.02) best = Math.max(best, slopeBank(bank, lm));
+    var wins = [], start = null;
+    for (lm = LM_MIN; lm <= LM_MAX; lm += 0.02) {
+      var ok = slopeBank(bank, lm) >= best / 3;
+      if (ok && start === null) start = lm;
+      if (!ok && start !== null) { wins.push([start, lm]); start = null; }
+    }
+    if (start !== null) wins.push([start, LM_MAX]);
+    return wins.filter(function (w) { return w[1] - w[0] > 0.15; });
+  }
+
+  function drawCalChart(bank, lmA, lmB) {
+    var W = 560, H = 300, M = { left: 52, right: 16, top: 14, bottom: 40 };
+    var plotW = W - M.left - M.right, plotH = H - M.top - M.bottom;
+    var vMax = veBank(bank, LM_MIN) * 1.04 + 0.5;
+    var vMin = Math.max(0, veBank(bank, LM_MAX) * 0.92 - 0.5);
+    function sx(v) { return M.left + ((v - vMin) / (vMax - vMin)) * plotW; }
+    function sy(lm) { return M.top + ((LM_MAX - lm) / (LM_MAX - LM_MIN)) * plotH; }
+    var s = "";
+    // axes + gridlines at decades
+    s += '<line x1="' + M.left + '" y1="' + (H - M.bottom) + '" x2="' + (W - M.right) + '" y2="' + (H - M.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    s += '<line x1="' + M.left + '" y1="' + M.top + '" x2="' + M.left + '" y2="' + (H - M.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    for (var d = 2; d <= 7; d++) {
+      s += '<line x1="' + M.left + '" y1="' + sy(d) + '" x2="' + (W - M.right) + '" y2="' + sy(d) + '" stroke="var(--border)" stroke-width="0.5" opacity="0.5"/>';
+      s += '<text x="' + (M.left - 8) + '" y="' + (sy(d) + 4) + '" text-anchor="end" font-size="11" fill="var(--text-dim)">10' +
+        '<tspan baseline-shift="super" font-size="8">' + d + '</tspan></text>';
+    }
+    for (var vt = Math.ceil(vMin); vt <= vMax; vt += 4) {
+      s += '<text x="' + sx(vt) + '" y="' + (H - M.bottom + 16) + '" text-anchor="middle" font-size="11" fill="var(--text-dim)">' + vt + '</text>';
+    }
+    s += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="11" fill="var(--text-dim)">elution volume (mL)</text>';
+    s += '<text x="14" y="' + (H / 2) + '" text-anchor="middle" font-size="11" fill="var(--text-dim)" transform="rotate(-90 14 ' + (H / 2) + ')">molecular weight (g/mol)</text>';
+    // each column's own curve, faint (offset by the REST of the bank's void so
+    // curves nest visually inside the combined one)
+    bank.forEach(function (c) {
+      var d0 = "";
+      for (var i = 0; i <= 160; i++) {
+        var lm = LM_MIN + (LM_MAX - LM_MIN) * i / 160;
+        var others = 0;
+        bank.forEach(function (o) { if (o !== c) others += o.V0; });
+        var v = veCol(c, lm) + others;
+        d0 += (i ? " L " : "M ") + sx(v) + " " + sy(lm);
+      }
+      s += '<path d="' + d0 + '" fill="none" stroke="var(--text-dim)" stroke-width="1" opacity="0.35"/>';
+    });
+    // combined curve, bold
+    var d1 = "";
+    for (var j = 0; j <= 200; j++) {
+      var lmj = LM_MIN + (LM_MAX - LM_MIN) * j / 200;
+      d1 += (j ? " L " : "M ") + sx(veBank(bank, lmj)) + " " + sy(lmj);
+    }
+    s += '<path d="' + d1 + '" fill="none" stroke="var(--primary, #5b8def)" stroke-width="3" stroke-linecap="round"/>';
+    // peak markers
+    [[lmA, "#37c98f", "A"], [lmB, "#ef6a6a", "B"]].forEach(function (pk) {
+      var vx = sx(veBank(bank, pk[0])), vy = sy(pk[0]);
+      s += '<circle cx="' + vx + '" cy="' + vy + '" r="5.5" fill="' + pk[1] + '"/>';
+      s += '<text x="' + (vx + 9) + '" y="' + (vy + 4) + '" font-size="11" font-weight="700" fill="' + pk[1] + '">' + pk[2] + '</text>';
+    });
+    calSvg.innerHTML = s;
+  }
+
+  function drawChromChart(bank, lmA, lmB) {
+    var svg = $("bank-chrom-chart");
+    var W = 560, H = 240, M = { left: 52, right: 16, top: 14, bottom: 40 };
+    var plotW = W - M.left - M.right, plotH = H - M.top - M.bottom;
+    var vA = veBank(bank, lmA), vB = veBank(bank, lmB);
+    var sg = sigmaBank(bank);
+    var vLo = Math.min(vA, vB) - 6 * sg - 0.6, vHi = Math.max(vA, vB) + 6 * sg + 0.6;
+    function sx(v) { return M.left + ((v - vLo) / (vHi - vLo)) * plotW; }
+    function sy(y) { return H - M.bottom - y * plotH; }
+    var s = "";
+    s += '<line x1="' + M.left + '" y1="' + (H - M.bottom) + '" x2="' + (W - M.right) + '" y2="' + (H - M.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    var step = (vHi - vLo) > 6 ? 2 : 1;
+    for (var vt = Math.ceil(vLo / step) * step; vt <= vHi; vt += step) {
+      s += '<text x="' + sx(vt) + '" y="' + (H - M.bottom + 16) + '" text-anchor="middle" font-size="11" fill="var(--text-dim)">' + vt.toFixed(0) + '</text>';
+    }
+    s += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="11" fill="var(--text-dim)">elution volume (mL) at ' + FLOW.toFixed(0) + ' mL/min</text>';
+    function peakPath(vc, color) {
+      var d = "";
+      for (var i = 0; i <= 180; i++) {
+        var v = vLo + (vHi - vLo) * i / 180;
+        var y = Math.exp(-((v - vc) * (v - vc)) / (2 * sg * sg)) * 0.9;
+        d += (i ? " L " : "M ") + sx(v) + " " + sy(y);
+      }
+      return '<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linecap="round"/>';
+    }
+    // summed trace, faint fill
+    var dSum = "M " + sx(vLo) + " " + sy(0);
+    for (var i2 = 0; i2 <= 180; i2++) {
+      var v2 = vLo + (vHi - vLo) * i2 / 180;
+      var y2 = (Math.exp(-((v2 - vA) * (v2 - vA)) / (2 * sg * sg)) + Math.exp(-((v2 - vB) * (v2 - vB)) / (2 * sg * sg))) * 0.9 / 2;
+      dSum += " L " + sx(v2) + " " + sy(Math.min(y2 * 2, 0.98));
+    }
+    dSum += " L " + sx(vHi) + " " + sy(0) + " Z";
+    s += '<path d="' + dSum + '" fill="var(--primary, #5b8def)" opacity="0.10"/>';
+    s += peakPath(vA, "#37c98f") + peakPath(vB, "#ef6a6a");
+    svg.innerHTML = s;
+  }
+
+  function update() {
+    var bank = currentBank();
+    var lmA = parseFloat($("bank-peak-a").value);
+    var lmB = parseFloat($("bank-peak-b").value);
+    $("bank-peak-a-val").textContent = fmtMW(lmA) + " g/mol";
+    $("bank-peak-b-val").textContent = fmtMW(lmB) + " g/mol";
+    var statsEl = $("bank-stats"), warnEl = $("bank-warnings");
+    if (!bank.length) {
+      calSvg.innerHTML = "";
+      $("bank-chrom-chart").innerHTML = "";
+      statsEl.innerHTML = "";
+      warnEl.innerHTML = '<p class="guide-note">Pick at least one column.</p>';
+      return;
+    }
+    drawCalChart(bank, lmA, lmB);
+    drawChromChart(bank, lmA, lmB);
+
+    var dV = Math.abs(veBank(bank, lmA) - veBank(bank, lmB));
+    var Rs = dV / (4 * sigmaBank(bank));
+    var runMin = (veBank(bank, LM_MIN) + 1.5) / FLOW;
+    var bar = bank.reduce(function (s2, c) { return s2 + c.bar; }, 0);
+    var wins = usableWindows(bank);
+    var winTxt = wins.map(function (w) { return fmtMW(w[0]) + " to " + fmtMW(w[1]); }).join(" and ");
+
+    statsEl.innerHTML =
+      '<div class="stat"><div class="label">Resolution R<sub>s</sub> (A/B)</div><div class="value">' + Rs.toFixed(2) + '</div><div class="sub">' +
+        (Rs >= 1.5 ? "baseline resolved" : Rs >= 1.0 ? "partly resolved" : "co-eluting") + '</div></div>' +
+      '<div class="stat"><div class="label">Run time</div><div class="value">' + Math.round(runMin) + ' min</div><div class="sub">to total permeation + flush</div></div>' +
+      '<div class="stat"><div class="label">Back pressure</div><div class="value">~' + bar + ' bar</div><div class="sub">typical, THF at 1 mL/min</div></div>' +
+      '<div class="stat"><div class="label">Usable range</div><div class="value" style="font-size:0.95rem;line-height:1.3;">' + (winTxt || "none") + '</div><div class="sub">g/mol' + (wins.length > 1 ? ' - two windows' : '') + '</div></div>';
+
+    // Warnings: dead zones, wasted columns, exclusion
+    var warns = [];
+    if (wins.length > 1) {
+      warns.push('This bank separates in <strong>' + wins.length + ' disconnected windows</strong> with a dead zone between them; molecular weights in the gap pile up with almost no separation. Pick pore sizes whose windows overlap.');
+    }
+    // a column is wasted for this peak pair if it contributes under 5% of the
+    // separation volume while still adding its broadening
+    if (bank.length > 1 && dV > 0.01) {
+      var wasted = [];
+      bank.forEach(function (c) {
+        var contrib = Math.abs(veCol(c, lmA) - veCol(c, lmB));
+        if (contrib / dV < 0.05 && c.label.indexOf("Guard") === -1) wasted.push(c.label);
+      });
+      if (wasted.length) {
+        warns.push('<strong>' + wasted.join(", ") + '</strong> adds no separation for this peak pair, only band broadening and run time. Resolution would be <em>higher</em> without it.');
+      }
+    }
+    var slopeA = slopeBank(bank, lmA), slopeB = slopeBank(bank, lmB);
+    var bestSlope = 0;
+    for (var lm2 = LM_MIN; lm2 <= LM_MAX; lm2 += 0.02) bestSlope = Math.max(bestSlope, slopeBank(bank, lm2));
+    if (slopeA < bestSlope / 8 || slopeB < bestSlope / 8) {
+      warns.push('A peak sits at the edge of this bank’s range (near exclusion or total permeation), where the calibration is nearly flat: its apparent molecular weight there is unreliable no matter how good the fit looks.');
+    }
+    warnEl.innerHTML = warns.map(function (w) {
+      return '<p class="guide-note" style="border-left:3px solid var(--danger, #ef6a6a);padding-left:10px;">' + w + '</p>';
+    }).join("");
+  }
+
+  var slotIds = ["bank-slot-1", "bank-slot-2", "bank-slot-3", "bank-slot-4"];
+  var optionsHtml = Object.keys(COLS).map(function (k) {
+    return '<option value="' + k + '">' + COLS[k].label + '</option>';
+  }).join("");
+  slotIds.forEach(function (id) {
+    var sel = $(id);
+    sel.innerHTML = optionsHtml;
+    sel.addEventListener("change", update);
+  });
+  document.querySelectorAll(".bank-preset").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var keys = btn.getAttribute("data-bank").split(",");
+      slotIds.forEach(function (id, i) { $(id).value = keys[i] || "none"; });
+      update();
+    });
+  });
+  $("bank-peak-a").addEventListener("input", update);
+  $("bank-peak-b").addEventListener("input", update);
+
+  // default: the workhorse two-column general bank
+  $("bank-slot-1").value = "mixC";
+  $("bank-slot-2").value = "mixC";
+  $("bank-slot-3").value = "none";
+  $("bank-slot-4").value = "none";
+  update();
 })();
 </script>
 
