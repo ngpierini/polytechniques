@@ -745,7 +745,7 @@ function wirePresetBar(tabId, collectFn, applyFn) {
   function getStore() {
     try { return JSON.parse(localStorage.getItem(storageKey)) || {}; } catch (e) { return {}; }
   }
-  function setStore(store) { localStorage.setItem(storageKey, JSON.stringify(store)); }
+  function setStore(store) { try { localStorage.setItem(storageKey, JSON.stringify(store)); } catch (e) { /* storage blocked */ } }
 
   function refreshSelect() {
     const store = getStore();
