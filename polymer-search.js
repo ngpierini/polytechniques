@@ -1890,6 +1890,27 @@
       return { atoms: subAtoms, bonds: subBonds, boundaryCount: starCount, atomCount: atoms.length - starCount };
     }
 
+    // Extract a repeat unit from an explicit set of atom ids (the block's known
+    // atoms), instead of geometry. Used for loaded copolymers so a tight,
+    // image-style bracket can sit on the backbone with acyclic pendants (an
+    // ester, a methyl) poking outside without being miscounted as chain ends.
+    function extractFromAtomIds(idSet) {
+      var subAtoms = [], subBonds = [], starCount = 0, boundaryCount = 0, count = 0;
+      atoms.forEach(function (a) { if (idSet[a.id]) { subAtoms.push({ id: a.id, el: a.el, charge: a.charge }); count++; } });
+      bonds.forEach(function (b) {
+        var ain = !!idSet[b.a], bin = !!idSet[b.b];
+        if (ain && bin) { subBonds.push({ a: b.a, b: b.b, order: b.order }); }
+        else if (ain || bin) {
+          boundaryCount++;
+          var interiorEnd = ain ? b.a : b.b;
+          var starId = 'S' + (starCount++);
+          subAtoms.push({ id: starId, el: '*' });
+          subBonds.push({ a: interiorEnd, b: starId, order: b.order });
+        }
+      });
+      return { atoms: subAtoms, bonds: subBonds, boundaryCount: boundaryCount, atomCount: count };
+    }
+
     function escapeHtml(s) {
       return String(s).replace(/[&<>"']/g, function (c) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -2613,7 +2634,13 @@
       var y1 = Math.min(rect.y1, rect.y2), y2 = Math.max(rect.y1, rect.y2);
       var idSet = {};
       atoms.forEach(function (a) { if (a.x >= x1 && a.x <= x2 && a.y >= y1 && a.y <= y2) idSet[a.id] = true; });
-      return tightBracketForIds(idSet) || rect;
+      var tight = tightBracketForIds(idSet);
+      // Only adopt the tight bracket if it still extracts to a clean two-ended
+      // unit. A ring pendant (phenyl) gets re-absorbed and stays valid; an
+      // acyclic pendant (methyl, ester) would poke out and add a spurious end,
+      // so there we keep the drawn box, which already encloses it.
+      if (!tight) return rect;
+      return extractRepeatUnit(tight).boundaryCount === 2 ? tight : rect;
     }
 
     function importSmiles() {
@@ -2795,7 +2822,9 @@
         brackets = blockCore.map(function (idxs) {
           var set = {};
           idxs.forEach(function (i) { set[made[i].id] = true; });
-          return tightBracketForIds(set);
+          var b = tightBracketForIds(set);
+          if (b) b.atomIds = set;   // remember the block's atoms for robust re-extraction
+          return b;
         }).filter(Boolean);
         draw();
         smilesNote('Loaded ' + entry.name + ' as a ' + blockCore.length + '-block copolymer. Press Search this structure.');
@@ -2819,6 +2848,11 @@
         var name = btn.getAttribute('data-poly-name');
         var p = (window.POLYMER_DB || []).filter(function (x) { return x.name === name; })[0];
         if (p) { if (p.type === 'copolymer') loadCopolymerStructure(p); else loadPolymerStructure(p); }
+      });
+      // The architecture selector repaints the copolymer name + publications.
+      resultsEl.addEventListener('change', function (e) {
+        var sel = e.target.closest && e.target.closest('.mol-arch-select');
+        if (sel) paintCopolymer(sel.value);
       });
     })();
 
@@ -3465,6 +3499,27 @@
       return arr.slice(0, -1).join(', ') + ', and ' + arr[arr.length - 1];
     }
 
+    // Chain architecture: what the drawing/name can and can't tell us. Separate
+    // chained brackets are the block notation, so a drawn multi-block copolymer
+    // is inferred as 'block'; the user can restate it for the cases geometry
+    // can't decide (random/gradient), and a typed name's -co-/-b-/-alt-/-g-
+    // infix states it outright.
+    var ARCH_INFO = {
+      block:       { label: 'Block copolymer',       infix: 'b',    q: 'block copolymer' },
+      random:      { label: 'Random copolymer',      infix: 'ran',  q: 'random copolymer' },
+      statistical: { label: 'Statistical copolymer', infix: 'stat', q: 'statistical copolymer' },
+      alternating: { label: 'Alternating copolymer', infix: 'alt',  q: 'alternating copolymer' },
+      gradient:    { label: 'Gradient copolymer',    infix: 'grad', q: 'gradient copolymer' },
+      graft:       { label: 'Graft copolymer',       infix: 'g',    q: 'graft copolymer' },
+      copolymer:   { label: 'Copolymer',             infix: 'co',   q: 'copolymer' }
+    };
+    var ARCH_ORDER = ['block', 'random', 'alternating', 'gradient', 'graft', 'statistical'];
+    function archInfo(a) { return ARCH_INFO[a] || ARCH_INFO.copolymer; }
+    function copolyFormalName(names, arch) {
+      var inf = archInfo(arch).infix;
+      return names.map(function (n, i) { return i === 0 ? n : n.toLowerCase(); }).join('-' + inf + '-');
+    }
+
     // A named copolymer in the library (type:'copolymer', components:[names])
     // matches when its listed components line up one-to-one with the identified
     // blocks (by each block's name/aka/monomer). Surfaces SBR from PS + PBd, etc.
@@ -3526,6 +3581,7 @@
       var statusEl = document.getElementById('mol-status');
       if (!statusEl) return;
       var blocks = brackets.map(function (r, i) {
+        if (r.atomIds) return extractFromAtomIds(r.atomIds);   // loaded block: exact atom set
         return extractRepeatUnit(r, brackets.filter(function (_, j) { return j !== i; }));
       });
       for (var i = 0; i < blocks.length; i++) {
@@ -3564,7 +3620,7 @@
         return { name: nm ? nm.name : (o.entry ? o.entry.name : null), entry: o.entry, cid: nm ? nm.cid : null, count: o.count };
       }
       if (order.every(function (o) { return o.entry; })) {
-        renderCopolymer(order.map(function (o) { return toPart(o, null); }));
+        renderCopolymer(order.map(function (o) { return toPart(o, null); }), 'block');
         return;
       }
       statusEl.textContent = rdkitPromise ? 'Identifying each block…'
@@ -3575,13 +3631,26 @@
           return nameBlockExternally(o.block, RDKit).then(function (nm) { return toPart(o, nm); });
         }));
       }).then(function (parts) {
-        renderCopolymer(parts);
+        renderCopolymer(parts, 'block');
       }).catch(function () {
-        renderCopolymer(order.map(function (o) { return toPart(o, null); }));
+        renderCopolymer(order.map(function (o) { return toPart(o, null); }), 'block');
       });
     }
 
-    function renderCopolymer(parts) {
+    // The active copolymer result, so the architecture selector can repaint the
+    // name and publications without re-running the structure search.
+    var copolyState = null;
+    function renderCopolymer(parts, inferredArch) {
+      var named = matchNamedCopolymer(parts);
+      var arch = (named && named.arch) || inferredArch || 'copolymer';
+      copolyState = { parts: parts, named: named };
+      paintCopolymer(arch);
+    }
+
+    function paintCopolymer(arch) {
+      if (!copolyState) return;
+      var parts = copolyState.parts, named = copolyState.named;
+      copolyState.arch = arch;
       var statusEl = document.getElementById('mol-status');
       var resultsEl = document.getElementById('mol-results');
       if (!resultsEl) return;
@@ -3591,12 +3660,11 @@
       var known = parts.filter(function (p) { return p.name; });
       var names = known.map(function (p) { return p.name; });
       var unknownCount = parts.length - known.length;
-      var named = matchNamedCopolymer(parts);
+      var ai = archInfo(arch);
 
       if (statusEl) {
         statusEl.textContent = named ? 'Copolymer identified: ' + named.name
-          : (names.length ? 'Copolymer of ' + joinNames(names) + (unknownCount ? ' (plus ' + unknownCount + ' unidentified)' : '') + ':'
-                          : 'Could not identify the blocks of this copolymer.');
+          : (names.length ? ai.label + ' of ' + joinNames(names) + (unknownCount ? ' (plus ' + unknownCount + ' unidentified)' : '') : 'Could not identify the blocks of this copolymer.');
       }
 
       var blockList = parts.map(function (p, i) {
@@ -3604,12 +3672,21 @@
         return escapeHtml(p.name || 'unidentified') + ' <span style="color:var(--text-dim);">[' + s + (p.count > 1 ? '] &times;' + p.count : ']') + '</span>';
       }).join(' &nbsp;&middot;&nbsp; ');
 
+      var archSelect = '<div class="mol-result-meta" style="margin-top:6px;">Architecture: ' +
+        '<select class="mol-arch-select" style="font:inherit;padding:2px 4px;">' +
+        ARCH_ORDER.map(function (a) { return '<option value="' + a + '"' + (a === arch ? ' selected' : '') + '>' + archInfo(a).label + '</option>'; }).join('') +
+        '</select>' +
+        (named ? '' : ' <span style="color:var(--text-dim);">inferred from your bracketing; set it for random / gradient / graft</span>') +
+        '</div>';
+
       var summary = '<div class="mol-result-card" style="border-left:3px solid var(--primary);">' +
-        '<div class="mol-result-name">' + (named ? escapeHtml(named.name) : 'Copolymer') + '</div>' +
-        (named && named.aka && named.aka.length ? '<div class="mol-result-aka">' + escapeHtml(named.aka.join(', ')) + '</div>' : '') +
+        '<div class="mol-result-name">' + (named ? escapeHtml(named.name) : (names.length ? ai.label + ' of ' + escapeHtml(joinNames(names)) : 'Copolymer')) + '</div>' +
+        (named && named.aka && named.aka.length ? '<div class="mol-result-aka">' + escapeHtml(named.aka.join(', ')) + '</div>'
+          : (names.length ? '<div class="mol-result-aka">' + escapeHtml(copolyFormalName(names, arch)) + '</div>' : '')) +
         '<div class="mol-result-meta">' + (named && named.cls ? escapeHtml(named.cls) + ' &middot; ' : '') + 'blocks: ' + blockList + '</div>' +
+        archSelect +
         (named && named.note ? '<div class="mol-result-note">' + escapeHtml(named.note) + '</div>' : '') +
-        '<div class="mol-result-note" style="color:var(--text-dim);">A structure shows which repeat units are present, not the chain architecture (block, random, gradient, or graft). Publications below cover this monomer combination.</div>' +
+        '<div class="mol-result-note" style="color:var(--text-dim);">A drawing shows which repeat units are present; the architecture is inferred from how the blocks are bracketed (or set above). Random and gradient copolymers have no periodic unit to draw, so state those. Publications below cover this combination.</div>' +
         '</div>';
 
       var blockCards = parts.map(function (p) {
@@ -3627,9 +3704,9 @@
       if (pubEl && resultsEl.nextSibling !== pubEl) resultsEl.parentNode.insertBefore(pubEl, resultsEl.nextSibling);
       if (!names.length) { renderPublications(null); return; }
       var queryTerms = named ? [named.name].concat((named.aka || []).slice(0, 2))
-                             : [names.join(' ') + ' copolymer'];
-      renderPublications({ name: named ? named.name : ('copolymer of ' + joinNames(names)),
-                           aka: named ? (named.aka || []) : [], queryTerms: queryTerms });
+                             : [names.join(' ') + ' ' + ai.q];
+      renderPublications({ name: named ? named.name : (ai.label + ' of ' + joinNames(names)),
+                           aka: named ? (named.aka || []) : [copolyFormalName(names, arch)], queryTerms: queryTerms });
     }
 
     // After an explicit search action, bring the Results card into view if it
@@ -3857,8 +3934,59 @@
       }
       return prev[b.length];
     }
+    // Resolve a monomer/polymer name fragment (from inside a copolymer name) to
+    // a library homopolymer, by name, alias, or monomer.
+    function resolveComponent(frag) {
+      var db = window.POLYMER_DB || [];
+      var full = canonName(frag);
+      var mono = full.replace(/^poly[\s(]*/, '').replace(/[)\s]*$/, '').trim();
+      function structural(p) { return p.atoms && p.type !== 'copolymer'; }
+      return db.filter(function (p) { return structural(p) && (canonName(p.name) === full || (p.aka || []).some(function (a) { return canonName(a) === full; })); })[0]
+        || db.filter(function (p) { return structural(p) && p.monomer && canonName(p.monomer) === mono; })[0]
+        || db.filter(function (p) { return structural(p) && (p.aka || []).some(function (a) { return canonName(a) === mono; }); })[0]
+        || db.filter(function (p) { return structural(p) && p.monomer && mono.length > 3 && canonName(p.monomer).indexOf(mono) !== -1; })[0]
+        || null;
+    }
+
+    // Parse a typed copolymer name into components + architecture, e.g.
+    // "poly(styrene-co-methyl methacrylate)" or "PS-b-PMMA" or
+    // "block copolymer of polystyrene and PMMA". Returns null if it doesn't parse.
+    function parseCopolymerQuery(q) {
+      var s = canonName(q);
+      var wrap = s.match(/^poly\s*\((.+)\)\s*$/);
+      var inner = wrap ? wrap[1] : s;
+      var infixes = [
+        { re: /-\s*block\s*-|-\s*b\s*-/, arch: 'block' },
+        { re: /-\s*alt\s*-/, arch: 'alternating' },
+        { re: /-\s*grad\s*-/, arch: 'gradient' },
+        { re: /-\s*stat\s*-/, arch: 'statistical' },
+        { re: /-\s*ran\s*-/, arch: 'random' },
+        { re: /-\s*co\s*-/, arch: 'random' },
+        { re: /-\s*graft\s*-|-\s*g\s*-/, arch: 'graft' }
+      ];
+      for (var i = 0; i < infixes.length; i++) {
+        if (infixes[i].re.test(inner)) {
+          var comps = inner.split(infixes[i].re).map(resolveComponent);
+          if (comps.length >= 2 && comps.every(Boolean)) {
+            return { parts: comps.map(function (e) { return { name: e.name, entry: e, count: 1 }; }), arch: infixes[i].arch };
+          }
+          return null;
+        }
+      }
+      var m = s.match(/(block|random|statistical|alternating|gradient|graft)?\s*copolymer\s+of\s+(.+?)\s+and\s+(.+)/);
+      if (m) {
+        var a = resolveComponent(m[2]), b = resolveComponent(m[3]);
+        if (a && b) return { parts: [{ name: a.name, entry: a, count: 1 }, { name: b.name, entry: b, count: 1 }], arch: m[1] || 'copolymer' };
+      }
+      return null;
+    }
+
     function rescueNameSearch(q, statusEl) {
       var db = window.POLYMER_DB || [];
+      // A typed copolymer name ("poly(styrene-co-MMA)") that isn't a library
+      // entry: identify its components and report it with the stated architecture.
+      var copoly = parseCopolymerQuery(q);
+      if (copoly) { renderCopolymer(copoly.parts, copoly.arch); return; }
       var byMonomer = db.filter(function (p) {
         return p.monomer && p.monomer.toLowerCase().indexOf(q) !== -1;
       }).slice(0, 20);
