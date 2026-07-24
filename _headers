@@ -1,0 +1,15 @@
+# Cloudflare Pages response headers.
+#
+# Some locked-down networks (government/corporate proxies such as Navy NMCI)
+# ignore revalidation directives and pin a stale copy of a page or asset. That
+# is what froze the tools: the proxy kept serving a weeks-old, broken copy of
+# the Calculator and Dispersity pages while a cache-busted URL fetched the
+# current, working one. `no-store` tells every intermediary not to hold a copy
+# at all, so each request reaches the live file.
+#
+# This does not hurt performance or offline use: the in-browser service worker
+# caches assets explicitly (independent of this header) and serves repeat loads
+# from its own cache. Keeping sw.js itself un-stored also ensures service-worker
+# updates always propagate instead of being pinned by a proxy.
+/*
+  Cache-Control: no-store
