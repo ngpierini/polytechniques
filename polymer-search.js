@@ -221,7 +221,7 @@
     var mode = 'draw';
     var chargeDelta = 1;
     var currentEl = 'C';
-    var bracket = null;
+    var brackets = [];   // repeat-unit brackets; 2+ means a copolymer (one block each)
     var draggingAtom = null;
     var draggingBracketHandle = null;
     var draggingBracketPreview = null;
@@ -265,13 +265,13 @@
     }
 
     function snapshot() {
-      history.push(JSON.stringify({ atoms: atoms, bonds: bonds, bracket: bracket, nextAtomId: nextAtomId, nextBondId: nextBondId }));
+      history.push(JSON.stringify({ atoms: atoms, bonds: bonds, brackets: brackets, nextAtomId: nextAtomId, nextBondId: nextBondId }));
       if (history.length > 40) history.shift();
     }
     function undo() {
       if (!history.length) return;
       var s = JSON.parse(history.pop());
-      atoms = s.atoms; bonds = s.bonds; bracket = s.bracket; nextAtomId = s.nextAtomId; nextBondId = s.nextBondId;
+      atoms = s.atoms; bonds = s.bonds; brackets = s.brackets || (s.bracket ? [s.bracket] : []); nextAtomId = s.nextAtomId; nextBondId = s.nextBondId;
       selectedAtom = null; selectedGroup = [];
       draw();
     }
@@ -687,7 +687,7 @@
           ctx.fillText(chargeLabel, ccx, ccy);
         }
       });
-      if (bracket) drawBracket(bracket, primary);
+      brackets.forEach(function (b, i) { drawBracket(b, primary, brackets.length > 1 ? i : -1); });
     }
 
     function draw() {
@@ -907,6 +907,9 @@
       var target, label, hint = '';
       var dim = ' style="color:var(--text-dim);font-size:0.85em;"';
       var starCount = atoms.filter(function (a) { return a.el === '*'; }).length;
+      // The mass readout describes a single repeat unit; with several blocks
+      // bracketed (a copolymer) it reports the most recently drawn one.
+      var bracket = brackets.length ? brackets[brackets.length - 1] : null;
       if (sel.length) {
         // A live selection wins: weigh exactly what is highlighted.
         target = sel;
@@ -1107,7 +1110,10 @@
       ctx.stroke();
     }
 
-    function drawBracket(rect, color) {
+    // idx < 0: a lone repeat unit, subscript "n". idx >= 0: one block of a
+    // copolymer, subscripted m, n, x, y... so each bracketed block reads distinctly.
+    var BLOCK_SUBSCRIPTS = ['m', 'n', 'x', 'y', 'z', 'p', 'q'];
+    function drawBracket(rect, color, idx) {
       var x1 = Math.min(rect.x1, rect.x2), x2 = Math.max(rect.x1, rect.x2);
       var y1 = Math.min(rect.y1, rect.y2), y2 = Math.max(rect.y1, rect.y2);
       var tick = 8;
@@ -1123,7 +1129,8 @@
       ctx.fillStyle = color;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      ctx.fillText('n', x2 + 3, y2 - 12);
+      var sub = idx < 0 ? 'n' : (BLOCK_SUBSCRIPTS[idx] || String(idx + 1));
+      ctx.fillText(sub, x2 + 3, y2 - 12);
     }
 
     function drawMarquee(rect, color) {
@@ -1150,12 +1157,12 @@
       });
       var pad = 28;
       minX -= pad; minY -= pad; maxX += pad; maxY += pad;
-      if (bracket) {
+      brackets.forEach(function (bracket) {
         minX = Math.min(minX, bracket.x1, bracket.x2) - 4;
         maxX = Math.max(maxX, bracket.x1, bracket.x2) + 22;
         minY = Math.min(minY, bracket.y1, bracket.y2) - 4;
         maxY = Math.max(maxY, bracket.y1, bracket.y2) + 4;
-      }
+      });
       return { minX: minX, minY: minY, width: maxX - minX, height: maxY - minY };
     }
 
@@ -1386,7 +1393,16 @@
       if (mode === 'bracket' && draggingBracketHandle === 'new') {
         if (moved) {
           snapshot();
-          bracket = { x1: draggingBracketPreview.x1, y1: draggingBracketPreview.y1, x2: pos.x, y2: pos.y };
+          // Each drawn box adds a repeat-unit bracket, snapped tight onto the
+          // backbone bonds. One = a homopolymer unit; two or more = a copolymer
+          // (one block each). Undo removes the last.
+          brackets.push(snapBracketTight({ x1: draggingBracketPreview.x1, y1: draggingBracketPreview.y1, x2: pos.x, y2: pos.y }));
+          var statusEl = document.getElementById('mol-status');
+          if (statusEl) {
+            statusEl.textContent = brackets.length >= 2
+              ? brackets.length + ' repeat units bracketed. Search identifies each block and reports the copolymer (undo removes the last bracket).'
+              : 'Repeat unit bracketed. Add another bracket for a copolymer, or press Search this structure.';
+          }
         }
         draggingBracketHandle = null; draggingBracketPreview = null;
         dragStart = null; moved = false;
@@ -1781,17 +1797,32 @@
     var clearBtn = document.getElementById('mol-clear');
     if (clearBtn) clearBtn.addEventListener('click', function () {
       snapshot();
-      atoms = []; bonds = []; bracket = null; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
+      atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
       draw();
     });
 
     // ---------- Repeat-unit extraction + search ----------
-    function extractRepeatUnit(rect) {
+    // otherRects (optional): the other blocks' brackets in a copolymer. A pendant
+    // fragment that reaches into another block is a chain continuation, not a
+    // side group, so it must stay an open end rather than be absorbed.
+    function extractRepeatUnit(rect, otherRects) {
       var x1 = Math.min(rect.x1, rect.x2), x2 = Math.max(rect.x1, rect.x2);
       var y1 = Math.min(rect.y1, rect.y2), y2 = Math.max(rect.y1, rect.y2);
       function inside(a) { return a.x >= x1 && a.x <= x2 && a.y >= y1 && a.y <= y2; }
       var interiorIds = {};
       atoms.forEach(function (a) { if (inside(a)) interiorIds[a.id] = true; });
+
+      // Atoms sitting inside a sibling block's bracket: a pendant flood that
+      // reaches one of these is crossing into the next block, so it is a
+      // backbone continuation and must not be swallowed as a side group.
+      var otherIds = {};
+      (otherRects || []).forEach(function (r) {
+        var ox1 = Math.min(r.x1, r.x2), ox2 = Math.max(r.x1, r.x2);
+        var oy1 = Math.min(r.y1, r.y2), oy2 = Math.max(r.y1, r.y2);
+        atoms.forEach(function (a) {
+          if (a.x >= ox1 && a.x <= ox2 && a.y >= oy1 && a.y <= oy2) otherIds[a.id] = true;
+        });
+      });
 
       // Pull in pendant groups that hang past the bracket edge but are still
       // part of the repeat unit - the phenyl of a hand-drawn polystyrene, say,
@@ -1814,6 +1845,8 @@
           var u = stack.pop(); count++;
           adj[u].forEach(function (v) { if (!interiorIds[v] && !seen[v]) { seen[v] = true; stack.push(v); } });
         }
+        var reachesOtherBlock = Object.keys(seen).some(function (id) { return otherIds[id]; });
+        if (reachesOtherBlock) return;        // crosses into the next block: keep as an open end
         var edges = 0;
         bonds.forEach(function (b) { if (seen[b.a] && seen[b.b]) edges++; });
         if (edges >= count) {                 // a connected fragment with a cycle
@@ -1894,10 +1927,10 @@
         '<div class="mol-result-meta">' + escapeHtml(p.monomer || '') + (p.cls ? ' &middot; ' + escapeHtml(p.cls) : '') + '</div>' +
         (props.length ? '<div class="mol-result-props">' + props.join(' &nbsp;&middot;&nbsp; ') + '</div>' : '') +
         (p.note ? '<div class="mol-result-note">' + escapeHtml(p.note) + '</div>' : '') +
-        (p.atoms && p.bonds
+        ((p.atoms && p.bonds) || (p.type === 'copolymer' && p.components && p.components.length >= 2)
           ? '<div class="mol-result-actions">' +
               '<button type="button" class="mol-draw-btn" data-poly-name="' + escapeHtml(p.name) +
-              '" title="Load this repeat unit into the editor and pull its publications">' +
+              '" title="Load this ' + (p.type === 'copolymer' ? 'copolymer, block by block,' : 'repeat unit') + ' into the editor and pull its publications">' +
               '&#9998; Draw &amp; find publications</button>' +
             '</div>'
           : '') +
@@ -2009,6 +2042,7 @@
       if (rdkitLib) return rdkitLib;
       rdkitLib = [];
       (window.POLYMER_DB || []).forEach(function (p) {
+        if (p.type === 'copolymer' || !p.atoms) return;  // no single repeat unit to fingerprint
         var mol = molFrom(RDKit, molblockFrom(p.atoms, p.bonds));
         if (!mol) return;
         var smiles = null;
@@ -2551,6 +2585,37 @@
       };
     }
 
+    // Tight cosmetic bracket for an explicit atom-id set: two bars on the bonds
+    // that cross the set's boundary (the backbone entering/leaving), with a small
+    // height so pendant groups hang outside. Returns null unless exactly two
+    // bonds cross. Shared by the drawn-bracket snap and the copolymer loader.
+    function tightBracketForIds(idSet) {
+      var crossings = [];
+      bonds.forEach(function (b) {
+        var ain = !!idSet[b.a], bin = !!idSet[b.b];
+        if (ain === bin) return;
+        var ia = atomById(ain ? b.a : b.b), ea = atomById(ain ? b.b : b.a);
+        if (ia && ea) crossings.push({ x: (ia.x + ea.x) / 2, y: (ia.y + ea.y) / 2 });
+      });
+      if (crossings.length !== 2) return null;
+      var a = crossings[0], b2 = crossings[1];
+      var yc = (a.y + b2.y) / 2;
+      var halfH = Math.max(BOND_LEN * 0.6, Math.abs(a.y - b2.y) / 2 + BOND_LEN * 0.4);
+      return { x1: Math.min(a.x, b2.x), x2: Math.max(a.x, b2.x), y1: yc - halfH, y2: yc + halfH };
+    }
+
+    // Shrink a hand-dragged bracket box onto the repeat unit's backbone bonds so
+    // a bracketed block reads like a proper polymer bracket (bars on the bonds,
+    // pendants hanging out). Falls back to the drawn box when the enclosed region
+    // isn't a clean two-ended unit, which still searches correctly.
+    function snapBracketTight(rect) {
+      var x1 = Math.min(rect.x1, rect.x2), x2 = Math.max(rect.x1, rect.x2);
+      var y1 = Math.min(rect.y1, rect.y2), y2 = Math.max(rect.y1, rect.y2);
+      var idSet = {};
+      atoms.forEach(function (a) { if (a.x >= x1 && a.x <= x2 && a.y >= y1 && a.y <= y2) idSet[a.id] = true; });
+      return tightBracketForIds(idSet) || rect;
+    }
+
     function importSmiles() {
       var input = document.getElementById('mol-smiles-input');
       var text = input && input.value.trim();
@@ -2574,7 +2639,7 @@
         if (!layoutRepeatUnit(parsed)) orientRepeatUnit(parsed);
         var pos = fitParsedCoords(parsed);
         snapshot();
-        atoms = []; bonds = []; bracket = null; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
+        atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
         var made = parsed.atoms.map(function (ra, i) { return addAtom(ra.el || 'C', pos[i].x, pos[i].y); });
         parsed.bonds.forEach(function (rb) { addBond(made[rb.a - 1].id, made[rb.b - 1].id, rb.order); });
         Object.keys(parsed.charges).forEach(function (idx) {
@@ -2589,7 +2654,7 @@
         // than an open chain with two loose ends; search does not depend on it.
         var rb = repeatUnitBracket();
         if (rb) {
-          bracket = rb;
+          brackets = [rb];
           draw();
           smilesNote('Loaded a repeat unit with two attachment points — press Search this structure. Check the drawing first.');
           return;
@@ -2623,7 +2688,7 @@
         if (!layoutRepeatUnit(parsed)) orientRepeatUnit(parsed);
         var pos = fitParsedCoords(parsed);
         snapshot();
-        atoms = []; bonds = []; bracket = null; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
+        atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
         var made = parsed.atoms.map(function (ra, i) { return addAtom(ra.el || 'C', pos[i].x, pos[i].y); });
         parsed.bonds.forEach(function (rb) { addBond(made[rb.a - 1].id, made[rb.b - 1].id, rb.order); });
         Object.keys(parsed.charges).forEach(function (idx) {
@@ -2631,9 +2696,109 @@
           if (at) at.charge = parsed.charges[idx];
         });
         // Cosmetic repeat-unit bracket on the crossing bonds (matches SMILES import).
-        bracket = repeatUnitBracket();
+        var rbLoad = repeatUnitBracket();
+        brackets = rbLoad ? [rbLoad] : [];
         draw();
         smilesNote('Loaded ' + p.name + ' into the editor.');
+        var editorCard = document.getElementById('mol-editor-card');
+        if (editorCard) editorCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        runStructureSearch();
+      }).catch(function () {
+        smilesNote('The chemistry engine could not load. Check your connection and try again.');
+      });
+    }
+
+    // Draw a named copolymer into the editor as a chained, per-block-bracketed
+    // structure (the way one is drawn on paper), then run the search so it
+    // round-trips back to the same identification. Each component's repeat unit
+    // is laid out horizontally on its own (reusing layoutRepeatUnit, the proven
+    // single-unit layout), then the blocks are placed in adjacent, non-
+    // overlapping slots and stitched at the junctions, so every block's bracket
+    // sits cleanly on its own backbone bonds.
+    function loadCopolymerStructure(entry) {
+      if (!entry.components || entry.components.length < 2) { smilesNote('This copolymer has no drawable blocks.'); return; }
+      smilesNote(rdkitPromise ? 'Drawing ' + entry.name + '…' : 'Loading the chemistry engine (about 7 MB, one time; it stays cached)…');
+      ensureRDKit().then(function (RDKit) {
+        var db = window.POLYMER_DB || [];
+        var cAtoms = [], cBonds = [], blockCore = [];
+        var prevRightIdx = null, firstLeftIdx = null, lastRightIdx = null, xCursor = 0;
+
+        for (var ci = 0; ci < entry.components.length; ci++) {
+          var comp = db.filter(function (p) { return p.name === entry.components[ci] && p.atoms; })[0];
+          if (!comp) { smilesNote('Missing block "' + entry.components[ci] + '".'); return; }
+          var mol = molFrom(RDKit, molblockFrom(comp.atoms, comp.bonds));
+          var mb = null;
+          if (mol) { try { mb = mol.get_new_coords(); } catch (e) {} if (!mb) { try { mb = mol.get_molblock(); } catch (e2) {} } mol.delete(); }
+          var parsed = mb && parseMolblockToEditor(mb);
+          if (!parsed || !parsed.atoms.length) { smilesNote('Could not lay out ' + comp.name + '.'); return; }
+          if (!layoutRepeatUnit(parsed)) orientRepeatUnit(parsed);
+          var A = parsed.atoms;
+          var starIdx = [];
+          for (var i = 0; i < A.length; i++) if (A[i].el === '*') starIdx.push(i);
+          if (starIdx.length !== 2) { smilesNote('Could not lay out ' + comp.name + '.'); return; }
+          var nbOf = function (si) {
+            for (var k = 0; k < parsed.bonds.length; k++) {
+              var b = parsed.bonds[k];
+              if (b.a - 1 === si) return b.b - 1;
+              if (b.b - 1 === si) return b.a - 1;
+            }
+            return -1;
+          };
+          var s0 = starIdx[0], s1 = starIdx[1];
+          if (A[s0].x > A[s1].x) { var tmp = s0; s0 = s1; s1 = tmp; }   // s0 = left end, s1 = right end
+          var leftNbL = nbOf(s0), rightNbL = nbOf(s1);
+          var coreLocal = [];
+          for (i = 0; i < A.length; i++) if (i !== s0 && i !== s1) coreLocal.push(i);
+          var coreXs = coreLocal.map(function (li) { return A[li].x; });
+          var shiftX = xCursor - Math.min.apply(null, coreXs);
+          var map = {};
+          coreLocal.forEach(function (li) {
+            map[li] = cAtoms.length;
+            cAtoms.push({ el: A[li].el, x: A[li].x + shiftX, y: A[li].y, charge: parsed.charges[li + 1] });
+          });
+          parsed.bonds.forEach(function (b) {
+            var a = b.a - 1, bb = b.b - 1;
+            if (a === s0 || a === s1 || bb === s0 || bb === s1) return;
+            cBonds.push({ a: map[a], b: map[bb], order: b.order });
+          });
+          var thisLeftIdx = map[leftNbL], thisRightIdx = map[rightNbL];
+          if (prevRightIdx !== null) cBonds.push({ a: prevRightIdx, b: thisLeftIdx, order: 1 });
+          else firstLeftIdx = thisLeftIdx;
+          prevRightIdx = thisRightIdx;
+          lastRightIdx = thisRightIdx;
+          blockCore.push(coreLocal.map(function (li) { return map[li]; }));
+          xCursor = Math.max.apply(null, coreLocal.map(function (li) { return A[li].x + shiftX; })) + BOND_LEN;
+        }
+
+        // Cap the two outer ends with a stub so the end blocks still have a bond
+        // crossing their outer side for the bracket.
+        function addStub(nbIdx, dir) {
+          var idx = cAtoms.length;
+          cAtoms.push({ el: 'C', x: cAtoms[nbIdx].x + dir * BOND_LEN, y: cAtoms[nbIdx].y });
+          cBonds.push({ a: nbIdx, b: idx, order: 1 });
+        }
+        addStub(firstLeftIdx, -1);
+        addStub(lastRightIdx, 1);
+
+        var parsedC = {
+          atoms: cAtoms,
+          bonds: cBonds.map(function (b) { return { a: b.a + 1, b: b.b + 1, order: b.order }; }),
+          charges: {}
+        };
+        cAtoms.forEach(function (a, i) { if (a.charge) parsedC.charges[i + 1] = a.charge; });
+        var pos = fitParsedCoords(parsedC);
+        snapshot();
+        atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
+        var made = cAtoms.map(function (a, i) { return addAtom(a.el, pos[i].x, pos[i].y); });
+        cBonds.forEach(function (b) { addBond(made[b.a].id, made[b.b].id, b.order); });
+        cAtoms.forEach(function (a, i) { if (a.charge) made[i].charge = a.charge; });
+        brackets = blockCore.map(function (idxs) {
+          var set = {};
+          idxs.forEach(function (i) { set[made[i].id] = true; });
+          return tightBracketForIds(set);
+        }).filter(Boolean);
+        draw();
+        smilesNote('Loaded ' + entry.name + ' as a ' + blockCore.length + '-block copolymer. Press Search this structure.');
         var editorCard = document.getElementById('mol-editor-card');
         if (editorCard) editorCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
         runStructureSearch();
@@ -2653,7 +2818,7 @@
         if (!btn) return;
         var name = btn.getAttribute('data-poly-name');
         var p = (window.POLYMER_DB || []).filter(function (x) { return x.name === name; })[0];
-        if (p) loadPolymerStructure(p);
+        if (p) { if (p.type === 'copolymer') loadCopolymerStructure(p); else loadPolymerStructure(p); }
       });
     })();
 
@@ -2705,8 +2870,8 @@
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms.forEach(function (a, i) { a.x = pos[i].x; a.y = pos[i].y; });
-        var hadBracket = !!bracket;
-        bracket = null;   // the geometry it framed no longer exists
+        var hadBracket = brackets.length > 0;
+        brackets = [];   // the geometry it framed no longer exists
         draw();
         smilesNote(hadBracket
           ? 'Structure cleaned up. The bracket was cleared; drag it over the repeat unit again.'
@@ -3176,16 +3341,29 @@
       // directly than a drawn box, so when the drawing has exactly two of them
       // (a loaded or recognized repeat unit) search from those and ignore any
       // cosmetic bracket. Otherwise a hand-drawn bracket marks the unit.
+      // Two or more brackets means a copolymer: identify each bracketed block
+      // separately and report the combination.
+      if (brackets.length >= 2) { runCopolymerSearch(); return; }
+
       var sub;
       if (atoms.filter(function (a) { return a.el === '*'; }).length === 2) {
         sub = extractFromStars();
-      } else if (bracket) {
-        sub = extractRepeatUnit(bracket);
+      } else if (brackets.length === 1) {
+        sub = extractRepeatUnit(brackets[0]);
       } else {
         statusEl.textContent = 'Draw a repeat unit, then use the Bracket tool to mark it before searching.';
         renderResults([]);
         return;
       }
+      searchSub(sub);
+    }
+
+    // Match one extracted repeat unit (exactly two open ends) against the
+    // library, then fall back to similarity + external identification. Shared by
+    // the single-unit search and the homopolymer case of the copolymer search.
+    function searchSub(sub) {
+      var statusEl = document.getElementById('mol-status');
+      if (!statusEl) return;
       if (sub.atomCount === 0) {
         statusEl.textContent = 'No atoms found inside the bracket. Drag the bracket over your repeat unit backbone.';
         renderResults([]);
@@ -3222,7 +3400,7 @@
       // matching engine can't load (first visit offline, blocked wasm).
       function compositionFallback(message) {
         var profile = elementProfile(sub.atoms);
-        var ranked = db.map(function (p) {
+        var ranked = db.filter(function (p) { return p.type !== 'copolymer' && p.atoms; }).map(function (p) {
           return { p: p, d: profileDistance(profile, fingerprintOf(p)._profile) };
         }).sort(function (x, y) { return x.d - y.d; }).slice(0, 5).map(function (r) { return r.p; });
         statusEl.textContent = message;
@@ -3274,6 +3452,184 @@
       }).catch(function () {
         compositionFallback('The structure-matching engine could not load. Closest by element composition:');
       });
+    }
+
+    // ---------- Copolymer search (two or more bracketed blocks) ----------
+    // Each bracket is one repeat unit; identify each block with the same
+    // machinery a homopolymer uses, then report the combination and drive
+    // publications on the monomer pair.
+    function canonName(s) { return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+    function joinNames(arr) {
+      if (arr.length <= 1) return arr[0] || '';
+      if (arr.length === 2) return arr[0] + ' and ' + arr[1];
+      return arr.slice(0, -1).join(', ') + ', and ' + arr[arr.length - 1];
+    }
+
+    // A named copolymer in the library (type:'copolymer', components:[names])
+    // matches when its listed components line up one-to-one with the identified
+    // blocks (by each block's name/aka/monomer). Surfaces SBR from PS + PBd, etc.
+    function matchNamedCopolymer(parts) {
+      var db = window.POLYMER_DB || [];
+      // Every drawn block must be identified, or we can't claim a specific named
+      // copolymer: an unnamed block could be the piece that makes it a different
+      // material (a PS+PBd+? terpolymer is not SBR).
+      if (parts.length < 2 || parts.some(function (p) { return !p.name; })) return null;
+      var blockIds = parts.map(function (p) {
+        var ids = [canonName(p.name)];
+        if (p.entry) {
+          (p.entry.aka || []).forEach(function (a) { ids.push(canonName(a)); });
+          if (p.entry.monomer) ids.push(canonName(p.entry.monomer));
+        }
+        return ids;
+      });
+      var co = db.filter(function (p) { return p.type === 'copolymer' && p.components && p.components.length; });
+      for (var i = 0; i < co.length; i++) {
+        var comps = co[i].components.map(canonName);
+        if (comps.length !== blockIds.length) continue;
+        var used = {}, ok = true;
+        for (var c = 0; c < comps.length; c++) {
+          var m = -1;
+          for (var b = 0; b < blockIds.length; b++) {
+            if (!used[b] && blockIds[b].indexOf(comps[c]) !== -1) { m = b; break; }
+          }
+          if (m === -1) { ok = false; break; }
+          used[m] = true;
+        }
+        if (ok) return co[i];
+      }
+      return null;
+    }
+
+    // Name one unknown block via reconstruction + PubChem (a lean version of
+    // identifyExternally that returns a name instead of rendering).
+    function nameBlockExternally(block, RDKit) {
+      var recon = reconstructMonomer(block);
+      if (!recon) return Promise.resolve(null);
+      var a, b;
+      if ((recon.kind === 'comonomers' || recon.kind === 'condensation') && recon.pieces && recon.pieces.length) {
+        a = recon.pieces[0].atoms; b = recon.pieces[0].bonds;
+      } else { a = recon.atoms; b = recon.bonds; }
+      if (!a) return Promise.resolve(null);
+      var smiles = smilesOf(RDKit, a, b);
+      if (!smiles) return Promise.resolve(null);
+      return pcLookupSmiles(smiles).then(function (hit) {
+        if (!hit) return null;
+        if (recon.kind === 'fragment') return { name: pcPrettyCase(hit.title), cid: hit.cid };
+        return pcSynonyms(hit.cid).then(function (syn) {
+          var common = pcPickCommonName(syn, hit.title) || pcPrettyCase(hit.title);
+          return { name: 'poly(' + common.toLowerCase() + ')', cid: hit.cid };
+        }).catch(function () { return { name: 'poly(' + String(hit.title).toLowerCase() + ')', cid: hit.cid }; });
+      }).catch(function () { return null; });
+    }
+
+    function runCopolymerSearch() {
+      var statusEl = document.getElementById('mol-status');
+      if (!statusEl) return;
+      var blocks = brackets.map(function (r, i) {
+        return extractRepeatUnit(r, brackets.filter(function (_, j) { return j !== i; }));
+      });
+      for (var i = 0; i < blocks.length; i++) {
+        if (blocks[i].atomCount === 0) {
+          statusEl.textContent = 'Bracket ' + (i + 1) + ' is empty. Drag each bracket over one repeat-unit backbone.';
+          renderResults([]); return;
+        }
+        if (blocks[i].boundaryCount !== 2) {
+          statusEl.textContent = 'Bracket ' + (i + 1) + ' encloses ' + blocks[i].boundaryCount + ' open chain ends; each block must be a linear repeat unit with exactly two. Enclose the whole repeat unit (side groups included) in each bracket.';
+          renderResults([]); return;
+        }
+      }
+      var db = window.POLYMER_DB || [];
+      var ided = blocks.map(function (block) {
+        var qc = closedHash(block.atoms, block.bonds);
+        var qo = wlHash(block.atoms, block.bonds);
+        var hit = db.filter(function (p) {
+          if (p.type === 'copolymer' || !p.atoms) return false;
+          var f = fingerprintOf(p);
+          return qc != null ? f._chash === qc : f._hash === qo;
+        })[0];
+        return { block: block, key: (qc != null ? 'c' + qc : 'o' + qo), entry: hit || null };
+      });
+      // Collapse identical blocks (PS-b-PS-b-PEG becomes PS + PEG).
+      var order = [], byKey = {};
+      ided.forEach(function (r) {
+        if (!byKey[r.key]) { byKey[r.key] = { key: r.key, entry: r.entry, block: r.block, count: 0 }; order.push(byKey[r.key]); }
+        byKey[r.key].count++;
+      });
+      if (order.length < 2) {
+        statusEl.textContent = 'All brackets enclose the same repeat unit, so this is a homopolymer. Searching that unit:';
+        searchSub(order[0].block);
+        return;
+      }
+      function toPart(o, nm) {
+        return { name: nm ? nm.name : (o.entry ? o.entry.name : null), entry: o.entry, cid: nm ? nm.cid : null, count: o.count };
+      }
+      if (order.every(function (o) { return o.entry; })) {
+        renderCopolymer(order.map(function (o) { return toPart(o, null); }));
+        return;
+      }
+      statusEl.textContent = rdkitPromise ? 'Identifying each block…'
+        : 'Loading the structure-matching engine (about 7 MB, one time; it stays cached)…';
+      ensureRDKit().then(function (RDKit) {
+        return Promise.all(order.map(function (o) {
+          if (o.entry) return Promise.resolve(toPart(o, null));
+          return nameBlockExternally(o.block, RDKit).then(function (nm) { return toPart(o, nm); });
+        }));
+      }).then(function (parts) {
+        renderCopolymer(parts);
+      }).catch(function () {
+        renderCopolymer(order.map(function (o) { return toPart(o, null); }));
+      });
+    }
+
+    function renderCopolymer(parts) {
+      var statusEl = document.getElementById('mol-status');
+      var resultsEl = document.getElementById('mol-results');
+      if (!resultsEl) return;
+      var idEl = document.getElementById('mol-identify');
+      if (idEl) { idEl.hidden = true; idEl.innerHTML = ''; }
+
+      var known = parts.filter(function (p) { return p.name; });
+      var names = known.map(function (p) { return p.name; });
+      var unknownCount = parts.length - known.length;
+      var named = matchNamedCopolymer(parts);
+
+      if (statusEl) {
+        statusEl.textContent = named ? 'Copolymer identified: ' + named.name
+          : (names.length ? 'Copolymer of ' + joinNames(names) + (unknownCount ? ' (plus ' + unknownCount + ' unidentified)' : '') + ':'
+                          : 'Could not identify the blocks of this copolymer.');
+      }
+
+      var blockList = parts.map(function (p, i) {
+        var s = BLOCK_SUBSCRIPTS[i] || String(i + 1);
+        return escapeHtml(p.name || 'unidentified') + ' <span style="color:var(--text-dim);">[' + s + (p.count > 1 ? '] &times;' + p.count : ']') + '</span>';
+      }).join(' &nbsp;&middot;&nbsp; ');
+
+      var summary = '<div class="mol-result-card" style="border-left:3px solid var(--primary);">' +
+        '<div class="mol-result-name">' + (named ? escapeHtml(named.name) : 'Copolymer') + '</div>' +
+        (named && named.aka && named.aka.length ? '<div class="mol-result-aka">' + escapeHtml(named.aka.join(', ')) + '</div>' : '') +
+        '<div class="mol-result-meta">' + (named && named.cls ? escapeHtml(named.cls) + ' &middot; ' : '') + 'blocks: ' + blockList + '</div>' +
+        (named && named.note ? '<div class="mol-result-note">' + escapeHtml(named.note) + '</div>' : '') +
+        '<div class="mol-result-note" style="color:var(--text-dim);">A structure shows which repeat units are present, not the chain architecture (block, random, gradient, or graft). Publications below cover this monomer combination.</div>' +
+        '</div>';
+
+      var blockCards = parts.map(function (p) {
+        if (p.entry) return polymerCard(p.entry);
+        if (p.name) return '<div class="mol-result-card"><div class="mol-result-name">' + escapeHtml(p.name) + '</div>' +
+          '<div class="mol-result-meta">identified by structure' + (p.cid ? ' &middot; PubChem CID ' + p.cid : '') + '</div>' +
+          publicationLinks({ name: p.name }) + '</div>';
+        return '<div class="mol-result-card"><div class="mol-result-name">Unidentified block</div>' +
+          '<div class="mol-result-meta">This repeat unit could not be matched or named. Enclose the whole unit, or search it on its own.</div></div>';
+      }).join('');
+
+      resultsEl.innerHTML = summary + blockCards;
+
+      var pubEl = document.getElementById('mol-publications');
+      if (pubEl && resultsEl.nextSibling !== pubEl) resultsEl.parentNode.insertBefore(pubEl, resultsEl.nextSibling);
+      if (!names.length) { renderPublications(null); return; }
+      var queryTerms = named ? [named.name].concat((named.aka || []).slice(0, 2))
+                             : [names.join(' ') + ' copolymer'];
+      renderPublications({ name: named ? named.name : ('copolymer of ' + joinNames(names)),
+                           aka: named ? (named.aka || []) : [], queryTerms: queryTerms });
     }
 
     // After an explicit search action, bring the Results card into view if it
@@ -3700,7 +4056,7 @@
     }
     function loadExample(key) {
       snapshot();
-      atoms = []; bonds = []; bracket = null; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
+      atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
       var cx = canvas.width / 2, cy = canvas.height / 2;
       // Each example draws a stub atom just outside the bracket on both ends,
       // standing in for the neighboring repeat units, so the two bonds that
@@ -3714,7 +4070,7 @@
         addBond(stubA.id, c1.id, 1);
         addBond(c1.id, c2.id, 1);
         addBond(c2.id, stubB.id, 1);
-        bracket = { x1: c1.x - 20, y1: Math.min(c1.y, c2.y) - 20, x2: c2.x + 20, y2: Math.max(c1.y, c2.y) + 20 };
+        brackets = [{ x1: c1.x - 20, y1: Math.min(c1.y, c2.y) - 20, x2: c2.x + 20, y2: Math.max(c1.y, c2.y) + 20 }];
       } else if (key === 'ps') {
         var q0 = { x: cx - 150, y: cy + 10 };
         var stubC = addAtom('C', q0.x, q0.y);
@@ -3740,11 +4096,11 @@
         // Keep x2 strictly between the ring's right edge and stubD, whatever
         // the gap between them happens to be, instead of a fixed margin that
         // could land on the wrong side of either one.
-        bracket = {
+        brackets = [{
           x1: b1.x - 20, x2: (ringMaxX + q3.x) / 2,
           y1: Math.min(b1.y, b2.y, Math.min.apply(null, ringYs)) - 15,
           y2: Math.max(b1.y, b2.y, Math.max.apply(null, ringYs)) + 15
-        };
+        }];
       } else if (key === 'nylon6') {
         // Nylon 6 is -[NH-(CH2)5-CO]-: seven chain atoms after the stub
         // (the N, five CH2, and the carbonyl carbon).
@@ -3779,7 +4135,7 @@
         var oAtom = addAtom('O', oPos.x, oPos.y);
         addBond(carbonyl.id, oAtom.id, 2);
         var chainYs = chain.map(function (a) { return a.y; }).concat([oAtom.y]);
-        bracket = { x1: n1.x - 20, y1: Math.min.apply(null, chainYs) - 15, x2: carbonyl.x + 20, y2: Math.max.apply(null, chainYs) + 15 };
+        brackets = [{ x1: n1.x - 20, y1: Math.min.apply(null, chainYs) - 15, x2: carbonyl.x + 20, y2: Math.max.apply(null, chainYs) + 15 }];
       }
       draw();
       var statusEl = document.getElementById('mol-status');
@@ -3822,6 +4178,13 @@
 
     function fingerprintOf(p) {
       if (p._hash === undefined) {
+        // Named copolymer entries carry no drawable repeat unit, so they get
+        // null hashes: they never match a single-unit structure search (only
+        // name search and the copolymer component matcher use them).
+        if (p.type === 'copolymer' || !p.atoms) {
+          p._hash = null; p._chash = null; p._profile = {};
+          return p;
+        }
         var fp = SEARCH_INDEX && SEARCH_INDEX.fingerprints[p.name];
         if (fp) { p._hash = fp.hash; p._profile = fp.profile; }
         else { p._hash = wlHash(p.atoms, p.bonds); p._profile = elementProfile(p.atoms); }

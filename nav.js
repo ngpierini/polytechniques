@@ -86,7 +86,7 @@
   // ---- Ctrl+K / Cmd+K command palette ----
   var PALETTE_PAGES = [
     ["calculator.html", "Calculator", "atrp raft romp frp recipe mn dp block copolymer stock solutions"],
-    ["polymer-search.html", "Polymer Search", "structure draw name lookup database repeat unit"],
+    ["polymer-search.html", "Polymer Search", "structure draw name lookup database repeat unit copolymer block sbr abs plga pluronic"],
     ["copolymer-composition.html", "Copolymer Composition", "mayo lewis reactivity ratio azeotrope feed"],
     ["dispersity-predictor.html", "Dispersity (Đ) Predictor", "dispersity pdi mw mn distribution raft atrp nmp cta cex transfer constant deactivator living controlled radical poisson"],
     ["gpc-calibration.html", "GPC Calibration Converter", "mark houwink polystyrene equivalent molecular weight"],

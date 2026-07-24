@@ -51,13 +51,16 @@ function build(db) {
   db.forEach(function (entry, idx) {
     // structure fingerprint, keyed by name so it survives reordering of the DB.
     // chash is the framing-invariant key (closed-graph hash); hash stays as
-    // the open-graph fallback for malformed queries.
-    fingerprints[entry.name] = {
-      hash: PolymerGraph.wlHash(entry.atoms, entry.bonds),
-      chash: PolymerGraph.closedHash(entry.atoms, entry.bonds),
-      profile: PolymerGraph.elementProfile(entry.atoms),
-      bondCount: entry.bonds.length
-    };
+    // the open-graph fallback for malformed queries. Copolymer entries carry no
+    // repeat unit (components list only), so they get no structure fingerprint.
+    if (entry.type !== "copolymer" && Array.isArray(entry.atoms) && entry.atoms.length) {
+      fingerprints[entry.name] = {
+        hash: PolymerGraph.wlHash(entry.atoms, entry.bonds),
+        chash: PolymerGraph.closedHash(entry.atoms, entry.bonds),
+        profile: PolymerGraph.elementProfile(entry.atoms),
+        bondCount: entry.bonds.length
+      };
+    }
 
     // name/text tokens -> entry indices
     const fields = []

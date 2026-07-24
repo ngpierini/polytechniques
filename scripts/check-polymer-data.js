@@ -55,6 +55,15 @@ function checkEntry(entry, idx, errors) {
   if (entry.tags !== undefined && !Array.isArray(entry.tags)) {
     errors.push(where + ": \"tags\" must be an array if present");
   }
+  // Copolymer entries have no single repeat unit: they carry a components list
+  // of library homopolymer names instead of atoms/bonds. Validate the list and
+  // skip the structure/class checks (referential integrity is checked in main).
+  if (entry.type === "copolymer") {
+    if (!Array.isArray(entry.components) || entry.components.length < 2) {
+      errors.push(where + ": copolymer must list 2 or more \"components\"");
+    }
+    return;
+  }
   if (entry.cls !== undefined && !VALID_CLASSES.has(entry.cls)) {
     errors.push(where + ": unrecognized \"cls\" value \"" + entry.cls + "\"");
   }
@@ -184,6 +193,17 @@ function main() {
       } else {
         chashSeen.set(ch, idx);
       }
+    }
+  });
+
+  // Referential integrity: every copolymer component must name a real entry.
+  db.forEach(function (entry, idx) {
+    if (entry && entry.type === "copolymer" && Array.isArray(entry.components)) {
+      entry.components.forEach(function (c) {
+        if (!namesSeen.has(String(c).trim().toLowerCase())) {
+          errors.push("entry #" + idx + " (" + entry.name + "): component \"" + c + "\" is not a library polymer name");
+        }
+      });
     }
   });
 
