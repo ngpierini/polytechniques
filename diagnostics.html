@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Diagnostics: PolyTechniques</title>
+<meta name="description" content="Self-test that reports which browser and network capabilities work on this computer, to explain why the interactive tools may not run on a locked-down (e.g. government or corporate) network.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://getpolytechniques.com/diagnostics.html">
+<script src="theme.js"></script>
+<script src="nav.js?v=6" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=56">
+<style>
+  .diag-pill { display:inline-block; min-width:64px; text-align:center; padding:2px 10px; border-radius:999px; font-weight:600; font-size:0.85rem; }
+  .diag-ok   { background:rgba(14,159,110,0.15); color:var(--accent); }
+  .diag-fail { background:rgba(214,69,69,0.15); color:var(--danger); }
+  .diag-warn { background:rgba(242,184,75,0.18); color:#b7791f; }
+  .diag-info { background:var(--primary-dim); color:var(--primary); }
+  .diag-summary { border-left:4px solid var(--primary); padding:12px 14px; border-radius:8px; background:var(--bg); margin:4px 0 14px; font-size:1rem; line-height:1.5; }
+  #diag-table td:first-child { white-space:nowrap; font-weight:600; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Site Diagnostics</h1>
+      <p class="subtitle">A self-test that shows which browser and network features work on this computer</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>Why this page exists</h3>
+    <p class="guide-note">
+      PolyTechniques runs entirely in your browser: the calculators, the structure editor, and the search all execute as JavaScript on your own machine, with no login and no server-side computation. On a locked-down network (many government, military, and corporate builds fall in this bucket), the browser or a security proxy can silently block pieces of that, which makes the site look like it will only <em>display</em> pages, not respond to input. This page measures exactly what is and isn't allowed here, so the cause is a specific finding rather than a guess. Nothing here is sent anywhere; every result is computed and shown locally.
+    </p>
+    <noscript>
+      <div class="diag-summary" style="border-left-color:var(--danger);">
+        <strong>JavaScript is turned off or blocked in this browser.</strong> That is the whole problem: every interactive tool on this site (and on most modern sites) needs JavaScript to run. The pages will still display text, but calculators and the structure search cannot work. Ask your IT / network team to allow JavaScript for <strong>getpolytechniques.com</strong>, or open the site on a device that permits it.
+      </div>
+    </noscript>
+  </div>
+
+  <div class="card">
+    <h3>Results</h3>
+    <div class="diag-summary" id="diag-summary">Running tests&hellip;</div>
+    <div class="table-scroll">
+      <table class="recipe recipe-stackable" id="diag-table">
+        <thead><tr><th>Capability</th><th>Result</th><th>What it powers here</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="actions" style="justify-content:flex-start; margin-top:12px; gap:8px; display:flex; flex-wrap:wrap;">
+      <button type="button" class="copy-btn" id="diag-copy">Copy report</button>
+      <button type="button" class="copy-btn" id="diag-rerun">Run again</button>
+    </div>
+    <p class="guide-note" id="diag-env" style="margin-top:10px; color:var(--text-dim); font-size:0.85rem;"></p>
+  </div>
+
+  <div class="card">
+    <h3>What the findings mean</h3>
+    <ul class="guide-steps">
+      <li><strong>JavaScript, Canvas, and same-origin data all pass:</strong> the core tools should work. The calculators (ATRP/RAFT/NMP, dispersity, T<sub>g</sub>, GPC, copolymer composition) and drawing/searching a structure need nothing beyond this.</li>
+      <li><strong>Same-origin data passes but the outside services fail:</strong> the calculators and structure drawing work, but the features that reach the public internet do not, because this network blocks them. That covers the live <em>publications</em> search (Crossref), <em>naming an unknown drawn structure</em> (PubChem), <em>reading text off a photo</em> (a public code CDN), and <em>AI photo-to-structure</em> (the site's API). These degrade on their own and should not stop the rest of the page.</li>
+      <li><strong>Even same-origin data or Canvas fails:</strong> the browser here is very heavily restricted; the tools can't run until that is relaxed.</li>
+      <li><strong>WebAssembly fails:</strong> only the structure <em>similarity</em> ranking uses it. Drawing a repeat unit, exact-match search, and name/browse search all still work without it.</li>
+    </ul>
+    <p class="guide-note">
+      If the core rows fail on your network but the site works for you elsewhere (home, phone), the fix is on the network side: ask your IT service desk or Cybersecurity Service Provider to allow <strong>getpolytechniques.com</strong> (it is a static, read-only reference site with no user accounts and no data collection). The report button above copies these results so you can attach them to that request.
+    </p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>This page reports only what your own browser and network permit. No results leave this computer.</p>
+</footer>
+
+<script>
+(function () {
+  var TESTS = [
+    { name: "JavaScript execution", affects: "Everything interactive on the site", run: function () { return { status: "ok", detail: "running" }; } },
+    { name: "Secure context (HTTPS)", affects: "Storage, service worker, and modern APIs", run: function () { return { status: window.isSecureContext ? "ok" : "warn", detail: window.isSecureContext ? "yes" : "no (page not served over HTTPS)" }; } },
+    { name: "Canvas drawing", affects: "The structure editor", run: function () {
+        try { var c = document.createElement("canvas"); return { status: c.getContext && c.getContext("2d") ? "ok" : "fail", detail: c.getContext && c.getContext("2d") ? "supported" : "no 2D context" }; }
+        catch (e) { return { status: "fail", detail: String(e && e.message || e) }; } } },
+    { name: "Local storage", affects: "Remembering theme, recent searches, saved recipes", run: function () {
+        try { var k = "__pt_diag__"; localStorage.setItem(k, "1"); var v = localStorage.getItem(k); localStorage.removeItem(k); return { status: v === "1" ? "ok" : "fail", detail: v === "1" ? "read/write ok" : "blocked" }; }
+        catch (e) { return { status: "fail", detail: "blocked (" + (e && e.name || "error") + ")" }; } } },
+    { name: "Session storage", affects: "Per-visit state", run: function () {
+        try { var k = "__pt_diag__"; sessionStorage.setItem(k, "1"); var v = sessionStorage.getItem(k); sessionStorage.removeItem(k); return { status: v === "1" ? "ok" : "fail", detail: v === "1" ? "read/write ok" : "blocked" }; }
+        catch (e) { return { status: "fail", detail: "blocked (" + (e && e.name || "error") + ")" }; } } },
+    { name: "Cookies enabled", affects: "Some network proxies require them", run: function () { return { status: navigator.cookieEnabled ? "ok" : "warn", detail: navigator.cookieEnabled ? "yes" : "no" }; } },
+    { name: "WebAssembly", affects: "Structure-similarity ranking (drawing + exact match work without it)", run: function () {
+        return new Promise(function (resolve) {
+          if (typeof WebAssembly === "undefined" || !WebAssembly.instantiate) { resolve({ status: "fail", detail: "not available" }); return; }
+          try {
+            var bytes = new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]);   // a complete, empty, valid module
+            WebAssembly.instantiate(bytes).then(function () { resolve({ status: "ok", detail: "supported" }); })
+              .catch(function (e) { resolve({ status: "fail", detail: "blocked (" + (e && e.message || e) + ")" }); });
+          } catch (e) { resolve({ status: "fail", detail: "blocked (" + (e && e.message || e) + ")" }); }
+        }); } },
+    { name: "Service worker", affects: "Offline use and faster repeat loads (optional)", run: function () { return { status: ("serviceWorker" in navigator) ? "ok" : "warn", detail: ("serviceWorker" in navigator) ? "available" : "not available" }; } },
+    { name: "Same-origin data (this site)", affects: "The site's own data files — required for anything to work", run: function () { return probe("manifest.json", true); } },
+    { name: "Site API (/api/health)", affects: "AI photo-to-structure recognition", run: function () { return probe("api/health", true); } },
+    { name: "Crossref (publications)", affects: "The live publications search and Hot Off the Press", run: function () { return probe("https://api.crossref.org/works?rows=1", false); } },
+    { name: "PubChem", affects: "Naming an unknown drawn structure", run: function () { return probe("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/962/property/Title/JSON", false); } },
+    { name: "Public CDN (jsdelivr)", affects: "Reading text off an uploaded photo (OCR)", run: function () { return probe("https://cdn.jsdelivr.net/npm/tesseract.js@5/package.json", false); } }
+  ];
+
+  function probe(url, sameOrigin) {
+    return new Promise(function (resolve) {
+      var ctrl = ("AbortController" in window) ? new AbortController() : null;
+      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); resolve({ status: "fail", detail: "no response (blocked or timed out)" }); }, 8000);
+      var opts = { cache: "no-store" };
+      if (ctrl) opts.signal = ctrl.signal;
+      fetch(url, opts).then(function (r) {
+        clearTimeout(timer);
+        resolve({ status: r.ok || r.status ? "ok" : "warn", detail: "reachable (HTTP " + r.status + ")" });
+      }).catch(function (e) {
+        clearTimeout(timer);
+        resolve({ status: "fail", detail: "blocked or unreachable" + (sameOrigin ? " — this is on the site's own server" : "") });
+      });
+    });
+  }
+
+  var results = [];
+
+  function pill(status) {
+    var label = status === "ok" ? "Works" : status === "fail" ? "Blocked" : status === "warn" ? "Limited" : "Info";
+    return '<span class="diag-pill diag-' + status + '">' + label + '</span>';
+  }
+
+  function render() {
+    var body = document.querySelector("#diag-table tbody");
+    body.innerHTML = results.map(function (r) {
+      return '<tr><td data-label="Capability">' + r.name + '</td><td data-label="Result">' + pill(r.status) +
+        ' <span style="color:var(--text-dim);font-size:0.85rem;">' + escapeHtml(r.detail) + '</span></td>' +
+        '<td data-label="Powers">' + r.affects + '</td></tr>';
+    }).join("");
+  }
+
+  function escapeHtml(s) { var d = document.createElement("div"); d.textContent = String(s == null ? "" : s); return d.innerHTML; }
+
+  function summarize() {
+    function st(name) { var r = results.filter(function (x) { return x.name === name; })[0]; return r ? r.status : "?"; }
+    var core = ["Canvas drawing", "Same-origin data (this site)"];
+    var coreOk = core.every(function (n) { return st(n) === "ok"; });
+    var externals = ["Crossref (publications)", "PubChem", "Public CDN (jsdelivr)", "Site API (/api/health)"];
+    var extBlocked = externals.filter(function (n) { return st(n) === "fail"; }).length;
+    var el = document.getElementById("diag-summary");
+    var msg, color = "var(--primary)";
+    if (!coreOk) {
+      color = "var(--danger)";
+      msg = "<strong>The core tools are blocked here.</strong> Canvas drawing or the site's own data files did not load, so the calculators and structure editor can't run on this network/browser. Copy this report and ask your IT team to allow getpolytechniques.com.";
+    } else if (extBlocked >= 3) {
+      color = "#b7791f";
+      msg = "<strong>The calculators and structure drawing should work; the internet-connected extras are blocked.</strong> This network allowed the site's own files but blocked the outside services, so the publications search, structure naming, photo text-reading, and AI photo recognition won't function. Those degrade on their own and should not stop the calculators, the structure editor, or name/browse search.";
+    } else if (extBlocked > 0) {
+      msg = "<strong>Core tools work; some online extras are blocked.</strong> " + extBlocked + " outside service(s) were unreachable, so the matching feature(s) won't work, but the calculators and structure search are fine.";
+    } else {
+      color = "var(--accent)";
+      msg = "<strong>Everything works on this computer.</strong> If the site still misbehaved earlier, try a hard refresh (Ctrl+Shift+R).";
+    }
+    el.style.borderLeftColor = color;
+    el.innerHTML = msg;
+  }
+
+  function runAll() {
+    results = [];
+    document.getElementById("diag-summary").textContent = "Running tests…";
+    var i = 0;
+    (function next() {
+      if (i >= TESTS.length) { render(); summarize(); return; }
+      var t = TESTS[i++];
+      Promise.resolve().then(t.run).then(function (res) {
+        results.push({ name: t.name, affects: t.affects, status: res.status, detail: res.detail });
+        render();
+        next();
+      }).catch(function (e) {
+        results.push({ name: t.name, affects: t.affects, status: "fail", detail: "error: " + (e && e.message || e) });
+        render();
+        next();
+      });
+    })();
+  }
+
+  document.getElementById("diag-env").textContent = "Browser: " + navigator.userAgent + " · Online: " + (navigator.onLine ? "yes" : "no");
+
+  document.getElementById("diag-copy").addEventListener("click", function () {
+    var lines = ["PolyTechniques diagnostics — " + location.href];
+    lines.push(navigator.userAgent);
+    results.forEach(function (r) { lines.push("[" + (r.status === "ok" ? "WORKS" : r.status === "fail" ? "BLOCKED" : r.status === "warn" ? "LIMITED" : "INFO") + "] " + r.name + " — " + r.detail); });
+    var text = lines.join("\n");
+    if (navigator.clipboard) { navigator.clipboard.writeText(text).then(function () { flash("Copied"); }, function () { fallbackCopy(text); }); }
+    else fallbackCopy(text);
+  });
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); flash("Copied"); } catch (e) { flash("Select and copy the table manually"); }
+    document.body.removeChild(ta);
+  }
+  function flash(msg) { var b = document.getElementById("diag-copy"); var o = b.textContent; b.textContent = msg; setTimeout(function () { b.textContent = o; }, 1400); }
+  document.getElementById("diag-rerun").addEventListener("click", runAll);
+
+  runAll();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

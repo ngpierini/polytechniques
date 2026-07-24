@@ -1,8 +1,13 @@
 (function () {
-  var stored = localStorage.getItem('polytechniques_theme');
-  if (stored === 'light' || stored === 'dark') {
-    document.documentElement.setAttribute('data-theme', stored);
-  }
+  // Wrapped in try/catch: a hardened/locked-down browser (some corporate and
+  // government builds) throws a SecurityError the moment script touches
+  // localStorage. Unguarded, that would abort this head script on every page.
+  try {
+    var stored = localStorage.getItem('polytechniques_theme');
+    if (stored === 'light' || stored === 'dark') {
+      document.documentElement.setAttribute('data-theme', stored);
+    }
+  } catch (e) { /* storage blocked: fall back to the OS colour scheme */ }
 })();
 
 function isDarkTheme() {
@@ -25,7 +30,7 @@ function updateThemeToggleIcons() {
 function togglePolyTheme() {
   var next = isDarkTheme() ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('polytechniques_theme', next);
+  try { localStorage.setItem('polytechniques_theme', next); } catch (e) { /* storage blocked: theme won't persist */ }
   updateThemeToggleIcons();
 }
 

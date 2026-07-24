@@ -4224,17 +4224,39 @@
         if (file) runImageOCR(file);
       });
     }
+    // Tesseract (the in-browser OCR engine) is fetched lazily from a public CDN
+    // only when the photo-read feature is actually used, so it never sits in the
+    // page's blocking load path. A network that blackholes the CDN (as some
+    // secure/government networks do) can no longer stall the rest of the search.
+    var tesseractPromise = null;
+    function ensureTesseract() {
+      if (typeof Tesseract !== 'undefined') return Promise.resolve(true);
+      if (tesseractPromise) return tesseractPromise;
+      tesseractPromise = new Promise(function (resolve) {
+        var done = false;
+        var finish = function (ok) { if (!done) { done = true; resolve(ok); } };
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        s.onload = function () { finish(typeof Tesseract !== 'undefined'); };
+        s.onerror = function () { finish(false); };
+        setTimeout(function () { finish(false); }, 12000);   // give up cleanly if the CDN is blocked/hung
+        document.head.appendChild(s);
+      });
+      return tesseractPromise;
+    }
     function runImageOCR(file) {
       var ocrStatusEl = document.getElementById('mol-ocr-status');
       var ocrTextEl = document.getElementById('mol-ocr-text');
       var statusEl = document.getElementById('mol-status');
-      if (ocrStatusEl) ocrStatusEl.textContent = 'Reading image…';
+      if (ocrStatusEl) ocrStatusEl.textContent = 'Loading the text reader…';
       if (ocrTextEl) { ocrTextEl.hidden = true; ocrTextEl.textContent = ''; }
-      if (typeof Tesseract === 'undefined') {
-        if (ocrStatusEl) ocrStatusEl.textContent = 'OCR library did not load (needs an internet connection).';
-        return;
-      }
-      Tesseract.recognize(file, 'eng').then(function (result) {
+      ensureTesseract().then(function (loaded) {
+        if (!loaded || typeof Tesseract === 'undefined') {
+          if (ocrStatusEl) ocrStatusEl.textContent = 'The in-browser text reader could not load. It is fetched from a public CDN (cdn.jsdelivr.net) that some secure networks block. Type the polymer name in the search box instead.';
+          return;
+        }
+        if (ocrStatusEl) ocrStatusEl.textContent = 'Reading image…';
+        return Tesseract.recognize(file, 'eng').then(function (result) {
         var text = ((result && result.data && result.data.text) || '').trim();
         if (!text) {
           if (ocrStatusEl) ocrStatusEl.textContent = 'No readable text found in that image.';
@@ -4258,8 +4280,9 @@
           renderResults(matches);
           scrollResultsIntoView();
         }
-      }).catch(function () {
-        if (ocrStatusEl) ocrStatusEl.textContent = 'Could not read that image.';
+        }).catch(function () {
+          if (ocrStatusEl) ocrStatusEl.textContent = 'Could not read that image.';
+        });
       });
     }
 
