@@ -721,63 +721,63 @@ window.POLYMER_DB = [
   // directly). No atoms/bonds: fingerprintOf skips them for structure matching.
   {
     name: "Styrene-butadiene copolymer", aka: ["SBR", "SBS", "styrene butadiene rubber", "styrene-butadiene", "K-Resin"],
-    type: "copolymer", components: ["Polystyrene", "Polybutadiene (cis-1,4)"],
+    type: "copolymer", arch: "statistical", components: ["Polystyrene", "Polybutadiene (cis-1,4)"],
     monomer: "Styrene + 1,3-butadiene", cls: "Copolymer (addition, diene)", cas: "9003-55-8",
     tags: ["copolymer", "elastomer", "tire", "commodity", "thermoplastic elastomer"],
     note: "Styrene and butadiene together. Random and emulsion grades (SBR) are the workhorse tire rubber; the ordered triblock (SBS) is a thermoplastic elastomer. A drawing shows the monomers, not whether the arrangement is random or block."
   },
   {
     name: "Poly(styrene-co-acrylonitrile)", aka: ["SAN", "styrene-acrylonitrile"],
-    type: "copolymer", components: ["Polystyrene", "Polyacrylonitrile"],
+    type: "copolymer", arch: "random", components: ["Polystyrene", "Polyacrylonitrile"],
     monomer: "Styrene + acrylonitrile", cls: "Copolymer (addition, vinyl)", cas: "9003-54-7",
     tags: ["copolymer", "engineering", "transparent"],
     note: "A rigid, transparent, solvent-resistant copolymer; the acrylonitrile raises chemical resistance and stiffness over polystyrene."
   },
   {
     name: "Acrylonitrile-butadiene-styrene", aka: ["ABS"],
-    type: "copolymer", components: ["Polyacrylonitrile", "Polybutadiene (cis-1,4)", "Polystyrene"],
+    type: "copolymer", arch: "graft", components: ["Polyacrylonitrile", "Polybutadiene (cis-1,4)", "Polystyrene"],
     monomer: "Acrylonitrile + 1,3-butadiene + styrene", cls: "Terpolymer (addition)", cas: "9003-56-9",
     tags: ["copolymer", "terpolymer", "engineering", "impact-resistant"],
     note: "A three-monomer blend/graft: a butadiene rubber phase toughens a rigid SAN matrix. Widely used for impact-tough moldings (LEGO, housings)."
   },
   {
     name: "Nitrile rubber", aka: ["NBR", "acrylonitrile-butadiene rubber", "Buna-N"],
-    type: "copolymer", components: ["Polyacrylonitrile", "Polybutadiene (cis-1,4)"],
+    type: "copolymer", arch: "random", components: ["Polyacrylonitrile", "Polybutadiene (cis-1,4)"],
     monomer: "Acrylonitrile + 1,3-butadiene", cls: "Copolymer (addition, diene)", cas: "9003-18-3",
     tags: ["copolymer", "elastomer", "oil-resistant"],
     note: "An oil- and fuel-resistant rubber; acrylonitrile content sets the balance of oil resistance versus low-temperature flexibility."
   },
   {
     name: "Poly(lactic-co-glycolic acid)", aka: ["PLGA", "poly(lactide-co-glycolide)"],
-    type: "copolymer", components: ["Poly(lactide)", "Poly(glycolide)"],
+    type: "copolymer", arch: "random", components: ["Poly(lactide)", "Poly(glycolide)"],
     monomer: "Lactide + glycolide", cls: "Copolymer (ring-opening, polyester)", cas: "26780-50-7",
     tags: ["copolymer", "biodegradable", "biomedical", "drug delivery"],
     note: "A resorbable polyester copolymer; the lactide:glycolide ratio tunes the degradation rate, which is why it dominates controlled-release implants and sutures."
   },
   {
     name: "Ethylene-vinyl acetate", aka: ["EVA", "poly(ethylene-co-vinyl acetate)"],
-    type: "copolymer", components: ["Polyethylene", "Poly(vinyl acetate)"],
+    type: "copolymer", arch: "random", components: ["Polyethylene", "Poly(vinyl acetate)"],
     monomer: "Ethylene + vinyl acetate", cls: "Copolymer (addition, vinyl)", cas: "24937-78-8",
     tags: ["copolymer", "elastomer", "adhesive", "foam"],
     note: "Vinyl acetate content softens polyethylene into a flexible, rubbery material used in foams, hot-melt adhesives, and film."
   },
   {
     name: "Ethylene-propylene rubber", aka: ["EPR", "EPM", "EPDM", "poly(ethylene-co-propylene)"],
-    type: "copolymer", components: ["Polyethylene", "Polypropylene"],
+    type: "copolymer", arch: "random", components: ["Polyethylene", "Polypropylene"],
     monomer: "Ethylene + propylene (+ a diene for EPDM)", cls: "Copolymer (addition)", cas: "9010-79-1",
     tags: ["copolymer", "elastomer", "weather-resistant"],
     note: "A saturated-backbone rubber with excellent weather and ozone resistance; EPDM adds a small amount of a diene to allow sulfur vulcanization."
   },
   {
     name: "Polystyrene-b-poly(ethylene oxide)", aka: ["PS-b-PEO", "PS-b-PEG", "polystyrene-b-poly(ethylene glycol)", "PS-PEO"],
-    type: "copolymer", components: ["Polystyrene", "Poly(ethylene oxide)"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Poly(ethylene oxide)"],
     monomer: "Styrene + ethylene oxide", cls: "Block copolymer (amphiphilic)", cas: "104108-24-9",
     tags: ["copolymer", "block", "amphiphilic", "self-assembly"],
     note: "A classic amphiphilic block copolymer: a hydrophobic polystyrene block and a hydrophilic PEO block. It self-assembles into micelles and ordered nanostructures, and is a model system for block-copolymer phase behavior."
   },
   {
     name: "Poly(ethylene oxide-b-propylene oxide)", aka: ["poloxamer", "Pluronic", "PEO-PPO-PEO", "poly(ethylene glycol-b-propylene glycol)"],
-    type: "copolymer", components: ["Poly(ethylene oxide)", "Poly(propylene oxide)"],
+    type: "copolymer", arch: "block", components: ["Poly(ethylene oxide)", "Poly(propylene oxide)"],
     monomer: "Ethylene oxide + propylene oxide", cls: "Block copolymer (ring-opening, polyether)", cas: "9003-11-6",
     tags: ["copolymer", "block", "surfactant", "amphiphilic"],
     note: "A PEO-PPO-PEO triblock surfactant. The hydrophilic PEO and hydrophobic PPO blocks drive micellization and gelation, used in drug delivery and as a nonionic surfactant."
