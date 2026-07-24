@@ -3296,6 +3296,109 @@
       scrollResultsIntoView();
     });
 
+    // ---------- Substructure ("contains this fragment") search ----------
+    // A different question from repeat-unit matching: which library polymers
+    // CONTAIN the drawn motif (an ester linkage, a phenyl ring, a fluorinated
+    // backbone)? Any drawing works - no bracket or chain ends required.
+    // The query routes molblock -> get_mol -> get_smarts -> get_qmol. Feeding
+    // the molblock straight to get_qmol would skip aromaticity perception, so
+    // a hand-drawn benzene would match none of the aromatic polymers; and
+    // get_smiles-derived SMARTS means aliphatic-only carbon, silently dropping
+    // aryl esters. get_smarts emits [#6], which matches both. Chain-end "*"
+    // atoms and explicit H are stripped from the query (containment shouldn't
+    // care about drawn chain ends), while the library targets KEEP their
+    // dummies, which act as repeat-unit boundary walls.
+    function runSubstructureSearch() {
+      var statusEl = document.getElementById('mol-status');
+      if (!statusEl) return;
+      if (!atoms.length) {
+        statusEl.textContent = 'Draw a fragment first - an ester linkage, a ring, any motif. No bracket needed.';
+        renderResults([]);
+        return;
+      }
+      statusEl.textContent = rdkitPromise ? 'Searching for polymers containing this fragment…'
+        : 'Loading the structure-matching engine (about 7 MB, one time; it stays cached)…';
+      ensureRDKit().then(function (RDKit) {
+        var ex = expandSuperatoms(atoms, bonds);
+        var st = stripStars(ex.atoms, ex.bonds);
+        var hIds = {};
+        st.atoms.forEach(function (a) { if (a.el === 'H') hIds[a.id] = 1; });
+        var frag = {
+          atoms: st.atoms.filter(function (a) { return !hIds[a.id]; }),
+          bonds: st.bonds.filter(function (b) { return !hIds[b.a] && !hIds[b.b]; })
+        };
+        if (!frag.atoms.length) {
+          statusEl.textContent = 'Nothing left to match once chain ends are removed - draw the fragment itself.';
+          renderResults([]);
+          return;
+        }
+        var mol = molFrom(RDKit, molblockFrom(frag.atoms, frag.bonds));
+        if (!mol) {
+          statusEl.textContent = 'The fragment could not be interpreted as chemistry. Check valences and try again.';
+          renderResults([]);
+          return;
+        }
+        var smarts = null, qfp = null;
+        try { smarts = mol.get_smarts(); } catch (e) {}
+        try { qfp = mol.get_morgan_fp(FP_OPTS); } catch (e1) {}
+        mol.delete();
+        var qmol = null;
+        if (smarts) { try { qmol = RDKit.get_qmol(smarts); } catch (e2) {} }
+        if (!qmol) {
+          statusEl.textContent = 'The fragment could not be converted to a search pattern.';
+          renderResults([]);
+          return;
+        }
+        var disconnected = smarts.indexOf('.') !== -1;
+        var lib = prepRdkitLibrary(RDKit);
+        var qHeavy = frag.atoms.length;
+        var hits = [];
+        lib.forEach(function (e) {
+          if (!e.mol) return;
+          var parsed = null;
+          try { parsed = JSON.parse(e.mol.get_substruct_matches(qmol)); } catch (e3) {}
+          // RDKit returns '{}' (not '[]') on no match - only an array is a hit
+          var arr = Array.isArray(parsed) ? parsed : [];
+          if (!arr.length) return;
+          var tHeavy = e.p.atoms.filter(function (a) { return a.el !== '*'; }).length;
+          hits.push({ p: e.p, count: arr.length, cov: tHeavy ? Math.min(1, qHeavy / tHeavy) : 0, sim: (qfp && e.fp) ? tanimoto(qfp, e.fp) : 0 });
+        });
+        qmol.delete();
+        // Coverage first (the fragment is most OF these polymers), similarity
+        // breaks ties. All hits render - a fragment search legitimately
+        // returns dozens, and truncating would misreport the set.
+        hits.sort(function (x, y) { return (y.cov - x.cov) || (y.sim - x.sim); });
+        statusEl.textContent = hits.length
+          ? (hits.length + ' of ' + lib.length + ' library polymers contain this fragment' +
+            (disconnected ? ' (the drawing has disconnected pieces; each matched independently)' : '') + ':')
+          : ('No library polymer contains this fragment.' + (disconnected ? ' Note: the drawing has disconnected pieces.' : ''));
+        renderSubstructHits(hits);
+      }).catch(function () {
+        statusEl.textContent = 'The structure-matching engine could not load. Check your connection and try again.';
+        renderResults([]);
+      });
+    }
+    function renderSubstructHits(hits) {
+      var resultsEl = document.getElementById('mol-results');
+      if (!resultsEl) return;
+      var idEl = document.getElementById('mol-identify');
+      if (idEl) { idEl.hidden = true; idEl.innerHTML = ''; }
+      var pubEl = document.getElementById('mol-publications');
+      if (pubEl && resultsEl.nextSibling !== pubEl) resultsEl.parentNode.insertBefore(pubEl, resultsEl.nextSibling);
+      renderPublications(null);
+      resultsEl.innerHTML = hits.map(function (h) {
+        return '<div class="mol-sim-item">' +
+          '<div style="font-size:0.8rem;color:var(--text-dim);margin:10px 0 2px;">appears ' + h.count +
+          (h.count === 1 ? ' time' : ' times') + ' &middot; fragment is ' + Math.round(h.cov * 100) + '% of the repeat unit</div>' +
+          polymerCard(h.p) + '</div>';
+      }).join('');
+    }
+    var subBtn = document.getElementById('mol-search-substruct');
+    if (subBtn) subBtn.addEventListener('click', function () {
+      runSubstructureSearch();
+      scrollResultsIntoView();
+    });
+
     // Recent name searches, shown as one-click chips under the search box.
     // A query is remembered once it has sat unchanged for a moment with at
     // least one match, so half-typed prefixes don't pollute the list.
@@ -3355,8 +3458,12 @@
           if (p.name.toLowerCase().indexOf(q) !== -1) return true;
           return (p.aka || []).some(function (a) { return a.toLowerCase().indexOf(q) !== -1; });
         }).slice(0, 20);
-        if (statusEl) statusEl.textContent = matches.length ? (matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ':') : 'No name matches.';
-        renderResults(matches);
+        if (matches.length) {
+          if (statusEl) statusEl.textContent = matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ':';
+          renderResults(matches);
+        } else {
+          rescueNameSearch(q, statusEl);
+        }
         if (matches.length && q.length >= 3) {
           var toSave = nameInput.value.trim();
           recentTimer = setTimeout(function () { saveRecent(toSave); }, 1500);
@@ -3370,6 +3477,66 @@
         nameInput.value = deepQ;
         nameInput.dispatchEvent(new Event('input', { bubbles: true }));
       }
+    }
+
+    // Zero-hit name searches get two ladders of rescue before giving up:
+    // the monomer field ("caprolactam" finds Nylon 6 even though no polymer
+    // is NAMED caprolactam), then fuzzy did-you-mean suggestions over every
+    // name and alias (catches "polysytrene"). No PubChem fallback here on
+    // purpose: its name resolver knows no polymer names or abbreviations,
+    // and its fuzzy route returns confidently wrong compounds (Titanium for
+    // "Teflon"), which is worse than admitting no match.
+    function editDistLe2(a, b) {
+      if (Math.abs(a.length - b.length) > 2) return 3;
+      var prev = [], i, j;
+      for (j = 0; j <= b.length; j++) prev[j] = j;
+      for (i = 1; i <= a.length; i++) {
+        var cur = [i], rowMin = i;
+        for (j = 1; j <= b.length; j++) {
+          cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+          if (cur[j] < rowMin) rowMin = cur[j];
+        }
+        if (rowMin > 2) return 3;   // bounded: past 2 nothing here cares
+        prev = cur;
+      }
+      return prev[b.length];
+    }
+    function rescueNameSearch(q, statusEl) {
+      var db = window.POLYMER_DB || [];
+      var byMonomer = db.filter(function (p) {
+        return p.monomer && p.monomer.toLowerCase().indexOf(q) !== -1;
+      }).slice(0, 20);
+      if (byMonomer.length) {
+        if (statusEl) statusEl.textContent = 'No polymer is named that, but ' + byMonomer.length + (byMonomer.length === 1 ? ' is' : ' are') + ' made from it:';
+        renderResults(byMonomer);
+        return;
+      }
+      var sugg = [];
+      db.forEach(function (p) {
+        var cands = [p.name].concat(p.aka || []);
+        var best = null;
+        for (var i = 0; i < cands.length; i++) {
+          var d = editDistLe2(q, cands[i].toLowerCase());
+          if (d <= 2 && (best == null || d < best.d)) best = { label: cands[i], d: d };
+        }
+        if (best) sugg.push(best);
+      });
+      sugg.sort(function (x, y) { return x.d - y.d; });
+      sugg = sugg.slice(0, 5);
+      if (statusEl) statusEl.textContent = 'No name matches.' + (sugg.length ? ' Did you mean:' : '');
+      var resultsEl = document.getElementById('mol-results');
+      if (!sugg.length || !resultsEl) { renderResults([]); return; }
+      renderResults([]);
+      resultsEl.innerHTML = '<div class="mol-suggest-row">' + sugg.map(function (s) {
+        return '<button type="button" class="mol-suggest-chip">' + escapeHtml(s.label) + '</button>';
+      }).join('') + '</div>';
+      resultsEl.querySelectorAll('.mol-suggest-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          var input = document.getElementById('mol-name-search');
+          input.value = chip.textContent;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+      });
     }
 
     // ---------- Explore: browse the library by tag ----------
@@ -3391,17 +3558,84 @@
         });
       });
     }
-    function runTagFilter() {
+    // Tg/Tm strings in the library are uniform single integers ("100 °C",
+    // "-10 °C", "~92 °C", "130 °C (dry)"); the first signed integer is the
+    // value. Missing data stays null so filters can treat it honestly.
+    function parseTemp(s) {
+      if (s == null) return null;
+      var m = String(s).match(/-?\d+/);
+      return m ? parseInt(m[0], 10) : null;
+    }
+    function propInput(id) {
+      var el = document.getElementById(id);
+      if (!el || el.value.trim() === '') return null;
+      var v = parseFloat(el.value);
+      return isNaN(v) ? null : v;
+    }
+    // Explore is one combined filter: tags OR-combine within the row, then
+    // AND with each property range. An entry missing a property that is being
+    // filtered on is excluded but COUNTED, so "35 shown, 12 lack Tg data"
+    // never silently pretends the library has been fully screened.
+    function runExploreFilter() {
       var active = Array.prototype.slice.call(document.querySelectorAll('#mol-tag-filter .mol-tag-chip.active')).map(function (b) { return b.getAttribute('data-tag'); });
+      var tgMin = propInput('mol-tg-min'), tgMax = propInput('mol-tg-max');
+      var tmMin = propInput('mol-tm-min'), tmMax = propInput('mol-tm-max');
+      var tgOn = tgMin != null || tgMax != null;
+      var tmOn = tmMin != null || tmMax != null;
+      var clearBtn = document.getElementById('mol-prop-clear');
+      if (clearBtn) clearBtn.hidden = !(tgOn || tmOn);
       var statusEl = document.getElementById('mol-status');
-      if (!active.length) { if (statusEl) statusEl.textContent = ''; renderResults([]); return; }
+      if (!active.length && !tgOn && !tmOn) { if (statusEl) statusEl.textContent = ''; renderResults([]); return; }
       var db = window.POLYMER_DB || [];
+      var noData = 0;
       var matches = db.filter(function (p) {
-        return (p.tags || []).some(function (t) { return active.indexOf(t) !== -1; });
+        if (active.length && !(p.tags || []).some(function (t) { return active.indexOf(t) !== -1; })) return false;
+        if (tgOn) {
+          var tg = parseTemp(p.tg);
+          if (tg == null) { noData++; return false; }
+          if (tgMin != null && tg < tgMin) return false;
+          if (tgMax != null && tg > tgMax) return false;
+        }
+        if (tmOn) {
+          var tm = parseTemp(p.tm);
+          if (tm == null) { noData++; return false; }
+          if (tmMin != null && tm < tmMin) return false;
+          if (tmMax != null && tm > tmMax) return false;
+        }
+        return true;
       });
-      if (statusEl) statusEl.textContent = matches.length ? (matches.length + ' polymer' + (matches.length === 1 ? '' : 's') + ' tagged ' + active.join(', ') + ':') : 'No polymers with these tags.';
+      if (statusEl) {
+        // "-130 to -40" style, never a bare dash: a range dash next to a
+        // negative sign reads as "–-40".
+        var rangeText = function (label, lo, hi) {
+          if (lo != null && hi != null) return label + ' ' + lo + ' to ' + hi + ' °C';
+          if (lo != null) return label + ' ≥ ' + lo + ' °C';
+          return label + ' ≤ ' + hi + ' °C';
+        };
+        var parts = [];
+        if (active.length) parts.push('tagged ' + active.join(', '));
+        if (tgOn) parts.push(rangeText('Tg', tgMin, tgMax));
+        if (tmOn) parts.push(rangeText('Tm', tmMin, tmMax));
+        statusEl.textContent = (matches.length ? matches.length + ' polymer' + (matches.length === 1 ? '' : 's') + ' ' + parts.join(', ') : 'No polymers match ' + parts.join(', ')) +
+          (noData ? ' (' + noData + ' more lack the filtered data)' : '') + (matches.length ? ':' : '');
+      }
       renderResults(matches);
     }
+    var runTagFilter = runExploreFilter;   // tag chips and property inputs share one filter
+    (function wirePropFilter() {
+      ['mol-tg-min', 'mol-tg-max', 'mol-tm-min', 'mol-tm-max'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('input', runExploreFilter);
+      });
+      var clearBtn = document.getElementById('mol-prop-clear');
+      if (clearBtn) clearBtn.addEventListener('click', function () {
+        ['mol-tg-min', 'mol-tg-max', 'mol-tm-min', 'mol-tm-max'].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        runExploreFilter();
+      });
+    })();
     buildTagFilter();
 
     // ---------- Explore: upload an image, OCR any printed text in it
