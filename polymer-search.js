@@ -2222,6 +2222,34 @@
       fetchPublications(polymer);
     }
 
+    // Relevance needles: the distinctive names/phrases for this polymer, used to
+    // drop Crossref hits that merely share a generic word ("methacrylate") but
+    // aren't about it. Keeps multi-word phrases (the monomer name) and long
+    // distinctive tokens, so a common polymer still matches by its phrase while a
+    // niche one ("tetrahydrogeranyl methacrylate") isn't buried under generics.
+    var PUB_STOP = { methacrylate: 1, methacrylates: 1, acrylate: 1, acrylates: 1, acrylic: 1, polymer: 1, polymers: 1, copolymer: 1, copolymers: 1, homopolymer: 1 };
+    function pubNeedles(polymer) {
+      var out = [];
+      function add(s) { s = String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); if (s) out.push(s); }
+      if (polymer.monomer) add(polymer.monomer.split('(')[0]);
+      (polymer.aka || []).forEach(add);
+      var nm = String(polymer.name || '').toLowerCase();
+      add(nm);
+      add(nm.replace(/^poly\s*\(/, '').replace(/\)\s*$/, ''));
+      out.slice().forEach(function (phrase) {
+        phrase.replace(/[^a-z0-9]+/g, ' ').split(' ').forEach(function (tok) {
+          if (tok.length >= 7 && !PUB_STOP[tok]) out.push(tok);
+        });
+      });
+      var norm = out.map(function (n) { return n.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(); })
+        .filter(function (n) { return n.length >= 4; });
+      return norm.filter(function (n, i) { return norm.indexOf(n) === i; });
+    }
+    function pubIsRelevant(title, needles) {
+      var t = ' ' + String(title || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
+      return needles.some(function (n) { return t.indexOf(n) !== -1; });
+    }
+
     function fetchPublications(polymer) {
       var el = document.getElementById('mol-publications');
       var list = document.getElementById('mol-pub-list');
@@ -2275,11 +2303,27 @@
             ' the search links on the match above for a broader or structure-based lookup.</div>';
           return;
         }
+        // Crossref ranks by relevance but never filters, so a niche polymer with
+        // no dedicated literature floats up high-impact papers that merely share
+        // a family word ("methacrylate"). Keep only papers that actually name the
+        // polymer or its monomer; if none do, say so plainly rather than mislead.
+        var needles = pubNeedles(polymer);
+        var relevant = needles.length
+          ? papers.filter(function (p) { return pubIsRelevant(p.title, needles); })
+          : papers;
+        if (!relevant.length) {
+          if (pubFetchOffset > 0) { pubFetchOffset = 0; fetchPublications(polymer); return; }
+          list.innerHTML = '<div class="guide-note">No journal articles that specifically name <strong>' +
+            escapeHtml(name) + '</strong> (or its monomer) came back' +
+            (rangeDef.days ? ' for the ' + escapeHtml(rangeLabel) : '') +
+            '. It may be too new or too niche for the Crossref index &mdash; use the PubChem, Scholar, and Patents links on the match above to look it up directly.</div>';
+          return;
+        }
         pubFetchOffset += 30;
         // Rank the pool: venue weight minus a relevance-position penalty, so a
         // flagship-journal paper floats up while Crossref's order still breaks
         // ties and ranks the unweighted remainder.
-        pubPool = papers.map(function (p, i) { return { p: p, s: journalWeight(p.journal) - i * 2, i: i }; })
+        pubPool = relevant.map(function (p, i) { return { p: p, s: journalWeight(p.journal) - i * 2, i: i }; })
           .sort(function (x, y) { return (y.s - x.s) || (x.i - y.i); })
           .map(function (r) { return r.p; });
         pubPoolPos = 0;
