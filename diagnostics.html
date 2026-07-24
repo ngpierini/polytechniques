@@ -49,6 +49,15 @@
     </noscript>
   </div>
 
+  <div class="card" style="border:1px solid var(--danger);">
+    <h3>Tools not responding? Try this first</h3>
+    <p class="guide-note">
+      If the pages load but the calculators won't let you select or enter anything, the most common cause is a stuck or corrupted offline cache from an earlier visit. This button clears the site's saved cache and background worker and reloads with a completely fresh copy from the server. It's safe: it only affects this site's cached files on this computer.
+    </p>
+    <button type="button" class="copy-btn" id="diag-reset" style="border-color:var(--danger);color:var(--danger);font-weight:600;">Clear cache &amp; reload fresh</button>
+    <span class="hint" id="diag-reset-note" style="margin-left:8px;"></span>
+  </div>
+
   <div class="card">
     <h3>Results</h3>
     <div class="diag-summary" id="diag-browser" style="border-left-color:var(--text-dim);">Detecting browser&hellip;</div>
@@ -162,6 +171,20 @@
           document.head.appendChild(sc);
         });
     } },
+    { name: "Calculator code (app.js) delivered & parses", affects: "The main Calculator — whether its code file arrives intact and runs on this browser", run: function () {
+        return new Promise(function (resolve) {
+          var ctrl = ("AbortController" in window) ? new AbortController() : null;
+          var t = setTimeout(function () { if (ctrl) ctrl.abort(); resolve({ status: "fail", detail: "no response (blocked or timed out)" }); }, 9000);
+          var opts = { cache: "no-store" }; if (ctrl) opts.signal = ctrl.signal;
+          fetch("app.js?v=39&diag=" + (new Date()).getTime(), opts).then(function (r) { return r.text(); }).then(function (txt) {
+            clearTimeout(t);
+            if (!txt || txt.length < 500) { resolve({ status: "fail", detail: "served empty/truncated (" + (txt ? txt.length : 0) + " bytes) — likely a stale cache; use the Clear button above" }); return; }
+            if (/^\s*<(!doctype|html)/i.test(txt)) { resolve({ status: "fail", detail: "served as an HTML page, not JavaScript (a proxy block page was cached) — use the Clear button above" }); return; }
+            try { new Function(txt); resolve({ status: "ok", detail: "delivered and parses (" + Math.round(txt.length / 1024) + " KB)" }); }
+            catch (e) { resolve({ status: (e && e.name === "SyntaxError") ? "fail" : "warn", detail: (e && e.name === "SyntaxError") ? ("this browser can't parse it: " + (e.message || "SyntaxError")) : ("couldn't test parse (" + (e && e.name) + ") — script-eval may be restricted") }); }
+          }).catch(function () { clearTimeout(t); resolve({ status: "fail", detail: "could not fetch app.js" }); });
+        });
+    } },
     { name: "Site API (/api/health)", affects: "AI photo-to-structure recognition", run: function () { return probe("api/health", true); } },
     { name: "Crossref (publications)", affects: "The live publications search and Hot Off the Press", run: function () { return probe("https://api.crossref.org/works?rows=1", false); } },
     { name: "PubChem", affects: "Naming an unknown drawn structure", run: function () { return probe("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/962/property/Title/JSON", false); } },
@@ -265,6 +288,24 @@
   }
   function flash(msg) { var b = document.getElementById("diag-copy"); var o = b.textContent; b.textContent = msg; setTimeout(function () { b.textContent = o; }, 1400); }
   document.getElementById("diag-rerun").addEventListener("click", runAll);
+
+  var resetBtn = document.getElementById("diag-reset");
+  if (resetBtn) resetBtn.addEventListener("click", function () {
+    var note = document.getElementById("diag-reset-note");
+    resetBtn.disabled = true;
+    resetBtn.textContent = "Clearing…";
+    if (note) note.textContent = "unregistering worker and deleting caches…";
+    var reload = function () { try { location.reload(true); } catch (e) { location.reload(); } };
+    var step = Promise.resolve();
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+      step = navigator.serviceWorker.getRegistrations().then(function (rs) {
+        return Promise.all(rs.map(function (r) { return r.unregister(); }));
+      });
+    }
+    step.then(function () {
+      if (window.caches && caches.keys) return caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); });
+    }).then(function () { setTimeout(reload, 300); }, function () { setTimeout(reload, 300); });
+  });
 
   runAll();
 })();
