@@ -101,6 +101,12 @@
 
       <dt>Rate constants (k<sub>p</sub>, k<sub>t</sub>, k<sub>d</sub>, k<sub>i</sub>)</dt>
       <dd>Shorthand for the rate constants of propagation, termination, deactivation, and initiation. Their relative sizes determine whether a polymerization behaves as controlled or conventional.</dd>
+
+      <dt>Persistent radical effect (PRE)</dt>
+      <dd>The self-correcting mechanism behind ATRP and NMP: whenever two growing radicals terminate, they leave behind a small excess of the stable deactivator (Cu(II) in ATRP, the nitroxide in NMP), which accumulates and shuts down further termination by capping chain ends. This is why the active-radical concentration stays low and the dispersity stays narrow.</dd>
+
+      <dt>Transfer constant (C<sub>tr</sub>, C<sub>ex</sub>)</dt>
+      <dd>The ratio of the chain-transfer rate constant (in RAFT, the exchange rate constant) to the propagation rate constant, k<sub>tr</sub>/k<sub>p</sub>. A high value means a chain trades its active end for a dormant one many times before it grows much, which is what keeps every chain nearly the same length; the <a href="dispersity-predictor.html">Dispersity Predictor</a> uses it to set the narrowest &#272; a RAFT run can reach.</dd>
     </dl>
   </div>
 
@@ -121,6 +127,9 @@
 
       <dt>Catalyst</dt>
       <dd>The species that mediates chain growth without being consumed. The Cu(I)/ligand complex in ATRP and the Grubbs or Hoveyda type carbene complex in ROMP are both catalysts in this sense.</dd>
+
+      <dt>Deactivator</dt>
+      <dd>The species that caps an active chain end and returns it to its dormant form, the reverse of activation. In ATRP it is the Cu(II)/ligand complex; in NMP it is the nitroxide. Its concentration relative to the active species controls how often chains are put to sleep, and so sets how narrow the dispersity can get.</dd>
 
       <dt>Internal standard</dt>
       <dd>A compound added to the reaction at a known, fixed amount that does not react, used as a reference peak in NMR or GC so conversion can be calculated from aliquots regardless of aliquot size or workup losses.</dd>
@@ -148,10 +157,42 @@
   </div>
 
   <div class="card">
+    <h3>Polymer structure &amp; types</h3>
+    <dl class="glossary-dl">
+      <dt>Repeat unit</dt>
+      <dd>The smallest structural unit that repeats along a polymer chain, drawn with open bonds at the two points where it joins its neighbors. In the <a href="polymer-search.html">Polymer Search</a> you sketch a bit more than one unit and bracket just the repeating part; a polymer's name and properties both follow from it.</dd>
+
+      <dt>Homopolymer &amp; copolymer</dt>
+      <dd>A homopolymer is built from a single monomer; a copolymer combines two or more. How the different units are arranged, whether random, alternating, in blocks, or grafted onto a backbone, can shape properties as strongly as the overall composition does.</dd>
+
+      <dt>Block copolymer</dt>
+      <dd>A copolymer in which each monomer is gathered into a long continuous run, or block, joined end to end (for example polystyrene-b-poly(ethylene glycol)). Blocks are grown one from the reactive end of another, which is what a macroinitiator or macro CTA is for, rather than by mixing both monomers in one feed.</dd>
+
+      <dt>Alternating copolymer</dt>
+      <dd>A copolymer whose two monomers follow each other in a regular &hellip;ABABAB&hellip; sequence. It arises when each chain end strongly prefers adding the other monomer over its own, meaning both reactivity ratios are near zero, so their product r<sub>1</sub>r<sub>2</sub> approaches 0.</dd>
+
+      <dt>Statistical (random) copolymer</dt>
+      <dd>A copolymer whose monomer sequence is set by the reactivity ratios and the feed, with no long-range order. It is strictly random only in the special case r<sub>1</sub>r<sub>2</sub> = 1, where each addition ignores the unit before it. The <a href="copolymer-composition.html">Copolymer Composition</a> tool reads this regime from the reactivity-ratio product.</dd>
+
+      <dt>Gradient (tapered) copolymer</dt>
+      <dd>A copolymer whose composition shifts gradually from one monomer to the other along the chain, instead of changing sharply as it does at a block junction. It forms when strong composition drift is left to run in a batch reaction, or is made deliberately by feeding one monomer in over time.</dd>
+
+      <dt>Graft copolymer</dt>
+      <dd>A copolymer with side chains of one monomer attached along a backbone of another, like teeth on a comb. Written with -g- (for example poly(butadiene)-g-polystyrene), it is a branched architecture rather than a linear sequence.</dd>
+
+      <dt>Bio-based (renewable) polymer</dt>
+      <dd>A polymer whose monomer comes from a renewable biological feedstock, such as plant sugars, oils, or terpenes like geraniol, rather than from petroleum. Bio-based does not by itself mean biodegradable; the two are separate properties. The reference library flags these with a bio-based tag.</dd>
+    </dl>
+  </div>
+
+  <div class="card">
     <h3>Copolymer composition</h3>
     <dl class="glossary-dl">
       <dt>Reactivity ratio (r<sub>1</sub>, r<sub>2</sub>)</dt>
       <dd>A measure of how strongly a growing chain end prefers adding its own monomer over the other one in a copolymerization. r<sub>1</sub> &gt; 1 means a monomer 1 chain end favors monomer 1; r<sub>1</sub> &lt; 1 means it favors crossing over to monomer 2. Used in the <a href="copolymer-composition.html">Copolymer Composition</a> calculator.</dd>
+
+      <dt>Ideal copolymerization (r<sub>1</sub>r<sub>2</sub> = 1)</dt>
+      <dd>The case where each chain end adds the two monomers in the same ratio no matter which unit it just added, so neither alternation nor blockiness is favored and the sequence is effectively random. The product r<sub>1</sub>r<sub>2</sub> is the single number that places a pair on the scale from alternating (toward 0) through ideal (about 1) to blocky (well above 1); the <a href="copolymer-composition.html">Copolymer Composition</a> tool reads the likely microstructure from it.</dd>
 
       <dt>Azeotropic composition</dt>
       <dd>The feed composition at which the copolymer forms with exactly the same composition as the feed, so the copolymer composition does not drift as conversion proceeds. Only exists for some monomer pairs and reactivity ratio combinations.</dd>
