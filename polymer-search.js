@@ -4189,10 +4189,16 @@
       var v = parseFloat(el.value);
       return isNaN(v) ? null : v;
     }
-    // Explore is one combined filter: tags OR-combine within the row, then
+    // Explore is one combined filter: every selected tag must be present, then
     // AND with each property range. An entry missing a property that is being
     // filtered on is excluded but COUNTED, so "35 shown, 12 lack Tg data"
     // never silently pretends the library has been fully screened.
+    //
+    // Tags used to OR-combine, which was wrong here because the chips are not
+    // one facet: they mix chemistry (acrylic), architecture (block), and use
+    // (biomedical). Picking "acrylic" and "block" returned 21 acrylics plus 2
+    // block copolymers and presented the union as though every hit were both.
+    // Narrowing is the only reading that makes sense across different facets.
     function runExploreFilter() {
       var active = Array.prototype.slice.call(document.querySelectorAll('#mol-tag-filter .mol-tag-chip.active')).map(function (b) { return b.getAttribute('data-tag'); });
       var tgMin = propInput('mol-tg-min'), tgMax = propInput('mol-tg-max');
@@ -4206,7 +4212,8 @@
       var db = window.POLYMER_DB || [];
       var noData = 0;
       var matches = db.filter(function (p) {
-        if (active.length && !(p.tags || []).some(function (t) { return active.indexOf(t) !== -1; })) return false;
+        var tags = p.tags || [];
+        if (active.length && !active.every(function (t) { return tags.indexOf(t) !== -1; })) return false;
         if (tgOn) {
           var tg = parseTemp(p.tg);
           if (tg == null) { noData++; return false; }
@@ -4230,10 +4237,21 @@
           return label + ' ≤ ' + hi + ' °C';
         };
         var parts = [];
-        if (active.length) parts.push('tagged ' + active.join(', '));
+        // " + " rather than ", ": a comma list reads as "any of these", which is
+        // exactly the wrong impression now that the tags narrow.
+        if (active.length) parts.push('tagged ' + active.join(' + '));
         if (tgOn) parts.push(rangeText('Tg', tgMin, tgMax));
         if (tmOn) parts.push(rangeText('Tm', tmMin, tmMax));
-        statusEl.textContent = (matches.length ? matches.length + ' polymer' + (matches.length === 1 ? '' : 's') + ' ' + parts.join(', ') : 'No polymers match ' + parts.join(', ')) +
+        var head;
+        if (matches.length) {
+          head = matches.length + ' polymer' + (matches.length === 1 ? '' : 's') + ' ' + parts.join(', ');
+        } else {
+          head = 'No polymers match ' + parts.join(', ');
+          // Empty is a normal outcome now that tags narrow, so say why rather
+          // than leaving it looking like the library is missing something.
+          if (active.length > 1) head += ' — every selected tag has to apply';
+        }
+        statusEl.textContent = head +
           (noData ? ' (' + noData + ' more lack the filtered data)' : '') + (matches.length ? ':' : '');
       }
       renderResults(matches);

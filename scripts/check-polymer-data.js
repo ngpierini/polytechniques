@@ -207,6 +207,28 @@ function main() {
     }
   });
 
+  // Tag consistency. The Explore filter narrows (every selected tag must
+  // apply), so a tag applied to only some of the entries that qualify reads as
+  // "the library only has these two" rather than "the tagging is incomplete".
+  // "methacrylate" was on 2 of 11 methacrylates before this check existed.
+  const TAG_RULES = [
+    { tag: "methacrylate", when: function (e) { return /methacrylate/i.test(e.name || ""); } },
+    { tag: "block", when: function (e) { return e.arch === "block"; } }
+  ];
+  db.forEach(function (entry, idx) {
+    if (!entry || !entry.name) return;
+    const tags = entry.tags || [];
+    TAG_RULES.forEach(function (rule) {
+      const qualifies = rule.when(entry);
+      if (qualifies && tags.indexOf(rule.tag) === -1) {
+        errors.push("entry #" + idx + " (" + entry.name + "): qualifies for the \"" + rule.tag + "\" tag but does not carry it");
+      }
+      if (!qualifies && tags.indexOf(rule.tag) !== -1) {
+        errors.push("entry #" + idx + " (" + entry.name + "): carries the \"" + rule.tag + "\" tag but does not qualify");
+      }
+    });
+  });
+
   if (errors.length) {
     console.error("polymer-data.js failed integrity check (" + errors.length + " issue" + (errors.length === 1 ? "" : "s") + "):\n");
     errors.forEach(function (e) { console.error("  - " + e); });
