@@ -491,109 +491,137 @@
     </div>
 
     <div class="diagram-panel">
-      <svg class="diagram-svg" width="480" height="230" viewBox="0 0 480 230">
+      <svg class="diagram-svg" width="520" height="300" viewBox="0 0 520 300" role="img" aria-label="Emulsion polymerization: a monomer droplet reservoir feeds surfactant micelles; a water-phase radical enters a micelle to nucleate a particle that then grows.">
         <defs>
           <!-- surfactant: head at the origin, tail extending in +y, so a ring
                placement of translate(cx,cy) rotate(a) translate(0,-R) puts the
-               head at the interface and the tail pointing into the oil phase -->
+               head at the interface and the tail pointing inward -->
           <g id="em-surf">
-            <circle cx="0" cy="0" r="2.4" fill="var(--text)"/>
-            <line x1="0" y1="2" x2="0" y2="10" stroke="var(--text-dim)" stroke-width="1.5"/>
+            <circle cx="0" cy="0" r="2.6" fill="var(--text)"/>
+            <line x1="0" y1="2.2" x2="0" y2="10.5" stroke="var(--text-dim)" stroke-width="1.6" stroke-linecap="round"/>
           </g>
-          <circle id="em-init" r="3" fill="var(--danger)"/>
-          <linearGradient id="em-droplet-fill" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.15"/>
-            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.5"/>
+          <circle id="em-init" r="3.2" fill="var(--danger)"/>
+          <circle id="em-mono" r="3" fill="var(--accent)" fill-opacity="0.85"/>
+          <radialGradient id="em-mono-grad" cx="36%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.62"/>
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.15"/>
+          </radialGradient>
+          <radialGradient id="em-poly-grad" cx="36%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.62"/>
+            <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.15"/>
+          </radialGradient>
+          <radialGradient id="em-drop-grad" cx="72%" cy="32%" r="85%">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.12"/>
+          </radialGradient>
+          <linearGradient id="em-water" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--primary)" stop-opacity="0.10"/>
+            <stop offset="100%" stop-color="var(--primary)" stop-opacity="0.03"/>
           </linearGradient>
-          <marker id="em-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="var(--text-dim)" fill-opacity="0.55"/>
+          <marker id="em-flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#f2b84b"/>
           </marker>
         </defs>
 
-        <text x="10" y="16" class="small dim">continuous water phase</text>
+        <!-- continuous water phase -->
+        <rect x="6" y="26" width="508" height="256" rx="16" fill="url(#em-water)" stroke="var(--border)"/>
+        <text x="18" y="44" class="small dim">continuous water phase (persulfate initiator dissolved here)</text>
 
-        <!-- monomer droplet, bleeding off the right edge like a reservoir -->
-        <circle cx="600" cy="115" r="170" fill="url(#em-droplet-fill)" stroke="var(--accent)" stroke-width="2"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(240) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(245) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(250) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(255) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(260) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(265) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(270) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(275) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(280) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(285) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(290) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(295) translate(0,-170)"/>
-        <use href="#em-surf" transform="translate(600,115) rotate(300) translate(0,-170)"/>
-        <text x="472" y="112" text-anchor="end" class="small">monomer</text>
-        <text x="472" y="126" text-anchor="end" class="small">droplet</text>
+        <!-- monomer droplet reservoir, bleeding off the right edge -->
+        <circle cx="585" cy="162" r="150" fill="url(#em-drop-grad)" stroke="var(--accent)" stroke-width="2"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(210) translate(0,-150)"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(222) translate(0,-150)"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(234) translate(0,-150)"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(246) translate(0,-150)"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(258) translate(0,-150)"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(270) translate(0,-150)"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(282) translate(0,-150)"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(294) translate(0,-150)"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(306) translate(0,-150)"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(318) translate(0,-150)"/>
+        <use href="#em-surf" transform="translate(585,162) rotate(330) translate(0,-150)"/>
+        <text x="503" y="150" text-anchor="end" class="small">monomer</text>
+        <text x="503" y="164" text-anchor="end" class="small">droplet</text>
+        <text x="503" y="178" text-anchor="end" class="small dim">(reservoir)</text>
 
-        <!-- swollen micelle, dense surfactant shell, tails inward -->
-        <circle cx="258" cy="72" r="19" fill="var(--accent)" fill-opacity="0.25"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(0) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(22.5) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(45) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(67.5) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(90) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(112.5) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(135) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(157.5) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(180) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(202.5) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(225) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(247.5) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(270) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(292.5) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(315) translate(0,-19)"/>
-        <use href="#em-surf" transform="translate(258,72) rotate(337.5) translate(0,-19)"/>
-        <text x="258" y="108" text-anchor="middle" class="small dim">micelle</text>
+        <!-- monomer diffusing through the water toward the micelle and particle -->
+        <path d="M432,150 Q382,120 332,104" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-opacity="0.35" stroke-dasharray="2 5" stroke-linecap="round"/>
+        <path d="M436,176 Q300,214 176,198" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-opacity="0.35" stroke-dasharray="2 5" stroke-linecap="round"/>
+        <use href="#em-mono" transform="translate(410,141)"/>
+        <use href="#em-mono" transform="translate(380,126)"/>
+        <use href="#em-mono" transform="translate(352,113)"/>
+        <use href="#em-mono" transform="translate(398,186)"/>
+        <use href="#em-mono" transform="translate(322,203)"/>
+        <use href="#em-mono" transform="translate(252,205)"/>
+        <text x="300" y="248" text-anchor="middle" class="small dim">monomer diffuses through the water to feed the particles</text>
 
-        <!-- polymerizing particle: same shell, chain growing inside -->
-        <circle cx="130" cy="168" r="24" fill="var(--primary)" fill-opacity="0.25"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(0) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(22.5) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(45) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(67.5) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(90) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(112.5) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(135) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(157.5) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(180) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(202.5) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(225) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(247.5) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(270) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(292.5) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(315) translate(0,-24)"/>
-        <use href="#em-surf" transform="translate(130,168) rotate(337.5) translate(0,-24)"/>
-        <path d="M121,162 Q127,155 134,160 Q141,165 137,172 Q133,179 126,175 Q119,171 123,164 Q126,159 131,162 Q136,165 133,169" fill="none" stroke="var(--primary)" stroke-width="1.8" stroke-linecap="round"/>
-        <use href="#em-init" transform="translate(136,170) scale(0.8)"/>
-        <text x="130" y="212" text-anchor="middle" class="small dim">polymerizing particle</text>
+        <!-- transformation arrow: a nucleated micelle grows into a particle -->
+        <path d="M272,116 Q214,152 170,172" fill="none" stroke="#f2b84b" stroke-width="2.6" stroke-linecap="round" marker-end="url(#em-flow)"/>
+        <text x="228" y="150" text-anchor="middle" class="small" fill="#c98a1e">nucleation &amp; growth</text>
 
-        <!-- process arrows, droplet feeds micelles, micelles become particles -->
-        <path d="M420,58 Q355,30 292,55" fill="none" stroke="var(--text-dim)" stroke-width="4.5" stroke-opacity="0.4" stroke-linecap="round" marker-end="url(#em-arrowhead)"/>
-        <text x="356" y="22" text-anchor="middle" class="small dim">micelle formation</text>
-        <path d="M234,94 Q212,120 172,142" fill="none" stroke="var(--text-dim)" stroke-width="4.5" stroke-opacity="0.4" stroke-linecap="round" marker-end="url(#em-arrowhead)"/>
-        <text x="242" y="128" class="small dim">polymerization</text>
+        <!-- swollen micelle -->
+        <circle cx="300" cy="98" r="23" fill="url(#em-mono-grad)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(0) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(22.5) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(45) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(67.5) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(90) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(112.5) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(135) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(157.5) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(180) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(202.5) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(225) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(247.5) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(270) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(292.5) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(315) translate(0,-23)"/>
+        <use href="#em-surf" transform="translate(300,98) rotate(337.5) translate(0,-23)"/>
+        <use href="#em-mono" transform="translate(295,94) scale(0.7)"/>
+        <use href="#em-mono" transform="translate(305,101) scale(0.7)"/>
+        <text x="300" y="140" text-anchor="middle" class="small dim">swollen micelle</text>
 
-        <!-- free surfactant dissolved in the water -->
-        <use href="#em-surf" transform="translate(45,42) rotate(25)"/>
-        <use href="#em-surf" transform="translate(100,28) rotate(150)"/>
-        <use href="#em-surf" transform="translate(62,112) rotate(305)"/>
-        <use href="#em-surf" transform="translate(170,38) rotate(255)"/>
-        <use href="#em-surf" transform="translate(28,178) rotate(80)"/>
-        <use href="#em-surf" transform="translate(330,178) rotate(110)"/>
-        <use href="#em-surf" transform="translate(378,205) rotate(40)"/>
-        <use href="#em-surf" transform="translate(205,182) rotate(200)"/>
+        <!-- growing particle: same shell, chain coiling inside -->
+        <circle cx="132" cy="184" r="30" fill="url(#em-poly-grad)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(0) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(22.5) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(45) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(67.5) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(90) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(112.5) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(135) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(157.5) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(180) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(202.5) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(225) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(247.5) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(270) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(292.5) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(315) translate(0,-30)"/>
+        <use href="#em-surf" transform="translate(132,184) rotate(337.5) translate(0,-30)"/>
+        <path d="M118,175 Q127,164 137,171 Q147,178 141,188 Q135,198 125,192 Q115,186 122,176 Q128,169 135,174" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"/>
+        <use href="#em-init" transform="translate(139,187) scale(0.85)"/>
+        <text x="132" y="230" text-anchor="middle" class="small dim">growing particle</text>
 
-        <!-- free initiator dissolved in the water -->
-        <use href="#em-init" transform="translate(122,62)"/>
-        <use href="#em-init" transform="translate(210,120)"/>
-        <use href="#em-init" transform="translate(305,132)"/>
-        <use href="#em-init" transform="translate(70,215)"/>
-        <use href="#em-init" transform="translate(228,22)"/>
+        <!-- radical entry: a water-phase radical enters the micelle and nucleates it -->
+        <path d="M352,66 Q334,76 320,86" fill="none" stroke="#f2b84b" stroke-width="2.2" stroke-linecap="round" marker-end="url(#em-flow)"/>
+        <use href="#em-init" transform="translate(356,60)"/>
+        <text x="372" y="56" text-anchor="middle" class="small dim">radical entry</text>
+
+        <!-- numbered stages -->
+        <g><circle cx="272" cy="74" r="9" fill="var(--card-bg)" stroke="var(--accent)" stroke-width="1.6"/><text x="272" y="77.5" text-anchor="middle" class="small" fill="var(--accent)" style="font-weight:700;">1</text></g>
+        <g><circle cx="386" cy="58" r="9" fill="var(--card-bg)" stroke="var(--danger)" stroke-width="1.6"/><text x="386" y="61.5" text-anchor="middle" class="small" fill="var(--danger)" style="font-weight:700;">2</text></g>
+        <g><circle cx="102" cy="160" r="9" fill="var(--card-bg)" stroke="var(--primary)" stroke-width="1.6"/><text x="102" y="163.5" text-anchor="middle" class="small" fill="var(--primary)" style="font-weight:700;">3</text></g>
+
+        <!-- free surfactant and initiator dissolved in the water -->
+        <use href="#em-surf" transform="translate(52,74) rotate(25)"/>
+        <use href="#em-surf" transform="translate(66,210) rotate(305)"/>
+        <use href="#em-surf" transform="translate(214,66) rotate(255)"/>
+        <use href="#em-surf" transform="translate(120,262) rotate(110)"/>
+        <use href="#em-surf" transform="translate(455,262) rotate(200)"/>
+        <use href="#em-init" transform="translate(96,124)"/>
+        <use href="#em-init" transform="translate(244,262)"/>
+        <use href="#em-init" transform="translate(455,84)"/>
       </svg>
       <div class="diagram-legend">
         <span><svg width="14" height="16" viewBox="-4 -4 14 16"><circle cx="0" cy="0" r="2.4" fill="var(--text)"/><line x1="0" y1="2" x2="0" y2="10" stroke="var(--text-dim)" stroke-width="1.5"/></svg> surfactant (head + tail)</span>
@@ -602,7 +630,7 @@
         <span><span class="swatch" style="background:var(--primary);opacity:0.4;"></span> polymer</span>
       </div>
     </div>
-    <p class="diagram-caption">Surfactant (head toward the water, tail toward the oil) assembles into micelles that swell with monomer fed from the large droplets. An initiator-derived radical entering a swollen micelle nucleates a particle, where the chain then grows. Only a small fraction of micelles ever capture a radical, so far fewer particles form than there were micelles (only about 0.1% of them, typically 10<sup>16</sup> to 10<sup>18</sup> particles per liter); the rest give up their surfactant to stabilize the growing particles.</p>
+    <p class="diagram-caption">The numbers trace the sequence. Surfactant (head toward the water, tail toward the oil) assembles into a monomer-swollen micelle <strong>(1)</strong>; a water-phase radical enters and nucleates it <strong>(2)</strong>; the particle then grows <strong>(3)</strong> as more monomer keeps diffusing in from the large droplet reservoir. Only a small fraction of micelles ever capture a radical, so far fewer particles form than there were micelles (only about 0.1% of them, typically 10<sup>16</sup> to 10<sup>18</sup> particles per liter); the rest give up their surfactant to stabilize the growing particles.</p>
 
     <p class="guide-note">
       Because nucleation is essentially over once the micelles run out, the particle count set during that short window determines the final particle size for the rest of the reaction: the same total polymer volume divided among however many particles got started. That's the whole basis for the calculator's emulsion tab, which estimates that particle count from the surfactant and initiator charge (Smith-Ewart theory) and then reports the final diameter from a simple mass balance. Everything downstream of nucleation (propagation, transfer, termination) is ordinary free radical chemistry; the physics of getting a chain started is the only genuinely new mechanism here. This micellar picture holds when surfactant is well above its CMC; for styrene and MMA it accounts for over 99% of the particles. Below the CMC, or for more water-soluble monomers, a second route takes over: homogeneous nucleation, where oligomers growing in the water phase eventually become insoluble, precipitate, and pick up surfactant to become particles in their own right.
