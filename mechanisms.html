@@ -37,6 +37,19 @@
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="style.css?v=56">
+<style>
+  /* Subtle motion on the emulsion figure: monomer streams toward the
+     particles and the entering radical gently pulses. Disabled for users
+     who prefer reduced motion, and absent entirely on browsers without
+     CSS animation (the figure just renders static). */
+  .em-flowline { animation: em-drift 1.4s linear infinite; }
+  @keyframes em-drift { to { stroke-dashoffset: -14; } }
+  .em-radical { animation: em-pulse 2.2s ease-in-out infinite; }
+  @keyframes em-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  @media (prefers-reduced-motion: reduce) {
+    .em-flowline, .em-radical { animation: none; }
+  }
+</style>
 </head>
 <body>
 
@@ -544,9 +557,11 @@
         <text x="503" y="164" text-anchor="end" class="small">droplet</text>
         <text x="503" y="178" text-anchor="end" class="small dim">(reservoir)</text>
 
-        <!-- monomer diffusing through the water toward the micelle and particle -->
-        <path d="M432,150 Q382,120 332,104" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-opacity="0.35" stroke-dasharray="2 5" stroke-linecap="round"/>
-        <path d="M436,176 Q300,214 176,198" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-opacity="0.35" stroke-dasharray="2 5" stroke-linecap="round"/>
+        <!-- monomer diffusing through the water toward the micelle and particle.
+             The dash pattern drifts (em-flowline) so the stream reads as
+             flowing rather than static, honoring prefers-reduced-motion. -->
+        <path class="em-flowline" d="M432,150 Q382,120 332,104" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-opacity="0.4" stroke-dasharray="2 5" stroke-linecap="round"/>
+        <path class="em-flowline" d="M436,176 Q300,214 176,198" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-opacity="0.4" stroke-dasharray="2 5" stroke-linecap="round"/>
         <use href="#em-mono" transform="translate(410,141)"/>
         <use href="#em-mono" transform="translate(380,126)"/>
         <use href="#em-mono" transform="translate(352,113)"/>
@@ -605,7 +620,7 @@
 
         <!-- radical entry: a water-phase radical enters the micelle and nucleates it -->
         <path d="M352,66 Q334,76 320,86" fill="none" stroke="#f2b84b" stroke-width="2.2" stroke-linecap="round" marker-end="url(#em-flow)"/>
-        <use href="#em-init" transform="translate(356,60)"/>
+        <use href="#em-init" class="em-radical" transform="translate(356,60)"/>
         <text x="372" y="56" text-anchor="middle" class="small dim">radical entry</text>
 
         <!-- numbered stages -->
@@ -631,6 +646,59 @@
       </div>
     </div>
     <p class="diagram-caption">The numbers trace the sequence. Surfactant (head toward the water, tail toward the oil) assembles into a monomer-swollen micelle <strong>(1)</strong>; a water-phase radical enters and nucleates it <strong>(2)</strong>; the particle then grows <strong>(3)</strong> as more monomer keeps diffusing in from the large droplet reservoir. Only a small fraction of micelles ever capture a radical, so far fewer particles form than there were micelles (only about 0.1% of them, typically 10<sup>16</sup> to 10<sup>18</sup> particles per liter); the rest give up their surfactant to stabilize the growing particles.</p>
+
+    <p class="guide-note" style="margin-top:18px;">
+      That snapshot is a single instant. Run the same reaction from 0 to 100% conversion and it passes through three distinct regimes, the Smith-Ewart intervals, and the particle count set during the first, short one is what locks in everything after it.
+    </p>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="520" height="248" viewBox="0 0 520 248" role="img" aria-label="Rate of polymerization and particle number plotted against conversion, showing Smith-Ewart Interval I (nucleation), Interval II (steady growth with monomer droplets present), and Interval III (monomer-starved).">
+        <defs>
+          <marker id="em-axis-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--text-dim)"/>
+          </marker>
+        </defs>
+
+        <!-- zone bands, alternating tint, separated at the Interval I/II and II/III boundaries -->
+        <rect x="44" y="40" width="64.8" height="166" fill="var(--accent)" fill-opacity="0.07"/>
+        <rect x="108.8" y="40" width="237.6" height="166" fill="var(--primary)" fill-opacity="0.06"/>
+        <rect x="346.4" y="40" width="129.6" height="166" fill="var(--danger)" fill-opacity="0.06"/>
+        <line x1="108.8" y1="40" x2="108.8" y2="206" stroke="var(--border)" stroke-dasharray="3 3"/>
+        <line x1="346.4" y1="40" x2="346.4" y2="206" stroke="var(--border)" stroke-dasharray="3 3"/>
+
+        <!-- zone labels -->
+        <text x="76" y="22" text-anchor="middle" class="small" fill="var(--accent)" style="font-weight:700;">INTERVAL I</text>
+        <text x="76" y="34" text-anchor="middle" class="small dim">nucleation</text>
+        <text x="227" y="22" text-anchor="middle" class="small" fill="var(--primary)" style="font-weight:700;">INTERVAL II</text>
+        <text x="227" y="34" text-anchor="middle" class="small dim">droplets feed the particles</text>
+        <text x="411" y="22" text-anchor="middle" class="small" fill="var(--danger)" style="font-weight:700;">INTERVAL III</text>
+        <text x="411" y="34" text-anchor="middle" class="small dim">monomer-starved</text>
+
+        <!-- axes -->
+        <line x1="44" y1="206" x2="480" y2="206" stroke="var(--text-dim)" stroke-width="1.2" marker-end="url(#em-axis-arrow)"/>
+        <line x1="44" y1="206" x2="44" y2="36" stroke="var(--text-dim)" stroke-width="1.2" marker-end="url(#em-axis-arrow)"/>
+        <text x="262" y="230" text-anchor="middle" class="small dim">Conversion</text>
+        <text x="44" y="220" text-anchor="middle" class="small dim">0%</text>
+        <text x="260" y="220" text-anchor="middle" class="small dim">50%</text>
+        <text x="476" y="220" text-anchor="middle" class="small dim">100%</text>
+
+        <!-- rate of polymerization: rises through nucleation, plateaus (or creeps up
+             with the gel effect) while droplets last, falls as monomer depletes -->
+        <path d="M44,206 Q76,150 108.8,83.3 Q140,72 173.6,68.9 Q220,66 260,66 Q300,66 346.4,68.9 Q380,90 411.2,126.6 Q450,170 476,194.5" fill="none" stroke="var(--primary)" stroke-width="2.4" stroke-linecap="round"/>
+
+        <!-- particle number: builds during nucleation, then locked in flat for
+             the rest of the reaction (Odian: constant through Intervals II & III) -->
+        <path d="M44,206 Q76,120 108.8,47.9 L476,47.9" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4" stroke-linecap="round"/>
+      </svg>
+      <div class="diagram-legend">
+        <span><svg width="16" height="10" viewBox="0 0 16 10"><line x1="0" y1="5" x2="16" y2="5" stroke="var(--primary)" stroke-width="2.4"/></svg> rate of polymerization</span>
+        <span><svg width="16" height="10" viewBox="0 0 16 10"><line x1="0" y1="5" x2="16" y2="5" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3"/></svg> particle number</span>
+      </div>
+    </div>
+    <p class="diagram-caption"><strong>Interval I</strong> is nucleation: radicals are still finding micelles, so the particle number climbs and the rate climbs with it. It is the shortest interval (typically 2&ndash;15% conversion) and ends once the surfactant has all been absorbed onto particles and the micelles run out. <strong>Interval II</strong> starts once that particle number is locked in: monomer droplets still exist as a reservoir, feeding the particles through the water, so the rate holds roughly steady (or creeps up if the gel effect kicks in). <strong>Interval III</strong> begins the moment the droplets are exhausted; the particle number stays the same, but with no reservoir left the monomer concentration inside each particle falls, and the rate falls with it.</p>
+    <p class="guide-note">
+      That's why the particle count from Interval I is the whole game: everything measured afterward (rate, final molecular weight, particle size) is downstream of a number that was fixed early and never revisited.
+    </p>
 
     <p class="guide-note">
       Because nucleation is essentially over once the micelles run out, the particle count set during that short window determines the final particle size for the rest of the reaction: the same total polymer volume divided among however many particles got started. That's the whole basis for the calculator's emulsion tab, which estimates that particle count from the surfactant and initiator charge (Smith-Ewart theory) and then reports the final diameter from a simple mass balance. Everything downstream of nucleation (propagation, transfer, termination) is ordinary free radical chemistry; the physics of getting a chain started is the only genuinely new mechanism here. This micellar picture holds when surfactant is well above its CMC; for styrene and MMA it accounts for over 99% of the particles. Below the CMC, or for more water-soluble monomers, a second route takes over: homogeneous nucleation, where oligomers growing in the water phase eventually become insoluble, precipitate, and pick up surfactant to become particles in their own right.
