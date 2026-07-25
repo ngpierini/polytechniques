@@ -287,6 +287,22 @@
   </div>
 
   <div class="card">
+    <h3>Worked examples</h3>
+    <p class="guide-note">Each of these reproduces, by hand, a number the interactive read-outs above give you.</p>
+
+    <p class="guide-note"><strong>1. Crystallinity from a DSC scan.</strong> A quenched PET first heat shows a melting enthalpy &Delta;H<sub>m</sub> = 35&nbsp;J/g and a cold-crystallization exotherm &Delta;H<sub>cc</sub> = 30&nbsp;J/g; the perfect-crystal reference for PET is &Delta;H<sub>m</sub>&deg; = 140&nbsp;J/g. Subtract the cold crystallization so you count only crystals present before the scan:</p>
+    <div class="guide-formula">X<sub>c</sub> = (&Delta;H<sub>m</sub> &minus; &Delta;H<sub>cc</sub>) / &Delta;H<sub>m</sub>&deg; = (35 &minus; 30) / 140 = 3.6% &nbsp;&rarr;&nbsp; essentially amorphous as quenched</div>
+    <p class="guide-note">A clean HDPE melt with &Delta;H<sub>m</sub> = 200&nbsp;J/g and no cold crystallization (&Delta;H<sub>m</sub>&deg; = 293&nbsp;J/g) instead gives X<sub>c</sub> = 200/293 = 68%.</p>
+
+    <p class="guide-note"><strong>2. Composition from a TGA compositional run.</strong> A filled compound leaves 16.1% residue after a full inert (N<sub>2</sub>) run and 10.1% after a full air run, and shows a distinct CO<sub>2</sub>-loss step near 720&nbsp;&deg;C that removes 7.9% of the original mass. The inert residue keeps carbon plus mineral; the air residue is mineral only; the carbonate is fingerprinted by its 44% CO<sub>2</sub> loss:</p>
+    <div class="guide-formula">carbon black = 16.1% &minus; 10.1% = 6.0%<br>CaCO<sub>3</sub> = 7.9% &divide; 0.44 = 18%</div>
+
+    <p class="guide-note"><strong>3. Crosslink density from a DMA rubbery plateau.</strong> The default network on the DMA plot reads a rubbery storage modulus E&prime; &asymp; 1.2&nbsp;MPa on the plateau ~40&nbsp;&deg;C above T<sub>g</sub> (T &asymp; 373&nbsp;K). Ideal rubber elasticity, E&prime; = 3&nu;RT, inverts to the crosslink density &nu; and the molar mass between crosslinks M<sub>c</sub> (with &rho; &asymp; 1&nbsp;g/cm&sup3;):</p>
+    <div class="guide-formula">&nu; = E&prime; / (3RT) = 1.2&times;10<sup>6</sup> / (3 &times; 8.314 &times; 373) = 129 mol/m&sup3;<br>M<sub>c</sub> = &rho; / &nu; = 1000 / 129 &asymp; 7.8 kg/mol</div>
+    <p class="guide-note">Tighten the cure and E&prime;, &nu;, and T<sub>g</sub> all rise while M<sub>c</sub> falls; loosen it and they move the other way. Drag the crosslink-density slider to watch it.</p>
+  </div>
+
+  <div class="card">
     <h3>Related tools</h3>
     <p class="guide-note">
       Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a href="tg-predictor.html">Tg Predictor</a> (Fox equation). Turn a molecular-weight distribution question into numbers with the <a href="gpc-calibration.html">GPC Calibration Converter</a> and the <a href="gpc-peak-interpretation.html">GPC Peak Interpretation</a> guide. Every term here (T<sub>g</sub>, T<sub>m</sub>, crystallinity, storage modulus, crosslink density) is defined in the <a href="glossary.html">Glossary</a>.
