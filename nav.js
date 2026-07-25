@@ -16,6 +16,7 @@
     ["air-free-technique.html", "💨 Air-Free"],
     ["conversion-monitoring.html", "📊 Conversion"],
     ["gpc-peak-interpretation.html", "📉 GPC Peaks"],
+    ["thermal-analysis.html", "🔥 Thermal"],
     ["glossary.html", "📖 Glossary"]
   ];
 
@@ -98,6 +99,7 @@
     ["air-free-technique.html", "Air-Free Reaction Setup", "schlenk line freeze pump thaw degas inert"],
     ["conversion-monitoring.html", "Monitoring Conversion", "aliquot internal standard kinetics nmr"],
     ["gpc-peak-interpretation.html", "GPC Peak Interpretation", "chromatogram shoulder tailing column detector"],
+    ["thermal-analysis.html", "Thermal Analysis (DSC, TGA, DMA)", "dsc tga dma thermal thermogravimetric differential scanning calorimetry dynamic mechanical analysis glass transition tg melting tm crystallinity char yield decomposition onset storage loss modulus tan delta crosslink density"],
     ["glossary.html", "Glossary", "terms definitions dispersity dp cta"],
     ["polymer-chain-game.html", "Build a Polymer Chain", "game maze fun"],
     ["whats-new.html", "What's New", "changelog updates"],
@@ -415,7 +417,7 @@
   }
 
   // ---- "On this page" sticky jump nav for the long guide pages ----
-  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html"];
+  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html", "thermal-analysis.html"];
 
   function buildSectionNav(current) {
     if (TOC_PAGES.indexOf(current) === -1) return;
