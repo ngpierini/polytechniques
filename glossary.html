@@ -65,7 +65,7 @@
       <dd>A molecular weight average that weights each chain by its own mass, so longer chains count more. Always greater than or equal to M<sub>n</sub>; the two are equal only for a perfectly uniform (monodisperse) sample.</dd>
 
       <dt>Đ (dispersity, formerly PDI)</dt>
-      <dd>M<sub>w</sub> divided by M<sub>n</sub>. A measure of how uniform the chain lengths are. Đ = 1.00 means every chain is the same length. Controlled techniques (ATRP, RAFT, ROMP) typically land around 1.05 to 1.30; uncontrolled FRP is usually 1.5 to 2.5 or broader.</dd>
+      <dd>M<sub>w</sub> divided by M<sub>n</sub>. A measure of how uniform the chain lengths are. Đ = 1.00 means every chain is the same length. Controlled techniques (ATRP, RAFT, ROMP) typically land around 1.05 to 1.30; uncontrolled FRP is usually 1.5 to 2.5 or broader. That low end reflects the theoretical limits, about 1.5 for termination by pure coupling and 2.0 for pure disproportionation at low conversion; chain transfer, autoacceleration, and high conversion push it broader.</dd>
 
       <dt>DP (degree of polymerization)</dt>
       <dd>The number of monomer units in one chain. Setting a target DP and multiplying by the monomer's molecular weight (plus the initiator fragment) gives the target M<sub>n</sub>.</dd>
@@ -85,7 +85,7 @@
       <dd>A polymerization where chain growth is fast and reversible deactivation (ATRP), reversible chain transfer (RAFT), or a well behaved catalyst (ROMP) keeps termination low enough that molecular weight grows predictably with conversion and Đ stays narrow.</dd>
 
       <dt>Kinetic chain length</dt>
-      <dd>The average number of monomer units added per radical generated, from initiation to termination. In free radical polymerization this sets the chain length since there is no reactivation step.</dd>
+      <dd>The average number of monomer units added per radical generated, from initiation to termination. In free radical polymerization this sets the chain length since there is no reactivation step. For termination by disproportionation the number-average DP equals the kinetic chain length; for termination by combination (coupling) each dead chain is two kinetic chains, so DP<sub>n</sub> is about twice the kinetic chain length.</dd>
 
       <dt>Chain transfer</dt>
       <dd>A reaction that moves the growing chain's reactivity to another molecule (solvent, monomer, a deliberately added CTA), ending one chain and starting another. RAFT is built entirely around a reversible, degenerate version of this process.</dd>
@@ -172,7 +172,7 @@
       <dd>A copolymer whose two monomers follow each other in a regular &hellip;ABABAB&hellip; sequence. It arises when each chain end strongly prefers adding the other monomer over its own, meaning both reactivity ratios are near zero, so their product r<sub>1</sub>r<sub>2</sub> approaches 0.</dd>
 
       <dt>Statistical (random) copolymer</dt>
-      <dd>A copolymer whose monomer sequence is set by the reactivity ratios and the feed, with no long-range order. It is strictly random only in the special case r<sub>1</sub>r<sub>2</sub> = 1, where each addition ignores the unit before it. The <a href="copolymer-composition.html">Copolymer Composition</a> tool reads this regime from the reactivity-ratio product.</dd>
+      <dd>A copolymer whose monomer sequence is set by the reactivity ratios and the feed, with no long-range order. It is strictly random only in the special case r<sub>1</sub>r<sub>2</sub> = 1, where each addition ignores the unit before it. That memoryless placement does not mean the chain matches the feed: it mirrors the feed composition only in the tighter case r<sub>1</sub> = r<sub>2</sub> = 1, and otherwise the more reactive monomer is enriched, still in random placement. The <a href="copolymer-composition.html">Copolymer Composition</a> tool reads this regime from the reactivity-ratio product.</dd>
 
       <dt>Gradient (tapered) copolymer</dt>
       <dd>A copolymer whose composition shifts gradually from one monomer to the other along the chain, instead of changing sharply as it does at a block junction. It forms when strong composition drift is left to run in a batch reaction, or is made deliberately by feeding one monomer in over time.</dd>
@@ -195,7 +195,7 @@
       <dd>The case where each chain end adds the two monomers in the same ratio no matter which unit it just added, so neither alternation nor blockiness is favored and the sequence is effectively random. The product r<sub>1</sub>r<sub>2</sub> is the single number that places a pair on the scale from alternating (toward 0) through ideal (about 1) to blocky (well above 1); the <a href="copolymer-composition.html">Copolymer Composition</a> tool reads the likely microstructure from it.</dd>
 
       <dt>Azeotropic composition</dt>
-      <dd>The feed composition at which the copolymer forms with exactly the same composition as the feed, so the copolymer composition does not drift as conversion proceeds. Only exists for some monomer pairs and reactivity ratio combinations.</dd>
+      <dd>The feed composition at which the copolymer forms with exactly the same composition as the feed, so the copolymer composition does not drift as conversion proceeds. Only exists for some monomer pairs and reactivity ratio combinations: specifically when both reactivity ratios sit on the same side of 1, usually both r<sub>1</sub> and r<sub>2</sub> below 1 (both above 1 is possible but rare and blocky). When it does exist, the azeotropic feed is f<sub>1</sub> = (1 &minus; r<sub>2</sub>) / (2 &minus; r<sub>1</sub> &minus; r<sub>2</sub>).</dd>
 
       <dt>Composition drift</dt>
       <dd>The gradual change in a copolymer's instantaneous composition as conversion increases, caused by the faster reacting comonomer being consumed first. Avoided only at the azeotropic composition or by continuously feeding the faster monomer.</dd>

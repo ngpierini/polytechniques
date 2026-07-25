@@ -167,6 +167,18 @@
     <p class="guide-note">
       Enter your (time, conversion) data points from a series of aliquots below. This plots ln([M]&#8320;/[M]) = &minus;ln(1&minus;<em>p</em>) against time. For a well behaved controlled/living polymerization with a roughly constant concentration of propagating chains, this should be a straight line through the origin. The slope is k<sub>p</sub>[active chains], so curvature tells you that concentration is changing, and the direction says which way: curving <em>upward</em> (accelerating) means active chains are still building up, from slow or continuing initiation, or an induction period while the ATRP/RAFT equilibrium sets up; curving <em>downward</em> (flattening out) means active chains are being lost, from termination (chains dying off) or simply from the monomer running low near high conversion.
     </p>
+    <p class="guide-note">
+      "Active chains" here means only the small population of centers actually propagating at a given instant. In ATRP and RAFT most chains sit dormant (halide- or dithioester-capped) between activation events, so it is that active concentration, not the total number of chains, that has to stay constant. ROMP has no radicals at all; its active center is a metal-carbene (alkylidene), so read "active chains" as that active center whenever ROMP is in scope.
+    </p>
+    <p class="guide-note">
+      One exception worth knowing: in an ATRP run with no Cu(II) deactivator added up front, the first few points can curve (fast, then flattening) even when everything is working, because the deactivator has to build up before the reaction settles into its steady, linear regime. Over that early stretch ln([M]&#8320;/[M]) actually climbs as t<sup>2/3</sup> rather than linearly; adding a few mol% of the deactivator at the start, so the deactivator/activator ratio is about 0.1 or higher, makes the plot linear from the very beginning. So don't over-read curvature in the first couple of points.
+    </p>
+    <p class="guide-note">
+      <strong>RAFT:</strong> the radicals come from an ordinary initiator (AIBN, a peroxide), so the slope is set mainly by that initiator, not by the RAFT agent, which mostly just shuffles which chain carries the radical. Some RAFT systems (notably dithiobenzoates) show real rate retardation from side reactions of the intermediate radical, so a lower slope or gentle downward curvature can be retardation rather than a loss of control.
+    </p>
+    <p class="guide-note">
+      For the real test of control, pair this plot with a plot of Mₙ vs conversion from the same aliquots (by SEC/GPC). A straight Mₙ-vs-conversion line through the origin, together with a low and roughly constant Đ, is what actually defines a living/controlled polymerization: this first-order kinetic plot only tells you the active-chain concentration is constant, while the Mₙ line tells you the chains are really growing under control.
+    </p>
 
     <div id="kin-rows" class="kin-rows"></div>
     <div class="actions" style="justify-content:flex-start; margin-top:6px;">

@@ -141,7 +141,7 @@
       The first heat carries the sample's processing history, including a small enthalpy-relaxation overshoot on the T<sub>g</sub> step if the glass has aged. A controlled cool followed by a second heat erases that history, which is why intrinsic values are quoted from the second heat. Percent crystallinity comes from the melting enthalpy: X<sub>c</sub> = (&Delta;H<sub>m</sub> &minus; &Delta;H<sub>cc</sub>) / &Delta;H<sub>m</sub>&deg; &times; 100, subtracting the cold-crystallization enthalpy so you count only crystals that were there before the scan.
     </p>
     <p class="guide-note" style="font-size:0.85rem;">
-      <strong>On the numbers:</strong> tabulated T<sub>g</sub> and T<sub>m</sub> vary with sample and method, and because the glass transition is at least partly kinetic, the T<sub>g</sub> also depends on measurement rate (a faster scan reads a higher T<sub>g</sub>). Standard reference tables (Brandrup's <em>Polymer Handbook</em>, as tabulated in Odian's <em>Principles of Polymerization</em>) list PET at T<sub>g</sub> 61&nbsp;&deg;C with a crystalline T<sub>m</sub> of 270&nbsp;&deg;C, while a 10&nbsp;K/min DSC scan of quenched PET shows an apparent T<sub>g</sub> around 75&ndash;80&nbsp;&deg;C and a melting peak near 250&nbsp;&deg;C. The heating-rate slider below shows why the T<sub>g</sub> figure is method-dependent.
+      <strong>On the numbers:</strong> tabulated T<sub>g</sub> and T<sub>m</sub> vary with sample and method, and because the glass transition is at least partly kinetic, the T<sub>g</sub> also depends on measurement rate (a faster scan reads a higher T<sub>g</sub>). The transition is not a sharp point but the cessation of long-range segmental motion, spread over a modest temperature range for chain segments of different lengths (about 5&ndash;20 chain atoms), so which temperature you read depends on how fast you probe it. The cooling rate that formed the glass matters as well: a faster quench freezes in a higher T<sub>g</sub>, so a reheat scan also carries the history of how the sample was cooled. Standard reference tables (Brandrup's <em>Polymer Handbook</em>, as tabulated in Odian's <em>Principles of Polymerization</em>) list PET at T<sub>g</sub> 61&nbsp;&deg;C with a crystalline T<sub>m</sub> of 270&nbsp;&deg;C, while a 10&nbsp;K/min DSC scan of quenched PET shows an apparent T<sub>g</sub> around 75&ndash;80&nbsp;&deg;C and a melting peak near 250&nbsp;&deg;C. The heating-rate slider below shows why the T<sub>g</sub> figure is method-dependent.
     </p>
 
     <div class="ta-controls">
@@ -283,7 +283,7 @@
       </tbody>
     </table>
     </div>
-    <p class="guide-note" style="margin-top:12px;"><strong>Traps worth remembering.</strong> A first-heat DSC T<sub>g</sub> includes processing history and an aging overshoot; quote the second heat. Forgetting to subtract &Delta;H<sub>cc</sub> overstates crystallinity. A TGA &ldquo;decomposition temperature&rdquo; is ambiguous (extrapolated onset, T<sub>5%</sub>, and first deviation all differ), and every temperature shifts with heating rate and sample mass. A DMA T<sub>g</sub> is not comparable between labs unless the marker and frequency match, and the tan&nbsp;&delta; peak already overstates the usable service temperature.</p>
+    <p class="guide-note" style="margin-top:12px;"><strong>Traps worth remembering.</strong> A first-heat DSC T<sub>g</sub> includes processing history and an aging overshoot; quote the second heat. Forgetting to subtract &Delta;H<sub>cc</sub> overstates crystallinity. A TGA &ldquo;decomposition temperature&rdquo; is ambiguous (extrapolated onset, T<sub>5%</sub>, and first deviation all differ), and every temperature shifts with heating rate and sample mass. A melting point is convention-dependent in the same way: the classic T<sub>m</sub> is the extrapolated onset of melting, while DSC software usually quotes the endotherm peak, so a reported T<sub>m</sub> depends on which one is meant. A DMA T<sub>g</sub> is not comparable between labs unless the marker and frequency match, and the tan&nbsp;&delta; peak already overstates the usable service temperature.</p>
   </div>
 
   <div class="card">
@@ -426,7 +426,7 @@
     var SAMPLES = {
       pmma: { name: "PMMA (amorphous)", tg: 105, dCp: 0.30, tcc: null, tm: null, dHm: 0, dHcc: 0, dHm0: null, xEnd: 170, note2: "A single Tg step and nothing else: no crystals to melt." },
       pet: { name: "PET (quenched)", tg: 80, dCp: 0.40, tcc: 130, tm: 250, dHm: 35, dHcc: 30, dHm0: 140, xEnd: 285, note2: "Quenched amorphous: cold crystallization near 130 °C almost cancels the melt, so as-quenched crystallinity is near zero." },
-      hdpe: { name: "HDPE", tg: null, dCp: 0, tcc: null, tm: 132, dHm: 200, dHcc: 0, dHm0: 293, xEnd: 165, note2: "Tg is off-scale (≈ −120 °C). A big, sharp melt and no cold crystallization." }
+      hdpe: { name: "HDPE", tg: null, dCp: 0, tcc: null, tm: 132, dHm: 200, dHcc: 0, dHm0: 293, xEnd: 165, note2: "Tg is off-scale (≈ −120 °C; Odian's Table 1-3 lists polyethylene at −125 °C). A big, sharp melt and no cold crystallization. Odian's generic PE Tm is 137 °C; the demo uses 132 °C for HDPE specifically." }
     };
     var state = { s: "pmma", heat: 1, rate: 10, endo: "down" };
 

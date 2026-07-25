@@ -39,6 +39,7 @@ window.POLYMER_DB = [
   {
     name: "Polystyrene", aka: ["PS"], monomer: "Styrene", cls: "Addition (vinyl)", cas: "9003-53-6",
     tg: "100 °C", tags: ["commodity", "packaging"],
+    note: "Ordinary atactic PS is amorphous, so only Tg applies; the 250 °C melting point in Odian's Table 1-3 is for the crystalline (stereoregular) form.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" },
       { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 },
@@ -48,6 +49,7 @@ window.POLYMER_DB = [
   {
     name: "Poly(vinyl chloride)", aka: ["PVC"], monomer: "Vinyl chloride", cls: "Addition (vinyl)",
     cas: "9002-86-2", tg: "80 °C", tags: ["commodity", "vinyl-halide", "packaging"],
+    note: "Commercial PVC is nearly amorphous (only slight crystallinity), so it is used for its Tg; the 273 °C melting point in Odian's Table 1-3 is for the crystalline form.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "Cl" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
@@ -61,7 +63,7 @@ window.POLYMER_DB = [
   {
     name: "Polytetrafluoroethylene", aka: ["PTFE", "Teflon"], monomer: "Tetrafluoroethylene",
     cls: "Addition (vinyl)", cas: "9002-84-0", tm: "327 °C", tags: ["engineering", "fluoropolymer"],
-    note: "Multiple sub-ambient and near-ambient transitions are reported instead of a single clean Tg.",
+    note: "Multiple sub-ambient and near-ambient transitions are reported instead of a single clean Tg. Standard handbook tables (Brandrup, Odian's Table 1-3) nonetheless quote a Tg near 117 °C.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "F" }, { id: 4, el: "F" }, { id: 5, el: "F" }, { id: 6, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }, { a: 2, b: 5, order: 1 }, { a: 2, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
@@ -104,6 +106,7 @@ window.POLYMER_DB = [
   {
     name: "Poly(methyl methacrylate)", aka: ["PMMA", "acrylic glass", "Plexiglass"], monomer: "Methyl methacrylate",
     cls: "Addition (methacrylate)", cas: "9011-14-7", tg: "105 °C", tags: ["acrylic", "engineering"],
+    note: "Commercial PMMA is atactic and amorphous (Tg only); the 220 °C melting point in Odian's Table 1-3 refers to the crystalline stereoregular form.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
@@ -171,13 +174,15 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyisoprene (cis-1,4)", aka: ["Natural rubber", "NR"], monomer: "Isoprene", cls: "Addition (diene)",
-    cas: "9003-31-0", tg: "-70 °C", tags: ["elastomer"],
+    cas: "9003-31-0", tg: "-70 °C", tm: "28 °C", tags: ["elastomer"],
+    note: "Nearly amorphous at room temperature (crystalline Tm near 28 °C, Odian's Table 8-1). The trans-1,4 isomer, gutta-percha, is a harder, more crystalline, thermoplastic-like material (Tg near -58 °C, Tm near 74 °C).",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: "S1", order: 1 }]
   },
   {
     name: "Polybutadiene (cis-1,4)", aka: ["BR", "butadiene rubber"], monomer: "1,3-Butadiene", cls: "Addition (diene)",
-    cas: "9003-17-2", tg: "-100 °C", tags: ["elastomer"],
+    cas: "9003-17-2", tg: "-100 °C", tm: "6 °C", tags: ["elastomer"],
+    note: "The trans-1,4 isomer is markedly more crystalline (Tg near -83 °C, Tm near 145 °C, Odian's Table 8-1).",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
   },
@@ -202,7 +207,8 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(dimethylsiloxane)", aka: ["PDMS", "silicone rubber"], monomer: "Dimethylsiloxane / D4 or D3 cyclics",
-    cls: "Ring-opening (silicone)", cas: "9016-00-6", tg: "-125 °C", tags: ["silicone", "elastomer"],
+    cls: "Ring-opening (silicone)", cas: "9016-00-6", tg: "-125 °C", tm: "-40 °C", tags: ["silicone", "elastomer"],
+    note: "Crystallizes only well below room temperature, so its melting point (Odian's Table 1-3) is far sub-ambient.",
     atoms: [{ id: 1, el: "Si" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
   },

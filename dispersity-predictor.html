@@ -166,7 +166,7 @@
       &#272; = M<sub>w</sub>/M<sub>n</sub> = 1 + 1/DP<sub>n</sub> + C &middot; (2/p &minus; 1)
     </div>
     <p class="guide-note">
-      The <strong>1/DP<sub>n</sub></strong> term is the chain-length (Poisson) floor: longer chains give narrower distributions, and it is all that remains for a perfect living system. The <strong>C &middot; (2/p &minus; 1)</strong> term is the cost of finite exchange. The factor (2/p &minus; 1) is identical to (2 &minus; p)/p; it runs to infinity as conversion p approaches zero and falls to exactly 1 at full conversion, which is why Đ is high early and settles as the reaction proceeds. The whole difference between mechanisms is the exchange coefficient <strong>C</strong>:
+      The <strong>1/DP<sub>n</sub></strong> term is the chain-length (Poisson) floor: longer chains give narrower distributions, and it is all that remains for a perfect living system. It is the large-chain approximation of the exact living-chain result &#272; = 1 + DP<sub>n</sub>/(DP<sub>n</sub> + 1)<sup>2</sup>; either way a Poisson-distributed polymer of DP<sub>n</sub> = 50 reaches only &#272; = 1.02, about as tight as any chain-growth process gets. The <strong>C &middot; (2/p &minus; 1)</strong> term is the cost of finite exchange. The factor (2/p &minus; 1) is identical to (2 &minus; p)/p; it runs to infinity as conversion p approaches zero and falls to exactly 1 at full conversion, which is why Đ is high early and settles as the reaction proceeds. The whole difference between mechanisms is the exchange coefficient <strong>C</strong>:
     </p>
     <div class="table-scroll">
       <table class="recipe">
@@ -184,8 +184,8 @@
           </tr>
           <tr>
             <td><strong>NMP</strong></td>
-            <td class="num" style="text-align:left;">C = k<sub>p</sub>[R-X]<sub>0</sub> / (k<sub>c</sub>[nitroxide])</td>
-            <td class="num" style="text-align:left;">Same structure as ATRP; the deactivator is free nitroxide (TEMPO, SG1) and k<sub>c</sub> is the coupling rate constant.</td>
+            <td class="num" style="text-align:left;">C = k<sub>p</sub>[alkoxyamine]<sub>0</sub> / (k<sub>c</sub>[nitroxide])</td>
+            <td class="num" style="text-align:left;">Same structure as ATRP; the dormant chains are alkoxyamines, not alkyl halides, so [alkoxyamine]<sub>0</sub> is the NMP analog of [R-X]<sub>0</sub>. The deactivator is free nitroxide (TEMPO, SG1) and k<sub>c</sub> is the coupling rate constant.</td>
           </tr>
           <tr>
             <td><strong>Ideal living</strong></td>
@@ -224,7 +224,7 @@
       </table>
     </div>
     <p class="guide-note">
-      One failure mode the equation cannot show: a highly active dithiobenzoate on a less-activated monomer such as vinyl acetate. Addition to the RAFT agent is fast, but the intermediate radical is so stabilized that it fragments too slowly, which retards or stops the reaction outright. Control is lost through slow fragmentation, not through a low C<sub>ex</sub>, so no single number describes it.
+      One failure mode the equation cannot show: a highly active dithiobenzoate on a less-activated monomer such as vinyl acetate. Addition to the RAFT agent is fast, but the intermediate radical is so stabilized that it fragments too slowly, which retards or stops the reaction outright. Control is lost through slow fragmentation, not through a low C<sub>ex</sub>, so no single number describes it. Slow fragmentation is not the only retardation channel: the stabilized intermediate radical can also couple with a propagating radical, which both slows the rate and, because it consumes chains, makes stars and other complex architectures hard to build cleanly by RAFT.
     </p>
   </div>
 
@@ -244,7 +244,10 @@
       </table>
     </div>
     <p class="guide-note">
-      NMP behaves the same way with free nitroxide as the deactivator: plenty of persistent nitroxide gives a small C and a narrow product; too little lets chains run long between traps. The predictor exposes C directly for ATRP and NMP so you can dial it between these regimes or enter a value computed from your own rate constants.
+      NMP behaves the same way with free nitroxide as the deactivator: plenty of persistent nitroxide gives a small C and a narrow product; too little lets chains run long between traps. The predictor exposes C directly for ATRP and NMP so you can dial it between these regimes or enter a value computed from your own rate constants. NMP also covers a narrower set of monomers than ATRP or RAFT: TEMPO gives good control essentially only for styrene and 4-vinylpyridine (&#272; below ~1.1&ndash;1.2 is hard for other monomers), and it has never worked for methacrylates, whose propagating radical is degraded by &beta;-hydrogen abstraction. Second-generation nitroxides such as SG1 widen the range to acrylates, acrylamides, and dienes.
+    </p>
+    <p class="guide-note">
+      One reason the ideal curve flatters ATRP and NMP early on: the deactivator is self-regulating. Every irreversible termination event leaves behind an excess of the persistent species (Cu<sup>II</sup>, or free nitroxide in NMP), so its concentration builds over roughly the first 5% of conversion until it is high enough to shut normal termination down. This persistent radical effect is why real &#272; starts broad and why the model overstates the control at very low conversion.
     </p>
   </div>
 
@@ -261,10 +264,10 @@
       <strong>This is an ideal lower bound. Measured Đ is almost always higher.</strong> The equation is termination-free and assumes uniform, instant initiation and a fixed number of chains, so it cannot see the effects that broaden real samples:
     </p>
     <ul class="guide-steps">
-      <li><strong>Radical termination.</strong> Dead chains from combination or disproportionation add high- and low-mass shoulders the ideal form ignores.</li>
-      <li><strong>Slow or incomplete initiation.</strong> A RAFT agent with a low initial transfer constant, or an ATRP initiator that starts unevenly, spreads chain births over a range of conversions and can give early bimodality that the steady-state equation never captures.</li>
+      <li><strong>Radical termination.</strong> Dead chains from combination or disproportionation add high- and low-mass shoulders the ideal form ignores. This bites hardest at high target molecular weight: well-defined ATRP tops out around M<sub>n</sub> 150,000&ndash;200,000, and above that (especially at high conversion) bimolecular termination claims a growing share of chains and control is lost, so the ideal lower bound is least trustworthy there.</li>
+      <li><strong>Slow or incomplete initiation.</strong> A RAFT agent with a low initial transfer constant, or an ATRP initiator that starts unevenly, spreads chain births over a range of conversions and can give early bimodality that the steady-state equation never captures. In copper ATRP, pre-loading a little deactivator (roughly 10 mol% CuBr<sub>2</sub> relative to CuBr) at the start suppresses that initial burst of termination and removes most of the low-conversion broadening.</li>
       <li><strong>Chain transfer and backbiting.</strong> Significant for acrylates at high temperature and high conversion, both broaden the product.</li>
-      <li><strong>Loss of chain-end fidelity.</strong> At very high conversion, chain ends die faster than they propagate, so pushing to quantitative conversion trades Đ and end-group integrity for yield.</li>
+      <li><strong>Loss of chain-end fidelity.</strong> At very high conversion, chain ends die faster than they propagate, so pushing to quantitative conversion trades Đ and end-group integrity for yield. For a block copolymer this sets a deadline: add the second monomer no later than about 90&ndash;95% conversion, not at 100%, or too many first-block chains will have lost the active end needed to grow the second block.</li>
       <li><strong>A drifting C.</strong> Monomer depletes and deactivator builds over a run, so the real coefficient is not the single constant used here.</li>
     </ul>
     <p class="guide-note">
@@ -398,7 +401,7 @@
       w.push("Very high Cₑₓ (active dithiobenzoates) predicts an almost monodisperse product, but these agents often cause rate retardation the equation cannot show, so the real reaction can be slow.");
     }
     if (state.conv >= 0.98) {
-      w.push("Near-quantitative conversion trades chain-end fidelity for yield: real Đ climbs and living character degrades well before the ideal curve suggests.");
+      w.push("Near-quantitative conversion trades chain-end fidelity for yield: real Đ climbs and living character degrades well before the ideal curve suggests. For a block copolymer, add the second monomer by ~90-95% conversion, not 100%.");
     }
     var box = $("disp-warnings");
     if (!w.length) { box.innerHTML = ""; return; }

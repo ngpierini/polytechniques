@@ -1684,7 +1684,12 @@ function polyurethaneTemplate() {
           segments and driving molecular weight up. In practice, <strong>measure the real %NCO</strong> of your
           prepolymer before extending by following the isocyanate stretch at ~2270 cm<sup>&minus;1</sup> by in-line IR
           and quantify against a calibration. Side reactions, moisture, and polyol batch variation all pull the real
-          value below theory, and Step 2 accepts your measured value for exactly that reason.
+          value below theory, and Step 2 accepts your measured value for exactly that reason. Although the urethane
+          bond forms by addition, with no small molecule split off, the chain still builds by step-growth, so its
+          molecular weight is set by the Step 2 stoichiometry (the Carothers limit X<sub>n</sub> = (1 + r) &divide; (1 &minus; r),
+          with r the equivalents ratio). That is the deeper reason the extender index has to sit close to 1.00: a
+          couple percent off stoichiometry caps how high Mn can climb, quite apart from leaving free NCO for
+          allophanate/biuret crosslinking.
         </p>
         <div class="guide-formula">
           Polyol eq wt = 56100 &divide; OH# &nbsp;|&nbsp; Diisocyanate eq wt = 4202 &divide; %NCO &nbsp;|&nbsp; %NCO<sub>prepolymer</sub> = 4202 &times; (eq NCO &minus; eq OH) &divide; total mass
@@ -1802,7 +1807,7 @@ function polyurethaneTemplate() {
         <div class="field">
           <label for="pu-cat-pct">Catalyst loading (wt% of final batch)</label>
           <input type="number" id="pu-cat-pct" value="" step="any" min="0" max="5">
-          <span class="hint">0.01&ndash;0.2 wt% typical; more catalyst = shorter pot life</span>
+          <span class="hint">0.01&ndash;0.2 wt% typical; more catalyst = shorter pot life. The diol and diisocyanate reaction proceeds without a catalyst, and is often run uncatalyzed to suppress side reactions; the catalyst mainly buys rate and pot-life control, not a different product.</span>
         </div>
       </div>
       <div class="stat-grid" id="pu-ext-stats" style="margin-top:16px;"></div>
@@ -2133,7 +2138,11 @@ function emulsionTemplate() {
         Monomer diffuses from larger, surfactant-stabilized droplets through the water phase to feed the growing
         particles (Interval II) until the droplets are exhausted (Interval III). Particle number is set almost
         entirely during nucleation and stays roughly constant afterward, so the final particle size is just the
-        total polymer volume divided among however many particles nucleated.
+        total polymer volume divided among however many particles nucleated. Because each particle propagates in
+        near isolation between radical entries, that same particle number also sets the chain length, not just the
+        rate: more particles means less termination and higher molecular weight. That is why emulsion can deliver
+        high rate and high molecular weight at once, and why adding surfactant (more, smaller particles) lifts both,
+        whereas more initiator raises the rate but lowers molecular weight, as in a bulk polymerization.
       </p>
       <div class="guide-formula">
         N &asymp; k (R<sub>i</sub> &divide; &mu;)<sup>0.4</sup> (a<sub>s</sub> &middot; [S])<sup>0.6</sup> &nbsp;&nbsp; (Smith-Ewart, particles per volume of water)
@@ -2145,6 +2154,19 @@ function emulsionTemplate() {
         feed), electrolyte, trace metals, and impurities, none of which are captured here. Every reference constant
         below (a<sub>s</sub>, k<sub>p</sub>, &phi;<sub>sat</sub>, the initiator half-life) is editable, so use
         your own literature or supplier data where you have it.
+      </p>
+      <p class="guide-note" style="margin-top:8px;">
+        The 0.6 (3/5) power on surfactant is the ideal Smith-Ewart limit, not a fixed law. Once particles nucleate
+        and then coagulate, the observed surfactant exponent slides from about 1.2 at low surfactant down to 0.4 at
+        high surfactant, one more reason to read this as order-of-magnitude. Styrene, with little radical desorption,
+        tracks the ideal 0.6 (and 0.4 on R<sub>i</sub>) dependence most closely; more water-soluble monomers deviate more.
+      </p>
+      <p class="guide-note" style="margin-top:8px;">
+        The Smith-Ewart picture also assumes radicals are captured by micelles, which holds best for styrene (water
+        solubility ~0.07 g/L). Well above the CMC even methyl methacrylate (~16 g/L) still nucleates &gt;99%
+        micellarly, but nearer the CMC, and for the more water-soluble vinyl acetate, a real fraction of particles
+        nucleate homogeneously in the water phase, so treat the predicted particle number and size for those cases
+        as a rougher, lower-confidence estimate.
       </p>
     </div>
 

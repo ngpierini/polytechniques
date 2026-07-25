@@ -159,7 +159,7 @@
 
   <div class="card" id="fpt">
     <h3>Freeze Pump Thaw Method</h3>
-    <p class="guide-note">Freeze pump thaw (FPT) removes dissolved gas (mostly O₂ and N₂) from a liquid by alternately freezing it solid, pulling vacuum on the headspace, and letting it thaw. Each cycle releases gas that was trapped in the liquid. It's the most thorough degassing method and the standard for ATRP.</p>
+    <p class="guide-note">Freeze pump thaw (FPT) removes dissolved gas (mostly O₂ and N₂) from a liquid by alternately freezing it solid, pulling vacuum on the headspace, and letting it thaw. Each cycle releases gas that was trapped in the liquid. It's the most thorough degassing method and the standard for ATRP. The oxygen induction period is roughly proportional to how much O₂ is dissolved, which is exactly why a more thorough degas (FPT rather than a quick sparge) buys a shorter, more reproducible startup.</p>
 
     <h4 style="margin: 14px 0 8px; font-size: 0.9rem;">What you need</h4>
     <ul class="guide-list">
@@ -223,10 +223,11 @@
 
   <div class="card">
     <h3>Technique specific notes</h3>
+    <p class="guide-note">Why oxygen matters at all: it adds to a carbon radical almost as fast as diffusion allows, turning a reactive propagating radical into a sluggish peroxy radical (chain&ndash;OO&bull;) that mostly just couples off to dead peroxides and hydroperoxides. Until the dissolved O₂ is used up almost nothing propagates, and that stall is the induction period. Those same peroxides and hydroperoxides can also decompose thermally and start new chains, more so at higher temperature, so incomplete degassing adds a second, uncontrolled radical source that broadens the molecular weight distribution and hurts batch to batch reproducibility.</p>
     <ul class="guide-list">
       <li><strong>ATRP:</strong> most O₂ sensitive. Do the full 3 to 4x FPT. ARGET/ICAR/SARA variants continuously regenerate Cu(I) and tolerate trace O₂ better, so sparging alone is sometimes acceptable there. See <a href="#oxygen-tolerant">oxygen tolerant methods</a> below for how far that can be pushed.</li>
       <li><strong>RAFT:</strong> no O₂ sensitive metal, but O₂ scavenges initial radicals and causes an induction period. FPT (3x) or thorough sparging both work; less rigor needed than ATRP. PET-RAFT with an added tertiary amine can skip degassing entirely.</li>
-      <li><strong>ROMP:</strong> Grubbs type catalysts are fairly bench stable as solids but degrade in solution with O₂/moisture. Degas the monomer solution and add catalyst last as a fresh stock solution.</li>
+      <li><strong>ROMP:</strong> Grubbs type catalysts are fairly bench stable as solids but degrade in solution with O₂/moisture. The Ru-based Grubbs initiators are also relatively tolerant of air, moisture, and oxygen-containing groups (carbonyl, carboxyl, hydroxyl), which is why ROMP sits toward the tolerant end here; the older Schrock Mo/W initiators are far more air and moisture sensitive. Degas the monomer solution and add catalyst last as a fresh stock solution.</li>
       <li><strong>FRP:</strong> most O₂ tolerant, but degassing still shortens the induction period and improves reproducibility.</li>
     </ul>
 
