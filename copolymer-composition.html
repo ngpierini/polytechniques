@@ -155,16 +155,24 @@
   // r1*r2 is the key parameter: -> 0 alternating, ~1 ideal random, > 1 blocky.
   function microstructure(r1, r2) {
     var p = r1 * r2;
-    var drift = (Math.max(r1, r2) > 5 && Math.min(r1, r2) < 0.2);
+    var hi = Math.max(r1, r2), lo = Math.min(r1, r2);
+    // Both radicals prefer their OWN monomer (r1>1 and r2>1): runs of each form.
+    // Uncommon for radical copolymerization (Odian, Sec. 6-2a).
+    if (r1 > 1 && r2 > 1) return { label: "Blocky tendency", detail: "each radical prefers adding its own monomer, so runs of each form; uncommon for radical copolymerization" };
+    // Wildly different ratios (one >>1, the other <<1): the fast monomer polymerizes
+    // almost to exhaustion before the slow one takes over, so the product runs from
+    // one near-homopolymer to the other — approaching a blend of the two homopolymers.
+    // Odian calls this consecutive homopolymerization (Sec. 6-2a).
+    if (hi > 5 && lo < 0.3) return { label: "Consecutive homopolymerization", detail: "the ratios are wildly different, so the faster monomer polymerizes almost to exhaustion first and the slower one only afterward. A batch reaction gives a steep composition gradient (near-homopolymer to near-homopolymer), close to a blend of the two homopolymers; feed the fast monomer in continuously to hold composition." };
     var m;
-    if (r1 > 1 && r2 > 1) m = { label: "Blocky tendency", detail: "each radical prefers its own monomer, so runs of each form (uncommon for radical copolymerization)" };
-    else if (p < 0.05) m = { label: "Alternating", detail: "both radicals strongly prefer the other monomer, so the chain is close to …ABAB…" };
+    if (p < 0.05) m = { label: "Alternating", detail: "both radicals strongly prefer the other monomer, so the chain is close to …ABAB…" };
     else if (p < 0.20) m = { label: "Alternating tendency", detail: "both prefer cross-addition; an azeotropic feed holds the composition constant" };
     else if (p < 0.75) m = { label: "Statistical", detail: "r₁r₂ below 1 gives a mostly random chain with a mild alternating lean; composition drifts with conversion unless run at the azeotrope" };
-    else if (p <= 1.5) m = { label: "Ideal / near-random", detail: "r₁r₂ ≈ 1: monomers add nearly at random and the sequence is Bernoullian" };
-    else m = { label: "Blocky tendency", detail: "r₁r₂ well above 1: each radical favors its own monomer, giving long same-monomer runs" };
-    if (drift && m.label !== "Blocky tendency") {
-      m = { label: m.label + " + strong drift", detail: "the ratios are very disparate, so the faster monomer is consumed first, giving a gradient/tapered chain with a homopolymer-rich tail. Feed it continuously to hold composition." };
+    else m = { label: "Ideal / near-random", detail: "r₁r₂ ≈ 1: monomers add nearly at random and the sequence is Bernoullian" };
+    // Moderately unequal ratios still drift with conversion, short of full
+    // consecutive homopolymerization.
+    if (hi > 2 && lo < 0.5) {
+      m = { label: m.label + " + drift", detail: m.detail + " With ratios this unequal the composition also drifts noticeably as conversion climbs; run at the azeotrope or feed the faster monomer continuously to hold it constant." };
     }
     return m;
   }

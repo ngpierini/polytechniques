@@ -296,9 +296,9 @@
 
         <!-- ring bonds -->
         <line x1="120" y1="30" x2="196" y2="95" class="bond bond-break" />
-        <line x1="44" y1="95" x2="120" y2="30" class="bond bond-break" />
+        <line x1="44" y1="95" x2="120" y2="30" class="bond bond-keep" />
         <line x1="196" y1="95" x2="120" y2="160" class="bond bond-keep" />
-        <line x1="120" y1="160" x2="44" y2="95" class="bond bond-keep" />
+        <line x1="120" y1="160" x2="44" y2="95" class="bond bond-break" />
 
         <!-- vertices -->
         <g class="ring-atom ring-atom-metal">
@@ -321,11 +321,11 @@
         <text x="196" y="126" text-anchor="middle" class="ring-substituent">(R)</text>
       </svg>
       <div class="mech-ring-legend">
-        <span><span class="legend-swatch legend-break"></span> forming / breaking (M&ndash;C)</span>
-        <span><span class="legend-swatch legend-keep"></span> retained (C&ndash;C)</span>
+        <span><span class="legend-swatch legend-break"></span> bonds that break</span>
+        <span><span class="legend-swatch legend-keep"></span> kept &rarr; new M=C and C=C</span>
       </div>
     </div>
-    <p class="mech-ring-caption">Simplified metallacyclobutane intermediate: the four membered ring that forms and immediately opens on every cycle. When it opens, the two metal&ndash;carbon bonds break, regenerating a metal carbene on one side and a new alkene on the other.</p>
+    <p class="mech-ring-caption">Simplified metallacyclobutane intermediate: the four membered ring that forms and immediately opens on every cycle. When it opens, one metal&ndash;carbon bond and the carbon&ndash;carbon bond across from it break; the metal keeps its other carbon as the regenerated carbene (M=C) and the remaining two carbons become the new backbone alkene (C=C), so the metal never leaves the chain.</p>
 
     <p class="guide-note">
       Because the metal never leaves the chain end between cycles, ROMP is "living" in the same practical sense as ATRP/RAFT (predictable Mₙ, low dispersity, chain extension possible) but for a completely different mechanistic reason. There's no dormant/active equilibrium to manage, just a metal that keeps finding the next ring to open. Leaving the reaction to run too long without quenching risks secondary metathesis (chain scission/backbiting) rather than radical termination. The driving force is the relief of ring strain in the monomer, which is why highly strained rings like norbornene polymerize so readily and so fast; very large, essentially unstrained macrocycles can still be polymerized, but there the driving force is entropic instead. The practical limit on ROMP is <strong>catalyst death</strong>, which is the main termination pathway. It bites hardest exactly where you would want living behavior most: as each block nears full conversion the reaction becomes monomer starved, the polymerization slows, and the longer the active catalyst sits there the more of it decomposes. That is why ROMP diblocks are routine while clean tri-, tetra-, and higher multiblocks are genuinely difficult, and it is a good argument for not chasing the last few percent of conversion on an early block. A closely related technique, <strong>ADMET</strong> (acyclic diene metathesis), uses the same metal carbene chemistry but builds chains from linear diene monomers with loss of ethylene instead of opening a ring. It isn't one of this calculator's tabs, but it's worth knowing it's a mechanistic cousin of ROMP.

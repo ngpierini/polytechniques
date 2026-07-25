@@ -61,16 +61,16 @@ const ATRP_CU_SOURCES = [
 const ATRP_LIGANDS = [
   { name: "PMDETA", mw: 173.30 },
   { name: "2,2'-Bipyridine (bpy)", mw: 156.22 },
-  { name: "Me6TREN", mw: 231.42 },
-  { name: "4,4'-Dinonyl-2,2'-bipyridine (dNbpy)", mw: 380.65 },
-  { name: "Tris(2-pyridylmethyl)amine (TPMA)", mw: 305.37 },
+  { name: "Me6TREN", mw: 230.39 },
+  { name: "4,4'-Dinonyl-2,2'-bipyridine (dNbpy)", mw: 408.66 },
+  { name: "Tris(2-pyridylmethyl)amine (TPMA)", mw: 290.36 },
 ];
 
 const RAFT_CTAS = [
   { name: "4-Cyano-4-(phenylcarbonothioylthio)pentanoic acid (CPADB)", mw: 279.37 },
-  { name: "CDTPA", mw: 434.65 },
-  { name: "DDMAT", mw: 363.60 },
-  { name: "Cumyl dithiobenzoate (CDB)", mw: 256.40 },
+  { name: "CDTPA", mw: 403.66 },
+  { name: "DDMAT", mw: 364.63 },
+  { name: "Cumyl dithiobenzoate (CDB)", mw: 272.42 },
   { name: "2-Cyano-2-propyl benzodithioate (CPDB)", mw: 221.32 },
 ];
 
@@ -169,7 +169,7 @@ const RADICAL_INITIATORS = [
   { name: "AIBN", mw: 164.21 },
   { name: "4,4'-Azobis(4-cyanovaleric acid) (V-501 / ACVA)", mw: 280.28 },
   { name: "Benzoyl peroxide (BPO)", mw: 242.23 },
-  { name: "V-70", mw: 260.33 },
+  { name: "V-70", mw: 308.42 },
   { name: "Potassium persulfate (KPS)", mw: 270.32 },
   { name: "Ammonium persulfate (APS)", mw: 228.20 },
   { name: "V-50", mw: 271.19 },
@@ -190,7 +190,7 @@ const PET_PHOTOCATALYSTS = [
 const ROMP_CATALYSTS = [
   { name: "Grubbs 1st Generation", mw: 822.96 },
   { name: "Grubbs 2nd Generation", mw: 848.97 },
-  { name: "Grubbs 3rd Generation (bispyridine)", mw: 673.60 },
+  { name: "Grubbs 3rd Generation (bispyridine)", mw: 726.76 },
   { name: "Hoveyda-Grubbs 1st Generation", mw: 596.52 },
   { name: "Hoveyda-Grubbs 2nd Generation", mw: 626.61 },
 ];
