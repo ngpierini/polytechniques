@@ -297,6 +297,123 @@
     return closed ? wlHash(closed.atoms, closed.bonds) : null;
   }
 
+  // ---- canonical PSMILES support ------------------------------------------
+  //
+  // PSMILES writes a repeat unit as SMILES with two "*" wildcards marking where
+  // the chain continues: [*]CCO[*] is poly(ethylene oxide). One polymer has many
+  // valid PSMILES because the bracket can be cut at any backbone bond, so a
+  // canonical form is needed before the string can be used as an identity.
+  //
+  // The published recipe is: fold to the shortest unit, cyclize, canonicalize
+  // the ring, then break the closure bond back open. Step 4 is the awkward one -
+  // after a canonicalizer reorders atoms, the bond you closed is no longer
+  // trivially identifiable, and guessing wrong silently emits a valid-looking
+  // string for a different polymer.
+  //
+  // This sidesteps it. Rather than cut one bond and hope, enumerate EVERY legal
+  // framing (there are exactly L, one per backbone bond), hand each to the
+  // canonicalizer, and let the caller take the lexicographically smallest
+  // string. Any starting frame produces the same set, so the minimum is the same
+  // from any drawing - which is the property a canonical form has to have. The
+  // cost is L canonicalization calls, and L is a handful for any real unit.
+  //
+  // Only BACKBONE bonds are cut. Cutting a bond in a pendant ring would move the
+  // chain ends onto the phenyl of polystyrene and describe a different polymer
+  // entirely, so the rotation is restricted to the backbone cycle.
+  function repeatUnitFramings(atoms, bonds) {
+    var reduced = foldRepeatUnit(atoms, bonds);
+    var info = backbonePath(reduced.atoms, reduced.bonds);
+    if (!info) return null;
+    var path = info.path, L = path.length, i, j;
+    var byId = info.byId;
+
+    // core = everything except the two chain-end stars
+    var starSet = {};
+    starSet[info.headStar] = 1; starSet[info.tailStar] = 1;
+    var coreAtoms = [], coreBonds = [];
+    for (i = 0; i < reduced.atoms.length; i++) {
+      if (!starSet[reduced.atoms[i].id]) coreAtoms.push(reduced.atoms[i]);
+    }
+    for (i = 0; i < reduced.bonds.length; i++) {
+      var b = reduced.bonds[i];
+      if (!starSet[b.a] && !starSet[b.b]) coreBonds.push(b);
+    }
+    // Close the backbone into a cycle, exactly as closeRepeatUnit does - and
+    // note that this can create a PARALLEL edge. In any vinyl unit (*-CH2-CH2-*)
+    // the two attachment atoms are already bonded, so the cycle carries two
+    // distinct edges between the same pair. Cutting has to target one specific
+    // edge, so the cycle is indexed by POSITION in the bond list rather than by
+    // endpoints; matching on endpoints removes both and disconnects the unit.
+    var cyclic = coreBonds.map(function (b) { return { a: b.a, b: b.b, order: b.order }; });
+
+    // Is edge `skip` a bridge of the core graph? If its two ends stay connected
+    // without it, it lies in a ring and must NOT be cut. Restricting to the
+    // backbone path is not enough on its own: in PET or polycarbonate the
+    // backbone runs THROUGH an aromatic ring, so some backbone bonds are ring
+    // bonds, and cutting one tears benzene open and emits a star double-bonded
+    // to a carbon - a different compound wearing the right atom count.
+    function stillConnected(skip) {
+      var u = cyclic[skip].a, v = cyclic[skip].b, adj2 = {}, k;
+      for (k = 0; k < coreAtoms.length; k++) adj2[coreAtoms[k].id] = [];
+      for (k = 0; k < cyclic.length; k++) {
+        if (k === skip) continue;
+        if (!adj2[cyclic[k].a] || !adj2[cyclic[k].b]) continue;
+        adj2[cyclic[k].a].push(cyclic[k].b);
+        adj2[cyclic[k].b].push(cyclic[k].a);
+      }
+      var seen2 = {}, stack = [u];
+      seen2[u] = 1;
+      while (stack.length) {
+        var cur = stack.pop();
+        if (cur === v) return true;
+        var nb2 = adj2[cur] || [];
+        for (k = 0; k < nb2.length; k++) if (!seen2[nb2[k]]) { seen2[nb2[k]] = 1; stack.push(nb2[k]); }
+      }
+      return false;
+    }
+
+    var ringIdx = [], used = {};
+    for (i = 0; i + 1 < L; i++) {
+      var found = -1;
+      for (j = 0; j < cyclic.length; j++) {
+        if (used[j]) continue;
+        if ((cyclic[j].a === path[i] && cyclic[j].b === path[i + 1]) ||
+            (cyclic[j].a === path[i + 1] && cyclic[j].b === path[i])) { found = j; break; }
+      }
+      if (found === -1) return null;
+      used[found] = 1;
+      // Cuttable only if it is a bridge (not a ring bond) AND a single bond.
+      // PSMILES attachment points are single bonds by convention, and cutting a
+      // backbone C=C emits "[*]=C..." - which is not just unconventional, it
+      // WINS the lexicographic minimum, because "=" (0x3D) sorts below "C"
+      // (0x43). One double bond in the backbone would otherwise hijack the
+      // canonical form of every diene rubber in the library.
+      if (cyclic[found].order === 1 && !stillConnected(found)) ringIdx.push(found);
+    }
+    var closeOrder = Math.max(info.headOrder, info.tailOrder);
+    cyclic.push({ a: path[L - 1], b: path[0], order: closeOrder });
+    // The closure is where the unit was actually drawn, so it is always legal -
+    // but prefer single-bond framings when any exist.
+    if (closeOrder === 1 || !ringIdx.length) ringIdx.push(cyclic.length - 1);
+
+    // one framing per backbone bond: drop that edge, cap both loose ends with "*"
+    var out = [];
+    for (i = 0; i < ringIdx.length; i++) {
+      var cutAt = ringIdx[i], cut = cyclic[cutAt];
+      var fAtoms = coreAtoms.map(function (a) { return { id: a.id, el: a.el, charge: a.charge }; });
+      var fBonds = [];
+      for (j = 0; j < cyclic.length; j++) {
+        if (j === cutAt) continue;
+        fBonds.push({ a: cyclic[j].a, b: cyclic[j].b, order: cyclic[j].order });
+      }
+      fAtoms.push({ id: "__s0", el: "*" }, { id: "__s1", el: "*" });
+      fBonds.push({ a: "__s0", b: cut.b, order: cut.order });
+      fBonds.push({ a: cut.a, b: "__s1", order: cut.order });
+      out.push({ atoms: fAtoms, bonds: fBonds });
+    }
+    return out;
+  }
+
   function elementProfile(atoms) {
     var p = {};
     atoms.forEach(function (a) { if (a.el !== "*") p[a.el] = (p[a.el] || 0) + 1; });
@@ -312,5 +429,5 @@
     return d;
   }
 
-  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, foldRepeatUnit: foldRepeatUnit, elementProfile: elementProfile, profileDistance: profileDistance };
+  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, foldRepeatUnit: foldRepeatUnit, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance };
 });

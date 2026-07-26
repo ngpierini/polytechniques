@@ -261,6 +261,7 @@
       <div class="mol-tool-cluster">
         <button type="button" id="mol-copy-smiles" class="copy-btn" title="Copy the drawn structure as canonical SMILES">Copy SMILES</button>
         <button type="button" id="mol-copy-inchi" class="copy-btn" title="Copy the drawn structure as an InChI string">Copy InChI</button>
+        <button type="button" id="mol-copy-psmiles" class="copy-btn" title="Copy the repeat unit as canonical PSMILES: [*]-terminated SMILES, folded to the shortest period and framed canonically. The identifier open polymer datasets use.">Copy PSMILES</button>
         <button type="button" id="mol-cleanup" class="copy-btn" title="Redraw the structure with ideal geometry">&#10024; Clean up</button>
       </div>
     </div>
@@ -315,8 +316,8 @@
 </footer>
 
 <script src="polymer-data.js?v=13"></script>
-<script src="polymer-graph.js?v=1"></script>
-<script src="polymer-search.js?v=97"></script>
+<script src="polymer-graph.js?v=3"></script>
+<script src="polymer-search.js?v=98"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });

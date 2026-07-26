@@ -2810,16 +2810,62 @@
       });
     })();
 
+    // ---------- Canonical PSMILES ----------
+    // PSMILES is a repeat unit written as SMILES with two "*" wildcards where
+    // the chain continues: [*]CCO[*] is poly(ethylene oxide). It is what the
+    // open polymer-ML datasets are keyed on, so it is the portable identity our
+    // internal 32-bit graph hash can never be.
+    //
+    // Canonicalizing it is the hard part, because one polymer has many valid
+    // PSMILES: the bracket can be cut at any backbone bond, and it can enclose
+    // any whole number of repeat units. polymer-graph.js handles both - folding
+    // to the shortest period, then enumerating every legal framing - and this
+    // just canonicalizes each framing with RDKit and keeps the lexicographically
+    // smallest. Since every drawing of a given polymer produces the SAME set of
+    // framings, the minimum is stable across drawings, which is the whole point.
+    //
+    // Implemented here from the published four-step recipe rather than ported
+    // from the reference package, whose licence forbids commercial use. The
+    // canonicalization itself is RDKit's, which is BSD-3 and already vendored.
+    function canonicalPSmiles(RDKit, atomList, bondList) {
+      if (!window.PolymerGraph || !window.PolymerGraph.repeatUnitFramings) return null;
+      var ex = expandSuperatoms(atomList, bondList);
+      var framings = window.PolymerGraph.repeatUnitFramings(ex.atoms, ex.bonds);
+      if (!framings || !framings.length) return null;
+      var best = null, i;
+      for (i = 0; i < framings.length; i++) {
+        var mol = molFrom(RDKit, molblockFrom(framings[i].atoms, framings[i].bonds));
+        if (!mol) continue;
+        var s = null;
+        try { s = mol.get_smiles(); } catch (e) { s = null; }
+        mol.delete();
+        if (!s) continue;
+        // "*" round-trips out of RDKit unbracketed; PSMILES convention brackets it.
+        s = s.replace(/(?:\[\*\]|\*)/g, '[*]');
+        if (best === null || s < best) best = s;
+      }
+      return best;
+    }
+
     function copyCanvasAs(kind, btn) {
       if (!atoms.length) { smilesNote('Draw a structure first.'); return; }
       smilesNote(rdkitPromise ? '' : 'Loading the chemistry engine (about 7 MB, one time)…');
       ensureRDKit().then(function (RDKit) {
-        var ex = expandSuperatoms(atoms, bonds);
-        var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
-        if (!mol) { smilesNote('The drawing could not be interpreted as a molecule.'); return; }
         var out = null;
-        try { out = kind === 'inchi' ? mol.get_inchi() : mol.get_smiles(); } catch (e) {}
-        mol.delete();
+        if (kind === 'psmiles') {
+          out = canonicalPSmiles(RDKit, atoms, bonds);
+          if (!out) {
+            smilesNote('PSMILES needs a repeat unit: bracket the unit so it has exactly two open ' +
+                       'chain ends. A whole molecule with no attachment points has no PSMILES form.');
+            return;
+          }
+        } else {
+          var ex = expandSuperatoms(atoms, bonds);
+          var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
+          if (!mol) { smilesNote('The drawing could not be interpreted as a molecule.'); return; }
+          try { out = kind === 'inchi' ? mol.get_inchi() : mol.get_smiles(); } catch (e) {}
+          mol.delete();
+        }
         if (!out) { smilesNote('Conversion failed. Check the structure for impossible valences.'); return; }
         var flash = function () {
           var orig = btn.textContent;
@@ -2872,11 +2918,13 @@
       var input = document.getElementById('mol-smiles-input');
       var copySmi = document.getElementById('mol-copy-smiles');
       var copyInchi = document.getElementById('mol-copy-inchi');
+      var copyPs = document.getElementById('mol-copy-psmiles');
       var cleanBtn = document.getElementById('mol-cleanup');
       if (loadBtn) loadBtn.addEventListener('click', importSmiles);
       if (input) input.addEventListener('keydown', function (e) { if (e.key === 'Enter') importSmiles(); });
       if (copySmi) copySmi.addEventListener('click', function () { copyCanvasAs('smiles', copySmi); });
       if (copyInchi) copyInchi.addEventListener('click', function () { copyCanvasAs('inchi', copyInchi); });
+      if (copyPs) copyPs.addEventListener('click', function () { copyCanvasAs('psmiles', copyPs); });
       if (cleanBtn) cleanBtn.addEventListener('click', cleanUpStructure);
     })();
 
