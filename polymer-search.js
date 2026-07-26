@@ -705,7 +705,22 @@
     // structure and charges implicit (Shift+N writes NO2). The composition
     // feeds the formula/mass readout below; expandSuperatoms() rebuilds the
     // real atoms for anything RDKit sees (search, SMILES, clean-up).
-    var SUPERATOM_COUNTS = { NO2: { N: 1, O: 2 } };
+    // Element-count lookup for the mass readout. Populated once from the
+    // shared superatom dictionary so it never drifts from the atomic
+    // expansions above; falls back to hardcoded NO2 only if the module
+    // did not load. Aliased keys also resolve so "MeO" reads the same as
+    // "OMe" regardless of which one the user typed.
+    var SUPERATOM_COUNTS = (function () {
+      var out = { NO2: { N: 1, O: 2 } };
+      var SA = window.PolymerSuperatoms;
+      if (!SA) return out;
+      Object.keys(SA.SUPERATOMS).forEach(function (name) {
+        var c = SA.elementCount(name);
+        if (c) out[name] = c;
+        (SA.SUPERATOMS[name].aliases || []).forEach(function (alias) { out[alias] = c; });
+      });
+      return out;
+    })();
 
     function effectiveValence(a) {
       var v = IMPLICIT_H_VALENCE[a.el];
@@ -1530,19 +1545,50 @@
     // the end in the charged Lewis form), so callers that map RDKit output
     // back by index can still address the originals. Editor state is never
     // mutated; the canvas keeps the one-vertex label.
+    // Expand every superatom vertex into its atomic subgraph before handing
+    // the drawing to RDKit. Backed by window.PolymerSuperatoms (superatoms.js)
+    // which owns the dictionary and its aliases. If the module fails to load,
+    // fall back to the previous NO2-only behavior rather than silently emit an
+    // invalid molblock full of unknown element labels.
     function expandSuperatoms(atomList, bondList) {
+      var SA = window.PolymerSuperatoms;
       var atoms2 = atomList.map(function (a) { return { id: a.id, el: a.el, x: a.x || 0, y: a.y || 0, charge: a.charge }; });
       var bonds2 = bondList.map(function (b) { return { a: b.a, b: b.b, order: b.order }; });
       var extra = 0;
-      atoms2.forEach(function (a) {
-        if (a.el !== 'NO2') return;
-        a.el = 'N'; a.charge = 1;
-        var o1 = { id: '_no2a' + extra, el: 'O', x: a.x + 20, y: a.y - 20 };
-        var o2 = { id: '_no2b' + extra, el: 'O', x: a.x + 20, y: a.y + 20, charge: -1 };
-        extra++;
-        atoms2.push(o1, o2);
-        bonds2.push({ a: a.id, b: o1.id, order: 2 }, { a: a.id, b: o2.id, order: 1 });
-      });
+      // Iterate a SNAPSHOT of the original length: the array grows in-place as
+      // fragment atoms are appended, and expanding those appended atoms again
+      // would recurse into the fragment's own element symbols (which are real
+      // elements, but re-checking them is wasted work).
+      var origLen = atoms2.length;
+      for (var i = 0; i < origLen; i++) {
+        var a = atoms2[i];
+        var canon = SA ? SA.canonicalize(a.el) : (a.el === 'NO2' ? 'NO2' : null);
+        var entry = SA && canon ? SA.SUPERATOMS[canon] : (canon === 'NO2' ? { atoms: [{ el: 'N', charge: 1 }, { el: 'O' }, { el: 'O', charge: -1 }], bonds: [[0, 1, 2], [0, 2, 1]] } : null);
+        if (!entry) continue;
+        // First fragment atom REPLACES the parent in-place so any bond that
+        // already points to a.id keeps working - no bond rewriting needed.
+        var anchor = entry.atoms[0];
+        a.el = anchor.el;
+        a.charge = anchor.charge || 0;
+        // Append the remaining fragment atoms with fresh ids, laid out around
+        // (a.x, a.y). The coordinates are cosmetic - RDKit does its own layout
+        // if needed - but keeping them near the anchor avoids surprises in the
+        // debug SVG and in fitParsedCoords.
+        var localIds = [a.id];
+        var extraCount = entry.atoms.length - 1;
+        for (var k = 1; k < entry.atoms.length; k++) {
+          var atom = entry.atoms[k];
+          var angle = 2 * Math.PI * (k - 1) / Math.max(1, extraCount);
+          var newAtom = { id: '_sa' + (extra++), el: atom.el, x: a.x + 24 * Math.cos(angle), y: a.y + 24 * Math.sin(angle) };
+          if (atom.charge) newAtom.charge = atom.charge;
+          atoms2.push(newAtom);
+          localIds.push(newAtom.id);
+        }
+        for (var j = 0; j < entry.bonds.length; j++) {
+          var b = entry.bonds[j];
+          bonds2.push({ a: localIds[b[0]], b: localIds[b[1]], order: b[2] });
+        }
+      }
       return { atoms: atoms2, bonds: bonds2 };
     }
     document.addEventListener('keydown', function (evt) {
@@ -4301,15 +4347,24 @@
       var ocrStatusEl = document.getElementById('mol-ocr-status');
       var ocrTextEl = document.getElementById('mol-ocr-text');
       var statusEl = document.getElementById('mol-status');
-      if (ocrStatusEl) ocrStatusEl.textContent = 'Loading the text reader…';
       if (ocrTextEl) { ocrTextEl.hidden = true; ocrTextEl.textContent = ''; }
-      ensureTesseract().then(function (loaded) {
-        if (!loaded || typeof Tesseract === 'undefined') {
-          if (ocrStatusEl) ocrStatusEl.textContent = 'The in-browser text reader could not load. It is fetched from a public CDN (cdn.jsdelivr.net) that some secure networks block. Type the polymer name in the search box instead.';
-          return;
-        }
-        if (ocrStatusEl) ocrStatusEl.textContent = 'Reading image…';
-        return Tesseract.recognize(file, 'eng').then(function (result) {
+      // Route through the decoders first so PDFs and HEICs get rasterised to a
+      // canvas Tesseract can eat, and unsupported/oversized files are rejected
+      // BEFORE the ~15 MB Tesseract download starts.
+      var decoders = window.OcrDecoders;
+      var prep = decoders ? decoders.prepareForOcr(file) : Promise.resolve({ kind: 'jpeg', canvas: null });
+      if (ocrStatusEl) ocrStatusEl.textContent = 'Checking file…';
+      prep.then(function (res) {
+        if (res.error) { if (ocrStatusEl) ocrStatusEl.textContent = res.message; return; }
+        if (ocrStatusEl) ocrStatusEl.textContent = 'Loading the text reader…';
+        return ensureTesseract().then(function (loaded) {
+          if (!loaded || typeof Tesseract === 'undefined') {
+            if (ocrStatusEl) ocrStatusEl.textContent = 'The in-browser text reader could not load. It is fetched from a public CDN (cdn.jsdelivr.net) that some secure networks block. Type the polymer name in the search box instead.';
+            return;
+          }
+          if (ocrStatusEl) ocrStatusEl.textContent = 'Reading ' + (res.kind === 'pdf' ? 'PDF' : res.kind === 'heic' ? 'HEIC image' : 'image') + '…';
+          var input = res.canvas || file;
+          return Tesseract.recognize(input, 'eng').then(function (result) {
         var text = ((result && result.data && result.data.text) || '').trim();
         if (!text) {
           if (ocrStatusEl) ocrStatusEl.textContent = 'No readable text found in that image.';
@@ -4336,6 +4391,11 @@
         }).catch(function () {
           if (ocrStatusEl) ocrStatusEl.textContent = 'Could not read that image.';
         });
+        });
+      }).catch(function (err) {
+        // PDF/HEIC decoder failures land here. errorMessage maps our internal
+        // tags ("pdf-load-failed", "heic-unsupported") to user-facing prose.
+        if (ocrStatusEl) ocrStatusEl.textContent = decoders ? decoders.errorMessage(err) : 'Could not read that file.';
       });
     }
 
