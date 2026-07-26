@@ -104,11 +104,196 @@
     return { atoms: outAtoms, bonds: kept };
   }
 
-  // The framing-invariant exact-match key: hash of the closed graph, or null
-  // when the unit can't be closed (callers fall back to wlHash of the open
-  // graph, which preserves today's behavior for malformed input).
+  // ---- repeat-unit folding -------------------------------------------------
+  //
+  // Closing the unit makes the hash invariant to WHERE the bracket was drawn,
+  // but not to HOW MANY units were enclosed. A chemist may legitimately draw
+  // poly(ethylene oxide) as *-CH2CH2O-* or as *-CH2CH2OCH2CH2O-*; both are the
+  // same polymer, and before folding they hashed differently, so the second
+  // drawing missed a library entry containing the first. Folding reduces a unit
+  // to its shortest repeating period before hashing.
+  //
+  // The period is not trusted on inspection - it is VERIFIED by reconstruction.
+  // A candidate period d is accepted only if chaining L/d copies of the
+  // extracted fragment reproduces a graph isomorphic to the original. That
+  // makes the fold safe on rings, pendants and mixed bond orders without
+  // needing to reason about each case: anything that does not rebuild exactly
+  // is rejected and the unit is left alone.
+
+  function adjacency(atoms, bonds) {
+    var adj = {}, i;
+    for (i = 0; i < atoms.length; i++) adj[atoms[i].id] = [];
+    for (i = 0; i < bonds.length; i++) {
+      var b = bonds[i];
+      if (!adj[b.a] || !adj[b.b]) continue;
+      adj[b.a].push({ nb: b.b, order: b.order });
+      adj[b.b].push({ nb: b.a, order: b.order });
+    }
+    return adj;
+  }
+
+  // The chain of backbone atoms running from one "*" to the other. Shortest
+  // path, so a ring in the backbone is traversed the short way round; if that
+  // choice is wrong for a periodic unit the reconstruction check rejects it.
+  function backbonePath(atoms, bonds) {
+    var stars = [], byId = {}, i;
+    for (i = 0; i < atoms.length; i++) {
+      byId[atoms[i].id] = atoms[i];
+      if (atoms[i].el === "*") stars.push(atoms[i].id);
+    }
+    if (stars.length !== 2) return null;
+    var adj = adjacency(atoms, bonds);
+    var headBond = adj[stars[0]], tailBond = adj[stars[1]];
+    if (!headBond || !tailBond || headBond.length !== 1 || tailBond.length !== 1) return null;
+    var start = headBond[0].nb, end = tailBond[0].nb;
+    if (byId[start].el === "*" || byId[end].el === "*") return null;
+
+    var prev = {}, seen = {}, queue = [start], qi = 0;
+    seen[start] = 1;
+    while (qi < queue.length) {
+      var cur = queue[qi++];
+      if (cur === end) break;
+      var nb = adj[cur];
+      for (i = 0; i < nb.length; i++) {
+        var n = nb[i].nb;
+        if (seen[n] || byId[n].el === "*") continue;
+        seen[n] = 1; prev[n] = cur; queue.push(n);
+      }
+    }
+    if (!seen[end]) return null;
+    var path = [end], walk = end;
+    while (walk !== start) { walk = prev[walk]; path.push(walk); }
+    path.reverse();
+    return {
+      path: path, adj: adj, byId: byId,
+      headStar: stars[0], tailStar: stars[1],
+      headOrder: headBond[0].order, tailOrder: tailBond[0].order
+    };
+  }
+
+  // The set of atoms hanging off one backbone atom: substituents, and rings
+  // pendant to the backbone. Returns ATOM IDS only - bonds are collected later
+  // from the original bond list, because a traversal records only tree edges
+  // and would silently drop the closure bond of any pendant ring (phenyl,
+  // pyrrolidone, pyridine), turning a ring into an open chain.
+  function pendantIds(rootId, bbSet, byId, adj) {
+    var out = [], seen = {}, stack = [rootId];
+    seen[rootId] = 1;
+    while (stack.length) {
+      var cur = stack.pop();
+      var nb = adj[cur], i;
+      for (i = 0; i < nb.length; i++) {
+        var n = nb[i].nb;
+        if (byId[n].el === "*") continue;              // never absorb a chain end
+        if (n !== rootId && bbSet[n]) continue;        // stop at other backbone atoms
+        if (seen[n]) continue;
+        seen[n] = 1;
+        out.push(n);
+        stack.push(n);
+      }
+    }
+    return out;
+  }
+
+  // Pull out the first d backbone positions plus their pendants, capped with a
+  // "*" at each end, as a candidate shorter repeat unit.
+  function extractUnit(info, d, allBonds) {
+    var path = info.path, byId = info.byId, adj = info.adj, i, k;
+    var bbSet = {};
+    for (i = 0; i < path.length; i++) bbSet[path[i]] = 1;
+
+    // 1. atom set: the backbone slice plus everything pendant to it
+    var inUnit = {}, outAtoms = [];
+    function take(id) {
+      if (inUnit[id]) return;
+      inUnit[id] = 1;
+      outAtoms.push({ id: id, el: byId[id].el, charge: byId[id].charge });
+    }
+    for (i = 0; i < d; i++) {
+      take(path[i]);
+      var pend = pendantIds(path[i], bbSet, byId, adj);
+      for (k = 0; k < pend.length; k++) take(pend[k]);
+    }
+
+    // 2. every original bond with BOTH ends inside the unit. This is what
+    //    captures ring-closure bonds that a traversal misses.
+    var outBonds = [];
+    for (i = 0; i < allBonds.length; i++) {
+      var b = allBonds[i];
+      if (inUnit[b.a] && inUnit[b.b]) outBonds.push({ a: b.a, b: b.b, order: b.order });
+    }
+
+    // 3. cap: head keeps the original head-star bond; tail takes the order of
+    //    the bond that linked this fragment to the next one along the backbone.
+    var linkOrder = null, nb2 = adj[path[d - 1]], j;
+    for (j = 0; j < nb2.length; j++) if (nb2[j].nb === path[d]) { linkOrder = nb2[j].order; break; }
+    if (linkOrder == null) return null;
+    outAtoms.push({ id: "__h", el: "*" });
+    outAtoms.push({ id: "__t", el: "*" });
+    outBonds.push({ a: "__h", b: path[0], order: info.headOrder });
+    outBonds.push({ a: path[d - 1], b: "__t", order: linkOrder });
+    return { atoms: outAtoms, bonds: outBonds, linkOrder: linkOrder };
+  }
+
+  // Chain k copies of a unit end to end, re-capping the result. Used only to
+  // test a candidate fold against the original.
+  function chainCopies(unit, k) {
+    var atoms = [], bonds = [], c, i;
+    var innerA = unit.atoms.filter(function (a) { return a.el !== "*"; });
+    var starIds = {};
+    unit.atoms.forEach(function (a) { if (a.el === "*") starIds[a.id] = 1; });
+    var headAttach = null, tailAttach = null, headOrd = null, tailOrd = null;
+    unit.bonds.forEach(function (b) {
+      if (b.a === "__h") { headAttach = b.b; headOrd = b.order; }
+      else if (b.b === "__t") { tailAttach = b.a; tailOrd = b.order; }
+    });
+    if (headAttach == null || tailAttach == null) return null;
+    var prevTail = null;
+    for (c = 0; c < k; c++) {
+      var pfx = "c" + c + "_";
+      for (i = 0; i < innerA.length; i++) atoms.push({ id: pfx + innerA[i].id, el: innerA[i].el, charge: innerA[i].charge });
+      for (i = 0; i < unit.bonds.length; i++) {
+        var b = unit.bonds[i];
+        if (starIds[b.a] || starIds[b.b]) continue;
+        bonds.push({ a: pfx + b.a, b: pfx + b.b, order: b.order });
+      }
+      if (prevTail !== null) bonds.push({ a: prevTail, b: pfx + headAttach, order: tailOrd });
+      prevTail = pfx + tailAttach;
+    }
+    atoms.push({ id: "H", el: "*" }, { id: "T", el: "*" });
+    bonds.push({ a: "H", b: "c0_" + headAttach, order: headOrd });
+    bonds.push({ a: prevTail, b: "T", order: tailOrd });
+    return { atoms: atoms, bonds: bonds };
+  }
+
+  // Reduce a repeat unit to its shortest repeating period. Returns the original
+  // arrays unchanged when no shorter period reconstructs exactly.
+  function foldRepeatUnit(atoms, bonds) {
+    var info = backbonePath(atoms, bonds);
+    if (!info) return { atoms: atoms, bonds: bonds, folded: 1 };
+    var L = info.path.length;
+    if (L < 2) return { atoms: atoms, bonds: bonds, folded: 1 };
+    var target = wlHash(atoms, bonds);
+    var d;
+    for (d = 1; d < L; d++) {
+      if (L % d !== 0) continue;
+      var unit = extractUnit(info, d, bonds);
+      if (!unit) continue;
+      var rebuilt = chainCopies(unit, L / d);
+      if (!rebuilt) continue;
+      if (wlHash(rebuilt.atoms, rebuilt.bonds) === target) {
+        return { atoms: unit.atoms, bonds: unit.bonds, folded: L / d };
+      }
+    }
+    return { atoms: atoms, bonds: bonds, folded: 1 };
+  }
+
+  // The framing-invariant exact-match key: fold to the shortest period, then
+  // hash the closed graph. Null when the unit can't be closed (callers fall
+  // back to wlHash of the open graph, preserving behavior for malformed input).
   function closedHash(atoms, bonds) {
-    var closed = closeRepeatUnit(atoms, bonds);
+    var reduced = foldRepeatUnit(atoms, bonds);
+    var closed = closeRepeatUnit(reduced.atoms, reduced.bonds);
     return closed ? wlHash(closed.atoms, closed.bonds) : null;
   }
 
@@ -127,5 +312,5 @@
     return d;
   }
 
-  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, elementProfile: elementProfile, profileDistance: profileDistance };
+  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, foldRepeatUnit: foldRepeatUnit, elementProfile: elementProfile, profileDistance: profileDistance };
 });
