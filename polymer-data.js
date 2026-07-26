@@ -951,6 +951,48 @@ window.POLYMER_DB = [
     monomer: "Laurolactam + tetrahydrofuran", cls: "Segmented block copolymer (thermoplastic elastomer)", cas: "77402-38-1",
     tags: ["copolymer", "block", "elastomer", "thermoplastic elastomer", "polyamide", "polyether", "engineering", "biomedical"],
     note: "A thermoplastic elastomer in which crystalline polyamide-12 hard segments provide the physical crosslinks and poly(tetramethylene oxide) soft segments provide the elasticity, with stiffness dialled across a wide range purely by the hard:soft ratio. Unlike the styrenic triblocks this is a segmented multiblock made by melt polycondensation of dicarboxyl-terminated PA12 with polyether diol, so segment lengths are statistical and the chain is -(hard-soft)n- rather than a discrete ABA. Used for ski boots, running-shoe plates and catheter tubing."
+  },
+  {
+    name: "Polystyrene-b-polyisobutylene-b-polystyrene", aka: ["SIBS", "styrene-isobutylene-styrene", "SIBSTAR", "Translute"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Polyisobutylene"],
+    monomer: "Styrene + isobutylene", cls: "Block copolymer (thermoplastic elastomer)", cas: null,
+    tags: ["copolymer", "block", "elastomer", "thermoplastic elastomer", "biomedical", "drug delivery", "specialty"],
+    note: "The saturated answer to SBS: glassy polystyrene end-blocks pin a rubbery polyisobutylene mid-block into a physically crosslinked network, but with no backbone unsaturation to oxidise or crosslink, so it survives as a permanent implant coating where SBS or SIS would degrade. It is the drug-carrier matrix of the TAXUS paclitaxel-eluting coronary stent, releasing by diffusion from a non-degradable film rather than by erosion, and the dense PIB packing also makes it an excellent gas barrier. Textbook product of living cationic polymerisation by sequential monomer addition, a chemistry few block copolymers come from."
+  },
+  {
+    name: "Polybutadiene-b-poly(ethylene oxide)", aka: ["PB-b-PEO", "PBd-PEO", "polybutadiene-b-poly(ethylene glycol)"],
+    type: "copolymer", arch: "block", components: ["Polybutadiene (cis-1,4)", "Poly(ethylene oxide)"],
+    monomer: "Butadiene + ethylene oxide", cls: "Block copolymer (amphiphilic)", cas: null,
+    tags: ["copolymer", "block", "amphiphilic", "self-assembly", "surfactant", "drug delivery", "biomedical", "specialty"],
+    note: "The reference amphiphile for polymersomes, where the aggregate shape follows the hydrophilic weight fraction rather than the chemistry: near 0.35 it forms bilayer vesicles, 0.40-0.50 gives wormlike micelles and Y-junction networks, and above about 0.55 curvature forces spheres. The membranes are an order of magnitude tougher and far less permeable than a phospholipid bilayer, and the residual backbone double bonds are a convenient handle for crosslinking after assembly. Note the polymersome-grade material is 1,2-rich polybutadiene made anionically, not the stereoregular cis-1,4 linked here: the block Tg differs by roughly 70 C between the two microstructures, so do not carry the cis-1,4 value across."
+  },
+  {
+    name: "Poly(ethylene oxide)-b-poly(acrylic acid)", aka: ["PEO-b-PAA", "PEG-b-PAA", "poly(ethylene glycol)-block-poly(acrylic acid)"],
+    type: "copolymer", arch: "block", components: ["Poly(ethylene oxide)", "Poly(acrylic acid)"],
+    monomer: "Ethylene oxide + acrylic acid", cls: "Block copolymer (double-hydrophilic)", cas: null,
+    tags: ["copolymer", "block", "water-soluble", "self-assembly", "drug delivery", "specialty", "polyether"],
+    note: "Double-hydrophilic rather than amphiphilic: both blocks dissolve, so nothing assembles until assembly is triggered by pH, by multivalent cations, or by an oppositely charged polyion, whereupon the neutralised polyacid collapses into a core under a stabilising PEO corona. Those polyion complex micelles are the standard vehicle for carrying polycations, proteins and nucleic acids behind a stealth shell. The same free polyanion block chelates calcium and adsorbs onto growing mineral faces while the tethered PEO gives steric stabilisation, which is why it works as a scale and crystal-growth inhibitor at single-digit ppm and as a pigment dispersant."
+  },
+  {
+    name: "Poly(lactide)-b-poly(ethylene oxide)-b-poly(lactide)", aka: ["PLA-PEG-PLA", "PDLLA-PEG-PDLLA", "PLA-PEO-PLA"],
+    type: "copolymer", arch: "block", components: ["Poly(lactide)", "Poly(ethylene oxide)"],
+    monomer: "Lactide + ethylene oxide", cls: "Block copolymer (reverse thermal gelling triblock)", cas: null,
+    tags: ["copolymer", "block", "biodegradable", "biomedical", "drug delivery", "polyester", "polyether", "water-soluble"],
+    note: "An injectable depot that needs no crosslinker: cold, it is a free-flowing sol, and on warming toward body temperature the polylactide end-blocks dehydrate and aggregate, each chain bridging between micellar junctions into a percolated gel. Release is then governed jointly by diffusion and by hydrolysis of the polylactide junctions. The sol-gel window is very sensitive to the PEG block length and the lactide:ethylene oxide ratio, so small compositional changes move it out of the useful range. Distinct from the PLGA-PEG-PLGA thermogel sold as ReGel, and from the inverted PEG-PLLA-PEG triblock of the original 1997 report."
+  },
+  {
+    name: "Poly(dimethylsiloxane)-b-poly(ethylene oxide)", aka: ["PDMS-b-PEO", "silicone polyether", "dimethicone copolyol", "polyether-modified silicone"],
+    type: "copolymer", arch: "block", components: ["Poly(dimethylsiloxane)", "Poly(ethylene oxide)"],
+    monomer: "Dimethylsiloxane + ethylene oxide", cls: "Block copolymer (silicone polyether surfactant)", cas: null,
+    tags: ["copolymer", "block", "silicone", "surfactant", "amphiphilic", "self-assembly", "coating", "specialty"],
+    note: "The siloxane block sits near 20 mN/m, so the surface-energy gap across the junction drives the molecule to any interface and pulls surface tension below what a hydrocarbon surfactant can reach. Silicone polyethers are the cell stabilisers of polyurethane foam: they emulsify the reacting mix, nucleate bubbles, and hold the draining cell walls open by the Gibbs-Marangoni effect until gelation. Worth knowing which architecture you have - most commercial foam stabiliser tonnage is a graft or rake copolymer with polyether combs hung off a siloxane backbone, and the genuinely linear AB and ABA grades described here are a smaller, separately patented class."
+  },
+  {
+    name: "Poly(butylene terephthalate)-b-poly(tetrahydrofuran)", aka: ["PBT-b-PTMO", "copolyester-ether elastomer", "COPE", "TPC-ET", "Hytrel", "Arnitel"],
+    type: "copolymer", arch: "block", components: ["Poly(butylene terephthalate)", "Poly(tetrahydrofuran)"],
+    monomer: "Dimethyl terephthalate + 1,4-butanediol + poly(tetramethylene ether) glycol", cls: "Segmented block copolymer (thermoplastic elastomer)", cas: null,
+    tags: ["copolymer", "block", "elastomer", "thermoplastic elastomer", "polyester", "polyether", "engineering", "specialty"],
+    note: "The polyester counterpart of polyether block amide, and the other half of the segmented-TPE pair: crystalline PBT hard segments form lamellae that act as both physical crosslinks and reinforcing filler on a rubbery poly(tetramethylene oxide) matrix, adding the tear strength, creep resistance and hot-oil resistance the styrenic triblocks lack. Modulus and service temperature scale almost linearly with hard-segment weight fraction, which is what separates the grades. Like PEBA it is a segmented (AB)n multiblock from melt transesterification, with statistical segment lengths rather than a discrete ABA architecture."
   }
 
 ];
