@@ -17,6 +17,7 @@
     ["conversion-monitoring.html", "📊 Conversion"],
     ["gpc-peak-interpretation.html", "📉 GPC Peaks"],
     ["thermal-analysis.html", "🔥 Thermal"],
+    ["kinetics.html", "⚡ Kinetics"],
     ["glossary.html", "📖 Glossary"]
   ];
 
@@ -100,6 +101,7 @@
     ["conversion-monitoring.html", "Monitoring Conversion", "aliquot internal standard kinetics nmr"],
     ["gpc-peak-interpretation.html", "GPC Peak Interpretation", "chromatogram shoulder tailing column detector"],
     ["thermal-analysis.html", "Thermal Analysis (DSC, TGA, DMA)", "dsc tga dma thermal thermogravimetric differential scanning calorimetry dynamic mechanical analysis glass transition tg melting tm crystallinity char yield decomposition onset storage loss modulus tan delta crosslink density"],
+    ["kinetics.html", "Decomposition Kinetics (Isoconversional)", "kinetics activation energy ea kissinger friedman ofw ozawa flynn wall kas starink vyazovkin isoconversional model free heating rate conversion multi-step decomposition lifetime arrhenius"],
     ["glossary.html", "Glossary", "terms definitions dispersity dp cta"],
     ["polymer-chain-game.html", "Build a Polymer Chain", "game maze fun"],
     ["whats-new.html", "What's New", "changelog updates"],
