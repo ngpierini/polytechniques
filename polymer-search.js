@@ -84,6 +84,17 @@
       canvas.width = newW;
       canvas.height = newH;
       for (var i = 0; i < atoms.length; i++) { atoms[i].x += dx; atoms[i].y += dy; }
+      // Brackets carry pixel coordinates too, so a canvas resize that shifts
+      // atoms has to shift the brackets by the same amount or they drift out
+      // of alignment with the atoms they were drawn around. This desync was
+      // silently invisible on a load-then-search flow but bit the example
+      // buttons: loading polystyrene into a canvas whose size still changed
+      // in the same frame left the bracket enclosing only phenyl instead of
+      // CH2-CH(phenyl), producing the wrong repeat unit for the search.
+      for (var b = 0; b < brackets.length; b++) {
+        brackets[b].x1 += dx; brackets[b].x2 += dx;
+        brackets[b].y1 += dy; brackets[b].y2 += dy;
+      }
       draw();
     }
     window.addEventListener('resize', function () {
@@ -1899,7 +1910,23 @@
         var s = document.createElement('script');
         s.src = 'vendor/RDKit_minimal.js';
         s.onload = function () {
-          window.initRDKitModule({ locateFile: function (f) { return 'vendor/' + f; } }).then(resolve, reject);
+          // If the vendored script loaded but window.initRDKitModule is
+          // missing or throws, the promise would sit unresolved forever and
+          // every future Search/Copy would hang the same way. Force it to
+          // reject so the .catch below clears rdkitPromise and the next click
+          // retries from scratch.
+          try {
+            if (typeof window.initRDKitModule !== 'function') {
+              reject(new Error('initRDKitModule not defined after script load'));
+              return;
+            }
+            var p = window.initRDKitModule({ locateFile: function (f) { return 'vendor/' + f; } });
+            if (!p || typeof p.then !== 'function') {
+              reject(new Error('initRDKitModule did not return a promise'));
+              return;
+            }
+            p.then(resolve, reject);
+          } catch (e) { reject(e); }
         };
         s.onerror = function () { reject(new Error('RDKit script failed to load')); };
         document.head.appendChild(s);
@@ -2935,14 +2962,20 @@
     var pcChain = Promise.resolve();
     var pcLastAt = 0;
     function pcFetch(url, opts) {
-      pcChain = pcChain.then(function () {
+      // Hand the caller its own promise and keep the queue itself always
+      // fulfilled with .catch. Without this, one rejected fetch (dropped
+      // connection, DNS failure, CORS block) leaves pcChain in a rejected
+      // state and every subsequent PubChem lookup rejects immediately with
+      // the same error until the page reloads. On a locked DoD network
+      // that intermittently blocks pubchem.ncbi.nlm.nih.gov that is one
+      // transient blip away from bricking name/CAS/structure identification
+      // for the entire session.
+      var slot = pcChain.then(function () {
         var wait = Math.max(0, 220 - (Date.now() - pcLastAt));
-        return new Promise(function (res) { setTimeout(res, wait); }).then(function () {
-          pcLastAt = Date.now();
-          return fetch(url, opts);
-        });
+        return new Promise(function (res) { setTimeout(res, wait); });
       });
-      return pcChain;
+      pcChain = slot.catch(function () { /* swallow so the queue survives */ });
+      return slot.then(function () { pcLastAt = Date.now(); return fetch(url, opts); });
     }
 
     // Synonym ranking: PubChem orders synonyms by depositor frequency, so
@@ -4332,32 +4365,44 @@
         addBond(c2.id, stubB.id, 1);
         brackets = [{ x1: c1.x - 20, y1: Math.min(c1.y, c2.y) - 20, x2: c2.x + 20, y2: Math.max(c1.y, c2.y) + 20 }];
       } else if (key === 'ps') {
-        var q0 = { x: cx - 150, y: cy + 10 };
-        var stubC = addAtom('C', q0.x, q0.y);
-        var q1 = zigzagPos(q0, -30); var b1 = addAtom('C', q1.x, q1.y);
+        // b1 and b2 sit on the usual 30 degree zigzag; the stubs then step OUT
+        // horizontally (180 and 0 degrees) so they are guaranteed to sit far
+        // enough clear of the pendant phenyl for the bracket to enclose the
+        // whole ring without swallowing a stub. A pure zigzag would put stubD
+        // only ~36 px past b2 - narrower than the ring is wide - and the
+        // extractor would then see either 4 open ends (clipped ring) or 0
+        // (engulfed stub).
+        var q1 = { x: cx - 40, y: cy + 25 };  var b1 = addAtom('C', q1.x, q1.y);
+        var q0 = { x: q1.x - BOND_LEN, y: q1.y }; var stubC = addAtom('C', q0.x, q0.y);
         var q2 = zigzagPos(q1, 30); var b2 = addAtom('C', q2.x, q2.y);
-        var q3 = zigzagPos(q2, -30); var stubD = addAtom('C', q3.x, q3.y);
+        var q3 = { x: q2.x + BOND_LEN, y: q2.y }; var stubD = addAtom('C', q3.x, q3.y);
         addBond(stubC.id, b1.id, 1);
         addBond(b1.id, b2.id, 1);
         addBond(b2.id, stubD.id, 1);
-        // Same vertex geometry the interactive ring tool uses, so the ring
-        // bulges away from b2 (downward here) instead of folding back over
-        // it and crossing the b1-b2 bond.
-        var ringPositions = ringVertexPositions(b2, Math.PI / 2, 6);
+        // Phenyl hangs straight down from b2; the wider backbone stubs above
+        // give it room to fit inside the bracket.
+        var psAngle = Math.PI / 2;
+        var ringPositions = ringVertexPositions(b2, psAngle, 6);
         var ringR = BOND_LEN * 0.72;
-        var ringIpso = { x: b2.x + BOND_LEN * Math.cos(Math.PI / 2), y: b2.y + BOND_LEN * Math.sin(Math.PI / 2) };
-        var psRingCenter = { x: ringIpso.x + ringR * Math.cos(Math.PI / 2), y: ringIpso.y + ringR * Math.sin(Math.PI / 2) };
+        var ringIpso = { x: b2.x + BOND_LEN * Math.cos(psAngle), y: b2.y + BOND_LEN * Math.sin(psAngle) };
+        var psRingCenter = { x: ringIpso.x + ringR * Math.cos(psAngle), y: ringIpso.y + ringR * Math.sin(psAngle) };
         var ids = ringPositions.map(function (p) { return addAtom('C', p.x, p.y).id; });
         addBond(b2.id, ids[0], 1);
         for (var j = 0; j < 6; j++) addBond(ids[j], ids[(j + 1) % 6], j % 2 === 0 ? 2 : 1, psRingCenter);
         var ringXs = ringPositions.map(function (p) { return p.x; });
         var ringYs = ringPositions.map(function (p) { return p.y; });
-        var ringMaxX = Math.max.apply(null, ringXs);
-        // Keep x2 strictly between the ring's right edge and stubD, whatever
-        // the gap between them happens to be, instead of a fixed margin that
-        // could land on the wrong side of either one.
+        // Bracket has to enclose both backbone carbons AND every phenyl atom
+        // without touching stubC or stubD. With phenyl at 120 degrees the ring
+        // extends further left than b1 and further right than b2 by different
+        // amounts, so anchor to the actual atom positions rather than to b1/b2
+        // alone - the earlier "b1.x - 20, b2.x + 20" clipped the ring on the
+        // right and the extractor saw four open ends instead of two. The 8 px
+        // margin sits inside the stub margins (stubs are BOND_LEN * cos(30)
+        // = 36 px past b1/b2, so an 8 px ring margin leaves 28 px of clear
+        // canvas between the bracket and the stub, plus the stub's own R).
         brackets = [{
-          x1: b1.x - 20, x2: (ringMaxX + q3.x) / 2,
+          x1: Math.min(b1.x, Math.min.apply(null, ringXs)) - 8,
+          x2: Math.max(b2.x, Math.max.apply(null, ringXs)) + 8,
           y1: Math.min(b1.y, b2.y, Math.min.apply(null, ringYs)) - 15,
           y2: Math.max(b1.y, b2.y, Math.max.apply(null, ringYs)) + 15
         }];
