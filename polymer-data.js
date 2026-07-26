@@ -743,11 +743,11 @@ window.POLYMER_DB = [
   // structure search to name a drawn multi-block copolymer, and by name search
   // directly). No atoms/bonds: fingerprintOf skips them for structure matching.
   {
-    name: "Styrene-butadiene copolymer", aka: ["SBR", "SBS", "styrene butadiene rubber", "styrene-butadiene", "K-Resin"],
+    name: "Styrene-butadiene copolymer", aka: ["SBR", "styrene butadiene rubber", "styrene-butadiene", "E-SBR", "S-SBR"],
     type: "copolymer", arch: "statistical", components: ["Polystyrene", "Polybutadiene (cis-1,4)"],
     monomer: "Styrene + 1,3-butadiene", cls: "Copolymer (addition, diene)", cas: "9003-55-8",
-    tags: ["copolymer", "elastomer", "tire", "commodity", "thermoplastic elastomer"],
-    note: "Styrene and butadiene together. Random and emulsion grades (SBR) are the workhorse tire rubber; the ordered triblock (SBS) is a thermoplastic elastomer. A drawing shows the monomers, not whether the arrangement is random or block."
+    tags: ["copolymer", "elastomer", "tire", "commodity"],
+    note: "Styrene and butadiene arranged at random along the chain: the workhorse tyre rubber, made by emulsion (E-SBR) or solution (S-SBR) polymerisation and vulcanised in use. A random copolymer has one Tg between those of its components and no physical network, so it is not a thermoplastic elastomer - that is the ordered SBS triblock, which is a separate entry. A drawing shows the monomers, not whether the arrangement is random or block."
   },
   {
     name: "Poly(styrene-co-acrylonitrile)", aka: ["SAN", "styrene-acrylonitrile"],
@@ -804,7 +804,155 @@ window.POLYMER_DB = [
     monomer: "Ethylene oxide + propylene oxide", cls: "Block copolymer (ring-opening, polyether)", cas: "9003-11-6",
     tags: ["copolymer", "block", "surfactant", "amphiphilic"],
     note: "A PEO-PPO-PEO triblock surfactant. The hydrophilic PEO and hydrophobic PPO blocks drive micellization and gelation, used in drug delivery and as a nonionic surfactant."
+  },
+  {
+    name: "Polystyrene-b-polybutadiene-b-polystyrene", aka: ["SBS", "styrene-butadiene-styrene", "Kraton D1101"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Polybutadiene (cis-1,4)"],
+    monomer: "Styrene + butadiene", cls: "Block copolymer (thermoplastic elastomer)", cas: null,
+    tags: ["copolymer", "block", "elastomer", "thermoplastic elastomer", "adhesive", "commodity"],
+    note: "Glassy polystyrene end-blocks phase-separate into domains that act as physical, thermally reversible crosslinks, tying both ends of the rubbery polybutadiene mid-block into a network: rubber elasticity without vulcanisation, and melt processability above the PS Tg. Reinforcement fades from about 60-70 C, well below the PS domain Tg, which sets the service ceiling near 80 C. Commercial grades run 25-40 wt% styrene; the base polymer for hot-melt adhesives, bitumen modification and footwear."
+  },
+  {
+    name: "Polystyrene-b-polyisoprene-b-polystyrene", aka: ["SIS", "styrene-isoprene-styrene"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Polyisoprene (cis-1,4)"],
+    monomer: "Styrene + isoprene", cls: "Block copolymer (thermoplastic elastomer)", cas: null,
+    tags: ["copolymer", "block", "elastomer", "thermoplastic elastomer", "adhesive"],
+    note: "The same physical-crosslink mechanism as SBS, but the isoprene mid-block gives a softer, tackier rubber phase that accepts tackifying resin readily, which is why SIS rather than SBS dominates pressure-sensitive adhesives. Styrene contents are lower than in SBS (typically 14-22 wt%), keeping the PS domains discrete spheres. Isoprene differs from butadiene by a methyl substituent, not an extra double bond; both dienes carry one C=C per 1,4 repeat unit."
+  },
+  {
+    name: "Polystyrene-b-polybutadiene", aka: ["PS-b-PB", "SB diblock", "poly(styrene-block-butadiene)"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Polybutadiene (cis-1,4)"],
+    monomer: "Styrene + butadiene", cls: "Block copolymer (diblock)", cas: null,
+    tags: ["copolymer", "block", "self-assembly", "specialty"],
+    note: "The diblock counterpart of SBS and one of the model systems for block-copolymer phase behaviour, where the volume fraction of one block selects spheres, cylinders, gyroid or lamellae. Unlike SBS it is not an elastomer: with only one junction the rubbery chain has a free end and no load-bearing network forms, which is precisely why the commercial thermoplastic elastomer is the ABA triblock."
+  },
+  {
+    name: "Polystyrene-b-polyisoprene", aka: ["PS-b-PI", "SI diblock", "poly(styrene-block-isoprene)"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Polyisoprene (cis-1,4)"],
+    monomer: "Styrene + isoprene", cls: "Block copolymer (diblock)", cas: null,
+    tags: ["copolymer", "block", "self-assembly", "specialty"],
+    note: "The system the classical diblock phase diagram was mapped on (Khandpur et al., Macromolecules 1995, 28, 8796): composition, not chemistry, selects the morphology, and the same sequence of spheres, cylinders, gyroid and lamellae recurs in every strongly segregated diblock. Like PS-b-PB it is not an elastomer - a diblock leaves one rubber chain end free and forms no network."
+  },
+  {
+    name: "Polystyrene-b-poly(methyl methacrylate)", aka: ["PS-b-PMMA", "poly(styrene-block-methyl methacrylate)"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Poly(methyl methacrylate)"],
+    monomer: "Styrene + methyl methacrylate", cls: "Block copolymer (diblock)", cas: null,
+    tags: ["copolymer", "block", "self-assembly", "specialty"],
+    note: "The workhorse of directed self-assembly lithography. PS and PMMA have nearly identical surface energies at annealing temperature, so neither block preferentially wets the free surface and the lamellae stand perpendicular to the substrate without a top coat - the geometry a patterning process needs. PMMA is then selectively removed by UV or acetic acid, leaving PS as an etch mask. The same low chi that matches the surface energies also caps resolution, plateauing near 11-12 nm half-pitch."
+  },
+  {
+    name: "Polystyrene-b-poly(2-vinylpyridine)", aka: ["PS-b-P2VP", "poly(styrene-block-2-vinylpyridine)"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Poly(2-vinylpyridine)"],
+    monomer: "Styrene + 2-vinylpyridine", cls: "Block copolymer (diblock)", cas: null,
+    tags: ["copolymer", "block", "self-assembly", "specialty"],
+    note: "High chi relative to PS-b-PMMA, so it reaches smaller domains, and the pyridine nitrogen binds metal salts - the basis of block-copolymer micelle nanolithography, where reverse micelles loaded with a gold precursor are deposited as a monolayer and plasma-treated to leave a hexagonal array of gold nanodots with controllable spacing (Spatz and Moeller). The two block Tg values are close, so microphase separation is established by scattering and microscopy rather than by DSC."
+  },
+  {
+    name: "Polystyrene-b-poly(4-vinylpyridine)", aka: ["PS-b-P4VP", "poly(styrene-block-4-vinylpyridine)"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Poly(4-vinylpyridine)"],
+    monomer: "Styrene + 4-vinylpyridine", cls: "Block copolymer (diblock)", cas: null,
+    tags: ["copolymer", "block", "self-assembly", "specialty"],
+    note: "The 4-substituted pyridine is the less hindered, stronger hydrogen-bond acceptor, which makes this the classic supramolecular comb-shaped scaffold: small amphiphiles such as 3-n-pentadecylphenol hydrogen-bond to the P4VP block and generate a second, finer length scale inside the block-copolymer morphology - structure within structure (Ikkala and ten Brinke). Also widely used as a nanoporous membrane template, since the P4VP domains swell and open in acid."
+  },
+  {
+    name: "Polystyrene-b-poly(acrylic acid)", aka: ["PS-b-PAA", "poly(styrene-block-acrylic acid)"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Poly(acrylic acid)"],
+    monomer: "Styrene + acrylic acid", cls: "Block copolymer (amphiphilic)", cas: null,
+    tags: ["copolymer", "block", "amphiphilic", "self-assembly", "surfactant", "water-soluble", "specialty"],
+    note: "The crew-cut micelle system: with a long insoluble PS block and a short PAA corona, shrinking the corona walks the aggregate through spheres, rods, bicontinuous structures, lamellae, vesicles and large compound micelles, so morphology becomes a formulation variable rather than a fixed property (Zhang and Eisenberg). Usually made by hydrolysing poly(styrene-b-tert-butyl acrylate) rather than by direct copolymerisation, so any styrene/acrylic-acid registry number describes a different material."
+  },
+  {
+    name: "Polystyrene-b-poly(tert-butyl acrylate)", aka: ["PS-b-PtBA", "poly(styrene-block-tert-butyl acrylate)"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Poly(tert-butyl acrylate)"],
+    monomer: "Styrene + tert-butyl acrylate", cls: "Block copolymer (diblock)", cas: null,
+    tags: ["copolymer", "block", "self-assembly", "specialty"],
+    note: "Chiefly a protected precursor: the tert-butyl ester is polymerised cleanly by anionic or controlled-radical methods where acrylic acid itself is not, then removed thermally or with acid to give poly(styrene-b-acrylic acid) with the block lengths set before deprotection. Useful in its own right as a well-defined amorphous diblock, both blocks glassy at room temperature."
+  },
+  {
+    name: "Poly(ethylene oxide)-b-poly(lactide)", aka: ["PEG-b-PLA", "PEO-b-PLA", "mPEG-b-PDLLA", "PEG-PLA"],
+    type: "copolymer", arch: "block", components: ["Poly(ethylene oxide)", "Poly(lactide)"],
+    monomer: "Ethylene oxide + lactide", cls: "Block copolymer (amphiphilic, degradable)", cas: null,
+    tags: ["copolymer", "block", "amphiphilic", "self-assembly", "drug delivery", "biodegradable", "biomedical", "polyester", "polyether"],
+    note: "A hydrophobic polylactide core solubilises a water-insoluble drug while the PEG corona provides steric stealth and colloidal stability, and the ester backbone hydrolyses to lactic acid. Genexol-PM is the clinical proof: mPEG 2000-b-poly(D,L-lactide) 1750 micelles about 24 nm across carrying paclitaxel with no Cremophor EL, which raised the maximum tolerated dose to 390 from 175 mg/m2 for Taxol."
+  },
+  {
+    name: "Poly(ethylene oxide)-b-poly(lactide-co-glycolide)", aka: ["PEG-b-PLGA", "mPEG-b-PLGA", "PEG-PLGA"],
+    type: "copolymer", arch: "block", components: ["Poly(ethylene oxide)", "Poly(lactide)", "Poly(glycolide)"],
+    monomer: "Ethylene oxide + lactide + glycolide", cls: "Block copolymer (amphiphilic, degradable)", cas: null,
+    tags: ["copolymer", "block", "amphiphilic", "self-assembly", "drug delivery", "biodegradable", "biomedical", "polyester", "polyether"],
+    note: "Adds a tunable degradation clock to the PEG-b-PLA idea: the glycolide fraction sets the hydrolysis rate of the hydrophobic block, fastest near a 50:50 lactide:glycolide ratio and slower in either direction as the block becomes more crystalline. Note the hydrophobic block is itself a random lactide/glycolide copolymer, so this is a two-block architecture whose second block is statistical - the components list names its monomers, not three discrete blocks."
+  },
+  {
+    name: "Poly(lactide-co-glycolide)-b-poly(ethylene oxide)-b-poly(lactide-co-glycolide)", aka: ["PLGA-PEG-PLGA", "ReGel", "OncoGel"],
+    type: "copolymer", arch: "block", components: ["Poly(ethylene oxide)", "Poly(lactide)", "Poly(glycolide)"],
+    monomer: "Ethylene oxide + lactide + glycolide", cls: "Block copolymer (reverse thermal gelling triblock)", cas: null,
+    tags: ["copolymer", "block", "amphiphilic", "drug delivery", "biodegradable", "biomedical", "water-soluble", "polyester", "polyether"],
+    note: "A reverse-thermal-gelling ABA triblock: soluble in cold water at roughly 15-23 wt% and gelling as it warms to body temperature, so a drug is mixed into the cold sol and the depot forms in situ after injection. Marketed as ReGel, and as OncoGel with paclitaxel at 6 mg/mL. Both end blocks are random lactide/glycolide copolymers, and the components list cannot express the ABA ordering that makes the gel work."
+  },
+  {
+    name: "Poly(ethylene oxide)-b-poly(caprolactone)", aka: ["PEG-b-PCL", "PEO-b-PCL", "mPEG-b-PCL"],
+    type: "copolymer", arch: "block", components: ["Poly(ethylene oxide)", "Poly(caprolactone)"],
+    monomer: "Ethylene oxide + caprolactone", cls: "Block copolymer (amphiphilic, degradable)", cas: null,
+    tags: ["copolymer", "block", "amphiphilic", "self-assembly", "drug delivery", "biodegradable", "biomedical", "polyester", "polyether"],
+    note: "The rubbery, semicrystalline PCL core takes higher drug loadings than a glassy polyester core such as PDLLA, and degrades over months to years without the acid-autocatalysed burst that PLGA depots show. Both blocks crystallise and both have a glass transition near -60 C, so the amorphous fraction is small and the Tg step is often not detectable at all in bulk DSC - the melting endotherms, not the glass transitions, are what the trace shows."
+  },
+  {
+    name: "Poly(caprolactone)-b-poly(lactide)", aka: ["PCL-b-PLA", "PCL-PLA"],
+    type: "copolymer", arch: "block", components: ["Poly(caprolactone)", "Poly(lactide)"],
+    monomer: "Caprolactone + lactide", cls: "Block copolymer (degradable diblock)", cas: null,
+    tags: ["copolymer", "block", "biodegradable", "biomedical", "polyester", "self-assembly"],
+    note: "A fully resorbable diblock pairing a soft, slowly hydrolysing PCL block with a stiff, faster-degrading polylactide block; the ABA triblock form is the one that behaves as a resorbable thermoplastic elastomer, since a diblock forms no physical network. A useful diagnostic: sequential ring-opening polymerisation is prone to transesterification, and a single intermediate Tg in place of the two block transitions means the product has been scrambled into an effectively random copolymer."
+  },
+  {
+    name: "Poly(2-ethyl-2-oxazoline)-b-poly(caprolactone)", aka: ["PEtOx-b-PCL", "POx-b-PCL"],
+    type: "copolymer", arch: "block", components: ["Poly(2-ethyl-2-oxazoline)", "Poly(caprolactone)"],
+    monomer: "2-Ethyl-2-oxazoline + caprolactone", cls: "Block copolymer (amphiphilic)", cas: null,
+    tags: ["copolymer", "block", "amphiphilic", "self-assembly", "drug delivery", "biomedical", "specialty", "polyester"],
+    note: "A PEG alternative: poly(2-ethyl-2-oxazoline) is a water-soluble, low-fouling pseudo-polypeptide made by living cationic ring-opening polymerisation, and it is cleared renally rather than degraded, so only the PCL block of this micelle is resorbable. Reported paclitaxel loadings are modest (roughly 0.5-8 wt%); the much higher loadings quoted for polyoxazoline micelles belong to the hydrophobic-core PMeOx-b-PBuOx-b-PMeOx triblocks, not to this one."
+  },
+  {
+    name: "Poly(N-isopropylacrylamide)-b-poly(ethylene oxide)", aka: ["PNIPAM-b-PEO", "PNIPAAm-b-PEG"],
+    type: "copolymer", arch: "block", components: ["Poly(N-isopropylacrylamide)", "Poly(ethylene oxide)"],
+    monomer: "N-isopropylacrylamide + ethylene oxide", cls: "Block copolymer (double-hydrophilic, thermoresponsive)", cas: null,
+    tags: ["copolymer", "block", "self-assembly", "water-soluble", "drug delivery", "biomedical", "specialty", "polyether"],
+    note: "Double-hydrophilic below about 32 C, where both blocks are hydrated, and amphiphilic above it, where the PNIPAM block dehydrates and collapses into a core while the PEO block keeps the particle colloidally stable - the reason this micellises reversibly on warming where PNIPAM homopolymer simply precipitates. The 32 C transition is a solution cloud point (LCST), not a glass transition, and will not appear on a dry DSC scan."
+  },
+  {
+    name: "Poly(methyl methacrylate)-b-poly(butyl acrylate)-b-poly(methyl methacrylate)", aka: ["MAM", "PMMA-b-PnBA-b-PMMA", "Nanostrength"],
+    type: "copolymer", arch: "block", components: ["Poly(methyl methacrylate)", "Poly(butyl acrylate)"],
+    monomer: "Methyl methacrylate + butyl acrylate", cls: "Block copolymer (acrylic thermoplastic elastomer)", cas: null,
+    tags: ["copolymer", "block", "acrylic", "elastomer", "thermoplastic elastomer", "specialty"],
+    note: "The all-acrylic answer to SBS: glassy PMMA end-blocks pin both ends of a rubbery poly(n-butyl acrylate) mid-block into a physical network, but with no backbone unsaturation, so it keeps the weatherability and clarity that the styrenic dienes lack. Made industrially by nitroxide-mediated controlled radical polymerisation rather than anionically, and sold as Arkema Nanostrength for toughening epoxies and acrylics, where it self-assembles into nanodomains inside the cured matrix."
+  },
+  {
+    name: "Poly(methyl methacrylate)-b-poly(butyl acrylate)", aka: ["PMMA-b-PnBA", "PMMA-b-PBA"],
+    type: "copolymer", arch: "block", components: ["Poly(methyl methacrylate)", "Poly(butyl acrylate)"],
+    monomer: "Methyl methacrylate + butyl acrylate", cls: "Block copolymer (diblock)", cas: null,
+    tags: ["copolymer", "block", "acrylic", "self-assembly", "specialty"],
+    note: "The diblock half of the MAM system and a standard demonstration polymer for controlled radical polymerisation, since both monomers are radically polymerisable and the second block can be grown straight from a macroinitiator. Widely used as a compatibiliser and as a model for acrylic microphase separation; as a diblock it is not itself an elastomer."
+  },
+  {
+    name: "Polystyrene-b-poly(dimethylsiloxane)", aka: ["PS-b-PDMS", "poly(styrene-block-dimethylsiloxane)"],
+    type: "copolymer", arch: "block", components: ["Polystyrene", "Poly(dimethylsiloxane)"],
+    monomer: "Styrene + dimethylsiloxane", cls: "Block copolymer (diblock)", cas: null,
+    tags: ["copolymer", "block", "self-assembly", "silicone", "specialty"],
+    note: "A high-chi block copolymer, so it microphase-separates to much smaller domains than PS-b-PMMA and reaches sub-10 nm features. The silicon content is the other half of its appeal: an oxygen plasma converts the PDMS domains to a silica-like oxide while burning the organic block away, giving an etch contrast far larger than any all-organic pair. The cost is a large surface-energy mismatch, so the film needs a top coat or a neutral layer to orient the domains."
+  },
+  {
+    name: "Poly(dimethylsiloxane)-b-poly(methyl methacrylate)", aka: ["PDMS-b-PMMA", "PMMA-b-PDMS"],
+    type: "copolymer", arch: "block", components: ["Poly(dimethylsiloxane)", "Poly(methyl methacrylate)"],
+    monomer: "Dimethylsiloxane + methyl methacrylate", cls: "Block copolymer (diblock)", cas: null,
+    tags: ["copolymer", "block", "self-assembly", "silicone", "specialty"],
+    note: "The same silicon-versus-organic etch contrast as PS-b-PDMS with a polar organic block, which changes the surface-energy balance and the selective solvents available. The two blocks are about as far apart in glass transition as any pair here - PDMS near -125 C against PMMA near 105 C - so the material is a rubbery phase and a glassy phase side by side at room temperature."
+  },
+  {
+    name: "Polyether block amide", aka: ["PEBA", "Pebax", "polyether-block-amide", "poly(nylon 12-b-tetramethylene oxide)", "TPE-A"],
+    type: "copolymer", arch: "block", components: ["Nylon 12", "Poly(tetrahydrofuran)"],
+    monomer: "Laurolactam + tetrahydrofuran", cls: "Segmented block copolymer (thermoplastic elastomer)", cas: "77402-38-1",
+    tags: ["copolymer", "block", "elastomer", "thermoplastic elastomer", "polyamide", "polyether", "engineering", "biomedical"],
+    note: "A thermoplastic elastomer in which crystalline polyamide-12 hard segments provide the physical crosslinks and poly(tetramethylene oxide) soft segments provide the elasticity, with stiffness dialled across a wide range purely by the hard:soft ratio. Unlike the styrenic triblocks this is a segmented multiblock made by melt polycondensation of dicarboxyl-terminated PA12 with polyether diol, so segment lengths are statistical and the chain is -(hard-soft)n- rather than a discrete ABA. Used for ski boots, running-shoe plates and catheter tubing."
   }
+
 ];
 
 // Provenance / copyright-management information for the dataset above. Not
