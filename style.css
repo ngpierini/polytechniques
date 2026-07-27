@@ -632,6 +632,11 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
 }
+/* A four-card section at the default 260px minimum wraps 3+1, stranding the
+   fourth card alone on its own row. A slightly smaller minimum lets all four
+   sit on one desktop row (4 x 235 + 3 x 20 = 1000px inside the 1032px body)
+   while still collapsing to 2-up and then 1-up on narrower screens. */
+.home-grid--four { grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); }
 .home-card {
   display: block;
   background: var(--card-bg);
@@ -679,6 +684,18 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
   gap: 22px;
   padding: 24px 28px;
 }
+/* Two flagships side by side (Calculator + Polymer Search). Inside the pair
+   the horizontal feature layout would cramp at half width, so members use
+   the stacked block layout the narrow breakpoint already defines, while
+   keeping the larger feature type size. Collapses to one column on phones. */
+.home-feature-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 20px;
+}
+.home-feature-pair .home-card--feature { display: block; }
+.home-feature-pair .home-card--feature .home-card-icon { margin-bottom: 12px; }
+.home-feature-pair .home-card--feature .home-card-arrow { margin-top: 14px; }
 .home-card--feature .home-card-icon { margin-bottom: 0; flex: 0 0 auto; width: 52px; height: 52px; font-size: 1.6rem; }
 .home-card--feature .feature-text { flex: 1; min-width: 0; }
 .home-card--feature h2 { font-size: 1.35rem; }
