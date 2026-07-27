@@ -1,2 +1,342 @@
-This file's historical content was removed when the repository history was cleaned.
-See the current revision of this file on the default branch.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glossary: PolyTechniques</title>
+<meta name="description" content="A glossary of common polymer chemistry terms, from conversion and dispersity to living radical polymerization and thermal analysis.">
+<link rel="canonical" href="https://getpolytechniques.com/glossary.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Glossary: PolyTechniques">
+<meta property="og:description" content="A glossary of common polymer chemistry terms, from conversion and dispersity to living radical polymerization and thermal analysis.">
+<meta property="og:url" content="https://getpolytechniques.com/glossary.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Glossary: PolyTechniques">
+<meta name="twitter:description" content="Common polymer chemistry terms, from conversion and dispersity to living radical polymerization and thermal analysis.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTermSet",
+  "name": "Polymer Chemistry Glossary",
+  "url": "https://getpolytechniques.com/glossary.html",
+  "description": "A glossary of common polymer chemistry terms, from conversion and dispersity to living radical polymerization and thermal analysis.",
+  "author": { "@type": "Person", "name": "Nicholas Pierini" },
+  "publisher": { "@type": "Organization", "name": "PolyTechniques" }
+}
+</script>
+<script src="theme.js"></script>
+<script src="nav.js?v=11" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=59">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Glossary</h1>
+      <p class="subtitle">Plain language definitions for the terms used across the calculator and technique guides</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <input type="search" id="glossary-search" placeholder="Filter terms&hellip; (press / to focus)" aria-label="Filter glossary terms">
+    <p class="guide-note" id="glossary-count" style="margin:8px 0 0;"></p>
+  </div>
+
+  <div class="card">
+    <h3>Molecular weight &amp; dispersity</h3>
+    <dl class="glossary-dl">
+      <dt>M<sub>n</sub> (number average molecular weight)</dt>
+      <dd>The total mass of polymer divided by the number of chains. This is the value ATRP, RAFT, and controlled FRP recipes are usually designed around, since it tracks directly with monomer to initiator ratio and conversion.</dd>
+
+      <dt>M<sub>w</sub> (weight average molecular weight)</dt>
+      <dd>A molecular weight average that weights each chain by its own mass, so longer chains count more. Always greater than or equal to M<sub>n</sub>; the two are equal only for a perfectly uniform (monodisperse) sample.</dd>
+
+      <dt>Đ (dispersity, formerly PDI)</dt>
+      <dd>M<sub>w</sub> divided by M<sub>n</sub>. A measure of how uniform the chain lengths are. Đ = 1.00 means every chain is the same length. Controlled techniques (ATRP, RAFT, ROMP) typically land around 1.05 to 1.30; uncontrolled FRP is usually 1.5 to 2.5 or broader. That low end reflects the theoretical limits, about 1.5 for termination by pure coupling and 2.0 for pure disproportionation at low conversion; chain transfer, autoacceleration, and high conversion push it broader.</dd>
+
+      <dt>DP (degree of polymerization)</dt>
+      <dd>The number of monomer units in one chain. Setting a target DP and multiplying by the monomer's molecular weight (plus the initiator fragment) gives the target M<sub>n</sub>.</dd>
+
+      <dt>Conversion</dt>
+      <dd>The fraction of monomer that has reacted, usually reported as a percentage. Chain length and molecular weight scale with conversion in a controlled polymerization, so tracking conversion over time is how you monitor the reaction.</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h3>Kinetics &amp; mechanism</h3>
+    <dl class="glossary-dl">
+      <dt>Living polymerization</dt>
+      <dd>A chain growth process with no chain breaking (termination) or chain transfer, so chains keep growing as long as monomer is available and can be extended later by adding more monomer. True living systems are rare; ATRP, RAFT, and ROMP are usually described as "controlled" rather than perfectly living.</dd>
+
+      <dt>Controlled polymerization</dt>
+      <dd>A polymerization where chain growth is fast and reversible deactivation (ATRP), reversible chain transfer (RAFT), or a well behaved catalyst (ROMP) keeps termination low enough that molecular weight grows predictably with conversion and Đ stays narrow.</dd>
+
+      <dt>Kinetic chain length</dt>
+      <dd>The average number of monomer units added per radical generated, from initiation to termination. In free radical polymerization this sets the chain length since there is no reactivation step. For termination by disproportionation the number-average DP equals the kinetic chain length; for termination by combination (coupling) each dead chain is two kinetic chains, so DP<sub>n</sub> is about twice the kinetic chain length.</dd>
+
+      <dt>Chain transfer</dt>
+      <dd>A reaction that moves the growing chain's reactivity to another molecule (solvent, monomer, a deliberately added CTA), ending one chain and starting another. RAFT is built entirely around a reversible, degenerate version of this process.</dd>
+
+      <dt>Termination</dt>
+      <dd>An irreversible reaction (radical coupling or disproportionation) that permanently ends a growing chain's ability to add more monomer. Minimizing termination relative to propagation is central to keeping a polymerization controlled.</dd>
+
+      <dt>Propagation</dt>
+      <dd>The repeated addition of monomer units to a growing chain end. This is the step that builds molecular weight.</dd>
+
+      <dt>Induction period</dt>
+      <dd>A delay at the start of a reaction, before conversion begins rising, often caused by residual oxygen or inhibitor consuming the first radicals generated.</dd>
+
+      <dt>Rate constants (k<sub>p</sub>, k<sub>t</sub>, k<sub>d</sub>, k<sub>i</sub>, k<sub>deact</sub>)</dt>
+      <dd>Shorthand for the rate constants of propagation (k<sub>p</sub>), termination (k<sub>t</sub>), initiator decomposition (k<sub>d</sub>), and initiation (k<sub>i</sub>). Controlled radical techniques add a reversible-deactivation constant, usually written k<sub>deact</sub> (or k<sub>da</sub>), kept distinct from the classic k<sub>d</sub> for initiator decomposition. Their relative sizes determine whether a polymerization behaves as controlled or conventional.</dd>
+
+      <dt>Persistent radical effect (PRE)</dt>
+      <dd>The self-correcting mechanism behind ATRP and NMP: whenever two growing radicals terminate, they leave behind a small excess of the stable deactivator (Cu(II) in ATRP, the nitroxide in NMP), which accumulates and shuts down further termination by capping chain ends. This is why the active-radical concentration stays low and the dispersity stays narrow.</dd>
+
+      <dt>Transfer constant (C<sub>tr</sub>, C<sub>ex</sub>)</dt>
+      <dd>The ratio of the chain-transfer rate constant (in RAFT, the exchange rate constant) to the propagation rate constant, k<sub>tr</sub>/k<sub>p</sub>. A high value means a chain trades its active end for a dormant one many times before it grows much, which is what keeps every chain nearly the same length; the <a href="dispersity-predictor.html">Dispersity Predictor</a> uses it to set the narrowest &#272; a RAFT run can reach.</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h3>Reagents &amp; components</h3>
+    <dl class="glossary-dl">
+      <dt>Initiator</dt>
+      <dd>The small molecule that starts a chain. In ATRP it is an alkyl halide (R&ndash;X); in FRP it is a species that thermally or photochemically generates the first radicals.</dd>
+
+      <dt>CTA (chain transfer agent)</dt>
+      <dd>The reagent that carries out RAFT's reversible chain transfer, usually a thiocarbonylthio compound (dithioester, trithiocarbonate, xanthate). Every chain grows from a CTA molecule rather than a conventional initiator fragment.</dd>
+
+      <dt>Macroinitiator / macro CTA</dt>
+      <dd>A previously made polymer chain that still carries a reactive chain end (a halide for ATRP, a thiocarbonylthio group for RAFT), used to grow a second block from an existing first block. This is how block copolymers are built by sequential addition.</dd>
+
+      <dt>Ligand</dt>
+      <dd>A molecule that binds the copper center in ATRP, tuning its redox potential so the activation and deactivation equilibrium runs at a useful rate. PMDETA and Me<sub>6</sub>TREN are common examples.</dd>
+
+      <dt>Catalyst</dt>
+      <dd>The species that mediates chain growth without being consumed. The Cu(I)/ligand complex in ATRP and the Grubbs or Hoveyda type carbene complex in ROMP are both catalysts in this sense.</dd>
+
+      <dt>Deactivator</dt>
+      <dd>The species that caps an active chain end and returns it to its dormant form, the reverse of activation. In ATRP it is the Cu(II)/ligand complex; in NMP it is the nitroxide. Its concentration relative to the active species controls how often chains are put to sleep, and so sets how narrow the dispersity can get.</dd>
+
+      <dt>Internal standard</dt>
+      <dd>A compound added to the reaction at a known, fixed amount that does not react, used as a reference peak in NMR or GC so conversion can be calculated from aliquots regardless of aliquot size or workup losses.</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h3>Technique specific</h3>
+    <dl class="glossary-dl">
+      <dt>ATRP (Atom Transfer Radical Polymerization)</dt>
+      <dd>A controlled radical technique where a copper catalyst reversibly activates and deactivates a dormant alkyl halide chain end, keeping the concentration of active radicals low so termination stays rare.</dd>
+
+      <dt>RAFT (Reversible Addition Fragmentation chain Transfer)</dt>
+      <dd>A controlled radical technique that uses a CTA to reversibly transfer the growing radical between chains, giving all chains an equal chance to grow and keeping the population narrow in molecular weight.</dd>
+
+      <dt>ROMP (Ring Opening Metathesis Polymerization)</dt>
+      <dd>A chain growth technique where a metal carbene catalyst opens a strained cyclic olefin and inserts it into the chain, forming a new double bond at each step. Often close to truly living.</dd>
+
+      <dt>FRP (free radical polymerization)</dt>
+      <dd>Conventional radical polymerization with no reversible deactivation or transfer step controlling chain growth, giving fast reactions but broad, less predictable molecular weight distributions.</dd>
+
+      <dt>ARGET / ICAR / SARA ATRP</dt>
+      <dd>Variants of ATRP that continuously regenerate the active Cu(I) catalyst (by a reducing agent, a radical initiator, or a metal source, respectively), allowing much lower catalyst loading and better tolerance of trace oxygen than classic ATRP.</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h3>Polymer structure &amp; types</h3>
+    <dl class="glossary-dl">
+      <dt>Repeat unit</dt>
+      <dd>The smallest structural unit that repeats along a polymer chain, drawn with open bonds at the two points where it joins its neighbors. In the <a href="polymer-search.html">Polymer Search</a> you sketch a bit more than one unit and bracket just the repeating part; a polymer's name and properties both follow from it.</dd>
+
+      <dt>Homopolymer &amp; copolymer</dt>
+      <dd>A homopolymer is built from a single monomer; a copolymer combines two or more. How the different units are arranged, whether random, alternating, in blocks, or grafted onto a backbone, can shape properties as strongly as the overall composition does.</dd>
+
+      <dt>Block copolymer</dt>
+      <dd>A copolymer in which each monomer is gathered into a long continuous run, or block, joined end to end (for example polystyrene-b-poly(ethylene glycol)). Blocks are grown one from the reactive end of another, which is what a macroinitiator or macro CTA is for, rather than by mixing both monomers in one feed.</dd>
+
+      <dt>Alternating copolymer</dt>
+      <dd>A copolymer whose two monomers follow each other in a regular &hellip;ABABAB&hellip; sequence. It arises when each chain end strongly prefers adding the other monomer over its own, meaning both reactivity ratios are near zero, so their product r<sub>1</sub>r<sub>2</sub> approaches 0.</dd>
+
+      <dt>Statistical (random) copolymer</dt>
+      <dd>A copolymer whose monomer sequence is set by the reactivity ratios and the feed, with no long-range order. It is strictly random only in the special case r<sub>1</sub>r<sub>2</sub> = 1, where each addition ignores the unit before it. That memoryless placement does not mean the chain matches the feed: it mirrors the feed composition only in the tighter case r<sub>1</sub> = r<sub>2</sub> = 1, and otherwise the more reactive monomer is enriched, still in random placement. The <a href="copolymer-composition.html">Copolymer Composition</a> tool reads this regime from the reactivity-ratio product.</dd>
+
+      <dt>Gradient (tapered) copolymer</dt>
+      <dd>A copolymer whose composition shifts gradually from one monomer to the other along the chain, instead of changing sharply as it does at a block junction. It forms when strong composition drift is left to run in a batch reaction, or is made deliberately by feeding one monomer in over time.</dd>
+
+      <dt>Graft copolymer</dt>
+      <dd>A copolymer with side chains of one monomer attached along a backbone of another, like teeth on a comb. Written with -g- (for example poly(butadiene)-g-polystyrene), it is a branched architecture rather than a linear sequence.</dd>
+
+      <dt>Bio-based (renewable) polymer</dt>
+      <dd>A polymer whose monomer comes from a renewable biological feedstock, such as plant sugars, oils, or terpenes like geraniol, rather than from petroleum. Bio-based does not by itself mean biodegradable; the two are separate properties. The reference library flags these with a bio-based tag.</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h3>Copolymer composition</h3>
+    <dl class="glossary-dl">
+      <dt>Reactivity ratio (r<sub>1</sub>, r<sub>2</sub>)</dt>
+      <dd>A measure of how strongly a growing chain end prefers adding its own monomer over the other one in a copolymerization. r<sub>1</sub> &gt; 1 means a monomer 1 chain end favors monomer 1; r<sub>1</sub> &lt; 1 means it favors crossing over to monomer 2. Used in the <a href="copolymer-composition.html">Copolymer Composition</a> calculator.</dd>
+
+      <dt>Ideal copolymerization (r<sub>1</sub>r<sub>2</sub> = 1)</dt>
+      <dd>The case where each chain end adds the two monomers in the same ratio no matter which unit it just added, so neither alternation nor blockiness is favored and the sequence is effectively random. The product r<sub>1</sub>r<sub>2</sub> is the single number that places a pair on the scale from alternating (toward 0) through ideal (about 1) to blocky (well above 1); the <a href="copolymer-composition.html">Copolymer Composition</a> tool reads the likely microstructure from it.</dd>
+
+      <dt>Azeotropic composition</dt>
+      <dd>The feed composition at which the copolymer forms with exactly the same composition as the feed, so the copolymer composition does not drift as conversion proceeds. Only exists for some monomer pairs and reactivity ratio combinations: specifically when both reactivity ratios sit on the same side of 1, usually both r<sub>1</sub> and r<sub>2</sub> below 1 (both above 1 is possible but rare and blocky). When it does exist, the azeotropic feed is f<sub>1</sub> = (1 &minus; r<sub>2</sub>) / (2 &minus; r<sub>1</sub> &minus; r<sub>2</sub>).</dd>
+
+      <dt>Composition drift</dt>
+      <dd>The gradual change in a copolymer's instantaneous composition as conversion increases, caused by the faster reacting comonomer being consumed first. Avoided only at the azeotropic composition or by continuously feeding the faster monomer.</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h3>GPC &amp; characterization</h3>
+    <dl class="glossary-dl">
+      <dt>Mark Houwink parameters (K, &alpha;)</dt>
+      <dd>Two constants relating a polymer's intrinsic viscosity to its molecular weight, specific to a polymer, solvent, and temperature. Used to convert a polystyrene equivalent GPC result into a true molecular weight with the <a href="gpc-calibration.html">GPC Calibration Converter</a>.</dd>
+
+      <dt>Universal calibration</dt>
+      <dd>The principle that two polymers eluting at the same GPC retention volume have the same hydrodynamic volume, even if their molecular weights differ, which is what makes Mark Houwink based molecular weight conversion possible.</dd>
+
+      <dt>Polystyrene equivalent molecular weight</dt>
+      <dd>The molecular weight a GPC reports when it is calibrated against polystyrene standards. Only equal to a sample's true molecular weight if the sample is also polystyrene; otherwise it needs a Mark Houwink correction or true light scattering detection.</dd>
+
+      <dt>Light scattering (MALS)</dt>
+      <dd>A detection method that measures molecular weight directly from how much light a polymer scatters, with no calibration curve needed, though it does require an accurate refractive index increment (dn/dc) for the polymer.</dd>
+
+      <dt>dn/dc (refractive index increment)</dt>
+      <dd>How much a polymer solution's refractive index changes per unit concentration. Needed to convert light scattering or refractive index detector signal into an actual mass or molecular weight.</dd>
+
+      <dt>Band broadening</dt>
+      <dd>Peak spreading caused by the GPC instrument itself (tubing, fittings, column efficiency) rather than the sample, which increases the apparent dispersity of even a genuinely narrow polymer.</dd>
+
+      <dt>Triple detection</dt>
+      <dd>Running a concentration detector, a light scattering detector, and a viscometer together, giving absolute molecular weight, size, and branching information without relying on a calibration curve at all.</dd>
+
+      <dt>Shoulder</dt>
+      <dd>A secondary peak or poorly resolved bump next to a chromatogram's main peak, indicating either a genuine second population (chain coupling, a blend) or a measurement artifact (aggregation, column overloading). See <a href="gpc-peak-interpretation.html">GPC Peak Interpretation</a> for how to tell them apart.</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h3>Thermal analysis</h3>
+    <dl class="glossary-dl">
+      <dt>Glass transition temperature (T<sub>g</sub>)</dt>
+      <dd>The temperature marking the transition between a glassy, rigid amorphous state and a rubbery, flexible one. Below T<sub>g</sub>, amorphous chain segments are essentially frozen in place; above it, those segments regain enough mobility (segmental motion) that the material turns soft and rubbery. T<sub>g</sub> is partly kinetic, not a fixed constant: a faster heating or cooling rate gives a slightly higher measured value.</dd>
+
+      <dt>Fox equation</dt>
+      <dd>An equation estimating a random copolymer or miscible blend's T<sub>g</sub> from the weight fraction and homopolymer T<sub>g</sub> of each component. Does not apply to block copolymers or phase separated blends, which usually show two separate glass transitions instead of one. Used in the <a href="tg-predictor.html">Tg Predictor</a>.</dd>
+
+      <dt>DSC (Differential Scanning Calorimetry)</dt>
+      <dd>Measures heat flow vs. temperature, reading a sample's thermal transitions: a heat capacity step at the glass transition, and enthalpic peaks for melting, crystallization, and cure. See <a href="thermal-analysis.html">Thermal Analysis</a>.</dd>
+
+      <dt>TGA (Thermogravimetric Analysis)</dt>
+      <dd>Measures mass vs. temperature, reading a material's thermal stability (decomposition onset) and composition from the mass lost at each step (moisture, volatiles, polymer, filler, residue). See <a href="thermal-analysis.html">Thermal Analysis</a>.</dd>
+
+      <dt>DMA (Dynamic Mechanical Analysis)</dt>
+      <dd>Measures modulus and damping vs. temperature under oscillatory strain, plotting storage modulus E&prime;, loss modulus E&Prime;, and tan&nbsp;&delta; (= E&Prime;/E&prime;). The most sensitive method for detecting T<sub>g</sub>, and the only one of the three that reads stiffness and crosslinking directly. See <a href="thermal-analysis.html">Thermal Analysis</a>.</dd>
+
+      <dt>Storage modulus (E&prime;) &amp; loss modulus (E&Prime;)</dt>
+      <dd>The elastic (energy-stored) and viscous (energy-dissipated) components of a material's dynamic modulus, measured by DMA under oscillatory strain. E&prime; tracks stiffness; E&Prime; tracks damping; their ratio is tan&nbsp;&delta;. See <a href="thermal-analysis.html">Thermal Analysis</a>.</dd>
+
+      <dt>tan&nbsp;&delta;</dt>
+      <dd>The ratio of loss to storage modulus (E&Prime;/E&prime;) from DMA, peaking near the glass transition. A lightly crosslinked or linear polymer shows a tall tan&nbsp;&delta; peak; a tightly crosslinked network shows a short, broad one. An immiscible (phase separated) blend shows one tan&nbsp;&delta; peak per phase, while a miscible blend or random copolymer shows a single shifted peak. See <a href="thermal-analysis.html">Thermal Analysis</a>.</dd>
+
+      <dt>Crosslink density (&nu;) &amp; M<sub>c</sub></dt>
+      <dd>The concentration of elastically effective network chains (&nu;, in mol/m<sup>3</sup>, loosely called crosslink density) and the average molar mass of chain between crosslinks (M<sub>c</sub>), read from a DMA rubbery plateau (about 40&nbsp;&deg;C above T<sub>g</sub>) via ideal rubber elasticity, E&prime; = 3&nu;RT, together with the polymer's density &rho;. Tightening the cure raises E&prime; and &nu; while lowering M<sub>c</sub>; loosening it does the reverse. See <a href="thermal-analysis.html">Thermal Analysis</a>.</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h3>Lab technique</h3>
+    <dl class="glossary-dl">
+      <dt>Schlenk line</dt>
+      <dd>A dual manifold of vacuum and inert gas lines used to keep air sensitive reactions under an oxygen and moisture free atmosphere while still allowing normal glassware manipulations.</dd>
+
+      <dt>Freeze pump thaw (FPT)</dt>
+      <dd>A degassing method that removes dissolved gas from a liquid by alternately freezing it solid, evacuating the headspace, and letting it thaw so trapped gas can escape. The standard degassing method for ATRP.</dd>
+
+      <dt>Glovebox</dt>
+      <dd>A sealed, inert atmosphere enclosure used to handle reagents too oxygen or moisture sensitive to expose even briefly to air, such as some Cu(I) complexes or air free catalyst stocks.</dd>
+
+      <dt>Aliquot</dt>
+      <dd>A small sample withdrawn from the bulk reaction during the run, typically analyzed by NMR or GC against an internal standard to track conversion over time.</dd>
+    </dl>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Definitions are simplified for practical lab use, not formal IUPAC definitions.</p>
+</footer>
+
+<script>
+(function () {
+  var input = document.getElementById("glossary-search");
+  var countEl = document.getElementById("glossary-count");
+  if (!input) return;
+
+  // Collect every dt/dd pair and the card it lives in
+  var entries = [];
+  document.querySelectorAll("#guide .glossary-dl dt").forEach(function (dt) {
+    var dd = dt.nextElementSibling;
+    entries.push({
+      dt: dt,
+      dd: dd && dd.tagName === "DD" ? dd : null,
+      text: (dt.textContent + " " + (dd ? dd.textContent : "")).toLowerCase()
+    });
+  });
+
+  function applyFilter() {
+    var q = input.value.trim().toLowerCase();
+    var shown = 0;
+    entries.forEach(function (e) {
+      var hit = !q || e.text.indexOf(q) !== -1;
+      e.dt.hidden = !hit;
+      if (e.dd) e.dd.hidden = !hit;
+      if (hit) shown++;
+    });
+    // Hide any category card whose terms are all filtered out
+    document.querySelectorAll("#guide .card").forEach(function (card) {
+      var dl = card.querySelector(".glossary-dl");
+      if (!dl) return;
+      card.hidden = !dl.querySelector("dt:not([hidden])");
+    });
+    countEl.textContent = q
+      ? (shown + " term" + (shown === 1 ? "" : "s") + " matching “" + input.value.trim() + "”")
+      : "";
+  }
+
+  input.addEventListener("input", applyFilter);
+
+  // Deep link: glossary.html?q=term prefills the filter (used by the
+  // Ctrl+K palette)
+  var q = new URLSearchParams(location.search).get("q");
+  if (q) {
+    input.value = q;
+    applyFilter();
+    input.focus();
+  }
+})();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

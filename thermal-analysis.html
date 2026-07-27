@@ -1,2 +1,1710 @@
-This file's historical content was removed when the repository history was cleaned.
-See the current revision of this file on the default branch.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thermal Analysis: DSC, TGA &amp; DMA: PolyTechniques</title>
+<meta name="description" content="How to read DSC, TGA, and DMA on polymers, with interactive thermograms you reshape by heating rate, atmosphere, frequency, and crosslink density. Glass transition, melting, crystallinity, thermal stability, filler content, and modulus explained.">
+<link rel="canonical" href="https://getpolytechniques.com/thermal-analysis.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Thermal Analysis: DSC, TGA &amp; DMA: PolyTechniques">
+<meta property="og:description" content="Read DSC, TGA, and DMA on polymers with interactive thermograms: glass transition, melting, crystallinity, thermal stability, filler content, and modulus.">
+<meta property="og:url" content="https://getpolytechniques.com/thermal-analysis.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Thermal Analysis: DSC, TGA &amp; DMA">
+<meta name="twitter:description" content="Interactive DSC, TGA, and DMA for polymers: transitions, stability, composition, and modulus.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Thermal Analysis of Polymers: DSC, TGA and DMA",
+  "url": "https://getpolytechniques.com/thermal-analysis.html",
+  "description": "How to read DSC, TGA, and DMA on polymers, with interactive thermograms for the glass transition, melting, crystallinity, thermal stability, filler content, and modulus.",
+  "author": { "@type": "Person", "name": "Nicholas Pierini" },
+  "publisher": { "@type": "Organization", "name": "PolyTechniques" },
+  "mainEntityOfPage": "https://getpolytechniques.com/thermal-analysis.html"
+}
+</script>
+<script src="theme.js"></script>
+<script src="nav.js?v=11" defer></script>
+<script src="thermal-library.js?v=3"></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=59">
+<style>
+  /* Page-scoped styles for the interactive thermal-analysis charts. Colours are
+     pulled from the site's CSS variables so light/dark both work; the extra
+     series colours are mid-tones chosen to read on either background. */
+  .ta-controls { display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: flex-end; margin: 4px 0 14px; }
+  .ta-control { display: flex; flex-direction: column; gap: 5px; min-width: 150px; flex: 1 1 150px; }
+  .ta-control-label { font-size: 0.8rem; font-weight: 600; color: var(--text-dim); display: flex; justify-content: space-between; gap: 8px; }
+  .ta-control-label .ta-val { color: var(--primary); font-variant-numeric: tabular-nums; }
+  .ta-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+  .ta-seg button {
+    font: inherit; font-size: 0.82rem; padding: 6px 11px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); border-radius: 999px; cursor: pointer; transition: all 0.12s;
+  }
+  .ta-seg button:hover { border-color: var(--primary); }
+  .ta-seg button.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  input[type="range"].ta-range { width: 100%; accent-color: var(--primary); margin: 2px 0; cursor: pointer; }
+  .ta-chart-wrap { width: 100%; overflow-x: auto; margin: 6px 0 4px; }
+  .ta-chart { display: block; width: 100%; height: auto; min-width: 460px; }
+  .ta-chart .ta-axis { stroke: var(--text-dim); stroke-width: 1; }
+  .ta-chart .ta-grid { stroke: var(--border); stroke-width: 1; }
+  .ta-chart .ta-tick { fill: var(--text-dim); font-size: 10px; }
+  .ta-chart .ta-axis-label { fill: var(--text-dim); font-size: 11px; font-weight: 600; }
+  .ta-chart .ta-curve { fill: none; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+  .ta-chart .ta-curve-e1 { stroke: var(--primary); }
+  .ta-chart .ta-curve-e2 { stroke: #f2b84b; stroke-width: 1.8; }
+  .ta-chart .ta-curve-tand { stroke: var(--accent); stroke-width: 2; }
+  .ta-chart .ta-curve-dtg { stroke: #a78bfa; stroke-width: 1.8; }
+  .ta-chart .ta-curve-ref { stroke: var(--text-dim); stroke-width: 1.7; stroke-dasharray: 6 4; opacity: 0.85; }
+  select.ta-select {
+    font: inherit; font-size: 0.9rem; padding: 7px 10px; width: 100%;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); color: var(--text); cursor: pointer;
+  }
+  select.ta-select:hover { border-color: var(--primary); }
+  .ta-conf { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 0.72rem; font-weight: 600;
+             background: rgba(242,184,75,0.18); color: #c98a1e; margin-left: 6px; vertical-align: middle; }
+  .ta-matnote { font-size: 0.85rem; color: var(--text-dim); margin: 2px 0 10px; line-height: 1.45; }
+  .ta-formnote { font-size: 0.83rem; color: var(--text-dim); line-height: 1.45; margin-top: 7px;
+                 padding: 8px 11px; border-left: 3px solid var(--primary); border-radius: 0 7px 7px 0;
+                 background: rgba(127,127,127,0.06);
+                 background: color-mix(in srgb, var(--primary) 6%, transparent); }
+  .ta-src { display: block; margin-top: 4px; font-size: 0.78rem; opacity: 0.82; font-style: italic; }
+  .ta-mix-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+  .ta-mix-row select.ta-select { flex: 1 1 220px; width: auto; }
+  .ta-mix-row input[type="range"] { flex: 0 1 130px; accent-color: var(--primary); cursor: pointer; }
+  .ta-mix-wt { font-size: 0.82rem; font-weight: 700; color: var(--primary); min-width: 46px; text-align: right; font-variant-numeric: tabular-nums; }
+  input.ta-mix-num {
+    font: inherit; font-size: 0.85rem; font-weight: 700; width: 62px; padding: 5px 6px; text-align: right;
+    border: 1px solid var(--border); border-radius: 7px; background: var(--card-bg); color: var(--primary);
+    font-variant-numeric: tabular-nums;
+  }
+  input.ta-mix-num:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
+  .ta-mix-pct { font-size: 0.82rem; font-weight: 700; color: var(--text-dim); margin-left: -3px; }
+  .ta-mix-del {
+    font: inherit; line-height: 1; padding: 5px 9px; border: 1px solid var(--border); background: var(--bg);
+    color: var(--text-dim); border-radius: 7px; cursor: pointer;
+  }
+  .ta-mix-del:hover { border-color: var(--danger); color: var(--danger); }
+  .ta-mix-add {
+    font: inherit; font-size: 0.84rem; padding: 6px 12px; border: 1px dashed var(--border);
+    background: transparent; color: var(--text-dim); border-radius: 8px; cursor: pointer;
+  }
+  .ta-mix-add:hover { border-color: var(--primary); color: var(--primary); }
+  .ta-na { padding: 14px; border: 1px dashed var(--border); border-radius: var(--radius); color: var(--text-dim); font-size: 0.88rem; }
+  .ta-verdict { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+  .ta-verdict-ok { background: rgba(14,159,110,0.16); color: var(--accent); }
+  .ta-verdict-warn { background: rgba(242,184,75,0.20); color: #c98a1e; }
+  .ta-verdict-bad { background: rgba(214,69,69,0.16); color: var(--danger); }
+  .ta-chart .ta-fill { opacity: 0.10; }
+  .ta-chart .ta-fill-endo { fill: var(--primary); }
+  .ta-chart .ta-fill-exo { fill: #ef6a6a; }
+  .ta-chart .ta-marker { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 3 3; }
+  .ta-chart .ta-marker-label { fill: var(--text); font-size: 10px; font-weight: 600; }
+  .ta-chart .ta-feat { fill: var(--text-dim); font-size: 10px; }
+  .ta-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.8rem; color: var(--text-dim); margin: 2px 0 10px; }
+  .ta-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .ta-swatch { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
+  .ta-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
+  .ta-picker button {
+    font: inherit; font-size: 0.85rem; padding: 7px 13px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); border-radius: 8px; cursor: pointer; transition: all 0.12s;
+  }
+  .ta-picker button:hover { border-color: var(--primary); }
+  .ta-picker button.active { background: var(--primary-dim); border-color: var(--primary); color: var(--text); }
+  .ta-pick-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 10px; }
+  .ta-pick-card { border: 2px solid var(--border); border-radius: var(--radius); padding: 12px 14px; transition: all 0.15s; }
+  .ta-pick-card h4 { margin: 0 0 4px; font-size: 0.98rem; }
+  .ta-pick-card p { margin: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 1.45; }
+  .ta-pick-card.lit { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-dim); }
+  .ta-pick-card.dim { opacity: 0.4; }
+  @media (max-width: 620px) { .ta-pick-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Thermal Analysis: DSC, TGA &amp; DMA</h1>
+      <p class="subtitle">What each thermogram actually shows, with interactive plots you reshape by heating rate, atmosphere, frequency, and crosslink density</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>What thermal analysis tells you</h3>
+    <p class="guide-note">
+      Three techniques answer three different questions about a polymer, and together they cover most of what you need to characterize a material. <strong>DSC</strong> measures heat flow, so it sees every transition that absorbs or releases energy: the glass transition, crystallization, and melting, plus the enthalpies behind them. <strong>TGA</strong> measures mass, so it sees thermal stability and, by watching what is lost and when, the composition: moisture, plasticizer, polymer, carbon, and inorganic filler. <strong>DMA</strong> measures mechanical stiffness under an oscillating load, so it sees the same transitions DSC does but through their effect on modulus and damping, and it is far and away the most sensitive way to find a weak glass transition.
+    </p>
+    <p class="guide-note">
+      Every chart below is live and driven by a shared <strong>materials library</strong> of 40 entries: commodity and engineering thermoplastics, elastomers, polymeric binders, plasticizers, and common inorganic fillers. Pick a material from the dropdown on any test and the predicted curve and read-outs are generated from that entry's own properties. Each test only lists what it can actually measure, so powders and liquid plasticizers do not appear under DMA. Switch a test to its mixture mode and you can build a blend or filled compound from any of them and see the superposed trace.
+    </p>
+    <p class="guide-note">
+      The values come from handbooks, instrument-maker application notes, and the primary literature, but they vary with grade, thermal history, and method, so anything not well established carries a <span class="ta-conf">varies by grade</span> or <span class="ta-conf">rough estimate</span> flag next to the material description. These are teaching approximations for estimation and comparison, never a substitute for running your own standard.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Which technique answers your question?</h3>
+    <p class="guide-note">Pick what you want to measure, and the technique (or techniques) that give it light up.</p>
+    <div class="ta-picker" id="ta-picker"></div>
+    <div class="ta-pick-grid">
+      <div class="ta-pick-card" id="pick-dsc">
+        <h4>DSC</h4>
+        <p>Differential scanning calorimetry. Heat flow vs. temperature. Reads transitions and their enthalpies.</p>
+      </div>
+      <div class="ta-pick-card" id="pick-tga">
+        <h4>TGA</h4>
+        <p>Thermogravimetric analysis. Mass vs. temperature. Reads thermal stability and composition.</p>
+      </div>
+      <div class="ta-pick-card" id="pick-dma">
+        <h4>DMA</h4>
+        <p>Dynamic mechanical analysis. Modulus and damping vs. temperature. The most sensitive Tg, plus stiffness and crosslinking.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="sec-dsc">
+    <h3>DSC: Differential Scanning Calorimetry</h3>
+    <p class="guide-note">
+      DSC records the difference in heat flow between your sample and an empty reference pan as both follow the same temperature program. A step in the baseline is the <strong>glass transition (T<sub>g</sub>)</strong>, where the amorphous fraction gains segmental mobility and its heat capacity jumps. A peak is a first-order event: an <strong>endotherm</strong> (melting) absorbs heat, an <strong>exotherm</strong> (crystallization) releases it. A quenched semicrystalline polymer like PET shows a <strong>cold-crystallization</strong> exotherm on heating, between T<sub>g</sub> and melting, as frozen chains finally crystallize. Because a crystallization exotherm and a melting endotherm point in opposite directions, the plot is meaningless without an endo-up or endo-down arrow.
+    </p>
+    <p class="guide-note">
+      The first heat carries the sample's processing history, including a small enthalpy-relaxation overshoot on the T<sub>g</sub> step if the glass has aged. A controlled cool followed by a second heat erases that history, which is why intrinsic values are quoted from the second heat. Percent crystallinity comes from the melting enthalpy: X<sub>c</sub> = (&Delta;H<sub>m</sub> &minus; &Delta;H<sub>cc</sub>) / &Delta;H<sub>m</sub>&deg; &times; 100, subtracting the cold-crystallization enthalpy so you count only crystals that were there before the scan.
+    </p>
+    <p class="guide-note" style="font-size:0.85rem;">
+      <strong>On the numbers:</strong> tabulated T<sub>g</sub> and T<sub>m</sub> vary with sample and method, and because the glass transition is at least partly kinetic, the T<sub>g</sub> also depends on measurement rate (a faster scan reads a higher T<sub>g</sub>). The transition is not a sharp point but the cessation of long-range segmental motion, spread over a modest temperature range for chain segments of different lengths (about 5&ndash;20 chain atoms), so which temperature you read depends on how fast you probe it. The cooling rate that formed the glass matters as well: a faster quench freezes in a higher T<sub>g</sub>, so a reheat scan also carries the history of how the sample was cooled. Standard reference tables (Brandrup's <em>Polymer Handbook</em>, as tabulated in Odian's <em>Principles of Polymerization</em>) list PET at T<sub>g</sub> 61&nbsp;&deg;C with a crystalline T<sub>m</sub> of 270&nbsp;&deg;C, while a 10&nbsp;K/min DSC scan of quenched PET shows an apparent T<sub>g</sub> around 75&ndash;80&nbsp;&deg;C and a melting peak near 250&nbsp;&deg;C. The heating-rate slider below shows why the T<sub>g</sub> figure is method-dependent.
+    </p>
+
+    <div class="ta-controls">
+      <div class="ta-control" style="flex-basis:100%;">
+        <span class="ta-control-label">Mode</span>
+        <div class="ta-seg" id="dsc-mode">
+          <button type="button" data-v="single" class="active">Single material</button>
+          <button type="button" data-v="mix">Mixture</button>
+        </div>
+      </div>
+      <div class="ta-control ta-dsc-single" style="flex-basis:60%;">
+        <span class="ta-control-label">Material</span>
+        <select id="dsc-material" class="ta-select" aria-label="DSC material"></select>
+      </div>
+      <div class="ta-control ta-dsc-mix" style="flex-basis:100%;display:none;">
+        <span class="ta-control-label">Mixture: drag or type to set the ratio, weights normalise to 100%</span>
+        <div id="dsc-mix-rows"></div>
+        <button type="button" class="ta-mix-add" id="dsc-mix-add">+ Add component</button>
+      </div>
+      <div class="ta-control ta-dsc-mix" style="display:none;">
+        <span class="ta-control-label">View</span>
+        <div class="ta-seg" id="dsc-zoom">
+          <button type="button" data-v="full" class="active">Full scan</button>
+          <button type="button" data-v="binder">Binder transitions</button>
+        </div>
+      </div>
+      <div class="ta-control ta-dsc-mix" style="display:none;">
+        <span class="ta-control-label">Measured mixture peak <span class="ta-val" id="dsc-obs-val">&mdash;</span></span>
+        <input type="number" class="ta-select" id="dsc-obs" placeholder="e.g. 221" step="0.1" style="text-align:right;">
+      </div>
+      <div class="ta-control" id="dsc-heat-wrap">
+        <span class="ta-control-label">Heat <span class="ta-val" id="dsc-heat-val">First</span></span>
+        <div class="ta-seg" id="dsc-heat">
+          <button type="button" data-v="1" class="active">First heat</button>
+          <button type="button" data-v="2">Second heat</button>
+        </div>
+      </div>
+      <div class="ta-control">
+        <span class="ta-control-label">Heating rate <span class="ta-val" id="dsc-rate-val">10 K/min</span></span>
+        <input type="range" class="ta-range" id="dsc-rate" min="2" max="50" step="1" value="10">
+      </div>
+      <div class="ta-control">
+        <span class="ta-control-label">Display</span>
+        <div class="ta-seg" id="dsc-endo">
+          <button type="button" data-v="down" class="active">Endo down</button>
+          <button type="button" data-v="up">Endo up</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="ta-matnote" id="dsc-matnote"></p>
+    <div class="ta-legend" id="dsc-legend" style="display:none;"></div>
+    <div class="ta-chart-wrap">
+      <svg id="dsc-chart" class="ta-chart" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Interactive DSC thermogram"></svg>
+    </div>
+    <div class="stat-grid" id="dsc-stats"></div>
+    <p class="guide-note" id="dsc-read" style="margin-top:10px;"></p>
+  </div>
+
+  <div class="card" id="sec-tga">
+    <h3>TGA: Thermogravimetric Analysis</h3>
+    <p class="guide-note">
+      TGA weighs a few milligrams of sample continuously as it heats, plotting mass as a percent of the start. Each downward step is something leaving: adsorbed <strong>moisture</strong> below ~150&nbsp;&deg;C, <strong>plasticizer or process oil</strong> in the 150&ndash;350&nbsp;&deg;C range, then the <strong>polymer backbone</strong> decomposing in the largest step. The first derivative, <strong>DTG</strong>, turns each step into a peak whose apex is T<sub>max</sub>, the temperature of fastest mass loss, and resolves overlapping steps a plain curve would blur. T<sub>max</sub> is not a material constant: it climbs with heating rate, and that shift is information. Run the same sample at three or more rates and the size of the shift tells you how strongly the decomposition depends on temperature.
+    </p>
+    <p class="guide-note">
+      The purge gas is the trick that turns TGA into a compositional tool. Under inert <strong>N<sub>2</sub></strong>, carbon (polymer char and carbon black) survives, so the residue is carbon plus inorganic filler. Switch to <strong>air</strong> and that carbon burns off as CO<sub>2</sub>, leaving only mineral <strong>ash</strong>. The gap between the two residues is the carbon content. A carbonate filler gives itself away too: CaCO<sub>3</sub> decomposes to CaO near 700&nbsp;&deg;C, losing exactly 44% of its mass as CO<sub>2</sub>, so its loading is back-calculated from that step.
+    </p>
+
+    <div class="ta-controls">
+      <div class="ta-control" style="flex-basis:100%;">
+        <span class="ta-control-label">Sample</span>
+        <div class="ta-seg" id="tga-sample">
+          <button type="button" data-v="single" class="active">Single material</button>
+          <button type="button" data-v="mix">Mixture</button>
+          <button type="button" data-v="rubber">Filled rubber compound</button>
+        </div>
+      </div>
+      <div class="ta-control ta-single" style="flex-basis:60%;">
+        <span class="ta-control-label">Material</span>
+        <select id="tga-material" class="ta-select" aria-label="TGA material"></select>
+      </div>
+      <div class="ta-control ta-tmix" style="flex-basis:100%;display:none;">
+        <span class="ta-control-label">Formulation: mass loss is strictly additive, so this superposition is exact for a non-interacting mixture</span>
+        <div id="tga-mix-rows"></div>
+        <button type="button" class="ta-mix-add" id="tga-mix-add">+ Add component</button>
+      </div>
+      <div class="ta-control" style="flex-basis:100%;">
+        <span class="ta-control-label">Atmosphere</span>
+        <div class="ta-seg" id="tga-atm">
+          <button type="button" data-v="n2">N&#8322; (inert)</button>
+          <button type="button" data-v="air">Air (oxidative)</button>
+          <button type="button" data-v="switch" class="active">N&#8322; &rarr; air at 600&deg;C</button>
+        </div>
+      </div>
+      <div class="ta-control ta-rubber">
+        <span class="ta-control-label">Moisture <span class="ta-val" id="tga-moist-val">1%</span></span>
+        <input type="range" class="ta-range" id="tga-moist" min="0" max="8" step="0.5" value="1">
+      </div>
+      <div class="ta-control ta-rubber">
+        <span class="ta-control-label">Plasticizer / oil <span class="ta-val" id="tga-oil-val">0%</span></span>
+        <input type="range" class="ta-range" id="tga-oil" min="0" max="35" step="1" value="0">
+      </div>
+      <div class="ta-control ta-rubber">
+        <span class="ta-control-label">Carbon black <span class="ta-val" id="tga-cb-val">6%</span></span>
+        <input type="range" class="ta-range" id="tga-cb" min="0" max="35" step="1" value="6">
+      </div>
+      <div class="ta-control ta-rubber">
+        <span class="ta-control-label">CaCO&#8323; filler <span class="ta-val" id="tga-caco3-val">18%</span></span>
+        <input type="range" class="ta-range" id="tga-caco3" min="0" max="35" step="1" value="18">
+      </div>
+    </div>
+
+    <p class="ta-matnote" id="tga-matnote"></p>
+    <div class="ta-legend">
+      <span><span class="ta-swatch" style="background:var(--primary)"></span> Mass %</span>
+      <span><span class="ta-swatch" style="background:#a78bfa"></span> DTG (rate of mass loss)</span>
+    </div>
+    <div class="ta-chart-wrap">
+      <svg id="tga-chart" class="ta-chart" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Interactive TGA and DTG curve"></svg>
+    </div>
+    <div class="stat-grid" id="tga-stats"></div>
+    <p class="guide-note" id="tga-read" style="margin-top:10px;"></p>
+  </div>
+
+  <div class="card" id="sec-dma">
+    <h3>DMA: Dynamic Mechanical Analysis</h3>
+    <p class="guide-note">
+      DMA applies a small oscillating deformation and measures the stiffness, split into an in-phase elastic part, the <strong>storage modulus E&prime;</strong>, and an out-of-phase viscous part, the <strong>loss modulus E&Prime;</strong>. Their ratio, <strong>tan&nbsp;&delta; = E&Prime;/E&prime;</strong>, is the damping. On heating, E&prime; sits on a stiff <strong>glassy plateau</strong> near 10<sup>9</sup>&nbsp;Pa, falls three to four decades through the glass transition, and settles on a lower <strong>rubbery plateau</strong>. That drop is the most sensitive T<sub>g</sub> measurement there is.
+    </p>
+    <p class="guide-note">
+      DMA reports T<sub>g</sub> three ways, and they do not agree: the <strong>onset of the E&prime; drop</strong> (lowest, the conservative engineering limit), the <strong>E&Prime; peak</strong> (middle), and the <strong>tan&nbsp;&delta; peak</strong> (highest, most often quoted), typically spread 10&ndash;25&nbsp;&deg;C apart, so a DMA T<sub>g</sub> is meaningless without saying which marker and what frequency. Because T<sub>g</sub> is kinetic, raising the frequency shifts the whole transition to higher temperature, about 6&nbsp;&deg;C per decade. And for a crosslinked network the rubbery plateau is set by crosslink density through E&prime;<sub>rubbery</sub> = 3&nu;RT, so DMA doubles as a way to measure how tightly cured a thermoset is.
+    </p>
+
+    <div class="ta-controls">
+      <div class="ta-control" style="flex-basis:100%;">
+        <span class="ta-control-label">Mode</span>
+        <div class="ta-seg" id="dma-mode">
+          <button type="button" data-v="single" class="active">Single material</button>
+          <button type="button" data-v="mix">Blend / composite</button>
+        </div>
+      </div>
+      <div class="ta-control ta-dma-single" style="flex-basis:60%;">
+        <span class="ta-control-label">Material</span>
+        <select id="dma-material" class="ta-select" aria-label="DMA material"></select>
+      </div>
+      <div class="ta-control ta-dma-mix" style="flex-basis:100%;display:none;">
+        <span class="ta-control-label">Blend: stiffness is not additive, so this shows the Voigt/Reuss bounds rather than a single line</span>
+        <div id="dma-mix-rows"></div>
+        <button type="button" class="ta-mix-add" id="dma-mix-add">+ Add component</button>
+      </div>
+      <div class="ta-control">
+        <span class="ta-control-label">Frequency <span class="ta-val" id="dma-freq-val">1 Hz</span></span>
+        <input type="range" class="ta-range" id="dma-freq" min="-1" max="2" step="0.25" value="0">
+      </div>
+      <div class="ta-control" id="dma-xl-wrap">
+        <span class="ta-control-label">Crosslink density &nu; <span class="ta-val" id="dma-xl-val">130 mol/m&sup3;</span></span>
+        <input type="range" class="ta-range" id="dma-xl" min="1.0" max="3.3" step="0.05" value="2.11">
+      </div>
+    </div>
+
+    <p class="ta-matnote" id="dma-matnote"></p>
+    <div class="ta-legend">
+      <span><span class="ta-swatch" style="background:var(--primary)"></span> E&prime; storage</span>
+      <span><span class="ta-swatch" style="background:#f2b84b"></span> E&Prime; loss</span>
+      <span><span class="ta-swatch" style="background:var(--accent)"></span> tan &delta;</span>
+    </div>
+    <div class="ta-chart-wrap">
+      <svg id="dma-chart" class="ta-chart" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Interactive DMA modulus and tan delta curve"></svg>
+    </div>
+    <div class="stat-grid" id="dma-stats"></div>
+    <p class="guide-note" id="dma-read" style="margin-top:10px;"></p>
+  </div>
+
+  <div class="card">
+    <h3>Reading the three side by side</h3>
+    <div class="table-scroll">
+    <table class="recipe">
+      <thead><tr><th>Question</th><th>DSC</th><th>TGA</th><th>DMA</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Glass transition T<sub>g</sub></strong></td><td class="num" style="text-align:left;">Yes, as a small step; weak if highly crystalline</td><td class="num" style="text-align:left;">No</td><td class="num" style="text-align:left;">Yes, the most sensitive method (big E&prime; drop)</td></tr>
+        <tr><td><strong>Melting T<sub>m</sub> / crystallinity</strong></td><td class="num" style="text-align:left;">Yes, from the endotherm and &Delta;H<sub>m</sub></td><td class="num" style="text-align:left;">No</td><td class="num" style="text-align:left;">Indirectly, as a modulus collapse at T<sub>m</sub></td></tr>
+        <tr><td><strong>Thermal stability / decomposition</strong></td><td class="num" style="text-align:left;">No (limited by pan/onset)</td><td class="num" style="text-align:left;">Yes, onset and T<sub>max</sub></td><td class="num" style="text-align:left;">No</td></tr>
+        <tr><td><strong>Composition (filler, oil, carbon)</strong></td><td class="num" style="text-align:left;">No</td><td class="num" style="text-align:left;">Yes, from stepwise loss and atmosphere</td><td class="num" style="text-align:left;">No</td></tr>
+        <tr><td><strong>Modulus / stiffness</strong></td><td class="num" style="text-align:left;">No</td><td class="num" style="text-align:left;">No</td><td class="num" style="text-align:left;">Yes, E&prime; and E&Prime; directly</td></tr>
+        <tr><td><strong>Crosslink density / cure</strong></td><td class="num" style="text-align:left;">Indirectly (residual cure exotherm)</td><td class="num" style="text-align:left;">No</td><td class="num" style="text-align:left;">Yes, from the rubbery plateau</td></tr>
+        <tr><td><strong>Typical sample</strong></td><td class="num" style="text-align:left;">5&ndash;10 mg in a sealed pan</td><td class="num" style="text-align:left;">5&ndash;20 mg in an open pan</td><td class="num" style="text-align:left;">A bar, film, or fiber clamped in a fixture</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="guide-note" style="margin-top:12px;"><strong>Traps worth remembering.</strong> A first-heat DSC T<sub>g</sub> includes processing history and an aging overshoot; quote the second heat. Forgetting to subtract &Delta;H<sub>cc</sub> overstates crystallinity. A TGA &ldquo;decomposition temperature&rdquo; is ambiguous (extrapolated onset, T<sub>5%</sub>, and first deviation all differ), and every temperature shifts with heating rate and sample mass. A melting point is convention-dependent in the same way: the classic T<sub>m</sub> is the extrapolated onset of melting, while DSC software usually quotes the endotherm peak, so a reported T<sub>m</sub> depends on which one is meant. A DMA T<sub>g</sub> is not comparable between labs unless the marker and frequency match, and the tan&nbsp;&delta; peak already overstates the usable service temperature.</p>
+  </div>
+
+  <div class="card">
+    <h3>Worked examples</h3>
+    <p class="guide-note">Each of these reproduces, by hand, a number the interactive read-outs above give you.</p>
+
+    <p class="guide-note"><strong>1. Crystallinity from a DSC scan.</strong> A quenched PET first heat shows a melting enthalpy &Delta;H<sub>m</sub> = 35&nbsp;J/g and a cold-crystallization exotherm &Delta;H<sub>cc</sub> = 30&nbsp;J/g; the perfect-crystal reference for PET is &Delta;H<sub>m</sub>&deg; = 140&nbsp;J/g. Subtract the cold crystallization so you count only crystals present before the scan:</p>
+    <div class="guide-formula">X<sub>c</sub> = (&Delta;H<sub>m</sub> &minus; &Delta;H<sub>cc</sub>) / &Delta;H<sub>m</sub>&deg; = (35 &minus; 30) / 140 = 3.6% &nbsp;&rarr;&nbsp; essentially amorphous as quenched</div>
+    <p class="guide-note">A clean HDPE melt with &Delta;H<sub>m</sub> = 200&nbsp;J/g and no cold crystallization (&Delta;H<sub>m</sub>&deg; = 293&nbsp;J/g) instead gives X<sub>c</sub> = 200/293 = 68%.</p>
+
+    <p class="guide-note"><strong>2. Composition from a TGA compositional run.</strong> A filled compound leaves 16.1% residue after a full inert (N<sub>2</sub>) run and 10.1% after a full air run, and shows a distinct CO<sub>2</sub>-loss step near 720&nbsp;&deg;C that removes 7.9% of the original mass. The inert residue keeps carbon plus mineral; the air residue is mineral only; the carbonate is fingerprinted by its 44% CO<sub>2</sub> loss:</p>
+    <div class="guide-formula">carbon black = 16.1% &minus; 10.1% = 6.0%<br>CaCO<sub>3</sub> = 7.9% &divide; 0.44 = 18%</div>
+
+    <p class="guide-note"><strong>3. Crosslink density from a DMA rubbery plateau.</strong> The default network on the DMA plot reads a rubbery storage modulus E&prime; &asymp; 1.2&nbsp;MPa on the plateau ~40&nbsp;&deg;C above T<sub>g</sub> (T &asymp; 373&nbsp;K). Ideal rubber elasticity, E&prime; = 3&nu;RT, inverts to the crosslink density &nu; and the molar mass between crosslinks M<sub>c</sub> (with &rho; &asymp; 1&nbsp;g/cm&sup3;):</p>
+    <div class="guide-formula">&nu; = E&prime; / (3RT) = 1.2&times;10<sup>6</sup> / (3 &times; 8.314 &times; 373) = 129 mol/m&sup3;<br>M<sub>c</sub> = &rho; / &nu; = 1000 / 129 &asymp; 7.8 kg/mol</div>
+    <p class="guide-note">Tighten the cure and E&prime;, &nu;, and T<sub>g</sub> all rise while M<sub>c</sub> falls; loosen it and they move the other way. Drag the crosslink-density slider to watch it.</p>
+
+    <h3>Related tools</h3>
+    <p class="guide-note">
+Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a href="tg-predictor.html">Tg Predictor</a> (Fox equation). Turn a molecular-weight distribution question into numbers with the <a href="gpc-calibration.html">GPC Calibration Converter</a> and the <a href="gpc-peak-interpretation.html">GPC Peak Interpretation</a> guide. Every term here (T<sub>g</sub>, T<sub>m</sub>, crystallinity, storage modulus, crosslink density) is defined in the <a href="glossary.html">Glossary</a>.
+    </p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>The interactive curves are physically faithful teaching models, not simulations of a specific instrument. Always calibrate and run your own standards for quantitative work.</p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id) { return document.getElementById(id); }
+  function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+  function esc(s) { return String(s).replace(/[<>&]/g, function (c) { return c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&amp;"; }); }
+
+  // Smooth 0->1 step centred at c; w is the ~full transition width.
+  function sig(t, c, w) { return 1 / (1 + Math.exp(-(t - c) / (w / 4.4))); }
+  // Unit-height Gaussian bump; w is the full width at ~half maximum.
+  function gau(t, c, w) { var z = (t - c) / (w / 2.355); return Math.exp(-0.5 * z * z); }
+  // Unit-AREA Gaussian. In DSC the enthalpy is the peak area, not its height, so
+  // features of different widths must be drawn with height proportional to J/w
+  // or a narrow transition looks smaller than a broad one carrying the same heat.
+  function gauArea(t, c, w) {
+    var sigma = w / 2.355;
+    return gau(t, c, w) / (sigma * Math.sqrt(2 * Math.PI));
+  }
+  function peakHeight(J, w) { return J / ((w / 2.355) * Math.sqrt(2 * Math.PI)); }
+
+  // Wire a segmented button group: calls cb(value) on click and manages .active.
+  function seg(groupId, cb) {
+    var g = $(groupId);
+    g.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      var btns = g.querySelectorAll("button");
+      for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+      b.classList.add("active");
+      cb(b.getAttribute("data-v"));
+    });
+  }
+
+  // Build a linear-scale chart frame. Returns scales + a parts array + helpers.
+  function frame(W, H, m, xd, yd) {
+    var pw = W - m.l - m.r, ph = H - m.t - m.b;
+    function sx(x) { return m.l + ((x - xd[0]) / (xd[1] - xd[0])) * pw; }
+    function sy(y) { return H - m.b - ((y - yd[0]) / (yd[1] - yd[0])) * ph; }
+    return { W: W, H: H, m: m, xd: xd, yd: yd, pw: pw, ph: ph, sx: sx, sy: sy, parts: [] };
+  }
+  function ticks(a, b, n) { var out = [], i; for (i = 0; i <= n; i++) out.push(a + (b - a) * i / n); return out; }
+  function axes(f, xlab, ylab, xt, yt, xfmt, yfmt) {
+    var i, x, y;
+    for (i = 0; i < yt.length; i++) {
+      y = f.sy(yt[i]);
+      f.parts.push('<line class="ta-grid" x1="' + f.m.l + '" y1="' + y + '" x2="' + (f.W - f.m.r) + '" y2="' + y + '"/>');
+      f.parts.push('<text class="ta-tick" x="' + (f.m.l - 7) + '" y="' + (y + 3) + '" text-anchor="end">' + yfmt(yt[i]) + '</text>');
+    }
+    for (i = 0; i < xt.length; i++) {
+      x = f.sx(xt[i]);
+      // Pull the two end labels inward. Centred, the first one runs under the
+      // y-axis tick numbers and the last one under the right-hand axis.
+      var anch = (i === 0) ? "start" : (i === xt.length - 1) ? "end" : "middle";
+      f.parts.push('<text class="ta-tick" x="' + x + '" y="' + (f.H - f.m.b + 15) + '" text-anchor="' + anch + '">' + xfmt(xt[i]) + '</text>');
+    }
+    f.parts.push('<line class="ta-axis" x1="' + f.m.l + '" y1="' + (f.H - f.m.b) + '" x2="' + (f.W - f.m.r) + '" y2="' + (f.H - f.m.b) + '"/>');
+    f.parts.push('<line class="ta-axis" x1="' + f.m.l + '" y1="' + f.m.t + '" x2="' + f.m.l + '" y2="' + (f.H - f.m.b) + '"/>');
+    f.parts.push('<text class="ta-axis-label" x="' + (f.m.l + f.pw / 2) + '" y="' + (f.H - 3) + '" text-anchor="middle">' + xlab + '</text>');
+    f.parts.push('<text class="ta-axis-label" x="13" y="' + (f.m.t + f.ph / 2) + '" text-anchor="middle" transform="rotate(-90 13 ' + (f.m.t + f.ph / 2) + ')">' + ylab + '</text>');
+  }
+  function path(f, pts, cls, sampleFn) {
+    var d = "", i, p;
+    for (i = 0; i < pts.length; i++) {
+      p = pts[i];
+      d += (i ? " L " : "M ") + f.sx(p[0]).toFixed(1) + " " + f.sy(p[1]).toFixed(1);
+    }
+    f.parts.push('<path class="ta-curve ' + cls + '" d="' + d + '"/>');
+  }
+  function samplePts(fn, a, b, step) {
+    var out = [], t;
+    for (t = a; t <= b + 0.0001; t += step) out.push([t, fn(t)]);
+    return out;
+  }
+  function statTile(label, value, sub) {
+    return '<div class="stat"><div class="label">' + label + '</div><div class="value">' + value + '</div><div class="sub">' + (sub || "") + '</div></div>';
+  }
+
+  // Picks a log-modulus window wide enough for every curve, snapped to whole
+  // decades so the ticks stay readable. A fixed 4-10 window clipped anything
+  // that flowed (linear terminal flow) or melted far enough to run off the
+  // bottom, which read as a chart bug rather than as real softening.
+  function decadeFit(fns, lo, hi) {
+    var yMin = Infinity, yMax = -Infinity, i, t, v;
+    for (i = 0; i < fns.length; i++) {
+      for (t = lo; t <= hi; t += 2) {
+        v = fns[i](t);
+        if (!isFinite(v)) continue;
+        if (v < yMin) yMin = v;
+        if (v > yMax) yMax = v;
+      }
+    }
+    if (!isFinite(yMin) || !isFinite(yMax)) return { yd: [4, 10], ticks: [4, 5, 6, 7, 8, 9, 10] };
+    var a = Math.max(-2, Math.floor(yMin - 0.15));
+    var b = Math.min(13, Math.ceil(yMax + 0.15));
+    if (b - a < 4) b = a + 4;
+    var step = (b - a) > 8 ? 2 : 1;
+    var tk = [], d;
+    for (d = a; d <= b + 0.0001; d += step) tk.push(d);
+    return { yd: [a, b], ticks: tk };
+  }
+
+  // Places marker labels without collisions or overflow.
+  //
+  // Two hazards: a marker at the right edge passes the in-bounds test but its
+  // text spills past the viewBox, and two features can sit almost on top of
+  // each other (a melt and a decomposition a degree apart), which a fixed stagger
+  // cannot separate. This walks down the stagger rows and takes the first that
+  // is horizontally clear; if every row is blocked the label is dropped and the
+  // marker line alone is drawn, since an unreadable pile of text is worse than
+  // one missing name.
+  function makeLabeller(f, rows) {
+    var used = [], i;
+    var nRows = rows || 4;
+    // A 10px label measures ~13.5px tall, so rows must be spaced wider than
+    // that or two labels on adjacent rows still touch.
+    var ROW_STEP = 15;
+    for (i = 0; i < nRows; i++) used.push([]);
+    return function (x, label) {
+      var estW = String(label).length * 5.6 + 8;      // ~10px font, deliberately generous
+      var flip = (x + estW) > (f.W - f.m.r);
+      var x1 = flip ? (x - 4 - estW) : (x + 3);
+      var x2 = x1 + estW;
+      var r, k, clash, y;
+      for (r = 0; r < nRows; r++) {
+        clash = false;
+        for (k = 0; k < used[r].length; k++) {
+          if (x1 < used[r][k][1] + 4 && used[r][k][0] - 4 < x2) { clash = true; break; }
+        }
+        if (!clash) {
+          used[r].push([x1, x2]);
+          y = f.m.t + 10 + r * ROW_STEP;
+          return { y: y, row: r,
+            svg: '<text class="ta-marker-label" x="' + (flip ? x - 4 : x + 3) + '" y="' + y +
+                 '" text-anchor="' + (flip ? "end" : "start") + '">' + esc(label) + "</text>" };
+        }
+      }
+      return null;                                     // no room: line only
+    };
+  }
+
+  /* ======================= SHARED MATERIALS LIBRARY ======================= */
+  var LIB = window.THERMAL_LIBRARY || [];
+  var CLS_ORDER = ["thermoplastic", "elastomer", "binder", "plasticizer", "additive"];
+  var CLS_LABEL = {
+    thermoplastic: "Thermoplastics", elastomer: "Elastomers & rubbers", binder: "Binders",
+    plasticizer: "Plasticizers", additive: "Fillers & additives"
+  };
+  function libById(id) { var i; for (i = 0; i < LIB.length; i++) if (LIB[i].id === id) return LIB[i]; return null; }
+  function libLabel(m) { return m.abbr ? (m.name + " (" + m.abbr + ")") : m.name; }
+  // Populate a <select> with optgroups, keeping only materials the test can draw.
+  function fillSelect(sel, ok, preferId) {
+    var html = "", c, i, group, first = null;
+    for (c = 0; c < CLS_ORDER.length; c++) {
+      group = LIB.filter(function (m) { return m.cls === CLS_ORDER[c] && ok(m); });
+      if (!group.length) continue;
+      html += '<optgroup label="' + CLS_LABEL[CLS_ORDER[c]] + '">';
+      for (i = 0; i < group.length; i++) {
+        if (!first) first = group[i].id;
+        html += '<option value="' + group[i].id + '">' + esc(libLabel(group[i])) + "</option>";
+      }
+      html += "</optgroup>";
+    }
+    sel.innerHTML = html;
+    if (preferId && libById(preferId) && ok(libById(preferId))) sel.value = preferId;
+    return sel.value || first;
+  }
+  // Anything not "high" confidence is flagged in the UI rather than presented as fact.
+  function confBadge(m) {
+    if (!m || m.conf === "high") return "";
+    return '<span class="ta-conf">' + (m.conf === "low" ? "rough estimate" : "varies by grade") + "</span>";
+  }
+  function matNote(m) { return m ? (esc(m.note) + confBadge(m)) : ""; }
+
+  /* ---------------- Shared formulation builder (used by all three) ----------------
+     A formulation is an array of { id, parts }. Parts are normalised to weight
+     fractions at render time, so the sliders are ratios rather than absolutes. */
+  function mixWeightsOf(mix) {
+    var tot = 0, i, out = [], m;
+    for (i = 0; i < mix.length; i++) tot += Math.max(0, mix[i].parts);
+    if (tot <= 0) return [];
+    for (i = 0; i < mix.length; i++) {
+      m = libById(mix[i].id);
+      if (!m) continue;
+      out.push({ m: m, w: Math.max(0, mix[i].parts) / tot });
+    }
+    return out;
+  }
+  // Largest-remainder rounding so the displayed percentages add to exactly 100.
+  //
+  // Worked in TENTHS of a percent. Whole percents were enough for a hand-built
+  // blend, but a real compound is routinely specified to a decimal
+  // (95 / 2.5 / 2.5), and rounding that to 95 / 3 / 2 on screen
+  // contradicted the composition the user actually typed in.
+  function displayPctOf(mix) {
+    var raw = [], out = [], i, sum = 0, tot = 0;
+    for (i = 0; i < mix.length; i++) tot += Math.max(0, mix[i].parts);
+    for (i = 0; i < mix.length; i++) raw.push(tot > 0 ? (Math.max(0, mix[i].parts) / tot) * 1000 : 0);
+    for (i = 0; i < raw.length; i++) { out.push(Math.floor(raw[i])); sum += out[i]; }
+    var order = raw.map(function (v, k) { return { k: k, frac: v - Math.floor(v) }; })
+                   .sort(function (a, b) { return b.frac - a.frac; });
+    var give = (tot > 0 ? 1000 : 0) - sum;
+    for (i = 0; i < give && i < order.length; i++) out[order[i].k]++;
+    // Back to percent. Trailing ".0" is dropped so an ordinary blend still
+    // reads as a whole number rather than gaining spurious precision.
+    return out.map(function (v) { return Math.round(v) / 10; });
+  }
+  // Percentages for prose, from already-normalised weight fractions. Rounding
+  // each weight independently let a formulation read "65% + 20% + 7% + 7%",
+  // which sums to 99 directly under a tile claiming "normalised to 100%".
+  function pctOfWeights(comps) {
+    return displayPctOf(comps.map(function (c) { return { parts: c.w }; }));
+  }
+  // Pin one component to a target weight fraction, rescaling the others in
+  // proportion so the formulation still sums to 100%. Parts are kept on a
+  // 0-100 scale afterwards so "parts" and "percent" stay interchangeable.
+  function setFraction(mix, row, f) {
+    f = clamp(f, 0, 1);
+    var others = mix.filter(function (r) { return r !== row; }), i, sOther = 0;
+    if (!others.length) { row.parts = 100; return; }
+    for (i = 0; i < others.length; i++) sOther += Math.max(0, others[i].parts);
+    if (f >= 0.9995) { for (i = 0; i < others.length; i++) others[i].parts = 0; row.parts = 100; return; }
+    if (sOther <= 0) {
+      // Nothing left to scale against, so split the remainder evenly.
+      var each = ((1 - f) / others.length) * 100;
+      for (i = 0; i < others.length; i++) others[i].parts = each;
+      row.parts = f * 100;
+      return;
+    }
+    row.parts = (f / (1 - f)) * sOther;
+    var tot = row.parts + sOther, k = tot > 0 ? 100 / tot : 1;
+    row.parts *= k;
+    for (i = 0; i < others.length; i++) others[i].parts = Math.max(0, others[i].parts) * k;
+  }
+
+  // Render the editable component rows. Handlers are bound to the row object
+  // itself rather than an index, so splicing a row cannot leave stale indices.
+  // The slider and the number box both edit the same normalised percentage.
+  //
+  // The row DOM is built ONCE and rebuilt only when the set of rows changes
+  // (add, remove, or a different material chosen). Editing a value refreshes
+  // the displayed numbers in place instead: rebuilding on every input event
+  // destroyed the element under the pointer, which broke click-and-hold on the
+  // number spinners and killed a slider drag after the first pixel.
+  function buildMixUI(rowsId, mix, ok, onRender) {
+    var wrap = document.getElementById(rowsId);
+    if (!wrap) return;
+    wrap.innerHTML = "";
+    var refs = [];
+    function rebuild() { buildMixUI(rowsId, mix, ok, onRender); onRender(); }
+    // Push the normalised percentages back into the controls without touching
+    // the DOM structure. `skip` leaves the control being dragged alone so the
+    // browser's own drag handling is not disturbed.
+    function refresh(skip) {
+      var pct = displayPctOf(mix), i;
+      for (i = 0; i < refs.length; i++) {
+        if (refs[i].rng !== skip) refs[i].rng.value = pct[i];
+        if (refs[i].num !== skip) refs[i].num.value = pct[i];
+      }
+    }
+
+    mix.forEach(function (row, idx) {
+      var div = document.createElement("div");
+      div.className = "ta-mix-row";
+      var sel = document.createElement("select");
+      sel.className = "ta-select";
+      sel.setAttribute("aria-label", "Component " + (idx + 1));
+      fillSelect(sel, ok, row.id);
+      sel.value = row.id;
+      // A different material changes what the row IS, so rebuild.
+      sel.addEventListener("change", function () { row.id = this.value; rebuild(); });
+
+      var rng = document.createElement("input");
+      rng.type = "range"; rng.min = "0"; rng.max = "100"; rng.step = "0.1";
+      rng.setAttribute("aria-label", "Weight percent of component " + (idx + 1));
+      rng.addEventListener("input", function () {
+        setFraction(mix, row, parseFloat(this.value) / 100);
+        refresh(this);            // keep the dragged slider under the pointer
+        onRender();
+      });
+
+      var num = document.createElement("input");
+      num.type = "number"; num.className = "ta-mix-num";
+      num.min = "0"; num.max = "100"; num.step = "0.1";
+      num.setAttribute("aria-label", "Weight percent of component " + (idx + 1) + " (type a value)");
+      // "change" covers Enter, blur, and a spinner-arrow click; "input" alone
+      // would renormalise halfway through typing a two-digit number.
+      function commit() {
+        var v = parseFloat(num.value);
+        if (!isFinite(v)) { refresh(); return; }
+        setFraction(mix, row, clamp(v, 0, 100) / 100);
+        refresh();
+        onRender();
+      }
+      num.addEventListener("change", commit);
+      num.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); commit(); num.select(); } });
+
+      var pctSign = document.createElement("span");
+      pctSign.className = "ta-mix-pct";
+      pctSign.textContent = "%";
+
+      div.appendChild(sel); div.appendChild(rng); div.appendChild(num); div.appendChild(pctSign);
+      if (mix.length > 1) {
+        var del = document.createElement("button");
+        del.type = "button"; del.className = "ta-mix-del"; del.textContent = "×";
+        del.setAttribute("aria-label", "Remove component " + (idx + 1));
+        del.addEventListener("click", function () {
+          var at = mix.indexOf(row);
+          if (at >= 0) mix.splice(at, 1);
+          rebuild();
+        });
+        div.appendChild(del);
+      }
+      wrap.appendChild(div);
+      refs.push({ rng: rng, num: num });
+    });
+    refresh();
+  }
+
+  /* ============================ PROPERTY PICKER ============================ */
+  (function () {
+    var PROPS = [
+      { k: "Glass transition (Tg)", t: ["dsc", "dma"] },
+      { k: "Melting point (Tm)", t: ["dsc"] },
+      { k: "% crystallinity", t: ["dsc"] },
+      { k: "Thermal stability", t: ["tga"] },
+      { k: "Decomposition temperature", t: ["tga"] },
+      { k: "Filler / ash content", t: ["tga"] },
+      { k: "Carbon black content", t: ["tga"] },
+      { k: "Moisture / volatiles", t: ["tga"] },
+      { k: "Stiffness (modulus)", t: ["dma"] },
+      { k: "Damping (tan δ)", t: ["dma"] },
+      { k: "Crosslink density / cure", t: ["dma"] }
+    ];
+    var wrap = $("ta-picker");
+    var cards = { dsc: $("pick-dsc"), tga: $("pick-tga"), dma: $("pick-dma") };
+    function light(set) {
+      var k;
+      for (k in cards) {
+        cards[k].classList.remove("lit", "dim");
+        if (!set) continue;
+        if (set.indexOf(k) !== -1) cards[k].classList.add("lit");
+        else cards[k].classList.add("dim");
+      }
+    }
+    PROPS.forEach(function (p, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = p.k;
+      b.addEventListener("click", function () {
+        var btns = wrap.querySelectorAll("button"), on = !b.classList.contains("active");
+        for (var j = 0; j < btns.length; j++) btns[j].classList.remove("active");
+        if (on) { b.classList.add("active"); light(p.t); } else { light(null); }
+      });
+      wrap.appendChild(b);
+    });
+  })();
+
+  /* ================================= DSC ================================= */
+  (function () {
+    // A decomposition exotherm is kinetically controlled and moves far more with
+    // heating rate than a Tg or a melt does. Kissinger gives dTp/dlog(beta) =
+    // 2.303*R*Tp^2/Ea, which for a typical Ea of 150-200 kJ/mol and a peak near
+    // 500 K is about 25 C per decade, an order of magnitude above the ~2 C/decade
+    // that applies to the glass transition.
+    var DECOMP_RATE_SHIFT = 25;
+    function dscOk(m) { return m.tg !== null || m.tm !== null || m.decompT !== null; }
+
+
+    var state = {
+      mode: "single", id: "pet", heat: 1, rate: 10, endo: "down", zoom: "full", obs: null,
+      // Mixture builder: parts by mass, normalised to 100% at render time.
+      mix: [{ id: "htpb-cured", parts: 70 }, { id: "caco3", parts: 30 }]
+    };
+
+    // Turn a library entry into drawable features. Peaks carry their enthalpy in
+    // J/g so the chart can autoscale the way an instrument autoranges.
+    function modelOf(m, rate, second) {
+      var dec = Math.log10(rate / 10), steps = [], peaks = [];
+      if (m.tg !== null) steps.push({ T: m.tg + 2 * dec, w: 14, h: (m.dCp || 0.3) });
+      if (m.tcc !== null) {
+        // A controlled second heat has already crystallised the sample, so the
+        // cold-crystallisation exotherm largely disappears.
+        var ccJ = (m.dHm != null ? m.dHm * 0.8 : 30) * (second ? 0.15 : clamp(1 - 0.25 * dec, 0.3, 1.3));
+        if (ccJ > 1) peaks.push({ T: m.tcc + 6 * dec, w: 26, J: ccJ, dir: 1, label: "Tcc" });
+      }
+      // Where the library deliberately leaves an enthalpy blank (because the
+      // published range is too wide to quote), the feature is still DRAWN at a
+      // nominal height but marked `modelled` so it is excluded from every J/g
+      // total and flagged in the read-out. Inventing a number here would put a
+      // fabricated figure in front of the user as if it were measured.
+      if (m.transT != null) {
+        peaks.push({ T: m.transT + 1.5 * dec, w: 13, J: (m.transH != null ? m.transH : 40), dir: -1, label: "transition", modelled: m.transH == null });
+      }
+      if (m.tm !== null) {
+        peaks.push({ T: m.tm + 1.5 * dec, w: 22, J: (m.dHm != null ? m.dHm : 60), dir: -1, label: "Tm", modelled: m.dHm == null });
+      }
+      if (m.decompT !== null) {
+        var unknownH = (m.decompH == null);
+        var totJ = unknownH ? 400 : m.decompH;
+        if (m.exos && m.exos.length) {
+          // A material with resolved multiple exotherms splits the heat between them.
+          for (var k = 0; k < m.exos.length; k++) {
+            peaks.push({ T: m.exos[k].t + DECOMP_RATE_SHIFT * dec, w: 34, J: totJ * m.exos[k].f, dir: 1, label: "decomp", modelled: unknownH });
+          }
+        } else {
+          peaks.push({ T: m.decompT + DECOMP_RATE_SHIFT * dec, w: 26, J: totJ, dir: 1, label: "decomp", modelled: unknownH });
+        }
+      }
+      return { steps: steps, peaks: peaks };
+    }
+
+    // keep(p) filters which peaks contribute. The y-window is fitted with the
+    // off-screen peaks dropped, then the full curve is drawn against it, so a
+    // cropped-away melt shows only as a trace running off-scale.
+    function curveOf(model, scale, stepGain, keep) {
+      var sg = (stepGain == null) ? 1 : stepGain;
+      return function (t) {
+        var y = 0.04 - 0.00025 * (t - 25), i, p;
+        for (i = 0; i < model.steps.length; i++) y -= 0.11 * sg * (model.steps[i].h / 0.4) * sig(t, model.steps[i].T, model.steps[i].w);
+        for (i = 0; i < model.peaks.length; i++) {
+          p = model.peaks[i];
+          if (keep && !keep(p)) continue;
+          y += p.dir * (p.J * scale) * gauArea(t, p.T, p.w);
+        }
+        return y;
+      };
+    }
+
+    // ---- Formulation builder -------------------------------------------------
+    // A physical mixture that does NOT interact gives the mass-weighted sum of
+    // its components' thermograms: every feature keeps its temperature and its
+    // enthalpy scales with that component's weight fraction. That superposition
+    // is the null hypothesis of a compatibility test, so it is what we predict;
+    // a real run that departs from it is the actual signal.
+    // Drop zero-weight rows and merge duplicate materials, so a component at 0%
+    // cannot drive a verdict and a material listed twice gets its true weight.
+    function mixWeights() {
+      var raw = mixWeightsOf(state.mix), byId = {}, order = [], i, k;
+      for (i = 0; i < raw.length; i++) {
+        if (raw[i].w <= 0) continue;
+        k = raw[i].m.id;
+        if (byId[k]) { byId[k].w += raw[i].w; }
+        else { byId[k] = { m: raw[i].m, w: raw[i].w }; order.push(k); }
+      }
+      return order.map(function (id) { return byId[id]; });
+    }
+    function superpose(comps, rate, second) {
+      var steps = [], peaks = [], i, j, mo;
+      for (i = 0; i < comps.length; i++) {
+        if (comps[i].w <= 0) continue;
+        mo = modelOf(comps[i].m, rate, second);
+        for (j = 0; j < mo.steps.length; j++) {
+          steps.push({ T: mo.steps[j].T, w: mo.steps[j].w, h: mo.steps[j].h * comps[i].w, from: comps[i].m });
+        }
+        for (j = 0; j < mo.peaks.length; j++) {
+          peaks.push({ T: mo.peaks[j].T, w: mo.peaks[j].w, J: mo.peaks[j].J * comps[i].w, dir: mo.peaks[j].dir, label: mo.peaks[j].label, from: comps[i].m, modelled: mo.peaks[j].modelled });
+        }
+      }
+      return { steps: steps, peaks: peaks };
+    }
+    function allT(models) {
+      var ts = [], i, j, mo;
+      for (i = 0; i < models.length; i++) {
+        mo = models[i];
+        for (j = 0; j < mo.steps.length; j++) ts.push(mo.steps[j].T);
+        for (j = 0; j < mo.peaks.length; j++) ts.push(mo.peaks[j].T);
+      }
+      return ts;
+    }
+
+    function renderMix() {
+      var comps = mixWeights(), i;
+      var second = state.heat === 2;
+      if (!comps.length) {
+        $("dsc-chart").innerHTML = '<text x="320" y="180" text-anchor="middle" class="ta-feat">Add a component to build a formulation</text>';
+        $("dsc-stats").innerHTML = "";
+        $("dsc-read").innerHTML = "";
+        $("dsc-matnote").innerHTML = "";
+        $("dsc-legend").style.display = "none";
+        return;
+      }
+      var base = superpose(comps, state.rate, second);          // no-interaction baseline
+      var models = [base];
+      // A melt or decomposition peak is one to three orders of magnitude larger
+      // than a binder's Tg step, so on a full-scan autoscale the binder is a
+      // flat line. "Binder transitions" crops the window to below the FIRST
+      // thermal event of any component and rescales to what is left, which is
+      // the replot an analyst does by hand to read the binder in a formulation.
+      // Cropping only below the decomposition was not enough: a filler that
+      // melts well before it decomposes still put a huge endotherm in the
+      // window and flattened the binder all over again.
+      var zoomBinder = state.zoom === "binder";
+      var peakTs = [], j, j2, pkM;
+      for (i = 0; i < models.length; i++) for (j2 = 0; j2 < models[i].peaks.length; j2++) peakTs.push(models[i].peaks[j2].T);
+      var firstEvent = peakTs.length ? Math.min.apply(null, peakTs) : null;
+
+      var ts = allT(models);
+      var lo = ts.length ? Math.min.apply(null, ts) - 70 : 0;
+      var hi = ts.length ? Math.max.apply(null, ts) + 70 : 300;
+      if (zoomBinder && firstEvent != null) hi = firstEvent - 20;
+      lo = Math.max(-160, Math.round(lo / 10) * 10);
+      hi = Math.min(950, Math.round(hi / 10) * 10);
+      if (hi - lo < 120) hi = lo + 120;
+
+      // In the zoom, a peak centred past the right edge is off-screen: it must
+      // not drive the scale, though its leading tail is still drawn and simply
+      // runs off-scale, exactly as it does on a real zoomed replot.
+      function counted(pk) { return !(zoomBinder && pk.T > hi); }
+
+      // Autoscale on drawn HEIGHT (enthalpy / width), not raw enthalpy, now that
+      // peaks are area-normalised and their widths differ several-fold.
+      var maxJ = 0.001, maxH = 1e-9;
+      for (i = 0; i < models.length; i++) for (j = 0; j < models[i].peaks.length; j++) {
+        pkM = models[i].peaks[j];
+        if (!counted(pkM)) continue;
+        maxJ = Math.max(maxJ, pkM.J);
+        maxH = Math.max(maxH, peakHeight(pkM.J, pkM.w));
+      }
+      // With the off-window peaks excluded a formulation can be all Tg steps and
+      // no peaks at all, so fall back to a scale that makes the steps readable.
+      var stepOnly = (maxH <= 1e-8);
+      var scale = stepOnly ? 1 : 0.80 / maxH;
+
+      // Amplify the Tg steps when zoomed in on the binder, so a 15% binder's
+      // heat-capacity step is legible instead of a hairline. Computed BEFORE the
+      // y-window, because the window has to fit whatever this produces.
+      var stepGain = 1;
+      if (zoomBinder) {
+        var totalStep = 0;
+        for (i = 0; i < base.steps.length; i++) totalStep += 0.11 * (base.steps[i].h / 0.4);
+        if (totalStep > 1e-6) stepGain = Math.min(0.55 / totalStep, 40);
+      }
+      var curveBase = curveOf(base, scale, stepGain);
+
+      // Auto-fit the y-window to what the curve(s) actually do over [lo,hi],
+      // rather than assuming a fixed range. A fixed window (the old approach)
+      // clipped or ran the trace off the chart whenever stepGain amplified a
+      // small Tg step enough to matter, since that amplification has no upper
+      // bound tied to the frame. Sampled in the endo-down sign convention that
+      // curveOf itself uses; flipped to match the display toggle afterward.
+      var fitBase = curveOf(base, scale, stepGain, counted);
+      var rawPts = samplePts(fitBase, lo, hi, 2).map(function (p) { return p[1]; });
+      var rawMin = Math.min.apply(null, rawPts), rawMax = Math.max.apply(null, rawPts);
+      var span = Math.max(rawMax - rawMin, 0.05);
+      var pad = span * 0.12;
+      var ydDown = [rawMin - pad, rawMax + pad];
+      var yd = state.endo === "down" ? ydDown : [-ydDown[1], -ydDown[0]];
+
+      var f = frame(640, 360, { l: 46, r: 16, t: 22, b: 40 }, [lo, hi], yd);
+      // Clamp in the display convention so an off-scale tail stops at the frame
+      // edge instead of drawing outside it.
+      function orient(pts) {
+        return pts.map(function (p) {
+          var v = state.endo === "down" ? p[1] : -p[1];
+          return [p[0], clamp(v, yd[0], yd[1])];
+        });
+      }
+      axes(f, "Temperature (°C)", "Heat flow (" + (state.endo === "down" ? "endo down" : "endo up") + ")", ticks(lo, hi, 6), ticks(yd[0], yd[1], 4),
+        function (v) { return Math.round(v); }, function () { return ""; });
+
+      // Dashed: this is a derived baseline, not a measured or predicted mixture.
+      path(f, orient(samplePts(curveBase, lo, hi, 1)), "ta-curve-ref");
+
+      // Label every feature with the component it came from, INCLUDING the
+      // glass-transition steps. A binder contributes only a Tg step, so leaving
+      // steps out of this loop made the binder invisible in the formulation.
+      var place = makeLabeller(f), live = base;
+      var marks = [];
+      for (i = 0; i < live.steps.length; i++) {
+        marks.push({ T: live.steps[i].T, from: live.steps[i].from, kind: "Tg" });
+      }
+      for (i = 0; i < live.peaks.length; i++) {
+        if (live.peaks[i].J < maxJ * 0.04) continue;            // too small to see
+        marks.push({ T: live.peaks[i].T, from: live.peaks[i].from, kind: live.peaks[i].label });
+      }
+      marks.sort(function (a, b) { return a.T - b.T; });
+      for (i = 0; i < marks.length; i++) {
+        var x = f.sx(marks[i].T);
+        if (x < f.m.l || x > f.W - f.m.r) continue;
+        var who = marks[i].from ? (marks[i].from.abbr || marks[i].from.name) : "";
+        var lab = marks[i].kind === "Tg" ? (who + " Tg")
+                : marks[i].kind === "decomp" ? (who + " decomp.")
+                : marks[i].kind === "new" ? "new peak"
+                : marks[i].kind === "Tm" ? (who + " Tm")
+                : who;
+        var put = place(x, lab);
+        f.parts.push('<line class="ta-marker" x1="' + x + '" y1="' + (put ? put.y - 9 : f.m.t) + '" x2="' + x + '" y2="' + (f.H - f.m.b) + '"/>');
+        if (put) f.parts.push(put.svg);
+      }
+      $("dsc-chart").innerHTML = f.parts.join("");
+
+      // ---- read-out ----
+      // Only sum enthalpies the library actually quotes; a feature drawn at a
+      // nominal height because its heat is unpublished must not enter a total.
+      var tiles = "", totJ = 0, unquantified = [];
+      for (i = 0; i < base.peaks.length; i++) {
+        if (base.peaks[i].dir > 0 && !base.peaks[i].modelled) totJ += base.peaks[i].J;
+        if (base.peaks[i].modelled && base.peaks[i].from && unquantified.indexOf(base.peaks[i].from) < 0) unquantified.push(base.peaks[i].from);
+      }
+      var pctList = displayPctOf(state.mix);
+      tiles += statTile("Components", String(comps.length), "normalised to 100%");
+      // If the user has run the mixture and typed in the peak they measured,
+      // compare it against the weighted pure-component baseline.
+      // The number comes from THEIR instrument, so this is arithmetic on real
+      // data rather than a prediction.
+      if (state.obs != null && firstDecomp != null) {
+        var dShift = firstDecomp - state.obs;      // positive = mixture decomposes earlier
+        var flagged = dShift >= 4;
+        tiles += statTile("Baseline decomp.", Math.round(firstDecomp) + " °C", "pure, weighted");
+        tiles += statTile("Your measured peak", state.obs.toFixed(1) + " °C", "as entered");
+        tiles += statTile("Onset shift", (dShift >= 0 ? "&minus;" : "+") + Math.abs(dShift).toFixed(1) + " °C",
+          flagged ? "at or past the ~4 °C flag" : "within the ~4 °C guide");
+      }
+      tiles += statTile("Exothermic heat", unquantified.length && totJ <= 0 ? "not quantified" : Math.round(totJ) + " J/g",
+        unquantified.length ? "excludes " + unquantified.length + " with unpublished ΔH" : "baseline, whole sample");
+      $("dsc-stats").innerHTML = tiles;
+
+      var names = [], namePct = pctOfWeights(comps);
+      for (i = 0; i < comps.length; i++) names.push(namePct[i] + "% " + esc(comps[i].m.abbr || comps[i].m.name));
+      var msg = "<strong>" + names.join(" + ") + ".</strong> ";
+      msg += "This is the <strong>ideal non-mixing baseline</strong>: each component keeps its own transition temperatures and contributes its enthalpy in proportion to weight fraction. It is the starting point a compatibility screen is read against, but it is <em>not</em> a prediction of your real sample. It assumes the components stay physically separate, so it is broken by ordinary physical mixing with no chemical incompatibility at all: a plasticizer dissolving into a binder depresses the binder T<sub>g</sub> and its own melt disappears, a solid dissolving in a molten component loses its fusion endotherm, and eutectic pairs melt below either pure component. Deviation from this curve is a prompt to investigate, not proof that the components react.";
+      // A measured peak beats any model: report what the user's own number says.
+      if (state.obs != null && firstDecomp != null) {
+        var oShift = firstDecomp - state.obs;
+        var oBadge = oShift >= 4 ? '<span class="ta-verdict ta-verdict-bad">Flagged</span>'
+                   : oShift >= 2 ? '<span class="ta-verdict ta-verdict-warn">Borderline</span>'
+                   : '<span class="ta-verdict ta-verdict-ok">Within guide</span>';
+        msg += "<br>" + oBadge + " <strong>Against your measured peak:</strong> the weighted pure-component decomposition sits at " +
+          Math.round(firstDecomp) + " °C and you measured " + state.obs.toFixed(1) + " °C, a shift of " +
+          Math.abs(oShift).toFixed(1) + " °C " + (oShift >= 0 ? "downward" : "upward") + ". " +
+          (oShift >= 4
+            ? "That is a large enough shift to be worth confirming by a second, independent method before you rely on it."
+            : "That is a small shift, but a shift is only one of the signals: also check for a new peak, a merged or broadened exotherm, and any rise in heat of decomposition before concluding the components do not interact.");
+      }
+      $("dsc-read").innerHTML = msg;
+
+      var rough = comps.filter(function (c) { return c.m.conf === "low"; });
+      var vary = comps.filter(function (c) { return c.m.conf === "medium"; });
+      var notes = [];
+      if (rough.length) notes.push("Rough estimates for " + rough.map(function (c) { return esc(c.m.abbr || c.m.name); }).join(", ") + ".");
+      if (vary.length) notes.push("Values for " + vary.map(function (c) { return esc(c.m.abbr || c.m.name); }).join(", ") + " vary by grade.");
+      if (unquantified.length) notes.push("Heat of decomposition is not published for " + unquantified.map(function (x) { return esc(x.abbr || x.name); }).join(", ") + ", so those peaks are drawn at nominal height and left out of the totals.");
+      $("dsc-matnote").innerHTML = notes.join(" ");
+      $("dsc-legend").style.display = "none";
+    }
+
+    function render() {
+      if (state.mode === "mix") { renderMix(); return; }
+      var m = libById(state.id);
+      if (!m) return;
+      var second = state.heat === 2;
+      var pureModel = modelOf(m, state.rate, second);
+      var models = [pureModel];
+
+      // Autoscale: the tallest peak on the chart fills 0.8 of the plot.
+      var maxJ = 0.001, maxH = 1e-9, i, j, pk_;
+      for (i = 0; i < models.length; i++) for (j = 0; j < models[i].peaks.length; j++) {
+        pk_ = models[i].peaks[j];
+        maxJ = Math.max(maxJ, pk_.J);
+        maxH = Math.max(maxH, peakHeight(pk_.J, pk_.w));
+      }
+      var amp = Math.pow(state.rate / 10, 0.45);
+      var scale = 0.80 / maxH;
+
+      var ts = allT(models);
+      var lo = ts.length ? Math.min.apply(null, ts) - 70 : 0;
+      var hi = ts.length ? Math.max.apply(null, ts) + 70 : 300;
+      lo = Math.max(-160, Math.round(lo / 10) * 10);
+      hi = Math.min(950, Math.round(hi / 10) * 10);
+      if (hi - lo < 120) hi = lo + 120;
+
+      // Fit the y-window to the curves actually drawn, the same way the mixture
+      // renderer does. A fixed range clipped anything whose features fell
+      // outside it (boron in endo-up, for one).
+      var cLive = curveOf(pureModel, scale);
+      var ySamp = samplePts(cLive, lo, hi, 2).map(function (p) { return p[1]; });
+      var yLo = Math.min.apply(null, ySamp), yHi = Math.max.apply(null, ySamp);
+      var ySpan = Math.max(yHi - yLo, 0.05), yPad = ySpan * 0.12;
+      var ydDown = [yLo - yPad, yHi + yPad];
+      var yd = state.endo === "down" ? ydDown : [-ydDown[1], -ydDown[0]];
+
+      var f = frame(640, 360, { l: 46, r: 16, t: 22, b: 40 }, [lo, hi], yd);
+      function orient(pts) { return state.endo === "down" ? pts : pts.map(function (p) { return [p[0], -p[1]]; }); }
+      axes(f, "Temperature (°C)", "Heat flow (" + (state.endo === "down" ? "endo down" : "endo up") + ")", ticks(lo, hi, 6), ticks(yd[0], yd[1], 4),
+        function (v) { return Math.round(v); }, function () { return ""; });
+
+
+      path(f, orient(samplePts(cLive, lo, hi, 1)), "ta-curve-e1");
+
+      var place = makeLabeller(f);
+      function mark(t, label) {
+        var x = f.sx(t);
+        if (x < f.m.l || x > f.W - f.m.r) return;
+        var put = place(x, label);
+        f.parts.push('<line class="ta-marker" x1="' + x + '" y1="' + (put ? put.y - 9 : f.m.t) + '" x2="' + x + '" y2="' + (f.H - f.m.b) + '"/>');
+        if (put) f.parts.push(put.svg);
+      }
+      var live = pureModel;
+      for (i = 0; i < live.steps.length; i++) mark(live.steps[i].T, "Tg");
+      for (i = 0; i < live.peaks.length; i++) {
+        var pk = live.peaks[i];
+        mark(pk.T, pk.label === "decomp" ? "decomp." : pk.label === "new" ? "new peak" : pk.label);
+      }
+      $("dsc-chart").innerHTML = f.parts.join("");
+
+      // ---- read-out ----
+      var tiles = "";
+      {
+        if (m.tg !== null) tiles += statTile("Tg", Math.round(m.tg + 2 * Math.log10(state.rate / 10)) + " °C", m.dCp ? "ΔCp ≈ " + m.dCp + " J/(g·K)" : "");
+        if (m.tcc !== null) tiles += statTile("Cold cryst. Tcc", Math.round(m.tcc) + " °C", "quenched sample");
+        if (m.transT != null) tiles += statTile("Solid-solid transition", Math.round(m.transT) + " °C", m.transH != null ? "≈ " + m.transH + " J/g, endothermic" : "endothermic");
+        if (m.tm !== null) tiles += statTile("Melt Tm", Math.round(m.tm) + " °C", m.dHm != null ? "ΔHm ≈ " + m.dHm + " J/g" : "");
+        if (m.tm !== null && m.dHm != null && m.dHm0) tiles += statTile("Crystallinity Xc", Math.round((m.dHm / m.dHm0) * 100) + " %", "ΔHm / " + m.dHm0);
+        if (m.decompT !== null) tiles += statTile("Decomposition", Math.round(m.decompT) + " °C", m.decompH != null ? "ΔH ≈ " + m.decompH + " J/g" : "exotherm");
+      }
+      $("dsc-stats").innerHTML = tiles;
+
+      // ---- narrative ----
+      var msg = "<strong>" + esc(libLabel(m)) + ".</strong> ";
+      {
+        var bits = [];
+        if (m.tg !== null) bits.push("a glass transition at " + Math.round(m.tg) + " °C");
+        if (m.tcc !== null) bits.push("cold crystallisation near " + Math.round(m.tcc) + " °C");
+        if (m.tm !== null) bits.push("melting at " + Math.round(m.tm) + " °C");
+        if (m.decompT !== null) bits.push("an exothermic decomposition near " + Math.round(m.decompT) + " °C");
+        msg += bits.length ? ("Shows " + bits.join(", ") + ". ") : "";
+        msg += "Faster heating raises the apparent Tg (about 2 °C per tenfold rate increase) and makes peaks taller but broader.";
+      }
+      $("dsc-read").innerHTML = msg;
+      $("dsc-matnote").innerHTML = matNote(m);
+
+      $("dsc-legend").style.display = "none";
+    }
+
+    function syncControls() {
+      var m = libById(state.id);
+      var isMix = state.mode === "mix";
+      var i, a = document.querySelectorAll("#sec-dsc .ta-dsc-single"), b = document.querySelectorAll("#sec-dsc .ta-dsc-mix");
+      for (i = 0; i < a.length; i++) a[i].style.display = isMix ? "none" : "";
+      for (i = 0; i < b.length; i++) b[i].style.display = isMix ? "" : "none";
+      if (!isMix) {
+        // A sample with no melt has nothing a second heat would reveal.
+        $("dsc-heat-wrap").style.display = (!m || m.tm === null) ? "none" : "";
+      } else {
+        // The control is hidden in mixture mode, so make sure a stale value from
+        // single mode cannot silently change the prediction.
+        state.heat = 1;
+        $("dsc-heat-wrap").style.display = "none";
+      }
+    }
+
+    function buildMixRows() {
+      buildMixUI("dsc-mix-rows", state.mix, dscOk, render);
+    }
+
+    state.id = fillSelect($("dsc-material"), dscOk, "pet");
+    buildMixRows();
+    seg("dsc-mode", function (v) { state.mode = v; syncControls(); render(); });
+    seg("dsc-zoom", function (v) { state.zoom = v; render(); });
+    $("dsc-obs").addEventListener("input", function () {
+      var v = parseFloat(this.value);
+      state.obs = isFinite(v) ? v : null;
+      $("dsc-obs-val").innerHTML = state.obs == null ? "&mdash;" : state.obs.toFixed(1) + " °C";
+      render();
+    });
+    $("dsc-mix-add").addEventListener("click", function () {
+      // Default a new row to a binder if the mix has none yet, else a filler.
+      var hasBinder = state.mix.some(function (r) { var m = libById(r.id); return m && (m.cls === "binder" || m.cls === "plasticizer"); });
+      state.mix.push({ id: hasBinder ? "caco3" : "htpb", parts: 20 });
+      buildMixRows(); render();
+    });
+    $("dsc-material").addEventListener("change", function () { state.id = this.value; syncControls(); render(); });
+    seg("dsc-heat", function (v) { state.heat = parseInt(v, 10); $("dsc-heat-val").textContent = v === "1" ? "First" : "Second"; render(); });
+    seg("dsc-endo", function (v) { state.endo = v; render(); });
+    $("dsc-rate").addEventListener("input", function () { state.rate = parseFloat(this.value); $("dsc-rate-val").textContent = state.rate + " K/min"; render(); });
+    syncControls();
+    render();
+  })();
+
+  /* ================================= TGA ================================= */
+  (function () {
+    var state = {
+      sample: "single", id: "pvc", atm: "switch", moist: 1, oil: 0, cb: 6, caco3: 18,
+      mix: [{ id: "htpb-cured", parts: 60 }, { id: "caco3", parts: 25 }, { id: "carbon-black", parts: 15 }]
+    };
+    function tgaOk(m) { return (m.tga.steps && m.tga.steps.length) || m.tga.special === "metal-oxidation"; }
+
+
+    // Build the mass(T) curve for a given atmosphere. Steps are cumulative
+    // sigmoids; a negative step is a mass gain.
+    function model(atm) {
+      var oxid = (atm === "air");
+      var steps = [];
+      if (state.sample === "single" || state.sample === "mix") {
+        // One material's mass-loss steps, scaled to `frac` of the whole sample.
+        // Mass is strictly additive, so a mixture is the sum of these.
+        function pushMaterial(m, frac) {
+          if (!m || frac <= 0) return;
+          var i, s, shift = oxid ? -45 : 0;
+          for (i = 0; i < m.tga.steps.length; i++) {
+            s = m.tga.steps[i];
+            steps.push({ c: s.t + shift, w: 55, h: s.f * 100 * frac });
+          }
+          var char = (m.tga.charN2 != null ? m.tga.charN2 : 0) * 100 * frac;
+          var ash = (m.tga.ashAir != null ? m.tga.ashAir : 0) * 100 * frac;
+          if (m.tga.special === "metal-oxidation") {
+            // ashAir is already the practical mass remaining at ~900 C (partial
+            // conversion for passivated powder), so use it directly as the gain.
+            if (oxid || atm === "switch") {
+              var gain = Math.max(0, ash - 100 * frac);
+              if (gain > 0.2) steps.push({ c: atm === "switch" ? 700 : 640, w: 150, h: -gain });
+            }
+          } else if ((oxid || atm === "switch") && char > ash + 0.2) {
+            steps.push({ c: atm === "switch" ? 660 : 600, w: 80, h: char - ash });
+          }
+        }
+        if (state.sample === "single") {
+          var m0 = libById(state.id);
+          if (!m0) return { mass: function () { return 100; } };
+          pushMaterial(m0, 1);
+        } else {
+          var comps = mixWeightsOf(state.mix), ci;
+          if (!comps.length) return { mass: function () { return 100; } };
+          for (ci = 0; ci < comps.length; ci++) pushMaterial(comps[ci].m, comps[ci].w);
+        }
+      } else {
+        var moist = state.moist, oil = state.oil, cb = state.cb, caco3 = state.caco3;
+        var polymer = clamp(100 - moist - oil - cb - caco3, 5, 100);
+        var polyTmax = oxid ? 400 : 455;   // oxidative decomposition starts lower
+        steps.push({ c: 80, w: 40, h: moist });                    // moisture
+        if (oil > 0) steps.push({ c: 255, w: 90, h: oil });        // plasticizer / oil
+        steps.push({ c: polyTmax, w: 55, h: polymer });            // polymer backbone
+        if (caco3 > 0) steps.push({ c: 720, w: 60, h: caco3 * 0.44 }); // CaCO3 loses 44% as CO2
+        if (cb > 0 && (oxid || atm === "switch")) {                 // carbon black combustion
+          steps.push({ c: atm === "switch" ? 660 : 620, w: 70, h: cb });
+        }
+      }
+      function mass(t) { var m = 100, i; for (i = 0; i < steps.length; i++) m -= steps[i].h * sig(t, steps[i].c, steps[i].w); return m; }
+      return { mass: mass };
+    }
+
+    function render() {
+      var disp = model(state.atm);                 // curve for the selected atmosphere
+      var mN2 = model("n2"), mAir = model("air");   // reference runs for the composition split
+      // A filler that oxidises in air ends heavier than it started, so the
+      // trace can run well above 100%. Only stretch the axis when that happens;
+      // an ordinary loss-only run keeps the familiar 0-100% frame.
+      var mMax = 100, tProbe;
+      for (tProbe = 25; tProbe <= 900; tProbe += 3) {
+        var mv = disp.mass(tProbe);
+        if (mv > mMax) mMax = mv;
+      }
+      var yTop = 105, yTk = [0, 20, 40, 60, 80, 100], tv;
+      if (mMax > 100.5) {
+        yTop = Math.ceil((mMax + 8) / 20) * 20;
+        yTk = [];
+        for (tv = 0; tv <= mMax; tv += 20) yTk.push(tv);
+      }
+      var f = frame(640, 360, { l: 46, r: 44, t: 22, b: 40 }, [25, 900], [0, yTop]);
+      axes(f, "Temperature (°C)", "Mass (%)", ticks(25, 900, 5), yTk,
+        function (v) { return Math.round(v); }, function (v) { return v; });
+
+      var pts = samplePts(disp.mass, 25, 900, 3);
+      // DTG on a hidden right-hand scale, drawn as its own curve (rate of loss).
+      var dtg = [], i, maxd = 0.0001, minRate = 0;
+      for (i = 1; i < pts.length; i++) {
+        var rate = (pts[i - 1][1] - pts[i][1]) / (pts[i][0] - pts[i - 1][0]); // %/degC, positive = loss
+        dtg.push([pts[i][0], rate]);
+        if (rate > maxd) maxd = rate;
+        if (rate < minRate) minRate = rate;
+      }
+      // Map DTG into the lower third of the plot for an overlaid trace, sized
+      // against the axis so the band keeps its proportions when a mass-gaining
+      // sample stretches the y-axis past 100%.
+      var band0 = yTop * 0.038, bandA = yTop * 0.324;
+      // A metal oxidising in air has a NEGATIVE rate and often no positive rate
+      // at all, which sent rate/maxd through the 1e-4 floor and threw the trace
+      // tens of thousands of units off the chart. Normalise on magnitude and
+      // centre the band so a gain reads as a dip below the baseline.
+      var hasGain = minRate < -1e-9;
+      var maxAbs = Math.max(maxd, -minRate, 0.0001);
+      var dtgPts = dtg.map(function (p) {
+        var v = hasGain ? (band0 + bandA / 2 + (p[1] / maxAbs) * (bandA / 2))
+                        : (band0 + (p[1] / maxd) * bandA);
+        return [p[0], clamp(v, 0, yTop)];
+      });
+      path(f, dtgPts, "ta-curve-dtg");
+      path(f, pts, "ta-curve-e1");
+
+      var resEnd = disp.mass(895);
+      if (resEnd > 1) {
+        var yy = f.sy(resEnd);
+        f.parts.push('<text class="ta-feat" x="' + f.sx(760) + '" y="' + (yy - 3) + '" text-anchor="start">residue ' + resEnd.toFixed(1) + '%</text>');
+      }
+      $("tga-chart").innerHTML = f.parts.join("");
+
+      // Composition read-out. The inert run keeps carbon; a full air run leaves
+      // only mineral ash; the difference is the carbon. Read the N2 residue at
+      // high temperature, AFTER any carbonate has decomposed, so its CO2 loss is
+      // not miscounted as carbon.
+      var resN2 = mN2.mass(895), ash = mAir.mass(895);
+      var tiles = "", msg = "";
+
+      if (state.sample === "mix") {
+        var comps = mixWeightsOf(state.mix), i;
+        if (!comps.length) {
+          $("tga-stats").innerHTML = "";
+          $("tga-read").innerHTML = "Add a component to build a formulation.";
+          return;
+        }
+        var names = [], namePct = pctOfWeights(comps);
+        for (i = 0; i < comps.length; i++) names.push(namePct[i] + "% " + esc(comps[i].m.abbr || comps[i].m.name));
+        tiles += statTile("Components", String(comps.length), "normalised to 100%");
+        tiles += statTile("Residue in N₂", resN2.toFixed(1) + " %", "sum of each component's");
+        if (state.atm !== "n2") tiles += statTile("Residue in air", ash.toFixed(1) + " %", ash > resN2 + 0.3 ? "gained mass (oxidised)" : "carbon burned off");
+        if (state.atm !== "n2" && resN2 > ash + 0.3) tiles += statTile("Carbon", (resN2 - ash).toFixed(1) + " %", "N₂ residue − air ash");
+        msg = "<strong>" + names.join(" + ") + ".</strong> Mass is strictly additive, so this superposition is exact for a mixture whose components do not interact: each contributes its own steps at its own temperatures, scaled by weight fraction, and the residues simply add. That makes it the baseline a real compositional run is measured against, and it is the same arithmetic behind the two formulation presets. A real scan that loses mass at a temperature none of the components does on its own, or leaves a different residue, means the components are reacting with each other.";
+        $("tga-stats").innerHTML = tiles;
+        $("tga-read").innerHTML = msg;
+        var lowT = comps.filter(function (c) { return c.m.conf !== "high"; });
+        $("tga-matnote").innerHTML = lowT.length
+          ? ("Values for " + lowT.map(function (c) { return esc(c.m.abbr || c.m.name); }).join(", ") + " vary by grade, so treat the combined curve as indicative.")
+          : "";
+        return;
+      }
+      if (state.sample === "single") {
+        var mm = libById(state.id), i;
+        tiles += statTile("Residue in N₂", resN2.toFixed(1) + " %", mm && mm.tga.special === "metal-oxidation" ? "metal, unreacted" : "char + inorganic");
+        if (state.atm !== "n2") tiles += statTile("Residue in air", ash.toFixed(1) + " %", ash > resN2 + 0.3 ? "gained mass (oxidised)" : "inorganic only");
+        if (mm && mm.tga.steps.length) {
+          tiles += statTile("Main step T", Math.round(mm.tga.steps[mm.tga.steps.length - 1].t) + " °C", "peak rate, N₂");
+          tiles += statTile("Steps", String(mm.tga.steps.length), mm.tga.steps.length > 1 ? "resolved by DTG" : "single stage");
+        }
+        msg = "<strong>" + esc(libLabel(mm)) + ".</strong> ";
+        if (mm && mm.tga.steps.length) {
+          var labs = [];
+          for (i = 0; i < mm.tga.steps.length; i++) labs.push(Math.round(mm.tga.steps[i].t) + " °C (" + Math.round(mm.tga.steps[i].f * 100) + "%, " + esc(mm.tga.steps[i].l) + ")");
+          msg += "Under N₂ it loses mass at " + labs.join(", then ") + ", leaving " + resN2.toFixed(1) + "% char. ";
+        }
+        if (mm && mm.tga.special === "metal-oxidation") msg += "In air it <em>gains</em> mass as the metal oxidises, so the residue climbs above 100%: a residue read as ash here would be meaningless. ";
+        else if (mm && mm.tga.special === "carbonate") msg += "The high-temperature step is carbonate breakdown releasing CO₂, not combustion, so it happens under N₂ too. ";
+        else if (mm && mm.tga.special === "sublimes") msg += "It leaves essentially no residue: the solid goes to gas rather than charring. ";
+        else if (state.atm !== "n2" && resN2 > ash + 0.3) msg += "Switching to air burns the char away, so the difference between the two residues is the carbon. ";
+      } else {
+        var carbon = clamp(resN2 - ash, 0, 100);
+        var caco3Loss = state.caco3 * 0.44;
+        tiles += statTile("Residue in N₂", resN2.toFixed(1) + " %", "carbon + mineral");
+        if (state.atm !== "n2") tiles += statTile("Ash (air)", ash.toFixed(1) + " %", "inorganic only");
+        if (state.cb > 0) tiles += statTile("Carbon black", carbon.toFixed(1) + " %", "N₂ residue − air ash");
+        if (state.caco3 > 0) tiles += statTile("CaCO₃ from CO₂ step", (caco3Loss / 0.44).toFixed(0) + " %", caco3Loss.toFixed(1) + "% loss ÷ 0.44");
+        if (state.atm === "n2") msg = "<strong>Inert N₂.</strong> Carbon (polymer char and carbon black) survives, so the residue is carbon plus mineral filler. ";
+        else if (state.atm === "air") msg = "<strong>Air.</strong> Oxidative decomposition starts lower, and any carbon burns to CO₂, so the residue is inorganic ash only. ";
+        else msg = "<strong>N₂ then air at 600 °C.</strong> The classic compositional run: polymer and oil leave under N₂, then switching to air burns off the carbon black, and the final plateau is mineral ash. ";
+        if (state.caco3 > 0) msg += "The step near 720 °C is CaCO₃ → CaO + CO₂, which loses exactly 44% of the carbonate as CO₂. ";
+        if (state.cb > 0 && state.atm === "n2") msg += "Switch to air (or the switch mode) to burn off and quantify the carbon black.";
+      }
+      $("tga-stats").innerHTML = tiles;
+      $("tga-read").innerHTML = msg;
+    }
+
+    function buildTgaMixRows() {
+      buildMixUI("tga-mix-rows", state.mix, tgaOk, render);
+    }
+
+    function syncTgaControls() {
+      var i, show = { single: ".ta-single", mix: ".ta-tmix", rubber: ".ta-rubber" };
+      var groups = [".ta-single", ".ta-tmix", ".ta-rubber"];
+      for (i = 0; i < groups.length; i++) {
+        var els = document.querySelectorAll("#sec-tga " + groups[i]), j;
+        for (j = 0; j < els.length; j++) els[j].style.display = (groups[i] === show[state.sample]) ? "" : "none";
+      }
+      $("tga-matnote").innerHTML = state.sample === "single" ? matNote(libById(state.id)) : "";
+    }
+
+    state.id = fillSelect($("tga-material"), tgaOk, "pvc");
+    buildTgaMixRows();
+    $("tga-mix-add").addEventListener("click", function () {
+      state.mix.push({ id: "caco3", parts: 10 });
+      buildTgaMixRows(); render();
+    });
+    $("tga-material").addEventListener("change", function () { state.id = this.value; syncTgaControls(); render(); });
+    seg("tga-sample", function (v) { state.sample = v; syncTgaControls(); render(); });
+    seg("tga-atm", function (v) { state.atm = v; render(); });
+    function slider(id, key, fmt) {
+      $(id).addEventListener("input", function () { state[key] = parseFloat(this.value); $(id + "-val").textContent = fmt(state[key]); syncTgaControls(); render(); });
+    }
+    slider("tga-moist", "moist", function (v) { return v + "%"; });
+    slider("tga-oil", "oil", function (v) { return v + "%"; });
+    slider("tga-cb", "cb", function (v) { return v + "%"; });
+    slider("tga-caco3", "caco3", function (v) { return v + "%"; });
+    // reuse ids with -val suffix
+    $("tga-moist-val").textContent = "1%";
+    syncTgaControls();
+    render();
+  })();
+
+  /* ================================= DMA ================================= */
+  (function () {
+    var R = 8.314;
+    var state = {
+      mode: "single", id: "ps", logf: 0, logNu: 2.11, custom: false, // nu default ~ 130 mol/m3
+      // A rubber-toughened glassy blend: two phases, so two tan-delta peaks.
+      mix: [{ id: "ps", parts: 80 }, { id: "br", parts: 20 }]
+    };
+    function dmaOk(m) { return !!(m.dma && m.dma.type && m.dma.glassy !== null && m.tg !== null); }
+
+    function derive(mIn) {
+      var m = mIn || libById(state.id) || { tg: 100, dma: { type: "linear", glassy: 3e9, rubbery: 3e5 }, tm: null };
+      var kind = m.dma.type === "semicrystalline" ? "semicry" : m.dma.type;   // internal names
+      var GLASSY = m.dma.glassy || 3e9;
+      var fshift = 6 * state.logf;                 // ~6 C per decade of frequency
+      var nu = Math.pow(10, state.logNu);
+      var base = m.tg;
+      // Crosslinking also raises Tg; more tightly cured network sits higher.
+      var xlShift = (kind === "network" && state.custom) ? 12 * (state.logNu - 2.11) : 0;
+      var tgOnset = base + fshift + xlShift;
+      var tgEpp = tgOnset + 6;
+      var tgTand = tgOnset + 15;
+      // Rubbery storage modulus. For a network the crosslink slider can override
+      // the library value through rubber elasticity, E' = 3 nu R T.
+      var Trub = tgOnset + 40 + 273.15;
+      var Er = (kind === "network" && state.custom) ? 3 * nu * R * Trub
+             : (m.dma.rubbery != null ? m.dma.rubbery : (kind === "semicry" ? 2.5e8 : 3e5));
+      // tan delta peak height: tall for a lightly crosslinked or linear polymer,
+      // shorter as the network tightens or crystallinity rises.
+      var drop = Math.log10(GLASSY / Math.max(Er, 1));      // decades lost through Tg
+      var tandH = kind === "semicry" ? clamp(0.12 * drop, 0.15, 0.8)
+                : kind === "network" ? clamp(0.42 * drop, 0.25, 1.6)
+                : clamp(0.40 * drop, 0.4, 1.8);
+      var tandW = kind === "semicry" ? 34 : 26;
+      return { kind: kind, m: m, GLASSY: GLASSY, fshift: fshift, nu: nu, tgOnset: tgOnset, tgEpp: tgEpp, tgTand: tgTand, Er: Er, tandH: tandH, tandW: tandW, Trub: Trub };
+    }
+
+    // The E'(T) and tan-delta functions for one material, in linear Pa.
+    function curvesFor(d) {
+      var s = d.kind, m = d.m, GLASSY = d.GLASSY;
+      var logG = Math.log10(GLASSY), logEr = Math.log10(d.Er);
+      function logE(t) {
+        var g = sig(t, d.tgEpp, 20);
+        var y = logG + (logEr - logG) * g;
+        if (s === "linear") y -= 3.2 * sig(t, d.tgEpp + 75, 30);
+        if (s === "semicry" && m.tm != null) y -= 3.6 * sig(t, m.tm, 12);
+        if (s === "network") y += Math.log10((t + 273.15) / d.Trub) * g;
+        return y;
+      }
+      return {
+        E: function (t) { return Math.pow(10, logE(t)); },
+        logE: logE,
+        tand: function (t) { return 0.03 + d.tandH * gau(t, d.tgTand, d.tandW); }
+      };
+    }
+
+    /* ---- Mixture: mechanical properties are NOT mass-additive ----------------
+       A blend or filled composite falls between the Voigt (parallel, upper) and
+       Reuss (series, lower) bounds, so we draw the band rather than a single
+       line pretending to know the morphology. Each phase keeps its own Tg, so
+       an immiscible mixture shows one tan-delta peak per component: that is the
+       classic miscibility diagnostic. Volume fraction is approximated by weight
+       fraction here, since the library carries no densities. */
+    function renderDmaMix() {
+      var comps = mixWeightsOf(state.mix).filter(function (c) { return dmaOk(c.m); }), i;
+      if (!comps.length) {
+        $("dma-chart").innerHTML = '<text x="320" y="180" text-anchor="middle" class="ta-feat">Add a component with DMA data</text>';
+        $("dma-stats").innerHTML = ""; $("dma-read").innerHTML = ""; $("dma-matnote").innerHTML = "";
+        return;
+      }
+      // Renormalise across only the components that DMA can actually describe.
+      var wsum = 0;
+      for (i = 0; i < comps.length; i++) wsum += comps[i].w;
+      for (i = 0; i < comps.length; i++) comps[i].w = comps[i].w / wsum;
+
+      var parts = comps.map(function (c) { var d = derive(c.m); return { d: d, cv: curvesFor(d), w: c.w, m: c.m }; });
+      var tgs = parts.map(function (p) { return p.d.tgOnset; });
+      var tms = parts.filter(function (p) { return p.m.tm != null; }).map(function (p) { return p.m.tm; });
+      var lo = Math.max(-180, Math.round((Math.min.apply(null, tgs) - 130) / 10) * 10);
+      var hiRef = Math.max(Math.max.apply(null, parts.map(function (p) { return p.d.tgTand; })) + 110,
+                           tms.length ? Math.max.apply(null, tms) + 50 : -999);
+      var hi = Math.min(700, Math.round(hiRef / 10) * 10);
+      if (hi - lo < 200) hi = lo + 200;
+      var xd = [lo, hi];
+
+      function voigt(t) { var s = 0, k; for (k = 0; k < parts.length; k++) s += parts[k].w * parts[k].cv.E(t); return s; }
+      function reuss(t) { var s = 0, k; for (k = 0; k < parts.length; k++) s += parts[k].w / Math.max(parts[k].cv.E(t), 1); return 1 / Math.max(s, 1e-30); }
+      function tandMix(t) { var s = 0, k; for (k = 0; k < parts.length; k++) s += parts[k].w * parts[k].cv.tand(t); return s; }
+      function lgV(t) { return Math.log10(voigt(t)); }
+      function lgR(t) { return Math.log10(reuss(t)); }
+
+      var fit = decadeFit([lgV, lgR], lo, hi);
+      var f = frame(640, 360, { l: 50, r: 46, t: 22, b: 40 }, xd, fit.yd);
+
+      axes(f, "Temperature (°C)", "log₁₀ E (Pa)", ticks(lo, hi, 6), fit.ticks,
+        function (v) { return Math.round(v); }, function (v) { return v; });
+      var tdMax = 2;
+      function syT(v) { return f.H - f.m.b - (v / tdMax) * f.ph; }
+      for (i = 0; i <= 4; i++) {
+        var tv = i * 0.5, yy = syT(tv);
+        f.parts.push('<text class="ta-tick" x="' + (f.W - f.m.r + 7) + '" y="' + (yy + 3) + '" text-anchor="start">' + tv.toFixed(1) + '</text>');
+      }
+      f.parts.push('<text class="ta-axis-label" x="' + (f.W - 11) + '" y="' + (f.m.t + f.ph / 2) + '" text-anchor="middle" transform="rotate(90 ' + (f.W - 11) + ' ' + (f.m.t + f.ph / 2) + ')">tan δ</text>');
+
+      // Shade the Voigt-to-Reuss band: the real composite lies inside it.
+      var up = samplePts(function (t) { return clamp(lgV(t), fit.yd[0], fit.yd[1]); }, lo, hi, 2);
+      var dn = samplePts(function (t) { return clamp(lgR(t), fit.yd[0], fit.yd[1]); }, lo, hi, 2);
+      var band = "M " + f.sx(up[0][0]).toFixed(1) + " " + f.sy(up[0][1]).toFixed(1);
+      for (i = 1; i < up.length; i++) band += " L " + f.sx(up[i][0]).toFixed(1) + " " + f.sy(up[i][1]).toFixed(1);
+      for (i = dn.length - 1; i >= 0; i--) band += " L " + f.sx(dn[i][0]).toFixed(1) + " " + f.sy(dn[i][1]).toFixed(1);
+      band += " Z";
+      f.parts.push('<path d="' + band + '" fill="var(--primary)" fill-opacity="0.13" stroke="none"/>');
+      path(f, up, "ta-curve-e1");
+      path(f, dn, "ta-curve-ref");
+
+      var tdPts = samplePts(tandMix, lo, hi, 2);
+      var dtd = "", j;
+      for (j = 0; j < tdPts.length; j++) dtd += (j ? " L " : "M ") + f.sx(tdPts[j][0]).toFixed(1) + " " + syT(clamp(tdPts[j][1], 0, tdMax)).toFixed(1);
+      f.parts.push('<path class="ta-curve ta-curve-tand" d="' + dtd + '"/>');
+
+      // One marker per component's tan-delta peak: the miscibility read.
+      var placeD = makeLabeller(f);
+      parts.slice().sort(function (a, b) { return a.d.tgTand - b.d.tgTand; }).forEach(function (p) {
+        var x = f.sx(p.d.tgTand);
+        if (x < f.m.l || x > f.W - f.m.r) return;
+        var put = placeD(x, p.m.abbr || p.m.name);
+        f.parts.push('<line class="ta-marker" x1="' + x + '" y1="' + (put ? put.y - 9 : f.m.t) + '" x2="' + x + '" y2="' + (f.H - f.m.b) + '"/>');
+        if (put) f.parts.push(put.svg);
+      });
+      $("dma-chart").innerHTML = f.parts.join("");
+
+      function modStr(v) { return v >= 1e9 ? (v / 1e9).toFixed(1) + " GPa" : v >= 1e6 ? (v / 1e6).toFixed(1) + " MPa" : (v / 1e3).toFixed(0) + " kPa"; }
+      var Tref = Math.max.apply(null, parts.map(function (p) { return p.d.tgTand; })) + 40;
+      var tiles = "";
+      tiles += statTile("Components", String(parts.length), "with DMA data");
+      tiles += statTile("Upper bound E′", modStr(voigt(Tref)), "Voigt (parallel) at " + Math.round(Tref) + " °C");
+      tiles += statTile("Lower bound E′", modStr(reuss(Tref)), "Reuss (series), same T");
+      tiles += statTile("tan δ peaks", String(parts.length), parts.length > 1 ? "one per phase if immiscible" : "single phase");
+      $("dma-stats").innerHTML = tiles;
+
+      var dmaPct = pctOfWeights(parts);
+      var names = parts.map(function (p, k) { return dmaPct[k] + "% " + esc(p.m.abbr || p.m.name); });
+      var tgList = parts.slice().sort(function (a, b) { return a.d.tgTand - b.d.tgTand; })
+        .map(function (p) { return esc(p.m.abbr || p.m.name) + " at " + Math.round(p.d.tgTand) + " °C"; });
+      var msg = "<strong>" + names.join(" + ") + ".</strong> Unlike heat flow and mass, stiffness is <em>not</em> additive, so this shows the <strong>Voigt (parallel) upper and Reuss (series) lower bounds</strong> with the real composite somewhere in the shaded band: where it actually falls depends on morphology, which phase is continuous, and how well the filler is bonded. ";
+      msg += "Each phase keeps its own glass transition, so an <strong>immiscible</strong> blend shows a separate tan δ peak per component (" + tgList.join(", ") + "). That is the standard miscibility test: two peaks means two phases. If the components were genuinely <strong>miscible</strong> you would instead see a single peak at an intermediate temperature, which the <a href=\"tg-predictor.html\">Tg Predictor</a> estimates with the Fox equation. ";
+      msg += "Volume fraction is approximated by weight fraction here, since the library carries no densities.";
+      $("dma-read").innerHTML = msg;
+      var lowD = parts.filter(function (p) { return p.m.conf !== "high"; });
+      $("dma-matnote").innerHTML = lowD.length
+        ? ("Values for " + lowD.map(function (p) { return esc(p.m.abbr || p.m.name); }).join(", ") + " vary by grade, so treat the band as indicative.")
+        : "";
+    }
+
+    function render() {
+      if (state.mode === "mix") { renderDmaMix(); return; }
+      var d = derive(), s = d.kind, m = d.m, GLASSY = d.GLASSY;
+      // Frame the scan around this material's transition, extending past Tm for
+      // a semicrystalline sample so the melt collapse is on screen.
+      var lo = Math.round((d.tgOnset - 130) / 10) * 10;
+      var hi = Math.round(((m.tm != null ? Math.max(d.tgTand + 90, m.tm + 50) : d.tgTand + 150)) / 10) * 10;
+      lo = Math.max(-180, lo); hi = Math.min(700, hi);
+      if (hi - lo < 200) hi = lo + 200;
+      var xd = [lo, hi];
+      var logG = Math.log10(GLASSY), logEr = Math.log10(d.Er);
+      function logE1(t) {
+        var g = sig(t, d.tgEpp, 20);                    // 0 glassy -> 1 rubbery (drop centred at the E'' peak)
+        var y = logG + (logEr - logG) * g;
+        if (s === "linear") y -= 3.2 * sig(t, d.tgEpp + 75, 30);           // terminal flow
+        if (s === "semicry" && m.tm != null) y -= 3.6 * sig(t, m.tm, 12);   // melt collapse at Tm
+        if (s === "network") y += Math.log10((t + 273.15) / d.Trub) * g;    // slight rise with T (E' proportional to T)
+        return y;
+      }
+      function tand(t) { return 0.03 + d.tandH * gau(t, d.tgTand, d.tandW); }
+      // Loss modulus as an independent peak riding ~1.4 decades below E', apex at the E'' marker.
+      function logE2(t) { return logE1(t) - 1.4 + 0.85 * gau(t, d.tgEpp, 20); }
+
+      // y = log10(E in Pa), snapped to whole decades that contain both curves.
+      var fit = decadeFit([logE1, logE2], lo, hi);
+      var f = frame(640, 360, { l: 50, r: 46, t: 22, b: 40 }, xd, fit.yd);
+
+      axes(f, "Temperature (°C)", "log₁₀ E (Pa)", ticks(lo, hi, 6), fit.ticks,
+        function (v) { return Math.round(v); }, function (v) { return v; });
+      // tan delta right axis (linear 0..2)
+      var tdMax = 2;
+      function syT(v) { return f.H - f.m.b - (v / tdMax) * f.ph; }
+      var i;
+      for (i = 0; i <= 4; i++) {
+        var tv = i * 0.5, yy = syT(tv);
+        f.parts.push('<text class="ta-tick" x="' + (f.W - f.m.r + 7) + '" y="' + (yy + 3) + '" text-anchor="start">' + tv.toFixed(1) + '</text>');
+      }
+      f.parts.push('<text class="ta-axis-label" x="' + (f.W - 11) + '" y="' + (f.m.t + f.ph / 2) + '" text-anchor="middle" transform="rotate(90 ' + (f.W - 11) + ' ' + (f.m.t + f.ph / 2) + ')">tan δ</text>');
+
+      path(f, samplePts(logE1, xd[0], xd[1], 2), "ta-curve-e1");
+      path(f, samplePts(logE2, xd[0], xd[1], 2), "ta-curve-e2");
+      var tdPts = samplePts(tand, xd[0], xd[1], 2);
+      var dtd = "", j;
+      for (j = 0; j < tdPts.length; j++) dtd += (j ? " L " : "M ") + f.sx(tdPts[j][0]).toFixed(1) + " " + syT(clamp(tdPts[j][1], 0, tdMax)).toFixed(1);
+      f.parts.push('<path class="ta-curve ta-curve-tand" d="' + dtd + '"/>');
+
+      // Three Tg markers, ordered by construction: E' onset < E'' peak < tan δ peak.
+      var tEpp = d.tgEpp, tTand = d.tgTand;
+      var placeS = makeLabeller(f);
+      function mark(t, label) {
+        var x = f.sx(t);
+        if (x < f.m.l || x > f.W - f.m.r) return;
+        var put = placeS(x, label);
+        f.parts.push('<line class="ta-marker" x1="' + x + '" y1="' + (put ? put.y - 9 : f.m.t) + '" x2="' + x + '" y2="' + (f.H - f.m.b) + '"/>');
+        if (put) f.parts.push(put.svg);
+      }
+      mark(d.tgOnset, "E′ onset");
+      mark(tEpp, "E″ peak");
+      mark(tTand, "tan δ peak");
+      if (s === "semicry" && m.tm != null) mark(m.tm, "Tm");
+
+      $("dma-chart").innerHTML = f.parts.join("");
+
+      // read-out
+      function modStr(v) { return v >= 1e9 ? (v / 1e9).toFixed(1) + " GPa" : v >= 1e6 ? (v / 1e6).toFixed(1) + " MPa" : (v / 1e3).toFixed(0) + " kPa"; }
+      var tiles = "";
+      tiles += statTile("Tg (E′ onset)", Math.round(d.tgOnset) + " °C", "conservative");
+      tiles += statTile("Tg (E″ peak)", Math.round(tEpp) + " °C", "middle");
+      tiles += statTile("Tg (tan δ peak)", Math.round(tTand) + " °C", "highest, most quoted");
+      tiles += statTile("Glassy E′", modStr(GLASSY), "below Tg");
+      tiles += statTile("Rubbery E′", modStr(d.Er), "plateau above Tg");
+      if (s === "network") {
+        var nuEff = state.custom ? d.nu : d.Er / (3 * R * d.Trub);
+        var Mc = 1000 / nuEff; // rho ~ 1000 kg/m3 -> Mc in kg/mol
+        tiles += statTile("Crosslink density ν", Math.round(nuEff) + "", "mol/m³, from E′ = 3νRT");
+        tiles += statTile("Mc between links", Mc.toFixed(1) + " kg/mol", "ρ/ν, ρ≈1 g/cm³");
+      }
+      $("dma-stats").innerHTML = tiles;
+
+      var msg = "<strong>" + esc(libLabel(m)) + ".</strong> ";
+      if (s === "network") msg += "A crosslinked network: the rubbery plateau is flat and set by crosslink density through E′ = 3νRT, so tightening the cure lifts the plateau and pushes Tg up while the tan δ peak shrinks and broadens. ";
+      else if (s === "linear") msg += "Linear and amorphous: no chemical crosslinks, so above Tg the entanglement plateau gives way to terminal flow and the modulus keeps dropping. ";
+      else msg += "Semicrystalline: crystallites act as physical crosslinks, holding the modulus up above Tg until they melt" + (m.tm != null ? " near " + Math.round(m.tm) + " °C" : "") + ", where E′ finally collapses. ";
+      msg += "The three Tg markers sit " + Math.round(tTand - d.tgOnset) + " °C apart (E′ onset < E″ peak < tan δ peak). Raising the frequency shifts them all up about 6 °C per decade.";
+      $("dma-read").innerHTML = msg;
+      $("dma-matnote").innerHTML = matNote(m);
+    }
+
+    function syncDma() {
+      var isMix = state.mode === "mix", i;
+      var a = document.querySelectorAll("#sec-dma .ta-dma-single"), b = document.querySelectorAll("#sec-dma .ta-dma-mix");
+      for (i = 0; i < a.length; i++) a[i].style.display = isMix ? "none" : "";
+      for (i = 0; i < b.length; i++) b[i].style.display = isMix ? "" : "none";
+      var m = libById(state.id);
+      // The crosslink slider tunes one network's plateau; it has no single
+      // meaning for a blend, so it only applies in single-material mode.
+      var isNet = !isMix && !!(m && m.dma.type === "network");
+      $("dma-xl-wrap").style.display = isNet ? "" : "none";
+      if (isMix) return;
+      // Seed the crosslink slider from this material's own plateau modulus so the
+      // starting value matches the library rather than a generic default.
+      if (isNet && !state.custom && m.dma.rubbery) {
+        var nu0 = m.dma.rubbery / (3 * R * (m.tg + 40 + 273.15));
+        state.logNu = clamp(Math.log10(Math.max(nu0, 1)), 1.0, 3.3);
+        $("dma-xl").value = state.logNu;
+        $("dma-xl-val").textContent = Math.round(Math.pow(10, state.logNu)) + " mol/m³";
+      }
+    }
+
+    function buildDmaMixRows() {
+      buildMixUI("dma-mix-rows", state.mix, dmaOk, render);
+    }
+
+    state.id = fillSelect($("dma-material"), dmaOk, "ps");
+    buildDmaMixRows();
+    seg("dma-mode", function (v) { state.mode = v; syncDma(); render(); });
+    $("dma-mix-add").addEventListener("click", function () {
+      // Offer a component that is not already in the blend.
+      var used = {}, i, pick = null;
+      for (i = 0; i < state.mix.length; i++) used[state.mix[i].id] = 1;
+      for (i = 0; i < LIB.length; i++) if (dmaOk(LIB[i]) && !used[LIB[i].id]) { pick = LIB[i].id; break; }
+      state.mix.push({ id: pick || "ps", parts: 20 });
+      buildDmaMixRows(); render();
+    });
+    $("dma-material").addEventListener("change", function () { state.id = this.value; state.custom = false; syncDma(); render(); });
+    $("dma-freq").addEventListener("input", function () {
+      state.logf = parseFloat(this.value);
+      var hz = Math.pow(10, state.logf);
+      $("dma-freq-val").textContent = (hz >= 1 ? Math.round(hz) : hz.toFixed(1)) + " Hz";
+      render();
+    });
+    $("dma-xl").addEventListener("input", function () {
+      state.logNu = parseFloat(this.value);
+      state.custom = true;
+      $("dma-xl-val").textContent = Math.round(Math.pow(10, state.logNu)) + " mol/m³";
+      render();
+    });
+    syncDma();
+    render();
+  })();
+
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
