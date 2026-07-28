@@ -18,6 +18,7 @@ on:
       - 'polymer-data.js'
       - 'polymer-graph.js'
       - 'thermal-library.js'
+      - 'thermal-analysis.html'
       - 'search-index.json'
       - 'scripts/**'
   push:
@@ -27,6 +28,7 @@ on:
       - 'polymer-data.js'
       - 'polymer-graph.js'
       - 'thermal-library.js'
+      - 'thermal-analysis.html'
       - 'search-index.json'
       - 'scripts/**'
   workflow_dispatch: {}
@@ -44,6 +46,9 @@ jobs:
       - run: node scripts/check-polymer-data.js
 
       - run: node scripts/check-thermal-library.js
+
+      # Backstop for the pre-commit hook, which lives only in a local clone.
+      - run: node scripts/check-no-energetic.js
 
       # Fails if search-index.json wasn't regenerated after a data change.
       - run: npm run check-index
