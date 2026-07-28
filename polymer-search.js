@@ -4059,6 +4059,10 @@
         var db = window.POLYMER_DB || [];
         var matches = db.filter(function (p) {
           if (p.name.toLowerCase().indexOf(q) !== -1) return true;
+          // Every result card prints "CAS <rn>", so people paste one back in.
+          // These are the polymer registry numbers, not the monomer's, so a
+          // monomer RN off a bottle label deliberately does not match here.
+          if (p.cas && p.cas.toLowerCase().indexOf(q) !== -1) return true;
           return (p.aka || []).some(function (a) { return a.toLowerCase().indexOf(q) !== -1; });
         }).slice(0, 20);
         if (matches.length) {

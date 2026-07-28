@@ -39,6 +39,60 @@ const VALID_CLASSES = new Set([
   "Ring-opening (polyamide)", "Step-growth (polyamide)", "Step-growth (polyester)"
 ]);
 
+// --- CAS sanity -----------------------------------------------------------
+// The "cas" field must be the CAS RN of the POLYMER, never of the monomer it
+// is made from. Twenty-seven auto-generated entries once carried the monomer's
+// number instead - poly(caprolactone) had 502-44-3, epsilon-caprolactone,
+// rather than 24980-41-4, "2-Oxepanone, homopolymer" - which is a quiet but
+// serious error on a page people copy CAS numbers out of. Two independent
+// guards below, because either one alone has a blind spot.
+
+// Guard 1: the exact monomer numbers that were previously mis-filed here, each
+// confirmed against EPA's Substance Registry Services as a discrete small
+// molecule (a bare molecular formula, no "homopolymer" in the CAS index name).
+// scripts/discover-polymers.js seeds new entries from monomer data, so these
+// are the values most likely to come back.
+const KNOWN_MONOMER_CAS = {
+  "141-32-2": "n-butyl acrylate", "103-11-7": "2-ethylhexyl acrylate",
+  "1663-39-4": "tert-butyl acrylate", "97-88-1": "n-butyl methacrylate",
+  "585-07-9": "tert-butyl methacrylate", "2495-37-6": "benzyl methacrylate",
+  "106-91-2": "glycidyl methacrylate", "2867-47-2": "2-(dimethylamino)ethyl methacrylate",
+  "98-83-9": "alpha-methylstyrene", "622-97-9": "4-methylstyrene",
+  "1746-23-2": "4-tert-butylstyrene", "79-38-9": "chlorotrifluoroethylene",
+  "2235-00-9": "N-vinylcaprolactam", "105-38-4": "vinyl propionate",
+  "107-25-5": "methyl vinyl ether", "109-92-2": "ethyl vinyl ether",
+  "13162-05-5": "N-vinylformamide", "513-81-5": "2,3-dimethyl-1,3-butadiene",
+  "502-44-3": "epsilon-caprolactone", "502-97-6": "glycolide",
+  "95-96-5": "lactide", "542-28-9": "delta-valerolactone",
+  "57-57-8": "beta-propiolactone", "2453-03-4": "trimethylene carbonate",
+  "106-89-8": "epichlorohydrin", "106-88-7": "1,2-butylene oxide",
+  "96-09-3": "styrene oxide",
+  // Monomers of entries that were already correct, listed so a future
+  // regression on those is caught too.
+  "100-42-5": "styrene", "80-62-6": "methyl methacrylate", "74-85-1": "ethylene",
+  "115-07-1": "propylene", "75-01-4": "vinyl chloride", "107-13-1": "acrylonitrile",
+  "108-05-4": "vinyl acetate", "79-06-1": "acrylamide", "79-10-7": "acrylic acid",
+  "88-12-0": "N-vinylpyrrolidone", "126-99-8": "chloroprene", "78-79-5": "isoprene",
+  "106-99-0": "1,3-butadiene", "75-21-8": "ethylene oxide", "75-56-9": "propylene oxide",
+  "96-33-3": "methyl acrylate", "140-88-5": "ethyl acrylate", "97-63-2": "ethyl methacrylate",
+};
+
+// Guard 2: structural. CAS put polymers and other substances of indefinite
+// composition in the 9000-9099 block, and everything registered from 1965 on
+// is 24000-00-0 or higher, which is where the post-1965 polymers land
+// (24980-41-4, 26680-10-4, ...). The gap between, 9100-23999, is early-registry
+// small molecules. So a polymer RN outside {9000-9099} U {>=24000} is almost
+// certainly a monomer. This catches monomers the table above does not list,
+// including ones numbered above 9000 such as N-vinylformamide's 13162-05-5,
+// which a naive "monomers are low numbers" rule would wave through.
+function casLooksLikeMonomer(cas) {
+  const first = parseInt(String(cas).split("-")[0], 10);
+  if (!isFinite(first)) return false;
+  if (first >= 9000 && first <= 9099) return false; // classic polymer block
+  if (first >= 24000) return false;                 // modern registry
+  return true;
+}
+
 function checkEntry(entry, idx, errors) {
   const where = "entry #" + idx + (entry && entry.name ? " (" + entry.name + ")" : "");
 
@@ -167,6 +221,15 @@ function main() {
     if (entry && entry.cas && typeof entry.cas === "string") {
       const key = entry.cas.trim().toLowerCase();
       if (key && key !== "n/a" && key !== "not assigned") {
+        if (KNOWN_MONOMER_CAS[key]) {
+          errors.push("entry #" + idx + " (" + entry.name + "): \"cas\" " + entry.cas +
+            " is the CAS number of " + KNOWN_MONOMER_CAS[key] + ", the monomer - " +
+            "this field must hold the POLYMER registry number (set it to null if none can be substantiated)");
+        } else if (casLooksLikeMonomer(key)) {
+          errors.push("entry #" + idx + " (" + entry.name + "): \"cas\" " + entry.cas +
+            " is outside the ranges CAS uses for polymers (9000-9099, or 24000-00-0 and up), " +
+            "so it looks like a monomer number - verify it names the polymer, not the monomer");
+        }
         if (casSeen.has(key)) {
           errors.push("entry #" + idx + " (" + entry.name + "): duplicate CAS \"" + entry.cas + "\", already used by entry #" + casSeen.get(key));
         } else {
