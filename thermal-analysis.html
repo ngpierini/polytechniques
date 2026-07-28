@@ -32,12 +32,12 @@
 </script>
 <script src="theme.js"></script>
 <script src="nav.js?v=11" defer></script>
-<script src="thermal-library.js?v=3"></script>
+<script src="thermal-library.js?v=5"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=59">
+<link rel="stylesheet" href="style.css?v=60">
 <style>
   /* Page-scoped styles for the interactive thermal-analysis charts. Colours are
      pulled from the site's CSS variables so light/dark both work; the extra
@@ -149,7 +149,7 @@
       Three techniques answer three different questions about a polymer, and together they cover most of what you need to characterize a material. <strong>DSC</strong> measures heat flow, so it sees every transition that absorbs or releases energy: the glass transition, crystallization, and melting, plus the enthalpies behind them. <strong>TGA</strong> measures mass, so it sees thermal stability and, by watching what is lost and when, the composition: moisture, plasticizer, polymer, carbon, and inorganic filler. <strong>DMA</strong> measures mechanical stiffness under an oscillating load, so it sees the same transitions DSC does but through their effect on modulus and damping, and it is far and away the most sensitive way to find a weak glass transition.
     </p>
     <p class="guide-note">
-      Every chart below is live and driven by a shared <strong>materials library</strong> of 40 entries: commodity and engineering thermoplastics, elastomers, polymeric binders, plasticizers, and common inorganic fillers. Pick a material from the dropdown on any test and the predicted curve and read-outs are generated from that entry's own properties. Each test only lists what it can actually measure, so powders and liquid plasticizers do not appear under DMA. Switch a test to its mixture mode and you can build a blend or filled compound from any of them and see the superposed trace.
+      Every chart below is live and driven by a shared <strong>materials library</strong> of 70 entries: commodity and engineering thermoplastics, <strong>15 copolymers</strong> including the styrenic and segmented thermoplastic elastomers and the self-assembling diblocks, elastomers, polymeric binders, plasticizers, and common inorganic fillers. Pick a material from the dropdown on any test and the predicted curve and read-outs are generated from that entry's own properties. Each test only lists what it can actually measure, so powders and liquid plasticizers do not appear under DMA. Switch a test to its mixture mode and you can build a blend or filled compound from any of them and see the superposed trace.
     </p>
     <p class="guide-note">
       The values come from handbooks, instrument-maker application notes, and the primary literature, but they vary with grade, thermal history, and method, so anything not well established carries a <span class="ta-conf">varies by grade</span> or <span class="ta-conf">rough estimate</span> flag next to the material description. These are teaching approximations for estimation and comparison, never a substitute for running your own standard.
@@ -548,9 +548,10 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
 
   /* ======================= SHARED MATERIALS LIBRARY ======================= */
   var LIB = window.THERMAL_LIBRARY || [];
-  var CLS_ORDER = ["thermoplastic", "elastomer", "binder", "plasticizer", "additive"];
+  var CLS_ORDER = ["thermoplastic", "copolymer", "elastomer", "binder", "plasticizer", "additive"];
   var CLS_LABEL = {
-    thermoplastic: "Thermoplastics", elastomer: "Elastomers & rubbers", binder: "Binders",
+    thermoplastic: "Thermoplastics", copolymer: "Copolymers & block copolymers",
+    elastomer: "Elastomers & rubbers", binder: "Binders",
     plasticizer: "Plasticizers", additive: "Fillers & additives"
   };
   function libById(id) { var i; for (i = 0; i < LIB.length; i++) if (LIB[i].id === id) return LIB[i]; return null; }
@@ -785,6 +786,13 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
     function modelOf(m, rate, second) {
       var dec = Math.log10(rate / 10), steps = [], peaks = [];
       if (m.tg !== null) steps.push({ T: m.tg + 2 * dec, w: 14, h: (m.dCp || 0.3) });
+      // A phase-separated copolymer has a SECOND glass transition, and drawing
+      // only the first makes e.g. PS-b-PDMS indistinguishable from plain PDMS.
+      // The temperature is sourced per entry; the step height is not, because
+      // the minority phase's own dCp is rarely resolved separately. It is drawn
+      // at nominal height and flagged, the same convention used for peaks whose
+      // enthalpy is unpublished, rather than inventing a dCp.
+      if (m.tg2 != null) steps.push({ T: m.tg2 + 2 * dec, w: 20, h: (m.dCp || 0.3) * 0.45, second: true, modelled: true });
       if (m.tcc !== null) {
         // A controlled second heat has already crystallised the sample, so the
         // cold-crystallisation exotherm largely disappears.
@@ -1104,7 +1112,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
         if (put) f.parts.push(put.svg);
       }
       var live = pureModel;
-      for (i = 0; i < live.steps.length; i++) mark(live.steps[i].T, "Tg");
+      for (i = 0; i < live.steps.length; i++) mark(live.steps[i].T, live.steps[i].second ? "Tg (2nd phase)" : "Tg");
       for (i = 0; i < live.peaks.length; i++) {
         var pk = live.peaks[i];
         mark(pk.T, pk.label === "decomp" ? "decomp." : pk.label === "new" ? "new peak" : pk.label);
@@ -1115,6 +1123,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       var tiles = "";
       {
         if (m.tg !== null) tiles += statTile("Tg", Math.round(m.tg + 2 * Math.log10(state.rate / 10)) + " °C", m.dCp ? "ΔCp ≈ " + m.dCp + " J/(g·K)" : "");
+        if (m.tg2 != null) tiles += statTile("Tg, 2nd phase", Math.round(m.tg2 + 2 * Math.log10(state.rate / 10)) + " °C", "step height not to scale");
         if (m.tcc !== null) tiles += statTile("Cold cryst. Tcc", Math.round(m.tcc) + " °C", "quenched sample");
         if (m.transT != null) tiles += statTile("Solid-solid transition", Math.round(m.transT) + " °C", m.transH != null ? "≈ " + m.transH + " J/g, endothermic" : "endothermic");
         if (m.tm !== null) tiles += statTile("Melt Tm", Math.round(m.tm) + " °C", m.dHm != null ? "ΔHm ≈ " + m.dHm + " J/g" : "");
@@ -1128,6 +1137,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       {
         var bits = [];
         if (m.tg !== null) bits.push("a glass transition at " + Math.round(m.tg) + " °C");
+        if (m.tg2 != null) bits.push("a second, phase-separated glass transition at " + Math.round(m.tg2) + " °C");
         if (m.tcc !== null) bits.push("cold crystallisation near " + Math.round(m.tcc) + " °C");
         if (m.tm !== null) bits.push("melting at " + Math.round(m.tm) + " °C");
         if (m.decompT !== null) bits.push("an exothermic decomposition near " + Math.round(m.decompT) + " °C");
