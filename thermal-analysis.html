@@ -32,7 +32,7 @@
 </script>
 <script src="theme.js"></script>
 <script src="nav.js?v=11" defer></script>
-<script src="thermal-library.js?v=5"></script>
+<script src="thermal-library.js?v=6"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
@@ -74,6 +74,15 @@
   .ta-conf { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 0.72rem; font-weight: 600;
              background: rgba(242,184,75,0.18); color: #c98a1e; margin-left: 6px; vertical-align: middle; }
   .ta-matnote { font-size: 0.85rem; color: var(--text-dim); margin: 2px 0 10px; line-height: 1.45; }
+  .ta-export { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 0; }
+  .ta-export-btn { font: inherit; font-size: 0.82rem; padding: 5px 11px; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); }
+  .ta-export-btn:hover { border-color: var(--primary); }
+  .ta-nodma { font-size: 0.85rem; color: var(--text-dim); margin: 0 0 10px; }
+  .ta-nodma > summary { cursor: pointer; }
+  .ta-nodma dl { margin: 8px 0 0; }
+  .ta-nodma dt { font-weight: 600; margin-top: 6px; }
+  .ta-nodma dd { margin: 0 0 0 14px; line-height: 1.45; }
   .ta-formnote { font-size: 0.83rem; color: var(--text-dim); line-height: 1.45; margin-top: 7px;
                  padding: 8px 11px; border-left: 3px solid var(--primary); border-radius: 0 7px 7px 0;
                  background: rgba(127,127,127,0.06);
@@ -220,11 +229,12 @@
         <span class="ta-control-label">Heat <span class="ta-val" id="dsc-heat-val">First</span></span>
         <div class="ta-seg" id="dsc-heat">
           <button type="button" data-v="1" class="active">First heat</button>
+          <button type="button" data-v="3">Cooling</button>
           <button type="button" data-v="2">Second heat</button>
         </div>
       </div>
       <div class="ta-control">
-        <span class="ta-control-label">Heating rate <span class="ta-val" id="dsc-rate-val">10 K/min</span></span>
+        <span class="ta-control-label"><span id="dsc-rate-label">Heating rate</span> <span class="ta-val" id="dsc-rate-val">10 K/min</span></span>
         <input type="range" class="ta-range" id="dsc-rate" min="2" max="50" step="1" value="10">
       </div>
       <div class="ta-control">
@@ -242,6 +252,10 @@
       <svg id="dsc-chart" class="ta-chart" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Interactive DSC thermogram"></svg>
     </div>
     <div class="stat-grid" id="dsc-stats"></div>
+    <div class="ta-export">
+      <button type="button" class="ta-export-btn" id="dsc-csv">Download CSV</button>
+      <button type="button" class="ta-export-btn" id="dsc-copy">Copy read-out</button>
+    </div>
     <p class="guide-note" id="dsc-read" style="margin-top:10px;"></p>
   </div>
 
@@ -307,6 +321,10 @@
       <svg id="tga-chart" class="ta-chart" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Interactive TGA and DTG curve"></svg>
     </div>
     <div class="stat-grid" id="tga-stats"></div>
+    <div class="ta-export">
+      <button type="button" class="ta-export-btn" id="tga-csv">Download CSV</button>
+      <button type="button" class="ta-export-btn" id="tga-copy">Copy read-out</button>
+    </div>
     <p class="guide-note" id="tga-read" style="margin-top:10px;"></p>
   </div>
 
@@ -347,6 +365,10 @@
     </div>
 
     <p class="ta-matnote" id="dma-matnote"></p>
+    <details class="ta-nodma" id="dma-missing">
+      <summary>Why isn't my material in this list?</summary>
+      <div id="dma-missing-body"></div>
+    </details>
     <div class="ta-legend">
       <span><span class="ta-swatch" style="background:var(--primary)"></span> E&prime; storage</span>
       <span><span class="ta-swatch" style="background:#f2b84b"></span> E&Prime; loss</span>
@@ -356,6 +378,10 @@
       <svg id="dma-chart" class="ta-chart" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Interactive DMA modulus and tan delta curve"></svg>
     </div>
     <div class="stat-grid" id="dma-stats"></div>
+    <div class="ta-export">
+      <button type="button" class="ta-export-btn" id="dma-csv">Download CSV</button>
+      <button type="button" class="ta-export-btn" id="dma-copy">Copy read-out</button>
+    </div>
     <p class="guide-note" id="dma-read" style="margin-top:10px;"></p>
   </div>
 
@@ -483,6 +509,107 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
     return '<div class="stat"><div class="label">' + label + '</div><div class="value">' + value + '</div><div class="sub">' + (sub || "") + '</div></div>';
   }
 
+  /* ---------------- Export -------------------------------------------------
+     The point of these charts is comparison against a real scan, which means
+     the curve has to leave the page. Each chart re-registers its current state
+     on every render; the buttons below read whatever is registered.
+
+     Everything here is Blob + anchor and a clipboard call with a manual
+     fallback - no library, no network - because this runs on locked-down lab
+     networks where an external script simply never arrives. */
+  var EXPORTS = {};
+  function registerExport(key, payload) { EXPORTS[key] = payload; }
+
+  function csvEscape(v) {
+    var s = String(v == null ? "" : v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function buildCSV(p) {
+    // Provenance first, as comment lines. A bare two-column CSV pasted into a
+    // notebook six months later is unattributable, and these are MODELLED
+    // curves - that has to travel with the numbers, not just sit on the page.
+    var lines = [
+      "# PolyTechniques - getpolytechniques.com",
+      "# " + p.title,
+      "# Modelled curve from a reference library, NOT measured data.",
+      "# " + (window.THERMAL_LIBRARY_META ? window.THERMAL_LIBRARY_META.copyright : "")
+    ];
+    (p.meta || []).forEach(function (m) { lines.push("# " + m); });
+    lines.push(p.columns.map(csvEscape).join(","));
+    p.rows.forEach(function (r) { lines.push(r.map(csvEscape).join(",")); });
+    return lines.join("\r\n") + "\r\n";
+  }
+  function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60); }
+
+  function downloadCSV(key) {
+    var p = EXPORTS[key];
+    if (!p) return;
+    var blob = new Blob([buildCSV(p)], { type: "text/csv;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = slug(p.title) + ".csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    // Revoke on a later tick; revoking synchronously can cancel the download.
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+
+  function flash(btn, text) {
+    var old = btn.textContent;
+    btn.textContent = text;
+    setTimeout(function () { btn.textContent = old; }, 1600);
+  }
+  function copyReadout(key, btn) {
+    var p = EXPORTS[key];
+    if (!p) return;
+    var text = p.title + "\n\n" + (p.readout || "") + "\n\n" +
+      "Modelled from the PolyTechniques reference library, not measured data.\ngetpolytechniques.com";
+    // navigator.clipboard is absent on plain http and can reject when the page
+    // is not focused - both of which happen on the locked-down lab networks
+    // this site has to work on - so there is always a manual path out.
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      if (ok) { flash(btn, "Copied"); return; }
+      // Last resort: select the read-out where it already sits so Ctrl+C works.
+      // A window.prompt would get the text out too, but blocking the page on a
+      // modal to copy one paragraph is a worse trade than a selection.
+      var el = document.getElementById(key + "-read");
+      if (el && window.getSelection && document.createRange) {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        flash(btn, "Selected - press Ctrl+C");
+      } else {
+        flash(btn, "Copy unavailable");
+      }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { flash(btn, "Copied"); }, fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  function wireExport(key) {
+    var dl = document.getElementById(key + "-csv");
+    var cp = document.getElementById(key + "-copy");
+    if (dl) dl.addEventListener("click", function () { downloadCSV(key); });
+    if (cp) cp.addEventListener("click", function () { copyReadout(key, cp); });
+  }
+
   // Picks a log-modulus window wide enough for every curve, snapped to whole
   // decades so the ticks stay readable. A fixed 4-10 window clipped anything
   // that flowed (linear terminal flow) or melted far enough to run off the
@@ -584,14 +711,20 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
      A formulation is an array of { id, parts }. Parts are normalised to weight
      fractions at render time, so the sliders are ratios rather than absolutes. */
   function mixWeightsOf(mix) {
-    var tot = 0, i, out = [], m;
-    for (i = 0; i < mix.length; i++) tot += Math.max(0, mix[i].parts);
-    if (tot <= 0) return [];
+    // Total only over rows that actually resolve to a material. Summing over
+    // every row first meant one unresolvable id left the survivors normalised
+    // against a phantom, so they no longer added to 100% while the read-out
+    // still said they did - and every weight-fraction figure downstream,
+    // crystallinity included, inherited the error.
+    var tot = 0, i, out = [], m, keep = [];
     for (i = 0; i < mix.length; i++) {
       m = libById(mix[i].id);
       if (!m) continue;
-      out.push({ m: m, w: Math.max(0, mix[i].parts) / tot });
+      keep.push({ m: m, parts: Math.max(0, mix[i].parts) });
+      tot += Math.max(0, mix[i].parts);
     }
+    if (tot <= 0) return [];
+    for (i = 0; i < keep.length; i++) out.push({ m: keep[i].m, w: keep[i].parts / tot });
     return out;
   }
   // Largest-remainder rounding so the displayed percentages add to exactly 100.
@@ -781,10 +914,44 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       mix: [{ id: "htpb-cured", parts: 70 }, { id: "caco3", parts: 30 }]
     };
 
+    // Crystallisation on COOLING is not the mirror image of melting. It needs a
+    // nucleation driving force, so it always happens below Tm, and how far below
+    // depends on nucleation density, molar mass and cooling rate - which is why
+    // supercooling is the signal a nucleating agent is working, and why the
+    // second heat differs from the first.
+    //
+    // A sourced tc always wins. Where the library has none, Tc is MODELLED at a
+    // nominal supercooling below Tm and flagged, so the chart teaches that the
+    // exotherm sits below the melt and moves with rate, without pretending to
+    // predict a temperature. Real supercooling spans roughly 10-60 C across the
+    // polymers here; a single fitted ratio would be wrong for most of them, so
+    // none is attempted. The rate term is the robust part: cool faster and
+    // crystallisation falls further behind.
+    var NOMINAL_SUPERCOOL = 25;
+    function coolingTc(m, dec) {
+      if (m.tc != null) return { T: m.tc - 6 * dec, modelled: false };
+      if (m.tm === null) return null;
+      return { T: m.tm - (NOMINAL_SUPERCOOL + 8 * dec), modelled: true };
+    }
+
     // Turn a library entry into drawable features. Peaks carry their enthalpy in
     // J/g so the chart can autoscale the way an instrument autoranges.
-    function modelOf(m, rate, second) {
+    function modelOf(m, rate, second, cooling) {
       var dec = Math.log10(rate / 10), steps = [], peaks = [];
+      if (cooling) {
+        // On the way down there is no melt to draw and no cold crystallisation:
+        // the sample is already molten, so the only events are the freezing
+        // exotherm and, below it, the glass transition.
+        var tc = coolingTc(m, dec);
+        if (tc) {
+          peaks.push({
+            T: tc.T, w: 24, J: (m.dHm != null ? m.dHm : 60), dir: 1, label: "Tc",
+            modelled: tc.modelled || m.dHm == null
+          });
+        }
+        if (m.tg !== null) steps.push({ T: m.tg - 2 * dec, w: 14, h: (m.dCp || 0.3), cooling: true });
+        return { steps: steps, peaks: peaks };
+      }
       if (m.tg !== null) steps.push({ T: m.tg + 2 * dec, w: 14, h: (m.dCp || 0.3) });
       // A phase-separated copolymer has a SECOND glass transition, and drawing
       // only the first makes e.g. PS-b-PDMS indistinguishable from plain PDMS.
@@ -810,17 +977,14 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       if (m.tm !== null) {
         peaks.push({ T: m.tm + 1.5 * dec, w: 22, J: (m.dHm != null ? m.dHm : 60), dir: -1, label: "Tm", modelled: m.dHm == null });
       }
+      // decompT draws an EXOTHERM, so it is only for materials whose
+      // decomposition actually releases heat in a DSC pan - PAN cyclising to a
+      // ladder polymer near 300 C is the one case in this library. Ordinary
+      // chain scission is endothermic and belongs to the TGA trace instead,
+      // which is why this field is rare rather than under-used.
       if (m.decompT !== null) {
         var unknownH = (m.decompH == null);
-        var totJ = unknownH ? 400 : m.decompH;
-        if (m.exos && m.exos.length) {
-          // A material with resolved multiple exotherms splits the heat between them.
-          for (var k = 0; k < m.exos.length; k++) {
-            peaks.push({ T: m.exos[k].t + DECOMP_RATE_SHIFT * dec, w: 34, J: totJ * m.exos[k].f, dir: 1, label: "decomp", modelled: unknownH });
-          }
-        } else {
-          peaks.push({ T: m.decompT + DECOMP_RATE_SHIFT * dec, w: 26, J: totJ, dir: 1, label: "decomp", modelled: unknownH });
-        }
+        peaks.push({ T: m.decompT + DECOMP_RATE_SHIFT * dec, w: 26, J: (unknownH ? 400 : m.decompH), dir: 1, label: "decomp", modelled: unknownH });
       }
       return { steps: steps, peaks: peaks };
     }
@@ -860,11 +1024,11 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       }
       return order.map(function (id) { return byId[id]; });
     }
-    function superpose(comps, rate, second) {
+    function superpose(comps, rate, second, cooling) {
       var steps = [], peaks = [], i, j, mo;
       for (i = 0; i < comps.length; i++) {
         if (comps[i].w <= 0) continue;
-        mo = modelOf(comps[i].m, rate, second);
+        mo = modelOf(comps[i].m, rate, second, cooling);
         for (j = 0; j < mo.steps.length; j++) {
           steps.push({ T: mo.steps[j].T, w: mo.steps[j].w, h: mo.steps[j].h * comps[i].w, from: comps[i].m });
         }
@@ -886,7 +1050,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
 
     function renderMix() {
       var comps = mixWeights(), i;
-      var second = state.heat === 2;
+      var second = state.heat === 2, cooling = state.heat === 3;
       if (!comps.length) {
         $("dsc-chart").innerHTML = '<text x="320" y="180" text-anchor="middle" class="ta-feat">Add a component to build a formulation</text>';
         $("dsc-stats").innerHTML = "";
@@ -895,7 +1059,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
         $("dsc-legend").style.display = "none";
         return;
       }
-      var base = superpose(comps, state.rate, second);          // no-interaction baseline
+      var base = superpose(comps, state.rate, second, cooling);  // no-interaction baseline
       var models = [base];
       // A melt or decomposition peak is one to three orders of magnitude larger
       // than a binder's Tg step, so on a full-scan autoscale the binder is a
@@ -1015,6 +1179,31 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       }
       var pctList = displayPctOf(state.mix);
       tiles += statTile("Components", String(comps.length), "normalised to 100%");
+
+      // Crystallinity in a filled or blended sample. The instrument integrates
+      // the melt over the WHOLE pan, so the enthalpy it reports is per gram of
+      // sample, not per gram of polymer. Dividing that straight into dHm0 is
+      // the standard mistake and it understates Xc by exactly the non-polymer
+      // loading: at 30% filler a 61% crystalline polymer reads as 43%. The
+      // correction is one weight fraction, so the tile shows the arithmetic
+      // rather than just the answer.
+      var xtal = [];
+      for (i = 0; i < comps.length; i++) {
+        var cm = comps[i].m;
+        if (cm.tm === null || cm.dHm == null || !cm.dHm0) continue;
+        xtal.push({
+          m: cm,
+          w: comps[i].w,
+          perSample: cm.dHm * comps[i].w,      // J/g of whole sample, what the scan shows
+          xc: cm.dHm / cm.dHm0,                // the polymer's own crystallinity
+          naive: (cm.dHm * comps[i].w) / cm.dHm0  // what you get if you forget the weight fraction
+        });
+      }
+      for (i = 0; i < xtal.length; i++) {
+        tiles += statTile("Crystallinity Xc, " + esc(xtal[i].m.abbr || xtal[i].m.name),
+          Math.round(xtal[i].xc * 100) + " %",
+          xtal[i].perSample.toFixed(1) + " J/g of sample ÷ " + Math.round(xtal[i].w * 100) + " wt% ÷ " + xtal[i].m.dHm0);
+      }
       // If the user has run the mixture and typed in the peak they measured,
       // compare it against the weighted pure-component baseline.
       // The number comes from THEIR instrument, so this is arithmetic on real
@@ -1035,6 +1224,22 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       for (i = 0; i < comps.length; i++) names.push(namePct[i] + "% " + esc(comps[i].m.abbr || comps[i].m.name));
       var msg = "<strong>" + names.join(" + ") + ".</strong> ";
       msg += "This is the <strong>ideal non-mixing baseline</strong>: each component keeps its own transition temperatures and contributes its enthalpy in proportion to weight fraction. It is the starting point a compatibility screen is read against, but it is <em>not</em> a prediction of your real sample. It assumes the components stay physically separate, so it is broken by ordinary physical mixing with no chemical incompatibility at all: a plasticizer dissolving into a binder depresses the binder T<sub>g</sub> and its own melt disappears, a solid dissolving in a molten component loses its fusion endotherm, and eutectic pairs melt below either pure component. Deviation from this curve is a prompt to investigate, not proof that the components react.";
+      // Spell out the weight-fraction correction on the actual numbers in front
+      // of the user. Stated in the abstract it reads as obvious; stated as "43%
+      // instead of 61%" it is the reason to go back and check a notebook.
+      if (xtal.length) {
+        var xb = [];
+        for (i = 0; i < xtal.length; i++) {
+          xb.push("<strong>" + esc(xtal[i].m.abbr || xtal[i].m.name) + "</strong> melts at " +
+            Math.round(xtal[i].m.tm) + " °C contributing " + xtal[i].perSample.toFixed(1) +
+            " J/g of sample, which is " + Math.round(xtal[i].xc * 100) + "% crystalline once divided by its " +
+            Math.round(xtal[i].w * 100) + " wt% share, but only " + Math.round(xtal[i].naive * 100) + "% if you forget to");
+        }
+        msg += "<br><strong>Reading crystallinity off a filled sample.</strong> The instrument integrates the melt over the whole pan, " +
+          "so &Delta;H<sub>m</sub> comes back per gram of <em>sample</em>, not per gram of polymer. Divide by the polymer's weight " +
+          "fraction before dividing by &Delta;H<sub>m</sub><sup>0</sup>, or the answer is low by exactly the non-polymer loading. Here " +
+          xb.join("; ") + ".";
+      }
       // A measured peak beats any model: report what the user's own number says.
       if (state.obs != null && firstDecomp != null) {
         var oShift = firstDecomp - state.obs;
@@ -1064,8 +1269,8 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       if (state.mode === "mix") { renderMix(); return; }
       var m = libById(state.id);
       if (!m) return;
-      var second = state.heat === 2;
-      var pureModel = modelOf(m, state.rate, second);
+      var second = state.heat === 2, cooling = state.heat === 3;
+      var pureModel = modelOf(m, state.rate, second, cooling);
       var models = [pureModel];
 
       // Autoscale: the tallest peak on the chart fills 0.8 of the plot.
@@ -1121,6 +1326,51 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
 
       // ---- read-out ----
       var tiles = "";
+      if (cooling) {
+        // On cooling the only events are the freezing exotherm and the glass
+        // transition. Supercooling is the number worth reading: it is what a
+        // nucleating agent changes, and it is why the second heat differs from
+        // the first.
+        var ctc = coolingTc(m, Math.log10(state.rate / 10));
+        if (ctc) {
+          tiles += statTile("Crystallisation Tc", Math.round(ctc.T) + " °C",
+            ctc.modelled ? "modelled, not measured" : "on cooling");
+          tiles += statTile("Supercooling ΔT", Math.round(m.tm - ctc.T) + " °C",
+            "Tm " + Math.round(m.tm) + " − Tc");
+        }
+        if (m.tg !== null) tiles += statTile("Tg on cooling", Math.round(m.tg - 2 * Math.log10(state.rate / 10)) + " °C",
+          m.dCp ? "ΔCp ≈ " + m.dCp + " J/(g·K)" : "");
+        if (!ctc && m.tg === null) tiles += statTile("Nothing to draw", "—", "no melt and no Tg");
+        $("dsc-stats").innerHTML = tiles;
+        var cmsg = "<strong>" + esc(libLabel(m)) + ", cooling scan.</strong> ";
+        if (ctc) {
+          cmsg += "Crystallisation needs a nucleation driving force, so the exotherm sits <em>below</em> the melt rather than mirroring it" +
+            (m.tm !== null ? ", here about " + Math.round(m.tm - ctc.T) + " °C below Tm" : "") + ". Cool faster and it falls further behind, " +
+            "because the chains have less time to organise at any given temperature. That gap is the standard read on nucleation: an " +
+            "effective nucleating agent raises Tc and narrows the supercooling without moving Tm at all. It is also why a first heat and " +
+            "a second heat disagree - the second heat melts whatever this cooling step just built.";
+          if (ctc.modelled) {
+            cmsg += " <strong>The Tc drawn here is modelled</strong>, placed at a nominal " + NOMINAL_SUPERCOOL +
+              " °C below Tm, because no measured value is carried for this material. Real supercooling runs from about 10 °C for a fast " +
+              "crystalliser to 60 °C or more for a slow one and depends on nucleation, molar mass and cooling rate, so treat the shape as " +
+              "the lesson and measure the number.";
+          }
+        } else {
+          cmsg += "There is no melt on record for it, so there is nothing to crystallise on the way down; an amorphous polymer shows only " +
+            "its glass transition, and that is the whole cooling trace.";
+        }
+        $("dsc-read").innerHTML = cmsg;
+        registerExport("dsc", {
+          title: "DSC - " + libLabel(m) + " - " + "cooling scan" + " at " + state.rate + " K/min",
+          meta: ["Rate: " + state.rate + " K/min", "Sign convention: " + (state.endo === "down" ? "endo down" : "endo up"),
+                 "Heat flow is on an ARBITRARY normalised scale - the shape and the transition temperatures are the content, not the y values."],
+          columns: ["Temperature (C)", "Heat flow (arb.)"],
+          rows: samplePts(cLive, lo, hi, 2).map(function (p) { return [p[0].toFixed(1), (state.endo === "down" ? p[1] : -p[1]).toFixed(5)]; }),
+          readout: $("dsc-read").textContent
+        });
+        $("dsc-matnote").innerHTML = matNote(m);
+        return;
+      }
       {
         if (m.tg !== null) tiles += statTile("Tg", Math.round(m.tg + 2 * Math.log10(state.rate / 10)) + " °C", m.dCp ? "ΔCp ≈ " + m.dCp + " J/(g·K)" : "");
         if (m.tg2 != null) tiles += statTile("Tg, 2nd phase", Math.round(m.tg2 + 2 * Math.log10(state.rate / 10)) + " °C", "step height not to scale");
@@ -1145,6 +1395,14 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
         msg += "Faster heating raises the apparent Tg (about 2 °C per tenfold rate increase) and makes peaks taller but broader.";
       }
       $("dsc-read").innerHTML = msg;
+      registerExport("dsc", {
+        title: "DSC - " + libLabel(m) + " - " + (second ? "second heat" : "first heat") + " at " + state.rate + " K/min",
+        meta: ["Rate: " + state.rate + " K/min", "Sign convention: " + (state.endo === "down" ? "endo down" : "endo up"),
+               "Heat flow is on an ARBITRARY normalised scale - the shape and the transition temperatures are the content, not the y values."],
+        columns: ["Temperature (C)", "Heat flow (arb.)"],
+        rows: samplePts(cLive, lo, hi, 2).map(function (p) { return [p[0].toFixed(1), (state.endo === "down" ? p[1] : -p[1]).toFixed(5)]; }),
+        readout: $("dsc-read").textContent
+      });
       $("dsc-matnote").innerHTML = matNote(m);
 
       $("dsc-legend").style.display = "none";
@@ -1188,11 +1446,19 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       buildMixRows(); render();
     });
     $("dsc-material").addEventListener("change", function () { state.id = this.value; syncControls(); render(); });
-    seg("dsc-heat", function (v) { state.heat = parseInt(v, 10); $("dsc-heat-val").textContent = v === "1" ? "First" : "Second"; render(); });
+    seg("dsc-heat", function (v) {
+      state.heat = parseInt(v, 10);
+      $("dsc-heat-val").textContent = v === "1" ? "First" : v === "3" ? "Cooling" : "Second";
+      // The slider is the same control either way, but calling it a heating
+      // rate while the sample is being cooled is just wrong.
+      $("dsc-rate-label").textContent = v === "3" ? "Cooling rate" : "Heating rate";
+      render();
+    });
     seg("dsc-endo", function (v) { state.endo = v; render(); });
     $("dsc-rate").addEventListener("input", function () { state.rate = parseFloat(this.value); $("dsc-rate-val").textContent = state.rate + " K/min"; render(); });
     syncControls();
     render();
+    wireExport("dsc");
   })();
 
   /* ================================= TGA ================================= */
@@ -1281,8 +1547,10 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       var pts = samplePts(disp.mass, 25, 900, 3);
       // DTG on a hidden right-hand scale, drawn as its own curve (rate of loss).
       var dtg = [], i, maxd = 0.0001, minRate = 0;
+      var csvRows = [[pts[0][0].toFixed(1), pts[0][1].toFixed(3), ""]];
       for (i = 1; i < pts.length; i++) {
         var rate = (pts[i - 1][1] - pts[i][1]) / (pts[i][0] - pts[i - 1][0]); // %/degC, positive = loss
+        csvRows.push([pts[i][0].toFixed(1), pts[i][1].toFixed(3), rate.toFixed(5)]);
         dtg.push([pts[i][0], rate]);
         if (rate > maxd) maxd = rate;
         if (rate < minRate) minRate = rate;
@@ -1374,6 +1642,15 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       }
       $("tga-stats").innerHTML = tiles;
       $("tga-read").innerHTML = msg;
+
+      registerExport("tga", {
+        title: "TGA - " + (state.sample === "mix" ? "blend" : libLabel(libById(state.id) || {})) +
+               " - " + (state.atm === "n2" ? "nitrogen" : state.atm === "air" ? "air" : "N2 then air at 600 C"),
+        meta: ["Atmosphere: " + state.atm, "Mass is a percent of the starting mass; DTG is the negative derivative in %/degC."],
+        columns: ["Temperature (C)", "Mass (%)", "DTG (%/C)"],
+        rows: csvRows,
+        readout: $("tga-read").textContent
+      });
     }
 
     function buildTgaMixRows() {
@@ -1410,6 +1687,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
     $("tga-moist-val").textContent = "1%";
     syncTgaControls();
     render();
+    wireExport("tga");
   })();
 
   /* ================================= DMA ================================= */
@@ -1652,6 +1930,23 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       msg += "The three Tg markers sit " + Math.round(tTand - d.tgOnset) + " °C apart (E′ onset < E″ peak < tan δ peak). Raising the frequency shifts them all up about 6 °C per decade.";
       $("dma-read").innerHTML = msg;
       $("dma-matnote").innerHTML = matNote(m);
+
+      // E' and E'' go out in Pa rather than the log values the chart plots, so
+      // the numbers are usable without undoing the axis first.
+      var exRows = [], et;
+      for (et = xd[0]; et <= xd[1] + 0.0001; et += 2) {
+        exRows.push([et.toFixed(1), Math.pow(10, logE1(et)).toExponential(4),
+                     Math.pow(10, logE2(et)).toExponential(4), tand(et).toFixed(4)]);
+      }
+      registerExport("dma", {
+        title: "DMA - " + libLabel(m) + " at " + (Math.pow(10, state.logf) >= 1
+          ? Math.round(Math.pow(10, state.logf)) : Math.pow(10, state.logf).toFixed(1)) + " Hz",
+        meta: ["Frequency: " + Math.pow(10, state.logf).toFixed(2) + " Hz",
+               "Tg markers (C): E' onset " + Math.round(d.tgOnset) + ", E\" peak " + Math.round(tEpp) + ", tan delta peak " + Math.round(tTand)],
+        columns: ["Temperature (C)", "E' storage (Pa)", "E\" loss (Pa)", "tan delta"],
+        rows: exRows,
+        readout: $("dma-read").textContent
+      });
     }
 
     function syncDma() {
@@ -1679,6 +1974,28 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       buildMixUI("dma-mix-rows", state.mix, dmaOk, render);
     }
 
+    // The DMA picker only offers materials that have a trace, so anything
+    // without one silently disappears when you arrive from the DSC or TGA tab.
+    // Most of those gaps are deliberate - a filler powder has no specimen to
+    // clamp, and PGA's moduli were removed once because the only published
+    // figures were for oriented material - so the reason is carried per entry
+    // and listed here rather than leaving the omission to look like an
+    // oversight.
+    (function () {
+      var rows = [], i, m;
+      for (i = 0; i < LIB.length; i++) {
+        m = LIB[i];
+        if (dmaOk(m) || !m.dma || !m.dma.na) continue;
+        rows.push("<dt>" + esc(m.abbr || m.name) + "</dt><dd>" + esc(m.dma.na) + "</dd>");
+      }
+      if (!rows.length) { $("dma-missing").style.display = "none"; return; }
+      $("dma-missing-body").innerHTML =
+        "<p>DMA needs a self-supporting specimen and a glass transition to anchor the model, so " +
+        rows.length + " of the " + LIB.length + " materials in the library have no DMA trace and are left out of the " +
+        "picker above. They are still available on the DSC and TGA charts. Each one says why:</p><dl>" +
+        rows.join("") + "</dl>";
+    })();
+
     state.id = fillSelect($("dma-material"), dmaOk, "ps");
     buildDmaMixRows();
     seg("dma-mode", function (v) { state.mode = v; syncDma(); render(); });
@@ -1705,6 +2022,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
     });
     syncDma();
     render();
+    wireExport("dma");
   })();
 
 })();

@@ -1,16 +1,23 @@
-name: Check polymer data integrity
+name: Check data integrity
 
-# Runs on every PR/push that touches polymer-data.js (human-authored or
-# from the automated discovery pipeline) and fails if an entry is
-# malformed - duplicate name/CAS/structure, a bond pointing at a
-# nonexistent atom, a missing chain-end pseudo-atom, or an obviously bad
-# valence. See scripts/check-polymer-data.js for what it actually checks.
+# Runs on every PR/push that touches either reference dataset and fails if an
+# entry is malformed.
+#
+# polymer-data.js: duplicate name/CAS/structure, a bond pointing at a
+# nonexistent atom, a missing chain-end pseudo-atom, an obviously bad valence,
+# or a monomer CAS number filed where the polymer's belongs.
+#
+# thermal-library.js: a dma.type or tga.special the renderers do not branch on,
+# a TGA mass balance that does not close, or cross-field impossibilities like a
+# heat of fusion with no melt. Both charts fail quietly on bad data, so this is
+# the only thing standing between a typo and a wrong thermogram.
 
 on:
   pull_request:
     paths:
       - 'polymer-data.js'
       - 'polymer-graph.js'
+      - 'thermal-library.js'
       - 'search-index.json'
       - 'scripts/**'
   push:
@@ -19,6 +26,7 @@ on:
     paths:
       - 'polymer-data.js'
       - 'polymer-graph.js'
+      - 'thermal-library.js'
       - 'search-index.json'
       - 'scripts/**'
   workflow_dispatch: {}
@@ -34,6 +42,8 @@ jobs:
           node-version: '22'
 
       - run: node scripts/check-polymer-data.js
+
+      - run: node scripts/check-thermal-library.js
 
       # Fails if search-index.json wasn't regenerated after a data change.
       - run: npm run check-index
