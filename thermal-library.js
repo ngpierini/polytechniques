@@ -30,10 +30,11 @@ window.THERMAL_LIBRARY = [
     id: "hdpe", name: "High-density polyethylene", abbr: "HDPE", cls: "thermoplastic",
     note: "Linear, highly crystalline polyolefin used for bottles, pipe, and drum liners; the crystallinity, not the glass transition, sets its stiffness.",
     tg: -125, dCp: 0.18, tm: 133, dHm: 200, dHm0: 293, tcc: null,
+    tc: 116,
     decompT: null, decompH: null,
     tga: { steps: [{ t: 480, f: 0.99, l: "random chain scission / depolymerization" }], charN2: 0.01, ashAir: 0, special: null },
     dma: { type: "semicrystalline", glassy: 3500000000, rubbery: 1200000000 },
-    conf: "high", src: "Tg from Odian Table 1-3 (PE -125 C); note the PE glass transition is genuinely method-dependent - assignments run -125 to -80 C depending on which relaxation is called Tg, and this site's polymer database lists -110 C, so treat Tg alone as medium confidence. dHm0 293 J/g is the standard PE crystal value (Wunderlich/ATHAS, ASTM D3418 practice); commercial HDPE Tm 130-137 C. dHm 200 J/g = 68% crystallinity, typical of HDPE. TGA single-step ~470-490 C in N2 with negligible char, 10 K/min."
+    conf: "high", src: "Tg from Odian Table 1-3 (PE -125 C); note the PE glass transition is genuinely method-dependent - assignments run -125 to -80 C depending on which relaxation is called Tg, and this site's polymer database lists -110 C, so treat Tg alone as medium confidence. dHm0 293 J/g is the standard PE crystal value (Wunderlich/ATHAS, ASTM D3418 practice); commercial HDPE Tm 130-137 C. dHm 200 J/g = 68% crystallinity, typical of HDPE. TGA single-step ~470-490 C in N2 with negligible char, 10 K/min. tc 116 C is the crystallisation peak on cooling at 10 K/min. This is the best-attested value of the four carried here: resin specifications quote a Tc10 window of 115.2 to 116.9 C and an independent neat-HDPE measurement gives 117.5 C, so the spread is only a couple of degrees. Supercooling is therefore about 17 C, far narrower than the polyesters, which is what a fast-crystallising polyolefin looks like."
   },
   {
     id: "ldpe", name: "Low-density polyethylene", abbr: "LDPE", cls: "thermoplastic",
@@ -48,10 +49,11 @@ window.THERMAL_LIBRARY = [
     id: "pa6", name: "Nylon 6 (polycaprolactam)", abbr: "PA6", cls: "thermoplastic",
     note: "Ring-opened caprolactam polyamide for gears, film, and fiber; hydrogen bonding drives both the high Tm and the strong moisture sensitivity of Tg.",
     tg: 48, dCp: 0.3, tm: 220, dHm: 70, dHm0: 230, tcc: null,
+    tc: 190,
     decompT: null, decompH: null,
     tga: { steps: [{ t: 455, f: 0.98, l: "amide scission, caprolactam and nitrile evolution" }], charN2: 0.02, ashAir: 0, special: null },
     dma: { type: "semicrystalline", glassy: 3200000000, rubbery: 500000000 },
-    conf: "medium", src: "Tm 220-223 C (Odian/site 220-223 C); dHm0 230 J/g (Wunderlich/ATHAS, also TA TN048); dHm 70 J/g = 30% crystallinity, typical. Tg is quoted for DRY PA6 (47-60 C depending on method); absorbed water plasticizes it to near room temperature, which is why confidence is medium on Tg. TGA one step 440-470 C in N2 with 1-3% char."
+    conf: "medium", src: "Tm 220-223 C (Odian/site 220-223 C); dHm0 230 J/g (Wunderlich/ATHAS, also TA TN048); dHm 70 J/g = 30% crystallinity, typical. Tg is quoted for DRY PA6 (47-60 C depending on method); absorbed water plasticizes it to near room temperature, which is why confidence is medium on Tg. TGA one step 440-470 C in N2 with 1-3% char. tc 190 C is derived rather than read off a single trace: the crystallisation exotherm on cooling sits 20 to 30 C below the melt for PA6, and 190 C is the middle of that band against the 220 C melt carried here. PA6 is polymorphic, and the phase depends on how far it is supercooled - the alpha monoclinic form at low undercooling, the gamma mesophase at high - so a fast cooling ramp changes which crystal you are measuring, not just where the peak lands."
   },
   {
     id: "pa66", name: "Nylon 6,6", abbr: "PA66", cls: "thermoplastic",
@@ -75,10 +77,11 @@ window.THERMAL_LIBRARY = [
     id: "pet", name: "Poly(ethylene terephthalate)", abbr: "PET", cls: "thermoplastic",
     note: "Bottle and fiber polyester; crystallizes slowly enough that a quenched specimen shows the classic Tg / cold-crystallization / melt triple feature.",
     tg: 78, dCp: 0.4, tm: 252, dHm: 45, dHm0: 140, tcc: 130,
+    tc: 203,
     decompT: null, decompH: null,
     tga: { steps: [{ t: 440, f: 0.86, l: "ester scission to vinyl esters, acetaldehyde, CO2" }], charN2: 0.14, ashAir: 0, special: null },
     dma: { type: "semicrystalline", glassy: 3000000000, rubbery: 300000000 },
-    conf: "high", src: "Tg 78 C for amorphous PET (site range 61-80 C, Odian); dCp 0.40 J/(g K) amorphous (ATHAS); dHm0 140 J/g is the standard crystallinity reference; commercial peak Tm 250-255 C; cold crystallization at 125-135 C on reheating a melt-quenched sample at 10 K/min; N2 TGA one main step 420-450 C with 12-15% char. dHm 45 J/g corresponds to a typical 32% crystalline molded part - a quenched amorphous specimen gives dHm minus dHcc near zero."
+    conf: "high", src: "Tg 78 C for amorphous PET (site range 61-80 C, Odian); dCp 0.40 J/(g K) amorphous (ATHAS); dHm0 140 J/g is the standard crystallinity reference; commercial peak Tm 250-255 C; cold crystallization at 125-135 C on reheating a melt-quenched sample at 10 K/min; N2 TGA one main step 420-450 C with 12-15% char. dHm 45 J/g corresponds to a typical 32% crystalline molded part - a quenched amorphous specimen gives dHm minus dHcc near zero. tc 203 C is the crystallisation peak on cooling for NEAT PET at approximately 10 K/min, and it is the least certain of the four. The anchor is a chemical-degradation-nucleation study (RSC Adv. 2017) reporting a neat-PET peak near 203.9 C rising to 218.0 C once nucleated, with a stated supercooling of 46.7 C for the pure polymer, which is consistent with the 252 C melt carried here. Rate dependence is steep in the same work: 189.2 C at 25 K/min and 182.2 C at 40 K/min, so this value is only meaningful at the stated ramp. Treat as +/- 10 C. PET is a slow crystalliser and its Tc moves further on nucleation than any other entry in this library, which is exactly why it is the standard demonstration of the effect."
   },
   {
     id: "pla", name: "Poly(lactic acid) (PLLA)", abbr: "PLA", cls: "thermoplastic",
@@ -129,10 +132,11 @@ window.THERMAL_LIBRARY = [
     id: "pp", name: "Polypropylene (isotactic)", abbr: "iPP", cls: "thermoplastic",
     note: "Isotactic polyolefin for closures, fibers, and living hinges; the alpha monoclinic form dominates in normal cooling.",
     tg: -10, dCp: 0.25, tm: 165, dHm: 100, dHm0: 207, tcc: null,
+    tc: 115,
     decompT: null, decompH: null,
     tga: { steps: [{ t: 460, f: 0.99, l: "random scission at tertiary carbons" }], charN2: 0.01, ashAir: 0, special: null },
     dma: { type: "semicrystalline", glassy: 3600000000, rubbery: 1400000000 },
-    conf: "high", src: "CORRECTED: Tg was listed as -1 C, which is not the Odian value. Odian Table 1-3 and this site's own polymer database both give iPP Tg = -10 C; DSC/DMA values span -20 to 0 C depending on crystallinity, heating rate, and whether the loss-modulus or tan-delta peak is used. dHm0 207 J/g (ATHAS/TA TN048); dHm 100 J/g = 48% crystallinity. Commercial iPP peak Tm 160-168 C, well below the 176-186 C equilibrium Tm quoted for perfect isotactic crystals. PP degrades ~20 C below PE in N2 because of the labile tertiary hydrogen."
+    conf: "high", src: "CORRECTED: Tg was listed as -1 C, which is not the Odian value. Odian Table 1-3 and this site's own polymer database both give iPP Tg = -10 C; DSC/DMA values span -20 to 0 C depending on crystallinity, heating rate, and whether the loss-modulus or tan-delta peak is used. dHm0 207 J/g (ATHAS/TA TN048); dHm 100 J/g = 48% crystallinity. Commercial iPP peak Tm 160-168 C, well below the 176-186 C equilibrium Tm quoted for perfect isotactic crystals. PP degrades ~20 C below PE in N2 because of the labile tertiary hydrogen. tc 115 C is the crystallisation peak on cooling at 10 K/min for a neat, non-nucleated resin, and the honest spread is wide: reported neat values run from about 110 to 123 C depending on tacticity, molar mass and residual catalyst, and beta-nucleating agents lift it a further 6 to 8 C. 115 C sits mid-range rather than being a single measurement. Supercooling is around 50 C, among the largest here."
   },
   {
     id: "ps", name: "Polystyrene (atactic)", abbr: "PS", cls: "thermoplastic",
