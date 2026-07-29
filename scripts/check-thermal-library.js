@@ -39,7 +39,7 @@ const INTERNAL_DMA_TYPES = new Set(["semicry"]);
 const VALID_TGA_SPECIAL = new Set(["metal-oxidation", "carbonate", "sublimes"]);
 
 const VALID_CLS = new Set([
-  "thermoplastic", "elastomer", "binder", "plasticizer", "additive", "copolymer"
+  "thermoplastic", "elastomer", "binder", "plasticizer", "additive", "copolymer", "biopolymer"
 ]);
 
 const VALID_CONF = new Set(["high", "medium", "low"]);

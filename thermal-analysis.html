@@ -32,7 +32,7 @@
 </script>
 <script src="theme.js"></script>
 <script src="nav.js?v=11" defer></script>
-<script src="thermal-library.js?v=7"></script>
+<script src="thermal-library.js?v=8"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
@@ -675,9 +675,10 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
 
   /* ======================= SHARED MATERIALS LIBRARY ======================= */
   var LIB = window.THERMAL_LIBRARY || [];
-  var CLS_ORDER = ["thermoplastic", "copolymer", "elastomer", "binder", "plasticizer", "additive"];
+  var CLS_ORDER = ["thermoplastic", "copolymer", "biopolymer", "elastomer", "binder", "plasticizer", "additive"];
   var CLS_LABEL = {
     thermoplastic: "Thermoplastics", copolymer: "Copolymers & block copolymers",
+    biopolymer: "Biopolymers",
     elastomer: "Elastomers & rubbers", binder: "Binders",
     plasticizer: "Plasticizers", additive: "Fillers & additives"
   };
