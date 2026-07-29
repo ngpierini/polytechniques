@@ -677,6 +677,411 @@ window.THERMAL_LIBRARY = [
     tga: { steps: [{ t: 90, f: 0.11, l: "loss of sorbed water; the sodium salt is strongly hygroscopic and a first scan is dominated by it" }, { t: 250, f: 0.49, l: "backbone breakdown: depurination, then phosphodiester and sugar-ring scission" }], charN2: 0.4, ashAir: 0.15, special: null },
     dma: { type: null, glassy: null, rubbery: null, na: "A hygroscopic powder, not a self-supporting bar; solid DNA is studied as a solvent-cast film or a surfactant complex, and no modulus for the neat material could be substantiated." },
     conf: "low", src: "LOW confidence. READ THIS BEFORE COMPARING IT WITH dna-ss: this entry carries the SAME TGA block as the single-stranded salmon-testes grade, deliberately, because no sourced solid-state difference between the two exists. Molecular weight and strandedness govern solution behaviour - duplex denaturation, hybridisation kinetics, viscosity - not the dehydration-then-decomposition shape of a hydrated sodium salt, and the one measured decomposition figure available (near 250 C, salmon-sperm DNA on a Perkin Elmer TGA-7) was itself measured on sperm-derived material. Do NOT read the identical curves as evidence that the two grades behave identically; read them as the library having no data fine enough to tell them apart. As with dna-ss, the 11 percent water step, the 49 percent decomposition step, the 0.40 char and the 0.15 air ash are REPRESENTATIVE for a hydrated sodium-salt biopolymer rather than measured on this material, and they move with water content, counter-ion and lot. Identity: sold as Deoxyribonucleic acid, low molecular weight, from salmon sperm, sodium salt; CAS 438545-06-3, which is the registry number PubChem indexes against salmon sperm specifically, as against the generic 9007-49-2 carried on the testes product. tg, tm, dHm and dHm0 are null for the same reasons given on dna-ss. If you run either grade on your own instrument, the two entries should stop being identical."
+  },
+  {
+    "id": "cellulose",
+    "name": "Cellulose (microcrystalline)",
+    "abbr": "Cellulose",
+    "cls": "biopolymer",
+    "note": "The most abundant organic polymer on Earth, and the parent of the cellulose esters. It cannot be melt processed at all: the dense hydrogen-bond network between chains means it decomposes before it softens, which is precisely why cellulose acetate butyrate exists and why CAB, not cellulose, is the one in this library with a Tg. Under nitrogen it gives a single sharp DTG peak, the cleanest of the three wood components.",
+    "tg": null,
+    "dCp": null,
+    "tm": null,
+    "dHm": null,
+    "dHm0": null,
+    "tcc": null,
+    "decompT": null,
+    "decompH": null,
+    "tga": {
+      "steps": [
+        {
+          "t": 80,
+          "f": 0.05,
+          "l": "sorbed moisture"
+        },
+        {
+          "t": 355,
+          "f": 0.85,
+          "l": "depolymerisation to levoglucosan and volatiles; a single sharp DTG peak in N2"
+        }
+      ],
+      "charN2": 0.1,
+      "ashAir": 0,
+      "special": null
+    },
+    "dma": {
+      "type": null,
+      "glassy": null,
+      "rubbery": null,
+      "na": "A powder or fibre, not a self-supporting moulded bar; these are cast or pressed into films rather than moulded, and no modulus for the neat material could be substantiated."
+    },
+    "conf": "medium",
+    "src": "Anchored on the Yang et al. study of hemicellulose, cellulose and lignin pyrolysis (Fuel 2007), the standard reference for the three components separately: cellulose loses essentially all its mass between 315 and 400 C with a low char. Independent TGA work at 10 K/min in N2 puts the DTG maximum at 350 to 370 C in nitrogen against 320 to 330 C in air, and reports char as 10 plus or minus 5 wt percent, so 355 C and 0.10 sit mid-range rather than being a single measurement. The 5 percent moisture step is representative: cellulose is hygroscopic and the figure depends on how the sample was conditioned. tg is NULL on purpose and this is a real result, not a gap - the glass transition of dry cellulose is reported anywhere from about 200 to 250 C, it is obscured by the onset of decomposition, and it cannot be measured cleanly on a conventional DSC, so no value is carried. tm is null because it has none: it decomposes first."
+  },
+  {
+    "id": "hemicellulose",
+    "name": "Hemicellulose (xylan)",
+    "abbr": "Xylan",
+    "cls": "biopolymer",
+    "note": "The branched, amorphous polysaccharide that fills the space between cellulose fibrils in a plant cell wall, taken here as xylan, the hardwood form. It is the least thermally stable of the three wood components and always the first to go, because its short branched chains have neither the crystallinity of cellulose nor the aromatic crosslinking of lignin to hold them together.",
+    "tg": null,
+    "dCp": null,
+    "tm": null,
+    "dHm": null,
+    "dHm0": null,
+    "tcc": null,
+    "decompT": null,
+    "decompH": null,
+    "tga": {
+      "steps": [
+        {
+          "t": 80,
+          "f": 0.06,
+          "l": "sorbed moisture"
+        },
+        {
+          "t": 270,
+          "f": 0.74,
+          "l": "scission of the branched amorphous backbone; the first of the three wood components to decompose"
+        }
+      ],
+      "charN2": 0.2,
+      "ashAir": 0,
+      "special": null
+    },
+    "dma": {
+      "type": null,
+      "glassy": null,
+      "rubbery": null,
+      "na": "A powder or fibre, not a self-supporting moulded bar; these are cast or pressed into films rather than moulded, and no modulus for the neat material could be substantiated."
+    },
+    "conf": "medium",
+    "src": "Yang et al. (Fuel 2007) put the bulk of hemicellulose mass loss between 220 and 315 C with roughly 20 percent solid residue, and TG-FTIR work on xylan describes a sharp mass-loss stage confined to 200 to 350 C. 270 C is the middle of that window. SIMPLIFICATION worth knowing: xylan actually decomposes in TWO resolvable steps, and the peak separation between them is reported as large, so the single step drawn here is a deliberate lumping of a two-peak DTG. It is drawn this way because no step split that would survive across xylan sources could be substantiated, and inventing one would be worse. Real hemicellulose is also not one substance - xylan, glucomannan and arabinoxylan all sit under the name and differ thermally - so treat this as the hardwood xylan case rather than as hemicellulose in general."
+  },
+  {
+    "id": "lignin",
+    "name": "Lignin (kraft)",
+    "abbr": "Lignin",
+    "cls": "biopolymer",
+    "note": "The crosslinked aromatic network that stiffens wood and the only large-volume aromatic polymer nature makes. Thermally it is the opposite of cellulose: instead of a sharp decomposition it degrades slowly across an enormous window, from about 180 C to 800 C, and leaves more char than anything else here. Its glass transition genuinely depends on how it was extracted, which is unusual enough to be worth a look on its own.",
+    "tg": 144,
+    "dCp": null,
+    "tm": null,
+    "dHm": null,
+    "dHm0": null,
+    "tcc": null,
+    "decompT": null,
+    "decompH": null,
+    "tga": {
+      "steps": [
+        {
+          "t": 80,
+          "f": 0.05,
+          "l": "sorbed moisture"
+        },
+        {
+          "t": 400,
+          "f": 0.55,
+          "l": "slow breakdown of the crosslinked aromatic network; degradation spans roughly 180 to 800 C with no sharp DTG peak"
+        }
+      ],
+      "charN2": 0.4,
+      "ashAir": 0.02,
+      "special": null
+    },
+    "conf": "medium",
+    "src": "tg 144 C is the KRAFT value from Tejado et al. (2007), against 100 C for organosolv lignin from the same work - the isolation route, not the botanical source alone, sets the number. The full reported span across lignins is 89.9 C for aspen to 180.6 C for mixed hardwood, so quote the grade with any Tg or the number means little. This is measurable enough to be standardised: ISO 22206:2024 specifies kraft lignin Tg by DSC. TGA: Yang et al. (Fuel 2007) report lignin degrading over a very wide range with about 40 to 45 wt percent solid residue, the highest of the three wood components, and the absence of a sharp DTG peak is the characteristic feature rather than a limitation of the data. The single step drawn at 400 C is therefore a stand-in for a continuous process, and the DTG trace it produces is sharper than reality - this is the entry where the chart flatters the material most. ashAir 0.02 covers residual inorganics from the pulping liquor, which vary by mill.",
+    "dma": {
+      "type": null,
+      "glassy": null,
+      "rubbery": null,
+      "na": "A powder or fibre, not a self-supporting moulded bar; these are cast or pressed into films rather than moulded, and no modulus for the neat material could be substantiated."
+    }
+  },
+  {
+    "id": "chitosan",
+    "name": "Chitosan",
+    "abbr": "Chitosan",
+    "cls": "biopolymer",
+    "note": "Deacetylated chitin, and the only common polysaccharide that carries a positive charge, which is what makes it a mucoadhesive and an antimicrobial. Thermally it is a good illustration that a polysaccharide is a composition rather than a compound: the degree of deacetylation shifts its decomposition, and the more deacetylated it is, the LESS stable it becomes.",
+    "tg": 145,
+    "dCp": null,
+    "tm": null,
+    "dHm": null,
+    "dHm0": null,
+    "tcc": null,
+    "decompT": null,
+    "decompH": null,
+    "tga": {
+      "steps": [
+        {
+          "t": 80,
+          "f": 0.08,
+          "l": "sorbed moisture"
+        },
+        {
+          "t": 280,
+          "f": 0.62,
+          "l": "random scission of glycosidic bonds and deamination of the glucosamine units"
+        }
+      ],
+      "charN2": 0.3,
+      "ashAir": 0.01,
+      "special": null
+    },
+    "dma": {
+      "type": null,
+      "glassy": null,
+      "rubbery": null,
+      "na": "A powder or fibre, not a self-supporting moulded bar; these are cast or pressed into films rather than moulded, and no modulus for the neat material could be substantiated."
+    },
+    "conf": "medium",
+    "src": "tg 145 C is the midpoint of the 140 to 150 C band reported by a study that measured it four independent ways - DMTA, DSC, thermally stimulated current and dilatometry - which is a stronger basis than a single technique. That work found no systematic effect of deacetylation degree on Tg, which is worth noting because deacetylation clearly does move the decomposition. TGA: a chitosan of 83 percent deacetylation is reported decomposing at 280 C, and the peak shifts DOWN as deacetylation rises, so the acetylated side chains stabilise the chain they sit on. Chitin, the fully acetylated parent, is correspondingly more stable and is not carried here because no matched-conditions figure for it could be substantiated. The moisture step and the 0.30 char are representative for a hygroscopic polysaccharide rather than measured, and both move with deacetylation degree and residual ash."
+  },
+  {
+    "id": "starch",
+    "name": "Starch",
+    "abbr": "Starch",
+    "cls": "biopolymer",
+    "note": "The plant storage glucan, and the cheapest biopolymer there is. Neat starch does not melt - it decomposes - and the thing everyone actually cares about, gelatinisation, is a water-mediated order-disorder transition that only exists in the presence of water and is therefore not a property of the dry solid at all. Thermoplastic starch only behaves like a plastic because water and glycerol plasticise it into behaving that way.",
+    "tg": null,
+    "dCp": null,
+    "tm": null,
+    "dHm": null,
+    "dHm0": null,
+    "tcc": null,
+    "decompT": null,
+    "decompH": null,
+    "tga": {
+      "steps": [
+        {
+          "t": 90,
+          "f": 0.1,
+          "l": "sorbed moisture; starch is markedly hygroscopic"
+        },
+        {
+          "t": 310,
+          "f": 0.75,
+          "l": "dehydration then depolymerisation of the glucan chains"
+        }
+      ],
+      "charN2": 0.15,
+      "ashAir": 0.01,
+      "special": null
+    },
+    "dma": {
+      "type": null,
+      "glassy": null,
+      "rubbery": null,
+      "na": "A powder or fibre, not a self-supporting moulded bar; these are cast or pressed into films rather than moulded, and no modulus for the neat material could be substantiated."
+    },
+    "conf": "low",
+    "src": "LOW confidence: the shape is right, the numbers are representative. Starch decomposition under inert atmosphere has been characterised by TG-DTG-DSC from 25 to 1000 C, but no single citable set of step fractions at 10 K/min for a neat native starch could be pinned down, and the values here were chosen to place the events correctly and close the mass balance. They will move with botanical source (maize, potato and wheat differ), with amylose to amylopectin ratio and above all with moisture, which for starch is large and storage dependent. tg is NULL and this is deliberate rather than missing: dry starch has a reported glass transition well above 200 C that is obscured by decomposition, and every practically useful Tg quoted for starch is for a plasticised system, where it depends on water and glycerol content and is therefore a property of the formulation and not of starch. See dextran for the same effect actually quantified."
+  },
+  {
+    "id": "gelatin",
+    "name": "Gelatin",
+    "abbr": "Gelatin",
+    "cls": "biopolymer",
+    "note": "Denatured, partially hydrolysed collagen. Its two headline temperatures both belong to the hydrated state and neither is a melt: the sol-gel transition of a gelatin gel is a partial recovery of the collagen triple helix, and the denaturation near 110 C is the loss of it. On a dry sample the DSC shows a broad dehydration endotherm and then decomposition, the same pattern as the DNA entries here and for the same reason.",
+    "tg": 85,
+    "dCp": null,
+    "tm": null,
+    "dHm": null,
+    "dHm0": null,
+    "tcc": null,
+    "decompT": null,
+    "decompH": null,
+    "tga": {
+      "steps": [
+        {
+          "t": 80,
+          "f": 0.1,
+          "l": "bound and sorbed water"
+        },
+        {
+          "t": 330,
+          "f": 0.65,
+          "l": "peptide bond scission and breakdown of the protein backbone"
+        }
+      ],
+      "charN2": 0.25,
+      "ashAir": 0.02,
+      "special": null
+    },
+    "dma": {
+      "type": null,
+      "glassy": null,
+      "rubbery": null,
+      "na": "A powder or fibre, not a self-supporting moulded bar; these are cast or pressed into films rather than moulded, and no modulus for the neat material could be substantiated."
+    },
+    "conf": "medium",
+    "src": "tg 85 C is the midpoint of the 80 to 90 C reported for native gelatin, with a denaturation temperature of 110 to 115 C quoted alongside it; both are strongly hydration dependent and neither is meaningful without stating water content. TGA follows the three-stage pattern reported for pure gelatin: water loss between 25 and 100 C, decomposition between 250 and 450 C, and combustion of the residue between 450 and 750 C in air. The two steps drawn here cover the first two stages, and charN2 0.25 is the residue left going into that third stage rather than a final ash. Blend work puts the main protein decomposition at 308 to 331 C, consistent with the 330 C used. Step fractions are representative; ash varies with the source hide or bone and with residual salts."
+  },
+  {
+    "id": "silk-fibroin",
+    "name": "Silk fibroin (Bombyx mori)",
+    "abbr": "Silk fibroin",
+    "cls": "biopolymer",
+    "note": "The structural protein of silk, once the sericin gum is removed. Its thermal behaviour is set by secondary structure rather than by chemistry: the beta-sheet crystalline domains are what resist heat, and a silk I film converted to silk II by methanol or water annealing becomes markedly more stable without any change in composition. It is the closest thing here to a semicrystalline polymer, though it still decomposes rather than melting.",
+    "tg": 178,
+    "dCp": null,
+    "tm": null,
+    "dHm": null,
+    "dHm0": null,
+    "tcc": null,
+    "decompT": null,
+    "decompH": null,
+    "tga": {
+      "steps": [
+        {
+          "t": 80,
+          "f": 0.06,
+          "l": "sorbed moisture"
+        },
+        {
+          "t": 300,
+          "f": 0.59,
+          "l": "breakdown of the beta-sheet domains and peptide backbone"
+        }
+      ],
+      "charN2": 0.35,
+      "ashAir": 0.02,
+      "special": null
+    },
+    "dma": {
+      "type": null,
+      "glassy": null,
+      "rubbery": null,
+      "na": "A powder or fibre, not a self-supporting moulded bar; these are cast or pressed into films rather than moulded, and no modulus for the neat material could be substantiated."
+    },
+    "conf": "medium",
+    "src": "tg 178 C is the value quoted for typical pure silk fibroin. Note that DMTA on native fibres resolves more than one transition, so a single Tg is a simplification of a structurally heterogeneous material. Initial decomposition temperatures across silk fibroin samples are reported from 260.6 to 286.4 C with no clear degradation before 200 C, and the 300 C used here is the peak rather than the onset, which is why it sits above that band. The 0.35 char is representative for a beta-sheet protein rather than measured. The single largest uncontrolled variable is secondary structure: silk I and silk II differ in stability, so quote the treatment along with any number."
+  },
+  {
+    "id": "alginate-na",
+    "name": "Sodium alginate",
+    "abbr": "Na alginate",
+    "cls": "biopolymer",
+    "note": "The algal polysaccharide behind calcium-crosslinked hydrogel beads and wound dressings. Thermally it is the most informative entry in this group, because all three of its steps have been separately attributed: it dehydrates, then the glycosidic bonds break to a carbonaceous residue, and then the sodium counter-ion converts that residue to sodium carbonate. The last of those is a chemical conversion of the residue rather than a loss of polymer, which is why it leaves substantial ash even in air.",
+    "tg": null,
+    "dCp": null,
+    "tm": null,
+    "dHm": null,
+    "dHm0": null,
+    "tcc": null,
+    "decompT": null,
+    "decompH": null,
+    "tga": {
+      "steps": [
+        {
+          "t": 103,
+          "f": 0.12,
+          "l": "dehydration"
+        },
+        {
+          "t": 212,
+          "f": 0.43,
+          "l": "destruction of glycosidic bonds, leaving a carbonaceous residue"
+        },
+        {
+          "t": 426,
+          "f": 0.15,
+          "l": "conversion of the residue to sodium carbonate"
+        }
+      ],
+      "charN2": 0.3,
+      "ashAir": 0.25,
+      "special": null
+    },
+    "dma": {
+      "type": null,
+      "glassy": null,
+      "rubbery": null,
+      "na": "A powder or fibre, not a self-supporting moulded bar; these are cast or pressed into films rather than moulded, and no modulus for the neat material could be substantiated."
+    },
+    "conf": "medium",
+    "src": "The three step TEMPERATURES are individually sourced and individually attributed, which is unusual for this group: 103 C dehydration, 212 C destruction of the glycosidic bonds, and 426 C conversion of alginate into Na2CO3. The step FRACTIONS and the residues are representative rather than measured and were set to close the mass balance. ashAir is high at 0.25 because the sodium ends up as carbonate rather than burning away - the same reason the N2 char is high - so a residue reading on this material is inorganic and should not be read as carbon char. tg is NULL: a glass transition has been observed in the water-sodium alginate system, but only over a defined water-content range and together with cold crystallisation and melting OF THE WATER, so it is a property of the hydrated system rather than of the dry polymer. Real behaviour also moves with the mannuronic to guluronic ratio, which varies by seaweed species."
+  },
+  {
+    "id": "dextran",
+    "name": "Dextran",
+    "abbr": "Dextran",
+    "cls": "biopolymer",
+    "note": "A bacterial glucan, and the clearest demonstration in this library that a glass transition is a property of a system rather than of a substance. Its Tg moves 70 C for a 6 percent change in water content, which is why every Tg quoted for a hygroscopic biopolymer is meaningless unless the moisture is quoted with it. Worth loading next to starch, which has the same problem but without the numbers to show it.",
+    "tg": 95,
+    "dCp": null,
+    "tm": null,
+    "dHm": null,
+    "dHm0": null,
+    "tcc": null,
+    "decompT": null,
+    "decompH": null,
+    "tga": {
+      "steps": [
+        {
+          "t": 80,
+          "f": 0.07,
+          "l": "sorbed moisture"
+        },
+        {
+          "t": 300,
+          "f": 0.78,
+          "l": "scission of the glucan backbone"
+        }
+      ],
+      "charN2": 0.15,
+      "ashAir": 0.01,
+      "special": null
+    },
+    "dma": {
+      "type": null,
+      "glassy": null,
+      "rubbery": null,
+      "na": "A powder or fibre, not a self-supporting moulded bar; these are cast or pressed into films rather than moulded, and no modulus for the neat material could be substantiated."
+    },
+    "conf": "medium",
+    "src": "tg 95 C is quoted WITH ITS WATER CONTENT and is meaningless without it: DSC gives 95 C plus or minus 1 at 6.6 percent water and 25 C plus or minus 1 at 12.9 percent water. That is a 70 C shift for a 6.3 percent moisture change, and it is the reason this entry is here. The value carried in the tg field is the 6.6 percent water case; a sample equilibrated at ambient humidity will read far lower. TGA step fractions and char are representative rather than measured. Molar mass matters less than moisture here, but dextran is sold across a very wide molar mass range and the decomposition onset drifts with it."
+  },
+  {
+    "id": "zein",
+    "name": "Zein (maize prolamin)",
+    "abbr": "Zein",
+    "cls": "biopolymer",
+    "note": "The alcohol-soluble storage protein of maize and a by-product of corn wet milling, used for coatings and films where a water-resistant edible barrier is wanted. It is the most thermoplastic-like protein here - it can be plasticised and formed - but it still decomposes rather than melting.",
+    "tg": null,
+    "dCp": null,
+    "tm": null,
+    "dHm": null,
+    "dHm0": null,
+    "tcc": null,
+    "decompT": null,
+    "decompH": null,
+    "tga": {
+      "steps": [
+        {
+          "t": 80,
+          "f": 0.06,
+          "l": "sorbed moisture"
+        },
+        {
+          "t": 320,
+          "f": 0.64,
+          "l": "protein backbone degradation"
+        }
+      ],
+      "charN2": 0.3,
+      "ashAir": 0.02,
+      "special": null
+    },
+    "dma": {
+      "type": null,
+      "glassy": null,
+      "rubbery": null,
+      "na": "A powder or fibre, not a self-supporting moulded bar; these are cast or pressed into films rather than moulded, and no modulus for the neat material could be substantiated."
+    },
+    "conf": "low",
+    "src": "LOW confidence. The decomposition temperature is the best supported figure: gelatin/zein blend work puts the main decomposition stage at 308 to 331 C with 31 to 50 percent mass loss, and reports that the zein-rich and gelatin-rich domains degrade at slightly different temperatures within that window - so 320 C here is taken from BLEND data rather than from neat zein, which is a real weakness. tg is NULL: figures near 165 C circulate for dry zein but none could be substantiated in this pass, and zein is almost always studied plasticised, where the number belongs to the formulation. Step fractions and char are representative. Replace all of this if you run neat zein yourself."
   }
 ];
 

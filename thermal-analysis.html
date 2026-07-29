@@ -32,7 +32,7 @@
 </script>
 <script src="theme.js"></script>
 <script src="nav.js?v=11" defer></script>
-<script src="thermal-library.js?v=9"></script>
+<script src="thermal-library.js?v=11"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
@@ -520,6 +520,16 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
   var EXPORTS = {};
   function registerExport(key, payload) { EXPORTS[key] = payload; }
 
+  // The read-out is read from the DOM at download time rather than captured
+  // at render time, so it cannot describe a state the page has moved on from.
+  function readoutOf(p) {
+    if (p.readoutId) {
+      var el = document.getElementById(p.readoutId);
+      if (el) return el.textContent;
+    }
+    return p.readout || "";
+  }
+
   function csvEscape(v) {
     var s = String(v == null ? "" : v);
     return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
@@ -564,7 +574,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
   function copyReadout(key, btn) {
     var p = EXPORTS[key];
     if (!p) return;
-    var text = p.title + "\n\n" + (p.readout || "") + "\n\n" +
+    var text = p.title + "\n\n" + readoutOf(p) + "\n\n" +
       "Modelled from the PolyTechniques reference library, not measured data.\ngetpolytechniques.com";
     // navigator.clipboard is absent on plain http and can reject when the page
     // is not focused - both of which happen on the locked-down lab networks
@@ -1256,6 +1266,16 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       }
       $("dsc-read").innerHTML = msg;
 
+      registerExport("dsc", {
+        title: "DSC blend - " + names.join(" + ") + " - " + (cooling ? "cooling scan" : second ? "second heat" : "first heat") + " at " + state.rate + " K/min",
+        meta: ["Rate: " + state.rate + " K/min", "Sign convention: " + (state.endo === "down" ? "endo down" : "endo up"),
+               "Ideal non-mixing baseline: each component keeps its own transitions, scaled by weight fraction.",
+               "Heat flow is on an ARBITRARY normalised scale."],
+        columns: ["Temperature (C)", "Heat flow (arb.)"],
+        rows: samplePts(curveBase, lo, hi, 2).map(function (p) { return [p[0].toFixed(1), (state.endo === "down" ? p[1] : -p[1]).toFixed(5)]; }),
+        readoutId: "dsc-read"
+      });
+
       var rough = comps.filter(function (c) { return c.m.conf === "low"; });
       var vary = comps.filter(function (c) { return c.m.conf === "medium"; });
       var notes = [];
@@ -1367,7 +1387,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
                  "Heat flow is on an ARBITRARY normalised scale - the shape and the transition temperatures are the content, not the y values."],
           columns: ["Temperature (C)", "Heat flow (arb.)"],
           rows: samplePts(cLive, lo, hi, 2).map(function (p) { return [p[0].toFixed(1), (state.endo === "down" ? p[1] : -p[1]).toFixed(5)]; }),
-          readout: $("dsc-read").textContent
+          readoutId: "dsc-read"
         });
         $("dsc-matnote").innerHTML = matNote(m);
         return;
@@ -1402,7 +1422,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
                "Heat flow is on an ARBITRARY normalised scale - the shape and the transition temperatures are the content, not the y values."],
         columns: ["Temperature (C)", "Heat flow (arb.)"],
         rows: samplePts(cLive, lo, hi, 2).map(function (p) { return [p[0].toFixed(1), (state.endo === "down" ? p[1] : -p[1]).toFixed(5)]; }),
-        readout: $("dsc-read").textContent
+        readoutId: "dsc-read"
       });
       $("dsc-matnote").innerHTML = matNote(m);
 
@@ -1604,6 +1624,14 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
         msg = "<strong>" + names.join(" + ") + ".</strong> Mass is strictly additive, so this superposition is exact for a mixture whose components do not interact: each contributes its own steps at its own temperatures, scaled by weight fraction, and the residues simply add. That makes it the baseline a real compositional run is measured against, and it is the same arithmetic behind the two formulation presets. A real scan that loses mass at a temperature none of the components does on its own, or leaves a different residue, means the components are reacting with each other.";
         $("tga-stats").innerHTML = tiles;
         $("tga-read").innerHTML = msg;
+        registerExport("tga", {
+          title: "TGA blend - " + names.join(" + ") + " - " + (state.atm === "n2" ? "nitrogen" : state.atm === "air" ? "air" : "N2 then air at 600 C"),
+          meta: ["Atmosphere: " + state.atm, "Mass loss is strictly additive, so this superposition is exact for non-interacting components.",
+                 "Mass is a percent of the starting mass; DTG is the negative derivative in %/degC."],
+          columns: ["Temperature (C)", "Mass (%)", "DTG (%/C)"],
+          rows: csvRows,
+          readoutId: "tga-read"
+        });
         var lowT = comps.filter(function (c) { return c.m.conf !== "high"; });
         $("tga-matnote").innerHTML = lowT.length
           ? ("Values for " + lowT.map(function (c) { return esc(c.m.abbr || c.m.name); }).join(", ") + " vary by grade, so treat the combined curve as indicative.")
@@ -1650,7 +1678,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
         meta: ["Atmosphere: " + state.atm, "Mass is a percent of the starting mass; DTG is the negative derivative in %/degC."],
         columns: ["Temperature (C)", "Mass (%)", "DTG (%/C)"],
         rows: csvRows,
-        readout: $("tga-read").textContent
+        readoutId: "tga-read"
       });
     }
 
@@ -1839,6 +1867,21 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       msg += "Each phase keeps its own glass transition, so an <strong>immiscible</strong> blend shows a separate tan δ peak per component (" + tgList.join(", ") + "). That is the standard miscibility test: two peaks means two phases. If the components were genuinely <strong>miscible</strong> you would instead see a single peak at an intermediate temperature, which the <a href=\"tg-predictor.html\">Tg Predictor</a> estimates with the Fox equation. ";
       msg += "Volume fraction is approximated by weight fraction here, since the library carries no densities.";
       $("dma-read").innerHTML = msg;
+      registerExport("dma", {
+        title: "DMA blend - " + names.join(" + ") + " at " + Math.pow(10, state.logf).toFixed(2) + " Hz",
+        meta: ["Frequency: " + Math.pow(10, state.logf).toFixed(2) + " Hz",
+               "Stiffness is NOT additive: these are the Voigt (parallel) upper and Reuss (series) lower bounds, not a predicted curve.",
+               "Volume fraction is approximated by weight fraction; the library carries no densities."],
+        columns: ["Temperature (C)", "E-prime Voigt upper (Pa)", "E-prime Reuss lower (Pa)"],
+        rows: (function () {
+          var out = [], t;
+          for (t = lo; t <= hi + 0.0001; t += 2) {
+            out.push([t.toFixed(1), Math.pow(10, lgV(t)).toExponential(4), Math.pow(10, lgR(t)).toExponential(4)]);
+          }
+          return out;
+        })(),
+        readoutId: "dma-read"
+      });
       var lowD = parts.filter(function (p) { return p.m.conf !== "high"; });
       $("dma-matnote").innerHTML = lowD.length
         ? ("Values for " + lowD.map(function (p) { return esc(p.m.abbr || p.m.name); }).join(", ") + " vary by grade, so treat the band as indicative.")
@@ -1946,7 +1989,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
                "Tg markers (C): E' onset " + Math.round(d.tgOnset) + ", E\" peak " + Math.round(tEpp) + ", tan delta peak " + Math.round(tTand)],
         columns: ["Temperature (C)", "E' storage (Pa)", "E\" loss (Pa)", "tan delta"],
         rows: exRows,
-        readout: $("dma-read").textContent
+        readoutId: "dma-read"
       });
     }
 
