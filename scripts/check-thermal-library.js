@@ -82,7 +82,7 @@ function checkEntry(e, idx, errors, warnings) {
 
   // ---- scalar temperatures and enthalpies ----
   const tMax = tMaxFor(e.cls);
-  ["tg", "tg2", "tm", "tcc", "tc", "transT", "decompT"].forEach(function (k) {
+  ["tg", "tg2", "tm", "tcc", "tc", "transT", "decompT", "dehydT"].forEach(function (k) {
     if (!present(e[k])) return;
     if (!isNum(e[k])) { errors.push(where + ": \"" + k + "\" must be a number or null"); return; }
     if (e[k] < T_MIN || e[k] > tMax) {
@@ -90,7 +90,7 @@ function checkEntry(e, idx, errors, warnings) {
         " for cls \"" + e.cls + "\" - a Kelvin value or a transposed digit?");
     }
   });
-  ["dCp", "dHm", "dHm0", "transH", "decompH"].forEach(function (k) {
+  ["dCp", "dHm", "dHm0", "transH", "decompH", "dehydH"].forEach(function (k) {
     if (!present(e[k])) return;
     if (!isNum(e[k]) || e[k] < 0) errors.push(where + ": \"" + k + "\" must be a non-negative number or null");
   });
@@ -142,6 +142,31 @@ function checkEntry(e, idx, errors, warnings) {
   if (present(e.decompH) && !present(e.decompT)) {
     errors.push(where + ": decompH is set but decompT is null - an enthalpy with no exotherm to attach it to");
   }
+  // Sorbed water leaves below about 150 C. A "dehydration" filed higher than
+  // that is usually a CHEMICAL elimination - PVA losing water to a polyene near
+  // 320 C, PAA forming anhydride near 290 C - which is a decomposition step and
+  // does not belong in this field.
+  if (present(e.dehydH) && !present(e.dehydT)) {
+    errors.push(where + ": dehydH is set but dehydT is null - an enthalpy with no endotherm to attach it to");
+  }
+  if (present(e.dehydT)) {
+    if (e.dehydT < 30 || e.dehydT > 150) {
+      errors.push(where + ": dehydT " + e.dehydT + " °C is outside 30..150 - sorbed water leaves in that window, and " +
+        "a higher figure is a chemical elimination belonging in the TGA steps, not a moisture endotherm");
+    }
+    // The DSC endotherm and the TGA moisture step are the SAME event. If the
+    // two charts disagree about when it happens, one of them is wrong.
+    const s0 = Array.isArray(e.tga && e.tga.steps) && e.tga.steps.length ? e.tga.steps[0] : null;
+    if (!s0 || !/water|moistur|dehydrat/i.test(s0.l || "")) {
+      errors.push(where + ": dehydT is set but the first TGA step is not a water loss - " +
+        "a DSC dehydration endotherm with no corresponding mass loss is not physical");
+    } else if (isNum(s0.t) && Math.abs(s0.t - e.dehydT) > 25) {
+      errors.push(where + ": dehydT " + e.dehydT + " °C disagrees with the TGA water step at " + s0.t +
+        " °C by more than 25 °C - the endotherm and the mass loss are the same event");
+    }
+  }
+
+
   // A solid-solid transition happens in the crystal, so it has to sit below the
   // melt that destroys it (PTFE's 19 C triclinic-to-hexagonal against Tm 327).
   if (present(e.transH) && !present(e.transT)) {
@@ -258,7 +283,10 @@ function checkEntry(e, idx, errors, warnings) {
   // can draw is invisible everywhere and almost certainly a mistake; one that
   // is missing from a single chart is usually deliberate (a filler powder has
   // no DMA) so it is reported as a warning, not a failure.
-  const dscOk = present(e.tg) || present(e.tm) || present(e.decompT);
+  // Mirrors dscOk() in thermal-analysis.html. This drifted once already - the
+  // renderer gained dehydT and this copy did not, so entries that render fine
+  // were still reported as having no DSC trace. If you touch one, touch both.
+  const dscOk = present(e.tg) || present(e.tm) || present(e.decompT) || present(e.dehydT);
   const tgaOk = (Array.isArray(steps) && steps.length > 0) || e.tga.special === "metal-oxidation";
   const dmaOk = !!(e.dma && present(e.dma.type) && present(e.dma.glassy) && present(e.tg));
   if (!dscOk && !tgaOk && !dmaOk) {

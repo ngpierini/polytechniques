@@ -32,7 +32,7 @@
 </script>
 <script src="theme.js"></script>
 <script src="nav.js?v=11" defer></script>
-<script src="thermal-library.js?v=11"></script>
+<script src="thermal-library.js?v=12"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
@@ -916,7 +916,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
     // 500 K is about 25 C per decade, an order of magnitude above the ~2 C/decade
     // that applies to the glass transition.
     var DECOMP_RATE_SHIFT = 25;
-    function dscOk(m) { return m.tg !== null || m.tm !== null || m.decompT !== null; }
+    function dscOk(m) { return m.tg !== null || m.tm !== null || m.decompT !== null || m.dehydT != null; }
 
 
     var state = {
@@ -971,6 +971,14 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       // at nominal height and flagged, the same convention used for peaks whose
       // enthalpy is unpublished, rather than inventing a dCp.
       if (m.tg2 != null) steps.push({ T: m.tg2 + 2 * dec, w: 20, h: (m.dCp || 0.3) * 0.45, second: true, modelled: true });
+      // Sorbed water leaving is the largest thing on the first scan of a
+      // hygroscopic material, and it is why a Tg quoted without a moisture
+      // content means little. It does not come back: on the second heat the
+      // sample is dry, so the peak is drawn only on the first.
+      if (m.dehydT != null && !second) {
+        peaks.push({ T: m.dehydT + 2 * dec, w: 34, J: (m.dehydH != null ? m.dehydH : 120), dir: -1,
+                     label: "dehydration", modelled: m.dehydH == null });
+      }
       if (m.tcc !== null) {
         // A controlled second heat has already crystallised the sample, so the
         // cold-crystallisation exotherm largely disappears.
@@ -1393,6 +1401,8 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
         return;
       }
       {
+        if (m.dehydT != null && !second) tiles += statTile("Dehydration", Math.round(m.dehydT) + " °C",
+          m.dehydH != null ? "≈ " + m.dehydH + " J/g, endothermic" : "first heat only, height not to scale");
         if (m.tg !== null) tiles += statTile("Tg", Math.round(m.tg + 2 * Math.log10(state.rate / 10)) + " °C", m.dCp ? "ΔCp ≈ " + m.dCp + " J/(g·K)" : "");
         if (m.tg2 != null) tiles += statTile("Tg, 2nd phase", Math.round(m.tg2 + 2 * Math.log10(state.rate / 10)) + " °C", "step height not to scale");
         if (m.tcc !== null) tiles += statTile("Cold cryst. Tcc", Math.round(m.tcc) + " °C", "quenched sample");
@@ -1407,6 +1417,9 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       var msg = "<strong>" + esc(libLabel(m)) + ".</strong> ";
       {
         var bits = [];
+        if (m.dehydT != null) bits.push(second
+          ? "no dehydration peak, because the first heat already drove the water off"
+          : "a broad dehydration endotherm near " + Math.round(m.dehydT) + " °C");
         if (m.tg !== null) bits.push("a glass transition at " + Math.round(m.tg) + " °C");
         if (m.tg2 != null) bits.push("a second, phase-separated glass transition at " + Math.round(m.tg2) + " °C");
         if (m.tcc !== null) bits.push("cold crystallisation near " + Math.round(m.tcc) + " °C");
