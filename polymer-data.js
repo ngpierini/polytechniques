@@ -1019,6 +1019,13 @@ window.POLYMER_DB = [
     type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(ethylene oxide)"],
     monomer: "PEG-functional norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "polyether", "water-soluble", "drug delivery", "biomedical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S1", el: "*" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "O" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: 19, el: "C" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 2 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 3, order: 1 }, { a: 5, b: "S1", order: 1 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 7, order: 1 }, { a: 8, b: 11, order: 2 }, { a: 10, b: 12, order: 2 }, { a: 9, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }],
+    repeats: [
+      { ends: ["S0", "S1"], label: "m", role: "backbone" },
+      { unit: [16, 17, 18], cuts: [[15, 16], [18, 19]], label: "n", role: "sidechain" }
+    ],
     note: "The workhorse bottlebrush, and the reason ring-opening metathesis is the default route to this architecture. A PEG chain is capped with a norbornene and that macromonomer is polymerised through its strained ring by a fast-initiating Grubbs catalyst, so every backbone repeat carries a side chain by construction rather than by chance. Grafting-through guarantees the grafting density instead of hoping for it, which is why it dominates despite the macromonomer being the expensive part. The crowded PEG corona forces the backbone to extend, so the molecule behaves as a soft cylinder rather than a coil, and a drug attached to the backbone sits shielded inside a stealth shell."
   },
   {
@@ -1026,6 +1033,13 @@ window.POLYMER_DB = [
     type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(lactide)"],
     monomer: "polylactide-functional norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "polyester", "biodegradable", "self-assembly", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S1", el: "*" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "O" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: 16, el: "C" }, { id: 17, el: "O" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "O" }, { id: 21, el: "C" }, { id: 22, el: "O" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "O" }, { id: 26, el: "H" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 2 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 3, order: 1 }, { a: 5, b: "S1", order: 1 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 7, order: 1 }, { a: 8, b: 11, order: 2 }, { a: 10, b: 12, order: 2 }, { a: 9, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 16, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 18, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 21, b: 23, order: 1 }, { a: 23, b: 24, order: 1 }, { a: 23, b: 25, order: 1 }, { a: 25, b: 26, order: 1 }],
+    repeats: [
+      { ends: ["S0", "S1"], label: "m", role: "backbone" },
+      { unit: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25], cuts: [[15, 16], [25, 26]], label: "n", role: "sidechain" }
+    ],
     note: "The degradable bottlebrush, and the one that makes the architecture visible to the eye. Bottlebrush block copolymers assemble into lamellae with periods of hundreds of nanometres against the tens a linear block copolymer manages, because the crowded side chains stretch the backbone and there are no entanglements to slow the ordering. Those periods fall in the range of visible wavelengths, so the films are structurally coloured photonic crystals whose reflected colour is set by molar mass alone. The polylactide side chains then hydrolyse, which a polystyrene brush will not."
   },
   {
@@ -1033,6 +1047,13 @@ window.POLYMER_DB = [
     type: "copolymer", arch: "bottlebrush", components: ["Poly(2-hydroxyethyl methacrylate)", "Poly(methyl methacrylate)"],
     monomer: "poly(2-(2-bromoisobutyryloxy)ethyl methacrylate) macroinitiator, then grafted monomer", cls: "Bottlebrush copolymer (ATRP grafting-from)", cas: null,
     tags: ["copolymer", "bottlebrush", "acrylic", "methacrylate", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "O" }, { id: 20, el: "O" }, { id: 21, el: "C" }, { id: 22, el: "Br" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 10, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 12, b: 14, order: 1 }, { a: 12, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 16, b: 18, order: 1 }, { a: 18, b: 19, order: 2 }, { a: 18, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 16, b: 22, order: 1 }],
+    repeats: [
+      { ends: ["S0", "S1"], label: "m", role: "backbone" },
+      { unit: [15, 16, 17, 18, 19, 20, 21], cuts: [[12, 15], [16, 22]], label: "n", role: "sidechain" }
+    ],
     note: "The other route, and the one that inverts the trade-off. Rather than polymerising a pre-made side chain, a backbone is built carrying an initiator on every repeat - typically by esterifying poly(2-hydroxyethyl methacrylate) with a bromoisobutyryl group - and the side chains are grown outward by atom transfer radical polymerisation. The backbone can be made very long, which grafting-through struggles with, but the side chains grow crowded together where radicals sit close, so termination between neighbours becomes the limiting problem and conversion is deliberately kept low. Grafting-through buys certainty about grafting density; grafting-from buys backbone length. Neither gives both."
   },
   {
@@ -1040,6 +1061,13 @@ window.POLYMER_DB = [
     type: "copolymer", arch: "bottlebrush", components: ["Poly(dimethylsiloxane)", "Poly(methyl methacrylate)"],
     monomer: "PDMS methacrylate macromonomer, crosslinked", cls: "Bottlebrush network (elastomer)", cas: null,
     tags: ["copolymer", "bottlebrush", "elastomer", "silicone", "biomedical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "Si" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: 14, el: "Si" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 10, b: 12, order: 1 }, { a: 10, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 14, b: 16, order: 1 }, { a: 14, b: 17, order: 1 }],
+    repeats: [
+      { ends: ["S0", "S1"], label: "m", role: "backbone" },
+      { unit: [10, 11, 12, 13], cuts: [[9, 10], [13, 14]], label: "n", role: "sidechain" }
+    ],
     note: "A way to make a solid as soft as tissue with no solvent in it. An ordinary elastomer cannot be softened much below about 100 kPa, because softening means lengthening the strands between crosslinks and entanglements then take over. Grafting dense side chains onto those strands dilutes the entanglements from the inside: the side chains hold neighbouring backbones apart, and the network reaches a few kPa while staying completely dry. Conventional gels reach that softness only by holding solvent, which evaporates or leaches out. These match the stiffness of brain and fat tissue and stay where they are put."
   },
   {

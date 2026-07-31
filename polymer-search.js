@@ -94,6 +94,9 @@
       for (var b = 0; b < brackets.length; b++) {
         brackets[b].x1 += dx; brackets[b].x2 += dx;
         brackets[b].y1 += dy; brackets[b].y2 += dy;
+        // An angled bracket's bars sit on their own bonds, so they need the same
+        // shift; leaving them behind would slide them off the bonds they cut.
+        if (brackets[b].bars) brackets[b].bars.forEach(function (bar) { bar.x += dx; bar.y += dy; });
       }
       draw();
     }
@@ -1055,6 +1058,30 @@
       var tick = 8;
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
+      if (rect.bars) {
+        // A unit that does not lie left-to-right carries its own bars, each drawn
+        // across the bond it cuts with the ticks turned in toward the unit, so
+        // the bracket reads correctly whatever angle the chain sits at.
+        var halfBar = BOND_LEN * 0.5;
+        rect.bars.forEach(function (bar) {
+          var px = -bar.iny, py = bar.inx;                 // along the bar
+          ctx.beginPath();
+          ctx.moveTo(bar.x - px * halfBar + bar.inx * tick, bar.y - py * halfBar + bar.iny * tick);
+          ctx.lineTo(bar.x - px * halfBar, bar.y - py * halfBar);
+          ctx.lineTo(bar.x + px * halfBar, bar.y + py * halfBar);
+          ctx.lineTo(bar.x + px * halfBar + bar.inx * tick, bar.y + py * halfBar + bar.iny * tick);
+          ctx.stroke();
+        });
+        // Label the bar that sits furthest along the chain, just outside it.
+        var far = rect.bars[0].x + rect.bars[0].y > rect.bars[1].x + rect.bars[1].y ? rect.bars[0] : rect.bars[1];
+        ctx.font = '600 13px Arial, Helvetica, sans-serif';
+        ctx.fillStyle = color;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(rect.label || (idx < 0 ? 'n' : (BLOCK_SUBSCRIPTS[idx] || String(idx + 1))),
+          far.x - far.iny * BOND_LEN * 0.62 + 3, far.y + far.inx * BOND_LEN * 0.62 + 3);
+        return;
+      }
       ctx.beginPath();
       ctx.moveTo(x1 + tick, y1); ctx.lineTo(x1, y1); ctx.lineTo(x1, y2); ctx.lineTo(x1 + tick, y2);
       ctx.stroke();
@@ -1065,7 +1092,11 @@
       ctx.fillStyle = color;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      var sub = idx < 0 ? 'n' : (BLOCK_SUBSCRIPTS[idx] || String(idx + 1));
+      // A bracket may name its own subscript (a bottlebrush declares backbone m
+      // and side chain n), which must win over the positional letter: the side
+      // chain is not the second block of a chain, and lettering it by array
+      // position would be an accident that happened to agree.
+      var sub = rect.label || (idx < 0 ? 'n' : (BLOCK_SUBSCRIPTS[idx] || String(idx + 1)));
       ctx.fillText(sub, x2 + 3, y2 - 12);
     }
 
@@ -1777,7 +1808,13 @@
       var y1 = Math.min(rect.y1, rect.y2), y2 = Math.max(rect.y1, rect.y2);
       function inside(a) { return a.x >= x1 && a.x <= x2 && a.y >= y1 && a.y <= y2; }
       var interiorIds = {};
-      atoms.forEach(function (a) { if (inside(a)) interiorIds[a.id] = true; });
+      // A bracket built from a declared repeat already knows exactly which atoms
+      // it encloses, so believe that over the box. Geometry alone cannot be
+      // trusted for a unit that does not lie left-to-right: an upright box drawn
+      // around a diagonal oxyethylene clips its terminal O, and the search would
+      // go looking for ethylene.
+      if (rect.atomIds) atoms.forEach(function (a) { if (rect.atomIds[a.id]) interiorIds[a.id] = true; });
+      else atoms.forEach(function (a) { if (inside(a)) interiorIds[a.id] = true; });
 
       // Atoms sitting inside a sibling block's bracket: a pendant flood that
       // reaches one of these is crossing into the next block, so it is a
@@ -2652,6 +2689,35 @@
       return { x1: Math.min(a.x, b2.x), x2: Math.max(a.x, b2.x), y1: yc - halfH, y2: yc + halfH };
     }
 
+    // The same thing for a unit that does not run left-to-right. Upright bars in
+    // a box only separate a repeat unit when its chain is roughly horizontal; a
+    // bottlebrush's pendant chain climbs diagonally, and there the box clips the
+    // atom at the far end off the unit (the terminal O of an oxyethylene, which
+    // would then read as ethylene). So each bar is drawn across the bond it cuts
+    // instead, which is right at any angle. The box is kept as the unit's bounds
+    // for panning and for fitting the canvas; extractRepeatUnit reads atomIds.
+    function angledBracketForIds(idSet) {
+      var bars = [], xs = [], ys = [];
+      bonds.forEach(function (b) {
+        var ain = !!idSet[b.a], bin = !!idSet[b.b];
+        if (ain === bin) return;
+        var ia = atomById(ain ? b.a : b.b), ea = atomById(ain ? b.b : b.a);
+        if (!ia || !ea) return;
+        var vx = ia.x - ea.x, vy = ia.y - ea.y;          // points into the unit
+        var m = Math.hypot(vx, vy) || 1;
+        bars.push({ x: (ia.x + ea.x) / 2, y: (ia.y + ea.y) / 2, inx: vx / m, iny: vy / m });
+      });
+      if (bars.length !== 2) return null;
+      atoms.forEach(function (at) { if (idSet[at.id]) { xs.push(at.x); ys.push(at.y); } });
+      if (!xs.length) return null;
+      bars.forEach(function (bar) { xs.push(bar.x); ys.push(bar.y); });
+      return {
+        x1: Math.min.apply(null, xs) - 6, x2: Math.max.apply(null, xs) + 6,
+        y1: Math.min.apply(null, ys) - 6, y2: Math.max.apply(null, ys) + 6,
+        bars: bars
+      };
+    }
+
     // Shrink a hand-dragged bracket box onto the repeat unit's backbone bonds so
     // a bracketed block reads like a proper polymer bracket (bars on the bonds,
     // pendants hanging out). Falls back to the drawn box when the enclosed region
@@ -2752,6 +2818,34 @@
         // Cosmetic repeat-unit bracket on the crossing bonds (matches SMILES import).
         var rbLoad = repeatUnitBracket();
         brackets = rbLoad ? [rbLoad] : [];
+        if (rbLoad && p.repeats) {
+          var bbRepeat = p.repeats.filter(function (r) { return r.role === 'backbone'; })[0];
+          if (bbRepeat) { rbLoad.label = bbRepeat.label; rbLoad.role = 'backbone'; }
+        }
+        // A bottlebrush's pendant chain is a polymer in its own right, so it gets
+        // its own bracket and its own subscript, the way the literature draws it
+        // (backbone m, side chain n). Without the second bracket the drawing would
+        // assert the side chain is one oxyethylene rather than a chain of them.
+        // The declared unit is mapped through the layout: molblockFrom writes atoms
+        // in library order, so p.atoms[i] is parsed.atoms[i] is made[i].
+        if (p.repeats) {
+          var byLibId = {};
+          p.atoms.forEach(function (la, i) { if (made[i]) byLibId[la.id] = made[i].id; });
+          p.repeats.forEach(function (r) {
+            if (r.role === 'backbone' || !Array.isArray(r.unit)) return;
+            var set = {}, mapped = true;
+            r.unit.forEach(function (u) {
+              if (byLibId[u] === undefined) mapped = false; else set[byLibId[u]] = true;
+            });
+            if (!mapped) return;
+            var sb = angledBracketForIds(set);
+            if (!sb) return;             // no clean pair of crossing bonds; leave it off
+            sb.atomIds = set;
+            sb.label = r.label;
+            sb.role = 'sidechain';
+            brackets.push(sb);
+          });
+        }
         draw();
         smilesNote('Loaded ' + p.name + ' into the editor.');
         var editorCard = document.getElementById('mol-editor-card');
@@ -2778,8 +2872,16 @@
         var prevRightIdx = null, firstLeftIdx = null, lastRightIdx = null, xCursor = 0;
 
         for (var ci = 0; ci < entry.components.length; ci++) {
-          var comp = db.filter(function (p) { return p.name === entry.components[ci] && p.atoms; })[0];
-          if (!comp) { smilesNote('Missing block "' + entry.components[ci] + '".'); return; }
+          // An entry can carry an empty atoms array (a polymer the library names
+          // but has no drawable repeat unit for, DNA among them). That is not a
+          // structure, so say which block is missing rather than failing later
+          // with a generic layout error that reads like a bug.
+          var comp = db.filter(function (p) { return p.name === entry.components[ci] && p.atoms && p.atoms.length; })[0];
+          if (!comp) {
+            smilesNote('No structure on file for "' + entry.components[ci] + '", so ' + entry.name + ' cannot be drawn. Use the publication links on its card.');
+            renderResults([]);
+            return;
+          }
           var mol = molFrom(RDKit, molblockFrom(comp.atoms, comp.bonds));
           var mb = null;
           if (mol) { try { mb = mol.get_new_coords(); } catch (e) {} if (!mb) { try { mb = mol.get_molblock(); } catch (e2) {} } mol.delete(); }
@@ -2874,7 +2976,15 @@
         if (!btn) return;
         var name = btn.getAttribute('data-poly-name');
         var p = (window.POLYMER_DB || []).filter(function (x) { return x.name === name; })[0];
-        if (p) { if (p.type === 'copolymer') loadCopolymerStructure(p); else loadPolymerStructure(p); }
+        // A copolymer without a structure of its own is composed from its blocks,
+        // chained end to end. That is only right for a linear one: a bottlebrush's
+        // side chain hangs off the backbone, not in line with it, so an entry that
+        // carries its own atoms is always drawn from those.
+        if (p) {
+          if (p.atoms && p.atoms.length) loadPolymerStructure(p);
+          else if (p.type === 'copolymer') loadCopolymerStructure(p);
+          else loadPolymerStructure(p);
+        }
       });
       // The architecture selector repaints the copolymer name + publications.
       resultsEl.addEventListener('change', function (e) {
@@ -3457,8 +3567,13 @@
       // (a loaded or recognized repeat unit) search from those and ignore any
       // cosmetic bracket. Otherwise a hand-drawn bracket marks the unit.
       // Two or more brackets means a copolymer: identify each bracketed block
-      // separately and report the combination.
-      if (brackets.length >= 2) { runCopolymerSearch(); return; }
+      // separately and report the combination. A bottlebrush is the exception:
+      // its second bracket is a side chain nested inside the repeat unit, not a
+      // second block further along the chain, so it is searched as the single
+      // unit it is. Sent down the block path it reports the backbone as having
+      // too many open ends, which is true of every graft and beside the point.
+      var hasNestedRepeat = brackets.some(function (r) { return r.role === 'sidechain'; });
+      if (brackets.length >= 2 && !hasNestedRepeat) { runCopolymerSearch(); return; }
 
       var sub;
       if (atoms.filter(function (a) { return a.el === '*'; }).length === 2) {
@@ -3598,6 +3713,7 @@
       alternating: { label: 'Alternating copolymer', infix: 'alt',  q: 'alternating copolymer' },
       gradient:    { label: 'Gradient copolymer',    infix: 'grad', q: 'gradient copolymer' },
       graft:       { label: 'Graft copolymer',       infix: 'g',    q: 'graft copolymer' },
+      bottlebrush: { label: 'Bottlebrush polymer',   infix: 'g',    q: 'bottlebrush polymer molecular brush' },
       copolymer:   { label: 'Copolymer',             infix: 'co',   q: 'copolymer' }
     };
     var ARCH_ORDER = ['block', 'random', 'alternating', 'gradient', 'graft', 'statistical'];
@@ -4549,8 +4665,11 @@
       if (p._hash === undefined) {
         // Named copolymer entries carry no drawable repeat unit, so they get
         // null hashes: they never match a single-unit structure search (only
-        // name search and the copolymer component matcher use them).
-        if (p.type === 'copolymer' || !p.atoms) {
+        // name search and the copolymer component matcher use them). A
+        // bottlebrush is the exception - it does have one drawable unit, with the
+        // side chain nested inside it - so what disqualifies an entry is having
+        // no structure, not being a copolymer.
+        if (!p.atoms || !p.atoms.length) {
           p._hash = null; p._chash = null; p._profile = {};
           return p;
         }

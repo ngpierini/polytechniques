@@ -139,22 +139,93 @@ function checkEntry(entry, idx, errors) {
   }
 
   const ids = new Set();
-  let s0 = 0, s1 = 0, otherStar = 0;
+  const starIds = [];
   entry.atoms.forEach(function (a, i) {
     const awhere = where + ", atom #" + i;
     if (a.id === undefined || a.id === null) errors.push(awhere + ": missing id");
     if (!a.el || typeof a.el !== "string") errors.push(awhere + ": missing element");
     if (ids.has(a.id)) errors.push(awhere + ": duplicate atom id \"" + a.id + "\"");
     ids.add(a.id);
-    if (a.id === "S0") { s0++; if (a.el !== "*") errors.push(awhere + ": S0 must have el \"*\""); }
-    else if (a.id === "S1") { s1++; if (a.el !== "*") errors.push(awhere + ": S1 must have el \"*\""); }
-    else if (a.el === "*") otherStar++;
+    if (a.el === "*") starIds.push(a.id);
+    if ((a.id === "S0" || a.id === "S1") && a.el !== "*") {
+      errors.push(awhere + ": " + a.id + " must have el \"*\"");
+    }
   });
+
+  // Every structure has exactly one main chain, drawn open at S0 and S1. That
+  // stays true for a bottlebrush: the pendant chain is not a second open chain,
+  // it hangs off the backbone and is drawn attached, with its own bracket
+  // around only the part that repeats.
+  const s0 = entry.atoms.filter(function (a) { return a.id === "S0"; }).length;
+  const s1 = entry.atoms.filter(function (a) { return a.id === "S1"; }).length;
+  const otherStar = starIds.filter(function (id) { return id !== "S0" && id !== "S1"; }).length;
   if (s0 !== 1 || s1 !== 1) {
     errors.push(where + ": must have exactly one S0 and one S1 open-chain-end pseudo-atom (found S0x" + s0 + ", S1x" + s1 + ")");
   }
   if (otherStar > 0) {
     errors.push(where + ": found " + otherStar + " extra \"*\" atom(s) outside S0/S1");
+  }
+
+  // A bottlebrush side chain is a polymer in its own right, so the drawing needs
+  // a second bracket with its own subscript (backbone m, pendant chain n).
+  // Rather than a second pair of open ends, a side-chain repeat names the atoms
+  // inside its bracket and the two bonds that bracket cuts. Each cut must be a
+  // real bond with exactly one end inside the unit, otherwise the bracket would
+  // be drawn across something that is not a chain.
+  if (entry.repeats !== undefined) {
+    if (!Array.isArray(entry.repeats) || entry.repeats.length < 2) {
+      errors.push(where + ": \"repeats\" must be an array of 2 or more declared repeat units (omit it for a single repeat)");
+    } else {
+      const labels = new Set();
+      const claimed = new Set();
+      let backbones = 0;
+      entry.repeats.forEach(function (r, ri) {
+        const rw = where + ", repeats[" + ri + "]";
+        if (!r || typeof r !== "object") { errors.push(rw + ": not an object"); return; }
+
+        if (typeof r.label !== "string" || !r.label.trim()) errors.push(rw + ": \"label\" is the subscript drawn on the bracket, e.g. \"m\" or \"n\"");
+        else if (labels.has(r.label)) errors.push(rw + ": duplicate label \"" + r.label + "\" - each repeat needs its own subscript");
+        else labels.add(r.label);
+
+        if (r.role === "backbone") {
+          backbones++;
+          if (!Array.isArray(r.ends) || r.ends[0] !== "S0" || r.ends[1] !== "S1") {
+            errors.push(rw + ": the backbone repeat must declare ends [\"S0\", \"S1\"], so a reader that ignores \"repeats\" still finds the main chain");
+          }
+          if (r.unit !== undefined || r.cuts !== undefined) errors.push(rw + ": the backbone is bounded by S0/S1, not by \"unit\"/\"cuts\"");
+          return;
+        }
+        if (r.role !== "sidechain") { errors.push(rw + ": \"role\" must be \"backbone\" or \"sidechain\""); return; }
+
+        if (!Array.isArray(r.unit) || r.unit.length === 0) {
+          errors.push(rw + ": \"unit\" must list the atom ids inside this bracket");
+          return;
+        }
+        const inUnit = new Set(r.unit);
+        r.unit.forEach(function (u) {
+          if (!ids.has(u)) errors.push(rw + ": unit atom \"" + u + "\" is not an atom in this entry");
+          if (claimed.has(u)) errors.push(rw + ": atom \"" + u + "\" is inside more than one repeat bracket");
+          claimed.add(u);
+          if (u === "S0" || u === "S1") errors.push(rw + ": the main-chain ends cannot sit inside a side-chain bracket");
+        });
+        if (!Array.isArray(r.cuts) || r.cuts.length !== 2) {
+          errors.push(rw + ": \"cuts\" must name the two bonds the bracket crosses");
+          return;
+        }
+        r.cuts.forEach(function (c, ci) {
+          const cw = rw + ", cuts[" + ci + "]";
+          if (!Array.isArray(c) || c.length !== 2) { errors.push(cw + ": must be a pair of atom ids"); return; }
+          const real = entry.bonds.some(function (b) {
+            return (b.a === c[0] && b.b === c[1]) || (b.a === c[1] && b.b === c[0]);
+          });
+          if (!real) errors.push(cw + ": no bond between \"" + c[0] + "\" and \"" + c[1] + "\"");
+          else if (inUnit.has(c[0]) === inUnit.has(c[1])) {
+            errors.push(cw + ": a bracket cut must have exactly one end inside the unit (both ends are " + (inUnit.has(c[0]) ? "inside" : "outside") + ")");
+          }
+        });
+      });
+      if (backbones !== 1) errors.push(where + ": exactly one repeat must have role \"backbone\" (found " + backbones + ")");
+    }
   }
 
   const valence = {};
@@ -296,6 +367,17 @@ function main() {
         errors.push("entry #" + idx + " (" + entry.name + "): carries the \"" + rule.tag + "\" tag but does not qualify");
       }
     });
+
+    // A bottlebrush drawn without declaring its side chain would render one
+    // bracket around the backbone and show the pendant chain as a single fixed
+    // group - claiming a lone oxyethylene where a whole PEG chain belongs. If
+    // it is drawn at all, it has to say where the side-chain bracket goes.
+    if (entry.arch === "bottlebrush" && entry.atoms && entry.atoms.length) {
+      const side = (entry.repeats || []).filter(function (r) { return r && r.role === "sidechain"; });
+      if (!side.length) {
+        errors.push("entry #" + idx + " (" + entry.name + "): a drawn bottlebrush must declare its side chain in \"repeats\", or the pendant chain is drawn as a single group");
+      }
+    }
   });
 
   if (errors.length) {
