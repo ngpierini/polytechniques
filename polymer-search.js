@@ -1109,28 +1109,34 @@
       var tick = 8;
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
-      if (rect.bars) {
-        // A unit that does not lie left-to-right carries its own bars, each drawn
-        // across the bond it cuts with the ticks turned in toward the unit, so
-        // the bracket reads correctly whatever angle the chain sits at.
-        var halfBar = BOND_LEN * 0.5;
+      if (rect.bars && rect.bars.length === 2) {
+        // Every bar is drawn across the bond it cuts, with the ticks turned in
+        // toward the unit, and stops short of any bond it does not cut. Both
+        // matter: perpendicular keeps the bar across the chain rather than along
+        // it, and clipping keeps it from slicing through a side group.
+        var want = BOND_LEN * 0.5, ends = [];
         rect.bars.forEach(function (bar) {
-          var px = -bar.iny, py = bar.inx;                 // along the bar
+          var lim = clipBarHalf(bar, want);
+          var ax = bar.x - bar.ax * lim.neg, ay = bar.y - bar.ay * lim.neg;
+          var bx = bar.x + bar.ax * lim.pos, by = bar.y + bar.ay * lim.pos;
+          ends.push({ ax: ax, ay: ay, bx: bx, by: by });
           ctx.beginPath();
-          ctx.moveTo(bar.x - px * halfBar + bar.inx * tick, bar.y - py * halfBar + bar.iny * tick);
-          ctx.lineTo(bar.x - px * halfBar, bar.y - py * halfBar);
-          ctx.lineTo(bar.x + px * halfBar, bar.y + py * halfBar);
-          ctx.lineTo(bar.x + px * halfBar + bar.inx * tick, bar.y + py * halfBar + bar.iny * tick);
+          ctx.moveTo(ax + bar.tx * tick, ay + bar.ty * tick);
+          ctx.lineTo(ax, ay);
+          ctx.lineTo(bx, by);
+          ctx.lineTo(bx + bar.tx * tick, by + bar.ty * tick);
           ctx.stroke();
         });
-        // Label the bar that sits furthest along the chain, just outside it.
-        var far = rect.bars[0].x + rect.bars[0].y > rect.bars[1].x + rect.bars[1].y ? rect.bars[0] : rect.bars[1];
+        // Label the bar furthest along the chain, just beyond its outer end.
+        var fi = rect.bars[0].x + rect.bars[0].y > rect.bars[1].x + rect.bars[1].y ? 0 : 1;
+        var far = rect.bars[fi], fe = ends[fi];
+        var lo = (fe.ay > fe.by) ? { x: fe.ax, y: fe.ay } : { x: fe.bx, y: fe.by };
         ctx.font = '600 13px Arial, Helvetica, sans-serif';
         ctx.fillStyle = color;
         ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
+        ctx.textBaseline = 'top';
         ctx.fillText(rect.label || (idx < 0 ? 'n' : (BLOCK_SUBSCRIPTS[idx] || String(idx + 1))),
-          far.x - far.iny * BOND_LEN * 0.62 + 3, far.y + far.inx * BOND_LEN * 0.62 + 3);
+          lo.x - far.tx * 4 + 2, lo.y - far.ty * 4);
         return;
       }
       ctx.beginPath();
@@ -2754,18 +2760,65 @@
       if (!layoutRepeatUnit(parsed)) { restore(); orientRepeatUnit(parsed); return; }
       var zig = parsed.atoms.map(function (a) { return { x: a.x, y: a.y }; });
       var zigCrowd = layoutCrowding(parsed), zigScale = layoutScale(parsed);
+      // A clean textbook drawing is never given up. Size alone is not worth it:
+      // trading the horizontal backbone for a slightly larger picture cost PMMA
+      // its familiar shape and left its bracket looking crooked.
+      if (zigCrowd === 0) return;
 
       restore();
       orientRepeatUnit(parsed);
       var rdCrowd = layoutCrowding(parsed);
-      // Fewer collisions always wins. Failing that, take the one that draws
-      // bigger on this canvas: a tall thin drawing has to be scaled down to fit,
-      // which is what makes a long pendant arm hard to read even when nothing
-      // actually overlaps. The margin keeps a near-tie on the horizontal
-      // backbone, so the textbook picture is only given up for a real gain.
+      // Once the textbook layout does collide, fewer collisions wins; failing
+      // that, the one that draws bigger, since a tall thin drawing gets scaled
+      // down to fit and that is what makes a long pendant arm hard to read.
       if (rdCrowd < zigCrowd) return;
       if (rdCrowd === zigCrowd && layoutScale(parsed) > zigScale * 1.15) return;
       parsed.atoms.forEach(function (a, i) { a.x = zig[i].x; a.y = zig[i].y; });
+    }
+
+    // One bracket bar, sitting on the bond it cuts. "ax,ay" is the bar's own
+    // direction and "tx,ty" the way its ticks turn. A main-chain bracket keeps
+    // upright bars even where the backbone zigzags, because that is how the
+    // notation is drawn and turning them to each bond makes the pair look
+    // crooked. A side chain has no such axis to follow, so its bars are set
+    // across the bond instead, which is right at whatever angle it runs.
+    function barOnBond(outside, inside, upright) {
+      var vx = inside.x - outside.x, vy = inside.y - outside.y;
+      var m = Math.hypot(vx, vy) || 1;
+      var bar = {
+        x: (inside.x + outside.x) / 2, y: (inside.y + outside.y) / 2,
+        cutA: outside.id, cutB: inside.id
+      };
+      if (upright) { bar.ax = 0; bar.ay = 1; bar.tx = vx >= 0 ? 1 : -1; bar.ty = 0; }
+      else { bar.ax = -vy / m; bar.ay = vx / m; bar.tx = vx / m; bar.ty = vy / m; }
+      return bar;
+    }
+
+    // How far a bar may run before it meets a bond it is not cutting. A bar that
+    // runs through a neighbouring bond reads as cutting that bond too: on a
+    // methacrylate the ester leaves the backbone carbon almost sideways, so the
+    // upright bar sliced straight through it and the bracket claimed the ester
+    // was a chain continuation rather than a side group.
+    function clipBarHalf(bar, want) {
+      var ux = bar.ax, uy = bar.ay;                 // along the bar
+      var pos = want, neg = want, margin = 5;
+      bonds.forEach(function (b) {
+        if ((b.a === bar.cutA && b.b === bar.cutB) || (b.a === bar.cutB && b.b === bar.cutA)) return;
+        var p = atomById(b.a), q = atomById(b.b);
+        if (!p || !q) return;
+        var rx = q.x - p.x, ry = q.y - p.y;
+        var det = -ux * ry + rx * uy;
+        if (Math.abs(det) < 1e-9) return;           // parallel
+        var ex = p.x - bar.x, ey = p.y - bar.y;
+        var s = (ux * ey - ex * uy) / det;
+        if (s < 0 || s > 1) return;                 // meets the line, not the bond
+        var t = (-ex * ry + rx * ey) / det;
+        if (t > 0) pos = Math.min(pos, t - margin);
+        else neg = Math.min(neg, -t - margin);
+      });
+      // Never collapse to nothing: a stub still reads as a bracket, and a bar
+      // this cramped means the drawing is crowded, not that the bracket is wrong.
+      return { pos: Math.max(pos, BOND_LEN * 0.22), neg: Math.max(neg, BOND_LEN * 0.22) };
     }
 
     // A repeat unit marked by two "*" chain ends gets a cosmetic bracket. Put
@@ -2792,6 +2845,7 @@
       }
       var nA = neighborOf(stars[0]), nB = neighborOf(stars[1]);
       if (!nA || !nB) return null;
+      var barsRU = [barOnBond(stars[0], nA, true), barOnBond(stars[1], nB, true)];
       // Each bar sits at the midpoint of a "*"-to-backbone bond, so it crosses
       // that bond the way a polymer bracket does. The height is deliberately
       // small: just enough to span the two crossing points (plus a little), so
@@ -2806,7 +2860,8 @@
         x1: Math.min(crossA.x, crossB.x),
         x2: Math.max(crossA.x, crossB.x),
         y1: yc - halfH,
-        y2: yc + halfH
+        y2: yc + halfH,
+        bars: barsRU
       };
     }
 
@@ -2815,18 +2870,18 @@
     // height so pendant groups hang outside. Returns null unless exactly two
     // bonds cross. Shared by the drawn-bracket snap and the copolymer loader.
     function tightBracketForIds(idSet) {
-      var crossings = [];
+      var crossings = [], barsT = [];
       bonds.forEach(function (b) {
         var ain = !!idSet[b.a], bin = !!idSet[b.b];
         if (ain === bin) return;
         var ia = atomById(ain ? b.a : b.b), ea = atomById(ain ? b.b : b.a);
-        if (ia && ea) crossings.push({ x: (ia.x + ea.x) / 2, y: (ia.y + ea.y) / 2 });
+        if (ia && ea) { crossings.push({ x: (ia.x + ea.x) / 2, y: (ia.y + ea.y) / 2 }); barsT.push(barOnBond(ea, ia, true)); }
       });
       if (crossings.length !== 2) return null;
       var a = crossings[0], b2 = crossings[1];
       var yc = (a.y + b2.y) / 2;
       var halfH = Math.max(BOND_LEN * 0.6, Math.abs(a.y - b2.y) / 2 + BOND_LEN * 0.4);
-      return { x1: Math.min(a.x, b2.x), x2: Math.max(a.x, b2.x), y1: yc - halfH, y2: yc + halfH };
+      return { x1: Math.min(a.x, b2.x), x2: Math.max(a.x, b2.x), y1: yc - halfH, y2: yc + halfH, bars: barsT };
     }
 
     // The same thing for a unit that does not run left-to-right. Upright bars in
@@ -2843,9 +2898,7 @@
         if (ain === bin) return;
         var ia = atomById(ain ? b.a : b.b), ea = atomById(ain ? b.b : b.a);
         if (!ia || !ea) return;
-        var vx = ia.x - ea.x, vy = ia.y - ea.y;          // points into the unit
-        var m = Math.hypot(vx, vy) || 1;
-        bars.push({ x: (ia.x + ea.x) / 2, y: (ia.y + ea.y) / 2, inx: vx / m, iny: vy / m });
+        bars.push(barOnBond(ea, ia, false));
       });
       if (bars.length !== 2) return null;
       atoms.forEach(function (at) { if (idSet[at.id]) { xs.push(at.x); ys.push(at.y); } });
