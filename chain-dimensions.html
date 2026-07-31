@@ -51,6 +51,15 @@
   .cd-scale .cd-dot { fill: var(--text-dim); opacity: 0.55; }
   .cd-scale .cd-dot-sel { fill: var(--primary); opacity: 1; }
   .cd-scale .cd-name { fill: var(--text); font-size: 11px; font-weight: 600; }
+  .cd-wlc { width: 100%; height: 260px; }
+  .cd-wlc .cd-chain { fill: none; stroke: var(--primary); stroke-width: 1.6; stroke-linecap: round; }
+  .cd-wlc .cd-lp { stroke: #e05252; stroke-width: 3.4; stroke-linecap: round; }
+  .cd-wlc .cd-panel-t { fill: var(--text); font-size: 12px; font-weight: 600; }
+  .cd-wlc .cd-panel-s { fill: var(--text-dim); font-size: 10.5px; }
+  .cd-wlc .cd-lp-t { fill: #e05252; font-size: 10px; font-weight: 600; }
+  .cd-wlc .cd-frame { fill: none; stroke: var(--border); stroke-width: 1; }
+  .cd-cite { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; margin: 8px 0 0; }
+  .cd-cite li { margin-bottom: 4px; }
   .cd-regime { display: inline-block; padding: 2px 9px; border-radius: 999px;
     font-size: 0.78rem; font-weight: 600; }
   .cd-rod { background: #fde8e8; color: #9b1c1c; }
@@ -93,6 +102,20 @@
   </div>
 
   <div class="card">
+    <h3>DNA is the model system, and it is not a coincidence</h3>
+    <p class="guide-note">
+      Almost everything on this page is easiest to see in DNA, for three reasons that no synthetic polymer offers at once. Its persistence length is <strong>large enough to see</strong>: at about 50&nbsp;nm it is a hundred times a synthetic coil&rsquo;s, so a single molecule can be imaged and traced directly rather than inferred from a scattering average. Its stiffness is <strong>tunable without changing the chemistry</strong>: strip the second strand and it falls to about 1&nbsp;nm, or remove the salt and electrostatic repulsion stiffens it again. And it comes in <strong>exact lengths</strong>, so contour length is known rather than averaged over a distribution.
+    </p>
+    <p class="guide-note">
+      The picture below is not an illustration. Each chain is a <strong>simulated two-dimensional worm-like chain</strong> generated at l<sub>p</sub> = 50&nbsp;nm, with the direction of each step drawn from the same Gaussian the model specifies, so the shapes are real samples from the statistics this page computes. Two dimensions rather than three is also deliberate: it is what a DNA molecule adsorbed on mica looks like down an AFM, which is the subject of the next card. The red bar in each panel is one persistence length <em>to the scale of that panel</em>.
+    </p>
+    <svg id="cd-wlc" class="cd-wlc" viewBox="0 0 720 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Simulated DNA chains at three lengths, showing rod, semiflexible and coil behaviour"></svg>
+    <p class="cd-note">
+      Same molecule, same persistence length, three lengths. At 100&nbsp;bp the chain is shorter than its own persistence length and is a rod: it has no choice but to be straight. At 1&nbsp;kb it bends but still remembers roughly where it started. At 10&nbsp;kb the memory is gone within a small fraction of the chain and what is left is a random walk. Nothing about the molecule changed between panels except how much of it there is.
+    </p>
+  </div>
+
+  <div class="card">
     <h3>Calculator</h3>
     <div class="cd-controls">
       <div class="cd-control" style="flex-basis:100%;">
@@ -105,7 +128,7 @@
       </div>
       <div class="cd-control">
         <span class="cd-label" id="cd-mass-label">Molar mass (g/mol)</span>
-        <input type="number" id="cd-mass" class="cd-input" value="100000" min="1" step="1000">
+        <input type="number" id="cd-mass" class="cd-input" value="100000" min="1" step="any">
       </div>
     </div>
     <p class="cd-note" id="cd-matnote"></p>
@@ -148,6 +171,42 @@
     <p class="guide-note" style="margin-top:12px;">
       <strong>It fails for aromatic backbones, and not by a little.</strong> Bisphenol-A polycarbonate has C<sub>&infin;</sub> = 2.4, which the formula turns into 0.22&nbsp;nm &mdash; against a measured value near 1.0&nbsp;nm. The ratio is defined <em>per backbone bond</em>, and a polycarbonate repeat is a rigid phenylene plus a long virtual bond, not the tetrahedral C&ndash;C the geometry assumes. Entries where the route does not apply are marked and no prediction is offered for them, rather than quietly printing a number that is wrong by a factor of four.
     </p>
+  </div>
+
+  <div class="card">
+    <h3>Measuring it: what an AFM actually sees</h3>
+    <p class="guide-note">
+      Persistence length can be inferred from scattering or from pulling on a single molecule, but for DNA the most direct route is to <strong>look at it</strong>: adsorb molecules onto freshly cleaved mica, image them by atomic force microscopy, and trace the contours. Work in this area, including <strong>James Vesenka</strong>&rsquo;s on scanning probe imaging of DNA and its quadruplex assemblies, established both how to prepare samples that image reliably and how much the preparation decides the answer.
+    </p>
+    <p class="guide-note">
+      <strong>The trap is that the surface is part of the measurement.</strong> A molecule that reaches the mica and is still free to rearrange equilibrates in the plane, and the statistics you should fit are those of a <em>two-dimensional</em> worm-like chain. A molecule that sticks where it lands is <em>kinetically trapped</em>, and what you are looking at is a flattened projection of a three-dimensional conformation, which must be fitted differently. The two regimes are set by how the mica is treated, and reading one with the other&rsquo;s model gives a persistence length wrong by a factor close to two. Properly equilibrated DNA on mica returns about <strong>53&nbsp;nm</strong>, agreeing with solution measurements.
+    </p>
+    <p class="guide-note">
+      There is a second lesson in the quadruplex work. <strong>G-wires</strong> &mdash; continuous nanowires self-assembled from stacked guanine quadruplexes, first imaged by scanning probe microscopy in 1995 &mdash; are routinely described as stiffer than duplex DNA because each quadruplex unit is exceptionally rigid. Recent polymer characterisation of long G-quadruplex multimers finds the opposite at chain scale: a local persistence length comparable to the size of one monomer, behaving like a flexible chain in a good solvent. A stiff repeat unit does not make a stiff chain if the junctions between units are free to rotate, which is why <strong>no G-wire entry appears in the database above</strong> &mdash; the reported values do not yet converge on a number worth quoting.
+    </p>
+    <ul class="cd-cite">
+      <li>Vesenka, Marsh, Henderson et&nbsp;al., &ldquo;A new DNA nanostructure, the G-wire, imaged by scanning probe microscopy&rdquo;, <em>Nucleic Acids Research</em> <strong>23</strong>, 696&ndash;700 (1995).</li>
+      <li>Vesenka, &ldquo;The diameter of duplex and quadruplex DNA measured by Scanning Probe Microscopy&rdquo;, <em>Scanning Microscopy</em> <strong>12</strong>(2), 329&ndash;342 (1998).</li>
+      <li>Vesenka, &ldquo;Preparation and Atomic Force Microscopy of Quadruplex DNA&rdquo;, in <em>DNA Nanotechnology</em>, Methods in Molecular Biology vol.&nbsp;749 (2011).</li>
+      <li>Rivetti, Guthold &amp; Bustamante, &ldquo;Scanning force microscopy of DNA deposited onto mica: equilibration versus kinetic trapping&rdquo;, <em>J. Mol. Biol.</em> <strong>264</strong>, 919&ndash;932 (1996) &mdash; the source of the 53&nbsp;nm figure and of the two-regime distinction.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Where the single-chain picture ends: topology</h3>
+    <p class="guide-note">
+      Every number this page computes describes <strong>one chain, on its own, free to adopt any shape</strong>. That is a real limit, not a technicality. A chain cannot pass through itself or through its neighbours, and once a solution is dense or a chain is closed into a ring, those constraints stop being a correction and start being the dominant physics. Persistence length still sets the local stiffness, but it no longer predicts how the chain moves or how the material behaves.
+    </p>
+    <p class="guide-note">
+      This is the subject of <strong>Davide Michieletto</strong>&rsquo;s work at Edinburgh on topologically active polymers. A linear chain in a melt escapes its neighbours by sliding along its own contour &mdash; reptation &mdash; but <strong>a ring has no ends to slide from</strong>, so it cannot. Dense solutions of rings instead interpenetrate and thread through one another, and that threading alone, with no attraction and no change in chemistry, can drive the system into a glassy state. DNA is again the model system: it can be prepared as linear, relaxed circular or supercoiled forms of identical sequence and identical persistence length, whose bulk behaviour is nonetheless completely different. Living cells exploit this, spending ATP on topoisomerases whose entire job is to change DNA topology by cutting and resealing strands.
+    </p>
+    <p class="guide-note">
+      The practical consequence for this page: treat R<sub>g</sub> here as the <strong>dilute, ideal-chain answer</strong>. It is the right starting point and the quantity that scattering reports for a dilute sample, but a concentrated DNA solution, a gel, or anything inside a nucleus is a topological problem before it is a conformational one.
+    </p>
+    <ul class="cd-cite">
+      <li>Michieletto, <em>Topological Interactions in Ring Polymers</em>, Springer Theses (2016).</li>
+      <li>Michieletto, Royal Society University Research Fellow, School of Physics and Astronomy, University of Edinburgh &mdash; ERC project <em>Topologically Active Polymers</em>. <a href="https://www.ph.ed.ac.uk/people/davide-michieletto/publications" target="_blank" rel="noopener noreferrer">Publication list</a>.</li>
+    </ul>
   </div>
 
   <div class="card">
@@ -354,6 +413,82 @@
     svg.innerHTML = parts.join("");
   }
 
+  /* ---------------- simulated 2D worm-like chains ----------------
+     Not an illustration: each chain is a genuine sample from the discrete
+     worm-like chain. Step ds along the contour, then turn by a Gaussian angle
+     of variance ds/lp, which is what gives <cos theta(s)> = exp(-s/2lp) in two
+     dimensions. Two dimensions because that is what an AFM image of DNA on
+     mica actually is.
+
+     The PRNG is seeded so the figure is identical on every load - a chain that
+     reshuffled on refresh would suggest the shape was arbitrary, when the whole
+     point is that it is dictated by lp. */
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function gauss(rnd) {
+    var u = 1 - rnd(), v = rnd();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+  function wlcPath(L, lp, seed, steps) {
+    var rnd = mulberry32(seed), ds = L / steps;
+    var sd = Math.sqrt(ds / lp);
+    var x = 0, y = 0, th = 0, pts = [[0, 0]], i;
+    for (i = 0; i < steps; i++) {
+      th += gauss(rnd) * sd;
+      x += ds * Math.cos(th); y += ds * Math.sin(th);
+      pts.push([x, y]);
+    }
+    return pts;
+  }
+
+  function drawWlc() {
+    var svg = $("cd-wlc"); if (!svg) return;
+    var LP = 50;                                   // nm, dsDNA
+    var panels = [
+      { bp: 100,   seed: 7,  label: "100 bp" },
+      { bp: 1000,  seed: 21, label: "1 kb" },
+      { bp: 10000, seed: 5,  label: "10 kb" }
+    ];
+    var W = 720, H = 260, pw = W / 3, boxT = 34, boxH = 176, pad = 16;
+    var parts = [];
+    panels.forEach(function (p, i) {
+      var L = p.bp * 0.34;                          // contour length, nm
+      var pts = wlcPath(L, LP, p.seed, Math.max(60, Math.min(1400, p.bp)));
+      var xs = pts.map(function (q) { return q[0]; }), ys = pts.map(function (q) { return q[1]; });
+      var minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+      var minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
+      var spanX = Math.max(maxX - minX, 1e-6), spanY = Math.max(maxY - minY, 1e-6);
+      // one scale per panel: the shapes are the message, and 100 bp against
+      // 10 kb on a shared scale would render the first as a single pixel.
+      var k = Math.min((pw - 2 * pad) / spanX, (boxH - 2 * pad) / spanY);
+      var ox = i * pw + pad + ((pw - 2 * pad) - spanX * k) / 2;
+      var oy = boxT + pad + ((boxH - 2 * pad) - spanY * k) / 2;
+      var d = pts.map(function (q, j) {
+        return (j ? "L " : "M ") + (ox + (q[0] - minX) * k).toFixed(1) + " " + (oy + (q[1] - minY) * k).toFixed(1);
+      }).join(" ");
+      parts.push('<rect class="cd-frame" x="' + (i * pw + 6) + '" y="' + boxT + '" width="' + (pw - 12) + '" height="' + boxH + '" rx="8"/>');
+      parts.push('<path class="cd-chain" d="' + d + '"/>');
+      // one persistence length, to this panel's scale
+      var lpPx = LP * k, bx = i * pw + 18, by = boxT + boxH - 14;
+      var shown = Math.min(lpPx, pw - 40);
+      parts.push('<line class="cd-lp" x1="' + bx + '" y1="' + by + '" x2="' + (bx + shown) + '" y2="' + by + '"/>');
+      parts.push('<text class="cd-lp-t" x="' + bx + '" y="' + (by - 7) + '">l\u209a = 50 nm' + (L < LP ? " (longer than this chain)" : "") + '</text>');
+      var ratio = L / LP;
+      var regime = ratio < 1 ? "rod" : ratio < 10 ? "semiflexible" : "coil";
+      parts.push('<text class="cd-panel-t" x="' + (i * pw + pw / 2) + '" y="20" text-anchor="middle">' + p.label + " \u2014 " + regime + "</text>");
+      parts.push('<text class="cd-panel-s" x="' + (i * pw + pw / 2) + '" y="' + (H - 12) + '" text-anchor="middle">L = ' +
+        (L >= 1000 ? (L / 1000).toFixed(1) + " \u00b5m" : Math.round(L) + " nm") + "  \u00b7  L/l\u209a = " +
+        (ratio < 1 ? ratio.toFixed(2) : Math.round(ratio)) + "</text>");
+    });
+    svg.innerHTML = parts.join("");
+  }
+
   function fillTables() {
     var rows = [];
     DATA.forEach(function (e) {
@@ -385,6 +520,7 @@
   fillMaterials();
   fillMeasurements();
   fillTables();
+  drawWlc();
   render();
 
   $("cd-material").addEventListener("change", function () {
