@@ -280,7 +280,8 @@ function main() {
   // a different claim, and forcing the tag on it would silently redefine it.
   const TAG_RULES = [
     { tag: "methacrylate", homopolymerOnly: true, when: function (e) { return /methacrylate/i.test(e.name || ""); } },
-    { tag: "block", when: function (e) { return e.arch === "block"; } }
+    { tag: "block", when: function (e) { return e.arch === "block"; } },
+    { tag: "bottlebrush", when: function (e) { return e.arch === "bottlebrush"; } }
   ];
   db.forEach(function (entry, idx) {
     if (!entry || !entry.name) return;

@@ -994,7 +994,61 @@ window.POLYMER_DB = [
     tags: ["copolymer", "block", "elastomer", "thermoplastic elastomer", "polyester", "polyether", "engineering", "specialty"],
     note: "The polyester counterpart of polyether block amide, and the other half of the segmented-TPE pair: crystalline PBT hard segments form lamellae that act as both physical crosslinks and reinforcing filler on a rubbery poly(tetramethylene oxide) matrix, adding the tear strength, creep resistance and hot-oil resistance the styrenic triblocks lack. Modulus and service temperature scale almost linearly with hard-segment weight fraction, which is what separates the grades. Like PEBA it is a segmented (AB)n multiblock from melt transesterification, with statistical segment lengths rather than a discrete ABA architecture."
   }
-
+,
+  {
+    name: "Polynorbornene", aka: ["PNB", "poly(norbornene)", "polynorbornylene"], monomer: "norbornene (bicyclo[2.2.1]hept-2-ene)",
+    cls: "Ring-opening", cas: "25038-76-0",
+    tags: ["elastomer", "specialty"],
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 2 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 3, order: 1 }, { a: 5, b: "S1", order: 1 }],
+    note: "The polymer ROMP was built for. Norbornene carries about 27 kcal/mol of ring strain, and relieving it drives metathesis to completion, which is why norbornene macromonomers are the standard route to bottlebrush polymers. Ring-opening is an isomerisation, so the repeat unit has the same formula as the monomer. Commercially it is sold as an oil-extended damping rubber."
+  },
+  {
+    name: "Deoxyribonucleic acid", aka: ["DNA", "dsDNA", "deoxyribonucleic acid", "double-stranded DNA"], monomer: "deoxyribonucleoside 5'-triphosphates (dA, dC, dG, dT)",
+    cls: "Step-growth (polyester)", cas: "9007-49-2",
+    tags: ["biopolymer", "biomedical", "water-soluble", "self-assembly", "specialty"],
+    verified: false,
+    needsStructure: true,
+    atoms: [],
+    bonds: [],
+    note: "Carried without a drawn repeat unit, and not as a gap to be filled later: DNA has FOUR repeat units, not one. The backbone is a regular phosphodiester-linked deoxyribose, but each sugar bears one of four bases, so no single graph describes the chain the way one does for a synthetic homopolymer. The structure search matches repeat-unit graphs and would have nothing correct to match against. As a polymer it is a semiflexible polyanion with a persistence length near 50 nm, about a hundred times a synthetic coil, which is why it behaves like no other water-soluble polymer at the same molar mass."
+  },
+  {
+    name: "Poly(norbornene)-graft-poly(ethylene glycol)", aka: ["PNB-g-PEG", "polynorbornene-g-PEG", "PEG bottlebrush", "bottlebrush PEG"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(ethylene oxide)"],
+    monomer: "PEG-functional norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "polyether", "water-soluble", "drug delivery", "biomedical", "specialty"],
+    note: "The workhorse bottlebrush, and the reason ring-opening metathesis is the default route to this architecture. A PEG chain is capped with a norbornene and that macromonomer is polymerised through its strained ring by a fast-initiating Grubbs catalyst, so every backbone repeat carries a side chain by construction rather than by chance. Grafting-through guarantees the grafting density instead of hoping for it, which is why it dominates despite the macromonomer being the expensive part. The crowded PEG corona forces the backbone to extend, so the molecule behaves as a soft cylinder rather than a coil, and a drug attached to the backbone sits shielded inside a stealth shell."
+  },
+  {
+    name: "Poly(norbornene)-graft-poly(lactide)", aka: ["PNB-g-PLA", "polynorbornene-g-PLA", "PLA bottlebrush"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(lactide)"],
+    monomer: "polylactide-functional norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "polyester", "biodegradable", "self-assembly", "specialty"],
+    note: "The degradable bottlebrush, and the one that makes the architecture visible to the eye. Bottlebrush block copolymers assemble into lamellae with periods of hundreds of nanometres against the tens a linear block copolymer manages, because the crowded side chains stretch the backbone and there are no entanglements to slow the ordering. Those periods fall in the range of visible wavelengths, so the films are structurally coloured photonic crystals whose reflected colour is set by molar mass alone. The polylactide side chains then hydrolyse, which a polystyrene brush will not."
+  },
+  {
+    name: "Molecular bottlebrush by ATRP grafting-from", aka: ["molecular brush", "PBiBEM-g-PMMA", "grafting-from bottlebrush", "polymer brush (molecular)"],
+    type: "copolymer", arch: "bottlebrush", components: ["Poly(2-hydroxyethyl methacrylate)", "Poly(methyl methacrylate)"],
+    monomer: "poly(2-(2-bromoisobutyryloxy)ethyl methacrylate) macroinitiator, then grafted monomer", cls: "Bottlebrush copolymer (ATRP grafting-from)", cas: null,
+    tags: ["copolymer", "bottlebrush", "acrylic", "methacrylate", "specialty"],
+    note: "The other route, and the one that inverts the trade-off. Rather than polymerising a pre-made side chain, a backbone is built carrying an initiator on every repeat - typically by esterifying poly(2-hydroxyethyl methacrylate) with a bromoisobutyryl group - and the side chains are grown outward by atom transfer radical polymerisation. The backbone can be made very long, which grafting-through struggles with, but the side chains grow crowded together where radicals sit close, so termination between neighbours becomes the limiting problem and conversion is deliberately kept low. Grafting-through buys certainty about grafting density; grafting-from buys backbone length. Neither gives both."
+  },
+  {
+    name: "Bottlebrush poly(dimethylsiloxane) elastomer", aka: ["PDMS bottlebrush elastomer", "supersoft elastomer", "solvent-free gel"],
+    type: "copolymer", arch: "bottlebrush", components: ["Poly(dimethylsiloxane)", "Poly(methyl methacrylate)"],
+    monomer: "PDMS methacrylate macromonomer, crosslinked", cls: "Bottlebrush network (elastomer)", cas: null,
+    tags: ["copolymer", "bottlebrush", "elastomer", "silicone", "biomedical", "specialty"],
+    note: "A way to make a solid as soft as tissue with no solvent in it. An ordinary elastomer cannot be softened much below about 100 kPa, because softening means lengthening the strands between crosslinks and entanglements then take over. Grafting dense side chains onto those strands dilutes the entanglements from the inside: the side chains hold neighbouring backbones apart, and the network reaches a few kPa while staying completely dry. Conventional gels reach that softness only by holding solvent, which evaporates or leaches out. These match the stiffness of brain and fat tissue and stay where they are put."
+  },
+  {
+    name: "DNA bottlebrush", aka: ["DNA molecular brush", "DNA-polymer bottlebrush", "brush DNA"],
+    type: "copolymer", arch: "bottlebrush", components: ["Deoxyribonucleic acid", "Poly(ethylene oxide)"],
+    monomer: "DNA macromonomer, or synthetic backbone grafted with DNA", cls: "Bottlebrush copolymer (nucleic acid hybrid)", cas: null,
+    tags: ["copolymer", "bottlebrush", "biopolymer", "self-assembly", "drug delivery", "biomedical", "specialty"],
+    note: "A bottlebrush with DNA as one of its two components, either as side chains grafted from a synthetic backbone or as a main chain wearing a synthetic corona. The corona stiffens the DNA substantially: effective persistence lengths near 250 nm have been measured by nanopore and by AFM, against 50 nm for bare duplex DNA. That stiffening does not by itself buy liquid crystallinity, because the corona thickens the molecule faster than it rigidifies it, so the effective aspect ratio of persistence length over diameter actually falls. See the Chain Dimensions tool, where those numbers appear and a persistence length can be turned into a real chain size."
+  }
 ];
 
 // Provenance / copyright-management information for the dataset above. Not
