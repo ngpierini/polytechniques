@@ -854,6 +854,57 @@
         target = sel;
         label = 'Highlighted fragment';
         hint = ' <span' + dim + '>(bonds crossing the selection edge count as connections, not H)</span>';
+      } else if (starCount === 2 && whole.length && brackets.some(function (r) { return r.role === 'sidechain' && r.atomIds; })) {
+        // A bottlebrush has two repeats, so one mass cannot describe it: the
+        // drawn unit is a backbone repeat carrying exactly ONE side-chain unit
+        // plus an end group, and quoting that as "the repeat unit" invites it
+        // being read as the mass that repeats along the chain. Report the two
+        // repeats separately and say what the leftover end group is.
+        var sideRect = brackets.filter(function (r) { return r.role === 'sidechain' && r.atomIds; })[0];
+        var sideAtoms = whole.filter(function (a) { return sideRect.atomIds[a.id]; });
+        // The end group is what hangs beyond the side chain: flood outward from
+        // the unit without re-entering it, and keep whatever does not reach the
+        // backbone. For mPEO that is the methyl, for a lactide graft the -OH.
+        var adjM = {};
+        atoms.forEach(function (a) { adjM[a.id] = []; });
+        bonds.forEach(function (b) { if (adjM[b.a]) adjM[b.a].push(b.b); if (adjM[b.b]) adjM[b.b].push(b.a); });
+        var mainIds = mainChainIds() || {};
+        var capIds = {};
+        Object.keys(sideRect.atomIds).forEach(function (uid) {
+          (adjM[uid] || []).forEach(function (nb) {
+            if (sideRect.atomIds[nb] || capIds[nb]) return;
+            var stack = [nb], seenF = {}, reachesMain = false, frag = [];
+            seenF[nb] = true;
+            while (stack.length) {
+              var u = stack.pop(); frag.push(u);
+              if (mainIds[u]) reachesMain = true;
+              (adjM[u] || []).forEach(function (v) {
+                if (sideRect.atomIds[v] || seenF[v]) return;
+                seenF[v] = true; stack.push(v);
+              });
+            }
+            if (!reachesMain) frag.forEach(function (id) { capIds[id] = true; });
+          });
+        });
+        var backAtoms = whole.filter(function (a) { return !sideRect.atomIds[a.id] && !capIds[a.id]; });
+        var capAtoms = whole.filter(function (a) { return capIds[a.id]; });
+        var sideRes = fragmentMass(sideAtoms), backRes = fragmentMass(backAtoms);
+        if (!sideRes.unknown && !backRes.unknown && sideAtoms.length && backAtoms.length) {
+          var capRes = capAtoms.length ? fragmentMass(capAtoms) : null;
+          massReadout.hidden = false;
+          massReadout.innerHTML =
+            'Backbone repeat (m): ' + formatFormula(backRes.counts) + ' &middot; <strong>' + backRes.mass.toFixed(2) + ' g/mol</strong>' +
+            ' <span' + dim + '>&middot;</span> ' +
+            'side chain (n): ' + formatFormula(sideRes.counts) + ' &middot; <strong>' + sideRes.mass.toFixed(2) + ' g/mol</strong>' +
+            (capRes && !capRes.unknown
+              ? ' <span' + dim + '>&middot; end group ' + formatFormula(capRes.counts) + ' &middot; ' + capRes.mass.toFixed(2) + ' g/mol</span>'
+              : '') +
+            ' <span' + dim + '>&middot; a backbone repeat weighs ' + backRes.mass.toFixed(2) + ' + n &times; ' + sideRes.mass.toFixed(2) +
+            (capRes && !capRes.unknown ? ' + ' + capRes.mass.toFixed(2) : '') + '</span>';
+          return;
+        }
+        target = whole;
+        label = 'Repeat unit';
       } else if (starCount === 2 && whole.length) {
         // Two explicit "*" ends already define the repeat unit, so weigh all of
         // it regardless of the cosmetic bracket's size (the bracket is drawn
@@ -1363,12 +1414,16 @@
           // Each drawn box adds a repeat-unit bracket, snapped tight onto the
           // backbone bonds. One = a homopolymer unit; two or more = a copolymer
           // (one block each). Undo removes the last.
-          brackets.push(snapBracketTight({ x1: draggingBracketPreview.x1, y1: draggingBracketPreview.y1, x2: pos.x, y2: pos.y }));
+          brackets.push(makeDrawnBracket({ x1: draggingBracketPreview.x1, y1: draggingBracketPreview.y1, x2: pos.x, y2: pos.y }));
+          labelDrawnBrackets();
           var statusEl = document.getElementById('mol-status');
           if (statusEl) {
-            statusEl.textContent = brackets.length >= 2
-              ? brackets.length + ' repeat units bracketed. Search identifies each block and reports the copolymer (undo removes the last bracket).'
-              : 'Repeat unit bracketed. Add another bracket for a copolymer, or press Search this structure.';
+            var sides = brackets.filter(function (r) { return r.role === 'sidechain'; }).length;
+            statusEl.textContent = sides
+              ? 'Side chain bracketed (n) off the main chain (m) — a bottlebrush. Press Search this structure.'
+              : brackets.length >= 2
+                ? brackets.length + ' repeat units bracketed. Search identifies each block and reports the copolymer (undo removes the last bracket).'
+                : 'Repeat unit bracketed. Add another bracket for a copolymer, or press Search this structure.';
           }
         }
         draggingBracketHandle = null; draggingBracketPreview = null;
@@ -2628,6 +2683,91 @@
       }
     }
 
+    // How badly a candidate layout runs into itself: non-bonded atoms sitting on
+    // top of each other, plus bonds crossing. Measured in units of the drawing's
+    // own median bond length, so the two candidates can be compared even though
+    // one comes back in RDKit's units and the other in canvas pixels.
+    function layoutCrowding(parsed) {
+      var A = parsed.atoms, B = parsed.bonds;
+      if (!B.length) return 0;
+      var lens = B.map(function (b) {
+        return Math.hypot(A[b.a - 1].x - A[b.b - 1].x, A[b.a - 1].y - A[b.b - 1].y);
+      }).sort(function (p, q) { return p - q; });
+      var unit = lens[Math.floor(lens.length / 2)] || 1;
+      var bonded = {};
+      B.forEach(function (b) { bonded[b.a + '-' + b.b] = 1; bonded[b.b + '-' + b.a] = 1; });
+      var lim = unit * 0.75, hits = 0, i, j;
+      for (i = 0; i < A.length; i++) {
+        for (j = i + 1; j < A.length; j++) {
+          if (bonded[(i + 1) + '-' + (j + 1)]) continue;
+          if (Math.hypot(A[i].x - A[j].x, A[i].y - A[j].y) < lim) hits++;
+        }
+      }
+      // Crossed bonds read as badly as overlapping atoms, and a folded-back
+      // pendant arm usually produces them before it produces true overlaps.
+      function crosses(p1, p2, p3, p4) {
+        function side(a, b, c) { return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x); }
+        var d1 = side(p3, p4, p1), d2 = side(p3, p4, p2), d3 = side(p1, p2, p3), d4 = side(p1, p2, p4);
+        return ((d1 > 0) !== (d2 > 0)) && ((d3 > 0) !== (d4 > 0));
+      }
+      for (i = 0; i < B.length; i++) {
+        for (j = i + 1; j < B.length; j++) {
+          var b1 = B[i], b2 = B[j];
+          if (b1.a === b2.a || b1.a === b2.b || b1.b === b2.a || b1.b === b2.b) continue;
+          if (crosses(A[b1.a - 1], A[b1.b - 1], A[b2.a - 1], A[b2.b - 1])) hits++;
+        }
+      }
+      return hits;
+    }
+
+    // How big this layout would be drawn on the current canvas: the same scale
+    // fitParsedCoords will pick. Larger means more readable, so it separates two
+    // layouts that collide equally but use the canvas differently.
+    function layoutScale(parsed) {
+      var lens = parsed.bonds.map(function (b) {
+        var p = parsed.atoms[b.a - 1], q = parsed.atoms[b.b - 1];
+        return Math.hypot(p.x - q.x, p.y - q.y);
+      }).filter(function (l) { return l > 0.01; }).sort(function (x, y) { return x - y; });
+      var unit = lens.length ? lens[Math.floor(lens.length / 2)] : 1.5;
+      var scale = BOND_LEN / unit;
+      var xs = parsed.atoms.map(function (a) { return a.x; });
+      var ys = parsed.atoms.map(function (a) { return a.y; });
+      var w = Math.max.apply(null, xs) - Math.min.apply(null, xs);
+      var h = Math.max.apply(null, ys) - Math.min.apply(null, ys);
+      if (w > 0) scale = Math.min(scale, (canvas.width - 70) / w);
+      if (h > 0) scale = Math.min(scale, (canvas.height - 70) / h);
+      return scale;
+    }
+
+    // layoutRepeatUnit draws the textbook picture - backbone horizontal, pendants
+    // hanging off it - by lifting each pendant's shape from RDKit and rotating it
+    // rigidly outward. That is right for a vinyl polymer with a small side group,
+    // but a bottlebrush's pendant is a whole chain, and swinging it onto the
+    // backbone normal can fold it back through itself. So build both candidates,
+    // count how badly each runs into itself, and keep the cleaner one; ties go to
+    // the horizontal backbone, which leaves every structure that already drew
+    // well exactly as it was.
+    function layoutBest(parsed) {
+      var rdkit = parsed.atoms.map(function (a) { return { x: a.x, y: a.y }; });
+      function restore() { parsed.atoms.forEach(function (a, i) { a.x = rdkit[i].x; a.y = rdkit[i].y; }); }
+
+      if (!layoutRepeatUnit(parsed)) { restore(); orientRepeatUnit(parsed); return; }
+      var zig = parsed.atoms.map(function (a) { return { x: a.x, y: a.y }; });
+      var zigCrowd = layoutCrowding(parsed), zigScale = layoutScale(parsed);
+
+      restore();
+      orientRepeatUnit(parsed);
+      var rdCrowd = layoutCrowding(parsed);
+      // Fewer collisions always wins. Failing that, take the one that draws
+      // bigger on this canvas: a tall thin drawing has to be scaled down to fit,
+      // which is what makes a long pendant arm hard to read even when nothing
+      // actually overlaps. The margin keeps a near-tie on the horizontal
+      // backbone, so the textbook picture is only given up for a real gain.
+      if (rdCrowd < zigCrowd) return;
+      if (rdCrowd === zigCrowd && layoutScale(parsed) > zigScale * 1.15) return;
+      parsed.atoms.forEach(function (a, i) { a.x = zig[i].x; a.y = zig[i].y; });
+    }
+
     // A repeat unit marked by two "*" chain ends gets a cosmetic bracket. Put
     // the two vertical bars ON the bonds that leave the unit (each "*"-to-
     // backbone bond), the way a polymer bracket is drawn, instead of boxing the
@@ -2736,6 +2876,74 @@
       return extractRepeatUnit(tight).boundaryCount === 2 ? tight : rect;
     }
 
+    // The main chain is the path between the two open ends. Returns the ids on
+    // it, or null when the drawing has no two chain ends to define one.
+    function mainChainIds() {
+      var stars = atoms.filter(function (a) { return a.el === '*'; });
+      if (stars.length !== 2) return null;
+      var adj = {};
+      atoms.forEach(function (a) { adj[a.id] = []; });
+      bonds.forEach(function (b) {
+        if (adj[b.a]) adj[b.a].push(b.b);
+        if (adj[b.b]) adj[b.b].push(b.a);
+      });
+      var prev = {}, seen = {}, q = [stars[0].id];
+      seen[stars[0].id] = true;
+      while (q.length) {
+        var u = q.shift();
+        if (u === stars[1].id) break;
+        adj[u].forEach(function (v) { if (!seen[v]) { seen[v] = true; prev[v] = u; q.push(v); } });
+      }
+      if (!seen[stars[1].id]) return null;
+      var path = {};
+      for (var c = stars[1].id; c !== undefined; c = prev[c]) path[c] = true;
+      return path;
+    }
+
+    // Turn a dragged box into the right kind of bracket. A second bracket used to
+    // mean a second block without asking where it sat, so there was no way to
+    // draw a bottlebrush: its pendant repeat is not another block further along
+    // the chain. A bracket whose atoms all lie OFF the main chain is a side
+    // chain, and the drawing already says which that is - no extra tool or mode
+    // needed, just where the user dragged the box.
+    function makeDrawnBracket(rect) {
+      var x1 = Math.min(rect.x1, rect.x2), x2 = Math.max(rect.x1, rect.x2);
+      var y1 = Math.min(rect.y1, rect.y2), y2 = Math.max(rect.y1, rect.y2);
+      var idSet = {}, count = 0;
+      atoms.forEach(function (a) {
+        if (a.el === '*') return;
+        if (a.x >= x1 && a.x <= x2 && a.y >= y1 && a.y <= y2) { idSet[a.id] = true; count++; }
+      });
+      var main = mainChainIds();
+      var offMain = !!main && count > 0 && Object.keys(idSet).every(function (id) { return !main[id]; });
+      if (offMain) {
+        var ang = angledBracketForIds(idSet);
+        // Only a unit the chain enters once and leaves once can carry a bracket;
+        // anything else (a box over a branch point, or over a whole end group)
+        // falls through to the ordinary block bracket rather than being drawn as
+        // a repeat it is not.
+        if (ang) {
+          ang.atomIds = idSet;
+          ang.role = 'sidechain';
+          return ang;
+        }
+      }
+      var box = snapBracketTight(rect);
+      if (main && count > 0) box.role = 'backbone';
+      return box;
+    }
+
+    // Subscripts only mean anything once a side chain is in the picture: until
+    // then the brackets are blocks and the existing positional lettering applies.
+    function labelDrawnBrackets() {
+      if (!brackets.some(function (r) { return r.role === 'sidechain'; })) return;
+      var m = 0, n = 0;
+      brackets.forEach(function (r) {
+        if (r.role === 'sidechain') { n++; r.label = n > 1 ? 'n' + n : 'n'; }
+        else { m++; r.label = m > 1 ? 'm' + m : 'm'; }
+      });
+    }
+
     function importSmiles() {
       var input = document.getElementById('mol-smiles-input');
       var text = input && input.value.trim();
@@ -2756,7 +2964,7 @@
           smilesNote('The aromatic form could not be kekulized; try writing the SMILES in Kekulé form (C1=CC=CC=C1).');
           return;
         }
-        if (!layoutRepeatUnit(parsed)) orientRepeatUnit(parsed);
+        layoutBest(parsed);
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
@@ -2805,7 +3013,7 @@
           smilesNote('Could not draw ' + p.name + '. Use the publication links on its card instead.');
           return;
         }
-        if (!layoutRepeatUnit(parsed)) orientRepeatUnit(parsed);
+        layoutBest(parsed);
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
