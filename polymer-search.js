@@ -3154,6 +3154,20 @@
     // sits cleanly on its own backbone bonds.
     function loadCopolymerStructure(entry) {
       if (!entry.components || entry.components.length < 2) { smilesNote('This copolymer has no drawable blocks.'); return; }
+      // This path chains the components end to end, which says they follow one
+      // another along a single chain. That is true of a block copolymer and false
+      // of a bottlebrush, whose second component hangs off the first as side
+      // chains - and false again of a brush-arm star, where the arms are whole
+      // bottlebrushes joined at a crosslinked core. Drawing either as a diblock
+      // would state something about the architecture that is not so, and a
+      // bottlebrush that can be drawn carries its own atoms and never gets here.
+      if (entry.arch === 'bottlebrush') {
+        smilesNote(entry.name + ' has no repeat unit on file. Its components are not blocks along one chain, so it is not drawn as a block copolymer — use the publication links on its card.');
+        var archEl = document.getElementById('mol-status');
+        if (archEl) archEl.textContent = '';
+        renderResults([]);
+        return;
+      }
       smilesNote(rdkitPromise ? 'Drawing ' + entry.name + '…' : 'Loading the chemistry engine (about 7 MB, one time; it stays cached)…');
       ensureRDKit().then(function (RDKit) {
         var db = window.POLYMER_DB || [];

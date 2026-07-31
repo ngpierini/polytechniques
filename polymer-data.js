@@ -1076,6 +1076,35 @@ window.POLYMER_DB = [
     monomer: "DNA macromonomer, or synthetic backbone grafted with DNA", cls: "Bottlebrush copolymer (nucleic acid hybrid)", cas: null,
     tags: ["copolymer", "bottlebrush", "biopolymer", "self-assembly", "drug delivery", "biomedical", "specialty"],
     note: "A bottlebrush with DNA as one of its two components, either as side chains grafted from a synthetic backbone or as a main chain wearing a synthetic corona. The corona stiffens the DNA substantially: effective persistence lengths near 250 nm have been measured by nanopore and by AFM, against 50 nm for bare duplex DNA. That stiffening does not by itself buy liquid crystallinity, because the corona thickens the molecule faster than it rigidifies it, so the effective aspect ratio of persistence length over diameter actually falls. See the Chain Dimensions tool, where those numbers appear and a persistence length can be turned into a real chain size."
+  },
+  {
+    name: "Brush-arm star polymer", aka: ["BASP", "brush-arm star", "PEG BASP", "brush-first star polymer"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(ethylene oxide)"],
+    monomer: "PEG-norbornene macromonomer, then a bis-norbornene crosslinker", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "polyether", "water-soluble", "self-assembly", "drug delivery", "biomedical", "specialty"],
+    note: "The brush-first route, and the reason a bottlebrush can be turned into a nanoparticle without a template. Macromonomers are polymerised first to give living bottlebrushes; a bis-norbornene crosslinker is then added and couples those brushes together through their living chain ends, so the arms of the resulting star are themselves bottlebrushes rather than linear chains. Particle size is set by how much crosslinker is added, which makes a size series a matter of pipetting rather than of new synthesis. The original report used a photodegradable o-nitrobenzyl crosslinker and nitroxide labels, so the core could be cut with UV light and the core and shell environments distinguished by EPR. Liu, Burts and co-workers (Johnson group, MIT), J. Am. Chem. Soc. 2012, 134, 16337."
+  },
+  {
+    name: "Mikto-brush-arm star polymer", aka: ["MBASP", "mikto-BASP", "mikto-brush-arm star", "miktoarm brush-arm star polymer"],
+    type: "copolymer", arch: "bottlebrush", components: ["Poly(ethylene oxide)", "Polystyrene"],
+    monomer: "PEG-norbornene and polystyrene-norbornene macromonomers, crosslinked together", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "polyether", "styrenic", "self-assembly", "specialty"],
+    note: "What happens when two different bottlebrushes are crosslinked into the same star. Each macromonomer is polymerised separately to a living bottlebrush, the two are mixed in a chosen ratio, and only then is the crosslinker added, so composition is set by a mixing ratio rather than by making a new macromonomer for every point in the series. Because the arms are homopolymer brushes rather than brushes with mixed side chains, the domains inside one particle can be large. Hydrodynamic diameters were 28-32 nm in THF at every composition, both blocks being solvated; in water the polystyrene-rich particles aggregate instead, reaching about 166 nm, while PEG-rich ones stay single molecules with the polystyrene arms shielded. Irradiating the photocleavable core at 365 nm releases the arms as roughly 10 nm bottlebrushes. Shibuya, Nguyen and Johnson (MIT), ACS Macro Lett. 2017, 6, 963."
+  },
+  {
+    name: "Poly(norbornene)-graft-poly(2-ethyl-2-oxazoline)", aka: ["PNB-g-PEtOx", "polyoxazoline bottlebrush", "POx bottlebrush", "PEtOx bottlebrush"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(2-ethyl-2-oxazoline)"],
+    monomer: "norbornene-terminated poly(2-ethyl-2-oxazoline) macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "water-soluble", "biomedical", "specialty"],
+    needsStructure: true,
+    note: "A bottlebrush whose side chains are polyoxazoline rather than PEG. Polyoxazoline is water-soluble and stealthy like PEG but is a polyamide, so it is not degraded by the oxidative chemistry that eventually cuts a polyether, which matters for anything meant to circulate. The side chains are made by cationic ring-opening polymerisation from methyl tosylate and terminated onto a norbornene acid, then that macromonomer is polymerised through its strained ring by a Grubbs third-generation catalyst. Crosslinking those brushes brush-first gave stars of 21-27 nm. Their point was metal-free MRI contrast: a nitroxide radical carried at the core-shell interface gave transverse relaxivities of 1.83-2.28 per mM per s, against 0.14-0.19 for the longitudinal - an organic contrast agent that avoids gadolinium entirely. Alvaradejo and co-workers (Johnson group, MIT), ACS Macro Lett. 2019, 8, 473. Structure not drawn: the paper does not give the norbornene acid used to cap the chain, so the linker would have to be invented."
+  },
+  {
+    name: "Bottlebrush prodrug", aka: ["bottlebrush polymer prodrug", "drug-loaded bottlebrush", "bivalent brush polymer", "polymer prodrug bottlebrush"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(ethylene oxide)"],
+    monomer: "drug-bearing PEG-norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "polyether", "drug delivery", "biomedical", "water-soluble", "specialty"],
+    note: "The argument for grafting-through in one line: the drug is attached to the macromonomer before polymerisation, so loading is fixed by the monomer rather than left to a post-polymerisation coupling that never quite goes to completion. Every repeat carries its drug, and the batch has one composition rather than a distribution of them. The first version carried doxorubicin and camptothecin on the same PEG-norbornene macromonomer through a photocleavable linker, and was about thirty times more toxic to cells after irradiation than before. The later work made the linker the design variable rather than the payload: tuning traceless linkers so that release kinetics measured in vitro predicted what the drug did in a tumour, which turned prodrug design into something you can calculate instead of screen. Johnson, Lu, Burts and co-workers, Macromolecules 2010, 43, 10326; Vohidov and co-workers (Johnson group, MIT), J. Am. Chem. Soc. 2021, 143, 4714."
   }
 ];
 
