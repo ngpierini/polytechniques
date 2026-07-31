@@ -1120,11 +1120,23 @@
           var ax = bar.x - bar.ax * lim.neg, ay = bar.y - bar.ay * lim.neg;
           var bx = bar.x + bar.ax * lim.pos, by = bar.y + bar.ay * lim.pos;
           ends.push({ ax: ax, ay: ay, bx: bx, by: by });
+          // The ticks turn in toward the unit and can meet a bond just as the bar
+          // can, so they are cut back the same way. A shortened hook still reads
+          // as a bracket; one drawn through a bond does not.
+          var tA = clearRun(ax, ay, bar.tx, bar.ty, tick, bar.cutA, bar.cutB);
+          var tB = clearRun(bx, by, bar.tx, bar.ty, tick, bar.cutA, bar.cutB);
+          // Deliberate test seam. A bar or tick drawn through a bond it does not
+          // cut says the bracket cuts that bond, and it is not something the eye
+          // reliably catches at normal size - it was found by measurement, twice.
+          // The other data checkers run in node; this one needs a live canvas and
+          // RDKit, so it hangs off a hook: set window.__barCheck, load every
+          // entry, and it reports any bar that crosses something it should not.
+          if (window.__barCheck) window.__barCheck(bar, ax, ay, bx, by, tA, tB, atoms, bonds);
           ctx.beginPath();
-          ctx.moveTo(ax + bar.tx * tick, ay + bar.ty * tick);
+          ctx.moveTo(ax + bar.tx * tA, ay + bar.ty * tA);
           ctx.lineTo(ax, ay);
           ctx.lineTo(bx, by);
-          ctx.lineTo(bx + bar.tx * tick, by + bar.ty * tick);
+          ctx.lineTo(bx + bar.tx * tB, by + bar.ty * tB);
           ctx.stroke();
         });
         // Label the bar furthest along the chain, just beyond its outer end.
@@ -2807,6 +2819,26 @@
       if (upright) { bar.ax = 0; bar.ay = 1; bar.tx = vx >= 0 ? 1 : -1; bar.ty = 0; }
       else { bar.ax = -vy / m; bar.ay = vx / m; bar.tx = vx / m; bar.ty = vy / m; }
       return bar;
+    }
+
+    // How far a line may run from a point in one direction before it meets a bond
+    // it is not cutting, capped at "want" and kept a little clear of the meeting.
+    function clearRun(px, py, dx, dy, want, cutA, cutB) {
+      var lim = want, margin = 3;
+      bonds.forEach(function (b) {
+        if ((b.a === cutA && b.b === cutB) || (b.a === cutB && b.b === cutA)) return;
+        var p = atomById(b.a), q = atomById(b.b);
+        if (!p || !q) return;
+        var rx = q.x - p.x, ry = q.y - p.y;
+        var det = -dx * ry + rx * dy;
+        if (Math.abs(det) < 1e-9) return;
+        var ex = p.x - px, ey = p.y - py;
+        var s = (dx * ey - ex * dy) / det;
+        if (s < 0 || s > 1) return;
+        var t = (-ex * ry + rx * ey) / det;
+        if (t >= 0) lim = Math.min(lim, t - margin);
+      });
+      return Math.max(lim, 0);
     }
 
     // How far a bar may run before it meets a bond it is not cutting. A bar that
