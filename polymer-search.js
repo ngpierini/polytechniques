@@ -2753,25 +2753,6 @@
       A.forEach(function (a) { a.x *= k; a.y *= k; });
     }
 
-    // How big this layout would be drawn on the current canvas: the same scale
-    // fitParsedCoords will pick. Larger means more readable, so it separates two
-    // layouts that collide equally but use the canvas differently.
-    function layoutScale(parsed) {
-      var lens = parsed.bonds.map(function (b) {
-        var p = parsed.atoms[b.a - 1], q = parsed.atoms[b.b - 1];
-        return Math.hypot(p.x - q.x, p.y - q.y);
-      }).filter(function (l) { return l > 0.01; }).sort(function (x, y) { return x - y; });
-      var unit = lens.length ? lens[Math.floor(lens.length / 2)] : 1.5;
-      var scale = BOND_LEN / unit;
-      var xs = parsed.atoms.map(function (a) { return a.x; });
-      var ys = parsed.atoms.map(function (a) { return a.y; });
-      var w = Math.max.apply(null, xs) - Math.min.apply(null, xs);
-      var h = Math.max.apply(null, ys) - Math.min.apply(null, ys);
-      if (w > 0) scale = Math.min(scale, (canvas.width - 70) / w);
-      if (h > 0) scale = Math.min(scale, (canvas.height - 70) / h);
-      return scale;
-    }
-
     // layoutRepeatUnit draws the textbook picture - backbone horizontal, pendants
     // hanging off it - by lifting each pendant's shape from RDKit and rotating it
     // rigidly outward. That is right for a vinyl polymer with a small side group,
@@ -2786,20 +2767,20 @@
 
       if (!layoutRepeatUnit(parsed)) { restore(); orientRepeatUnit(parsed); return; }
       var zig = parsed.atoms.map(function (a) { return { x: a.x, y: a.y }; });
-      var zigCrowd = layoutCrowding(parsed), zigScale = layoutScale(parsed);
-      // A clean textbook drawing is never given up. Size alone is not worth it:
-      // trading the horizontal backbone for a slightly larger picture cost PMMA
-      // its familiar shape and left its bracket looking crooked.
+      var zigCrowd = layoutCrowding(parsed);
       if (zigCrowd === 0) return;
 
       restore();
       orientRepeatUnit(parsed);
-      var rdCrowd = layoutCrowding(parsed);
-      // Once the textbook layout does collide, fewer collisions wins; failing
-      // that, the one that draws bigger, since a tall thin drawing gets scaled
-      // down to fit and that is what makes a long pendant arm hard to read.
-      if (rdCrowd < zigCrowd) return;
-      if (rdCrowd === zigCrowd && layoutScale(parsed) > zigScale * 1.15) return;
+      // Fewer collisions wins, and a tie goes to the textbook backbone. Nothing
+      // else: an earlier version also preferred whichever drew bigger, which was
+      // wrong twice over. It depended on the canvas size, so the same polymer
+      // drew differently in different windows; and RDKit's layout can leave both
+      // chain ends low and close together, which puts the bracket bars in a
+      // huddle at one corner with the repeat unit sitting outside them. The
+      // horizontal backbone is what makes a polymer bracket read correctly, so
+      // it is only given up for a drawing that genuinely collides less.
+      if (layoutCrowding(parsed) < zigCrowd) return;
       parsed.atoms.forEach(function (a, i) { a.x = zig[i].x; a.y = zig[i].y; });
     }
 
