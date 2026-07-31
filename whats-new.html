@@ -28,7 +28,7 @@
 }
 </script>
 <script src="theme.js"></script>
-<script src="nav.js?v=11" defer></script>
+<script src="nav.js?v=12" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
@@ -52,6 +52,13 @@
     <p class="guide-note">
       This site keeps growing as I run into more things worth building. There's no fixed release schedule, so entries land whenever a tool or guide is ready, roughly newest first below. Have a suggestion? <a href="https://github.com/ngpierini/polytechniques/issues/new" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a>.
     </p>
+  </div>
+
+  <div class="card">
+    <h3>📐 Chain Dimensions: how big is one chain?</h3>
+    <p class="guide-note">A new tool for the other half of polymer characterisation: not what a chain is made of, but how it is shaped. Pick a polymer and a molar mass and it returns the <strong>persistence length</strong>, Kuhn length, contour length, end-to-end distance and radius of gyration, using the <strong>worm-like chain in its exact form</strong> rather than the Gaussian approximation, so it stays correct through the rod-to-coil crossover instead of only in the coil limit. A hundred base pairs of DNA comes back as a rod at 90% of its contour length; three kilobases comes back as a coil with a radius of gyration of 121&nbsp;nm.</p>
+    <p class="guide-note">The point of the database is that <strong>persistence length is not a material constant</strong>. It belongs to a chain in a particular solvent at a particular temperature, and for a charged chain it moves with ionic strength too, so every one of the 25 measurements is quoted with the conditions it was made under and several polymers carry more than one. Single-stranded DNA is 1&nbsp;nm in high salt and 2.2&nbsp;nm when the phosphates stop being screened; cellulose reads 6.5 or 9&nbsp;nm depending on which aggressive solvent dissolved it. Where the values disagree, the disagreement is the data. The 19 entries span from poly(ethylene oxide) at 0.35&nbsp;nm to an actin filament at 17&nbsp;µm, close to five orders of magnitude.</p>
+    <p class="guide-note">Where the backbone is a simple aliphatic one the page also predicts l<sub>p</sub> from the characteristic ratio by geometry alone, and agrees with measurement to within about 15% for polyethylene, polystyrene, PMMA and polypropylene. It refuses to predict for aromatic backbones, because that route genuinely fails there: bisphenol-A polycarbonate has C<sub>&infin;</sub> = 2.4, which the formula turns into 0.22&nbsp;nm against a measured 1.0. Open <a href="chain-dimensions.html">Chain Dimensions</a>.</p>
   </div>
 
   <div class="card">

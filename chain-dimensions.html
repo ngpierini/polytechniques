@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chain Dimensions: PolyTechniques</title>
+<meta name="description" content="Persistence length, Kuhn length, contour length and radius of gyration for real polymers, from a sourced database of measured values with their solvents. Worm-like chain model, exact across the rod to coil crossover.">
+<link rel="canonical" href="https://getpolytechniques.com/chain-dimensions.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Chain Dimensions: PolyTechniques">
+<meta property="og:description" content="Persistence length, Kuhn length and radius of gyration for real polymers, from measured values quoted with their solvents.">
+<meta property="og:url" content="https://getpolytechniques.com/chain-dimensions.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Chain Dimensions: PolyTechniques">
+<meta name="twitter:description" content="Persistence length, Kuhn length and radius of gyration from measured values quoted with their solvents.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Chain Dimensions",
+  "url": "https://getpolytechniques.com/chain-dimensions.html",
+  "description": "Persistence length, Kuhn length, contour length and radius of gyration for real polymers, using the worm-like chain model over a sourced database of measured values.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js"></script>
+<script src="nav.js?v=12" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=60">
+<style>
+  .cd-controls { display: flex; flex-wrap: wrap; gap: 14px; margin: 4px 0 12px; }
+  .cd-control { display: flex; flex-direction: column; gap: 4px; flex: 1 1 220px; min-width: 0; }
+  .cd-label { font-size: 0.82rem; color: var(--text-dim); }
+  .cd-select, .cd-input { font: inherit; padding: 7px 9px; border: 1px solid var(--border);
+    border-radius: 7px; background: var(--card); color: var(--text); width: 100%; }
+  .cd-note { font-size: 0.85rem; color: var(--text-dim); margin: 2px 0 10px; line-height: 1.45; }
+  .cd-scale { width: 100%; height: 132px; }
+  .cd-scale .cd-tick { fill: var(--text-dim); font-size: 10px; }
+  .cd-scale .cd-axis { stroke: var(--border); stroke-width: 1; }
+  .cd-scale .cd-dot { fill: var(--text-dim); opacity: 0.55; }
+  .cd-scale .cd-dot-sel { fill: var(--primary); opacity: 1; }
+  .cd-scale .cd-name { fill: var(--text); font-size: 11px; font-weight: 600; }
+  .cd-regime { display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 0.78rem; font-weight: 600; }
+  .cd-rod { background: #fde8e8; color: #9b1c1c; }
+  .cd-semi { background: #fef3c7; color: #92400e; }
+  .cd-coil { background: #e0f2fe; color: #075985; }
+  @media (prefers-color-scheme: dark) {
+    .cd-rod { background: #3b1414; color: #fca5a5; }
+    .cd-semi { background: #3a2c0a; color: #fcd34d; }
+    .cd-coil { background: #0c2a3d; color: #7dd3fc; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Chain Dimensions</h1>
+      <p class="subtitle">How big is one chain? Persistence length, contour length and radius of gyration, from measured values quoted with their solvents</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>Persistence length is not a material constant</h3>
+    <p class="guide-note">
+      The <strong>persistence length</strong> l<sub>p</sub> is the distance over which a chain keeps pointing the same way. Below it the chain is effectively a rigid rod; far above it, direction is forgotten and the chain is a random walk. It is the single number that decides whether a polymer behaves like a rod, a coil, or something awkward in between.
+    </p>
+    <p class="guide-note">
+      It belongs to a chain <em>in a particular solvent at a particular temperature</em>, and for a charged chain it moves with ionic strength as well. Single-stranded DNA is about 1&nbsp;nm in high salt and roughly twice that when the salt is removed and the phosphates stop being screened. Xanthan is 120&nbsp;nm as an ordered helix and far more flexible once heated through its order&ndash;disorder transition. Every value in this database is therefore quoted with the conditions it was measured under, and several materials carry more than one. <strong>Where they disagree, the disagreement is the data.</strong>
+    </p>
+    <div class="guide-formula">
+      &lang;R&sup2;&rang; = 2&thinsp;l<sub>p</sub>L &minus; 2&thinsp;l<sub>p</sub>&sup2;&thinsp;(1 &minus; e<sup>&minus;L/l<sub>p</sub></sup>) &nbsp;&nbsp;&nbsp; b = 2&thinsp;l<sub>p</sub> &nbsp;&nbsp;&nbsp; L = (M / M<sub>0</sub>) &times; l<sub>m</sub>
+    </div>
+    <p class="guide-note">
+      This is the <strong>worm-like chain</strong>, used in its exact form rather than the Gaussian approximation, so it stays correct through the rod-to-coil crossover instead of only in the coil limit. It collapses to &lang;R&sup2;&rang; = L&sup2; for a short chain and to 2&thinsp;l<sub>p</sub>L for a long one, and the radius of gyration uses the matching Benoit&ndash;Doty expression.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Calculator</h3>
+    <div class="cd-controls">
+      <div class="cd-control" style="flex-basis:100%;">
+        <span class="cd-label">Polymer</span>
+        <select id="cd-material" class="cd-select" aria-label="Polymer"></select>
+      </div>
+      <div class="cd-control">
+        <span class="cd-label">Measured under</span>
+        <select id="cd-measurement" class="cd-select" aria-label="Measurement conditions"></select>
+      </div>
+      <div class="cd-control">
+        <span class="cd-label" id="cd-mass-label">Molar mass (g/mol)</span>
+        <input type="number" id="cd-mass" class="cd-input" value="100000" min="1" step="1000">
+      </div>
+    </div>
+    <p class="cd-note" id="cd-matnote"></p>
+
+    <div class="stat-grid" id="cd-stats"></div>
+
+    <p class="guide-note" id="cd-read" style="margin-top:12px;"></p>
+  </div>
+
+  <div class="card">
+    <h3>Where this sits</h3>
+    <p class="cd-note">
+      Every measurement in the database on one logarithmic axis. The span from the most flexible synthetic chain to a cytoskeletal filament is close to five orders of magnitude, which is why no single mental model of &ldquo;a polymer chain&rdquo; covers all of it.
+    </p>
+    <svg id="cd-scale" class="cd-scale" viewBox="0 0 720 132" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Persistence lengths on a logarithmic scale"></svg>
+  </div>
+
+  <div class="card">
+    <h3>The database</h3>
+    <p class="cd-note">Every measured value, with the conditions it was measured under. A polymer appears once per measurement.</p>
+    <div class="table-scroll">
+      <table class="recipe" id="cd-table">
+        <thead><tr><th>Polymer</th><th>l<sub>p</sub> (nm)</th><th>Solvent / state</th><th>T (&deg;C)</th><th>Method</th><th>Confidence</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Predicting l<sub>p</sub> from the characteristic ratio, and where that fails</h3>
+    <p class="guide-note">
+      For a simple aliphatic backbone the persistence length follows from the <strong>characteristic ratio</strong> C<sub>&infin;</sub> by geometry alone: b = C<sub>&infin;</sub>&thinsp;l / cos(&theta;/2) with &theta; = 180&deg; &minus; the backbone bond angle, and l<sub>p</sub> = b/2. Since C<sub>&infin;</sub> is tabulated far more widely than l<sub>p</sub> is, that route is often the only one available.
+    </p>
+    <div class="table-scroll">
+      <table class="recipe" id="cd-pred-table">
+        <thead><tr><th>Polymer</th><th>C<sub>&infin;</sub></th><th>Predicted l<sub>p</sub></th><th>Measured l<sub>p</sub></th><th>Ratio</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="guide-note" style="margin-top:12px;">
+      <strong>It fails for aromatic backbones, and not by a little.</strong> Bisphenol-A polycarbonate has C<sub>&infin;</sub> = 2.4, which the formula turns into 0.22&nbsp;nm &mdash; against a measured value near 1.0&nbsp;nm. The ratio is defined <em>per backbone bond</em>, and a polycarbonate repeat is a rigid phenylene plus a long virtual bond, not the tetrahedral C&ndash;C the geometry assumes. Entries where the route does not apply are marked and no prediction is offered for them, rather than quietly printing a number that is wrong by a factor of four.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <p class="guide-note">
+      A GPC molar mass is a hydrodynamic-volume measurement calibrated against polystyrene, so a stiff chain and a flexible one of the same true mass do not elute together &mdash; see <a href="gpc-calibration.html">GPC Calibration</a> for the Mark&ndash;Houwink correction. The <a href="polymer-search.html">Polymer Search</a> database covers structure and identity, and <a href="thermal-analysis.html">Thermal Analysis</a> covers the DSC, TGA and DMA side.
+    </p>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <p>Reagent data and lab guidance are references for convenience. Always verify against your reagent's COA and your institution's safety protocols.</p>
+</footer>
+
+<script src="chain-data.js?v=1"></script>
+<script>
+(function () {
+  "use strict";
+  var DATA = window.CHAIN_DATA || [];
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[<>&]/g, function (c) { return c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&amp;"; });
+  }
+  function statTile(label, value, sub) {
+    return '<div class="stat"><div class="label">' + label + '</div><div class="value">' + value +
+           '</div><div class="sub">' + (sub || "") + "</div></div>";
+  }
+
+  /* ---------------- worm-like chain ----------------
+     Exact Kratky-Porod, not the Gaussian limit, so the rod-to-coil crossover is
+     right: <R2> -> L^2 for a short chain and 2*lp*L for a long one. Rg uses the
+     matching Benoit-Doty expression, which tends to L^2/12 and to <R2>/6 in the
+     same two limits. Both were checked numerically against those limits. */
+  function meanSqEnd(L, lp) {
+    return 2 * lp * L - 2 * lp * lp * (1 - Math.exp(-L / lp));
+  }
+  function radiusGyrationSq(L, lp) {
+    return (lp * L / 3) - lp * lp + (2 * lp * lp * lp / L)
+         - (2 * Math.pow(lp, 4) / (L * L)) * (1 - Math.exp(-L / lp));
+  }
+  // b = C_inf * l / cos(theta/2), theta = 180 - backbone angle. lp = b/2.
+  function predictedLp(e) {
+    if (!e.geom || !e.geom.simple || e.cInf == null) return null;
+    var theta = 180 - e.geom.angle;
+    return (e.cInf * e.geom.bond / Math.cos((theta / 2) * Math.PI / 180)) / 2;
+  }
+
+  function fmtLen(nm) {
+    if (nm >= 1e6) return (nm / 1e6).toFixed(nm / 1e6 < 10 ? 2 : 1) + " mm";
+    if (nm >= 1000) return (nm / 1000).toFixed(nm / 1000 < 10 ? 2 : 1) + " µm";
+    if (nm >= 1) return nm.toFixed(nm < 10 ? 2 : 1) + " nm";
+    return nm.toFixed(3) + " nm";
+  }
+  function byId(id) { for (var i = 0; i < DATA.length; i++) if (DATA[i].id === id) return DATA[i]; return null; }
+
+  var CLS_ORDER = ["flexible", "semiflexible", "rigid", "aromatic"];
+  var CLS_LABEL = {
+    flexible: "Flexible coils", semiflexible: "Semiflexible",
+    rigid: "Rigid rods", aromatic: "Aromatic backbones"
+  };
+
+  var state = { id: "ps", mIdx: 0, mass: 100000 };
+
+  function fillMaterials() {
+    var sel = $("cd-material"), html = "", c, i, group;
+    for (c = 0; c < CLS_ORDER.length; c++) {
+      group = DATA.filter(function (e) { return e.cls === CLS_ORDER[c]; });
+      if (!group.length) continue;
+      html += '<optgroup label="' + esc(CLS_LABEL[CLS_ORDER[c]]) + '">';
+      for (i = 0; i < group.length; i++) {
+        html += '<option value="' + esc(group[i].id) + '">' + esc(group[i].name) +
+                (group[i].abbr && group[i].abbr !== group[i].name ? " (" + esc(group[i].abbr) + ")" : "") + "</option>";
+      }
+      html += "</optgroup>";
+    }
+    sel.innerHTML = html;
+    sel.value = state.id;
+  }
+
+  function fillMeasurements() {
+    var e = byId(state.id), sel = $("cd-measurement"), html = "", i;
+    if (!e) return;
+    for (i = 0; i < e.lp.length; i++) {
+      html += '<option value="' + i + '">' + esc(e.lp[i].solvent) + ", " + e.lp[i].T + " °C — " +
+              fmtLen(e.lp[i].value) + "</option>";
+    }
+    sel.innerHTML = html;
+    if (state.mIdx >= e.lp.length) state.mIdx = 0;
+    sel.value = String(state.mIdx);
+    sel.disabled = e.lp.length < 2;
+  }
+
+  function render() {
+    var e = byId(state.id);
+    if (!e) return;
+    var meas = e.lp[state.mIdx] || e.lp[0];
+    var lp = meas.value, b = 2 * lp;
+    var n = state.mass / e.M0;                 // repeat units
+    var L = n * e.lm;                          // contour length, nm
+    var tiles = "";
+
+    // Units differ by entry: dsDNA is per base pair, F-actin per subunit.
+    var unit = e.id === "dsdna" ? "base pairs" : e.id === "ssdna" ? "nucleotides"
+             : e.id === "f-actin" ? "subunits" : "repeat units";
+
+    tiles += statTile("Persistence length l<sub>p</sub>", fmtLen(lp),
+      esc(meas.solvent) + ", " + meas.T + " °C");
+    tiles += statTile("Kuhn length b", fmtLen(b), "b = 2 l<sub>p</sub>");
+    tiles += statTile("Degree of polymerisation", n >= 1000 ? Math.round(n).toLocaleString() : n.toFixed(1),
+      unit + " at M = " + Number(state.mass).toLocaleString());
+    tiles += statTile("Contour length L", fmtLen(L), "fully extended");
+
+    if (L > 0 && lp > 0) {
+      var ratio = L / lp;
+      var R = Math.sqrt(meanSqEnd(L, lp));
+      var rg2 = radiusGyrationSq(L, lp);
+      var Rg = rg2 > 0 ? Math.sqrt(rg2) : 0;
+      var nk = L / b;
+      var regime = ratio < 1 ? "rod" : ratio < 10 ? "semiflexible" : "coil";
+      var badge = '<span class="cd-regime cd-' + (regime === "semiflexible" ? "semi" : regime) + '">' + regime + "</span>";
+
+      tiles += statTile("End-to-end &lang;R&sup2;&rang;<sup>&frac12;</sup>", fmtLen(R),
+        "exact worm-like chain");
+      tiles += statTile("Radius of gyration R<sub>g</sub>", fmtLen(Rg), "Benoit&ndash;Doty");
+      tiles += statTile("Kuhn segments", nk < 1 ? nk.toFixed(2) : Math.round(nk).toLocaleString(),
+        "L / b");
+      tiles += statTile("L / l<sub>p</sub>", ratio < 1 ? ratio.toFixed(2) : Math.round(ratio).toLocaleString(), badge);
+    }
+    $("cd-stats").innerHTML = tiles;
+
+    // ---- narrative ----
+    var msg = "<strong>" + esc(e.name) + ".</strong> " + esc(e.note) + " ";
+    if (L > 0 && lp > 0) {
+      var r2 = L / lp;
+      if (r2 < 1) {
+        msg += "At this molar mass the whole chain is shorter than one persistence length, so it is a <strong>rigid rod</strong>: " +
+          "&lang;R&sup2;&rang;<sup>&frac12;</sup> is within a few percent of the contour length, and Gaussian statistics do not apply to it at all.";
+      } else if (r2 < 10) {
+        msg += "At this molar mass the chain is only " + r2.toFixed(1) + " persistence lengths long, which puts it in the " +
+          "<strong>awkward middle</strong>: too long to treat as a rod, too short for Gaussian statistics. This is the regime where " +
+          "the exact worm-like chain matters and the coil approximation would overestimate how compact the chain is.";
+      } else {
+        msg += "At this molar mass the chain is " + Math.round(r2).toLocaleString() + " persistence lengths long, so it is a " +
+          "well-developed <strong>coil</strong> and Gaussian statistics are safe. Note how much smaller R<sub>g</sub> is than the " +
+          "contour length: the chain occupies a sphere far smaller than its own length, which is the whole reason polymer solutions " +
+          "behave as they do.";
+      }
+    }
+    if (e.lp.length > 1) {
+      msg += " This entry carries " + e.lp.length + " measurements under different conditions and they differ by " +
+        (Math.max.apply(null, e.lp.map(function (x) { return x.value; })) /
+         Math.min.apply(null, e.lp.map(function (x) { return x.value; }))).toFixed(1) +
+        "&times;. That spread is real, not scatter.";
+    }
+    var pred = predictedLp(e);
+    if (pred != null) {
+      msg += " The characteristic ratio C<sub>&infin;</sub> = " + e.cInf + " independently predicts " + fmtLen(pred) +
+        " from backbone geometry alone, against " + fmtLen(lp) + " measured.";
+    } else if (e.cInf != null) {
+      msg += " A characteristic ratio of " + e.cInf + " is carried for reference, but the geometric route to l<sub>p</sub> " +
+        "does not apply to this backbone, so no prediction is offered.";
+    }
+    $("cd-read").innerHTML = msg;
+
+    $("cd-matnote").innerHTML = "<strong>Confidence: " + esc(e.conf) + ".</strong> " + esc(e.src);
+    $("cd-mass-label").innerHTML = e.id === "dsdna" ? "Molar mass (g/mol, duplex)" : "Molar mass (g/mol)";
+    drawScale();
+  }
+
+  /* ---------------- log-scale strip ---------------- */
+  function drawScale() {
+    var svg = $("cd-scale"), W = 720, H = 132, padL = 34, padR = 24, y = 78;
+    var pts = [];
+    DATA.forEach(function (e) {
+      e.lp.forEach(function (m) { pts.push({ e: e, v: m.value }); });
+    });
+    var lo = Math.log10(Math.min.apply(null, pts.map(function (p) { return p.v; })));
+    var hi = Math.log10(Math.max.apply(null, pts.map(function (p) { return p.v; })));
+    lo = Math.floor(lo); hi = Math.ceil(hi);
+    function sx(v) { return padL + (Math.log10(v) - lo) / (hi - lo) * (W - padL - padR); }
+
+    var parts = [];
+    parts.push('<line class="cd-axis" x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '"/>');
+    for (var d = lo; d <= hi; d++) {
+      var x = sx(Math.pow(10, d));
+      parts.push('<line class="cd-axis" x1="' + x + '" y1="' + (y - 5) + '" x2="' + x + '" y2="' + (y + 5) + '"/>');
+      parts.push('<text class="cd-tick" x="' + x + '" y="' + (y + 20) + '" text-anchor="middle">' +
+        (d >= 6 ? Math.pow(10, d - 6) + " mm" : d >= 3 ? Math.pow(10, d - 3) + " µm" : Math.pow(10, d) + " nm") + "</text>");
+    }
+    // stagger labels so neighbouring points stay readable
+    var lastX = -1e9, above = true;
+    pts.sort(function (a, b) { return a.v - b.v; }).forEach(function (p) {
+      var x = sx(p.v), sel = p.e.id === state.id;
+      parts.push('<circle class="' + (sel ? "cd-dot-sel" : "cd-dot") + '" cx="' + x.toFixed(1) + '" cy="' + y + '" r="' + (sel ? 6 : 4) + '"/>');
+      if (sel || x - lastX > 46) {
+        above = (x - lastX > 46) ? !above : above;
+        var ly = above ? y - 16 : y - 34;
+        parts.push('<text class="cd-name" x="' + x.toFixed(1) + '" y="' + ly + '" text-anchor="middle"' +
+          (sel ? ' fill="var(--primary)"' : "") + ">" + esc(p.e.abbr || p.e.id) + "</text>");
+        lastX = x;
+      }
+    });
+    svg.innerHTML = parts.join("");
+  }
+
+  function fillTables() {
+    var rows = [];
+    DATA.forEach(function (e) {
+      e.lp.forEach(function (m) {
+        rows.push("<tr><td>" + esc(e.abbr || e.name) + "</td><td class=\"num\">" + fmtLen(m.value) +
+          "</td><td>" + esc(m.solvent) + "</td><td class=\"num\">" + m.T + "</td><td>" + esc(m.method) +
+          "</td><td>" + esc(m.conf) + "</td></tr>");
+      });
+    });
+    $("cd-table").querySelector("tbody").innerHTML = rows.join("");
+
+    var prows = [];
+    DATA.forEach(function (e) {
+      var pred = predictedLp(e);
+      var measured = e.lp[0].value;
+      if (pred == null) {
+        prows.push("<tr><td>" + esc(e.abbr || e.name) + "</td><td class=\"num\">" + (e.cInf == null ? "&mdash;" : e.cInf) +
+          "</td><td colspan=\"2\">geometric route does not apply to this backbone</td><td class=\"num\">&mdash;</td></tr>");
+      } else {
+        var ratio = pred > measured ? pred / measured : measured / pred;
+        prows.push("<tr><td>" + esc(e.abbr || e.name) + "</td><td class=\"num\">" + e.cInf +
+          "</td><td class=\"num\">" + fmtLen(pred) + "</td><td class=\"num\">" + fmtLen(measured) +
+          "</td><td class=\"num\">" + ratio.toFixed(2) + "&times;</td></tr>");
+      }
+    });
+    $("cd-pred-table").querySelector("tbody").innerHTML = prows.join("");
+  }
+
+  fillMaterials();
+  fillMeasurements();
+  fillTables();
+  render();
+
+  $("cd-material").addEventListener("change", function () {
+    state.id = this.value; state.mIdx = 0;
+    fillMeasurements(); render();
+  });
+  $("cd-measurement").addEventListener("change", function () {
+    state.mIdx = parseInt(this.value, 10) || 0; render();
+  });
+  $("cd-mass").addEventListener("input", function () {
+    var v = parseFloat(this.value);
+    state.mass = (isFinite(v) && v > 0) ? v : 0;
+    render();
+  });
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

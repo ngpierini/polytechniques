@@ -8,7 +8,8 @@
     "check-data": "node scripts/check-polymer-data.js",
     "check-thermal": "node scripts/check-thermal-library.js",
     "build-index": "node scripts/build-search-index.js",
-    "check-index": "node scripts/build-search-index.js --check"
+    "check-index": "node scripts/build-search-index.js --check",
+    "check-chain": "node scripts/check-chain-data.js"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"

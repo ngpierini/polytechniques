@@ -17,6 +17,7 @@
     ["conversion-monitoring.html", "📊 Conversion"],
     ["gpc-peak-interpretation.html", "📉 GPC Peaks"],
     ["thermal-analysis.html", "🔥 Thermal"],
+    ["chain-dimensions.html", "📐 Chain Size"],
     ["glossary.html", "📖 Glossary"]
   ];
 
