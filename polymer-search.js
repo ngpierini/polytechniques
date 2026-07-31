@@ -2726,6 +2726,21 @@
       return hits;
     }
 
+    // Rescale a laid-out unit so one bond spans BOND_LEN, whichever layout
+    // produced it. Anything that places several units side by side has to do
+    // this first, or it is adding pixel offsets to RDKit-scale coordinates.
+    function normalizeBondScale(parsed) {
+      var A = parsed.atoms;
+      var lens = parsed.bonds.map(function (b) {
+        var p = A[b.a - 1], q = A[b.b - 1];
+        return Math.hypot(p.x - q.x, p.y - q.y);
+      }).filter(function (l) { return l > 1e-6; }).sort(function (x, y) { return x - y; });
+      if (!lens.length) return;
+      var k = BOND_LEN / lens[Math.floor(lens.length / 2)];
+      if (!isFinite(k) || Math.abs(k - 1) < 1e-6) return;
+      A.forEach(function (a) { a.x *= k; a.y *= k; });
+    }
+
     // How big this layout would be drawn on the current canvas: the same scale
     // fitParsedCoords will pick. Larger means more readable, so it separates two
     // layouts that collide equally but use the canvas differently.
@@ -3140,6 +3155,10 @@
           var comp = db.filter(function (p) { return p.name === entry.components[ci] && p.atoms && p.atoms.length; })[0];
           if (!comp) {
             smilesNote('No structure on file for "' + entry.components[ci] + '", so ' + entry.name + ' cannot be drawn. Use the publication links on its card.');
+            // Clear the search line too, or the last polymer's identification
+            // stays on screen and reads as the result for this one.
+            var bailEl = document.getElementById('mol-status');
+            if (bailEl) bailEl.textContent = '';
             renderResults([]);
             return;
           }
@@ -3149,6 +3168,14 @@
           var parsed = mb && parseMolblockToEditor(mb);
           if (!parsed || !parsed.atoms.length) { smilesNote('Could not lay out ' + comp.name + '.'); return; }
           if (!layoutRepeatUnit(parsed)) orientRepeatUnit(parsed);
+          // The two layouts do not speak the same units: layoutRepeatUnit places
+          // atoms in canvas pixels, orientRepeatUnit leaves RDKit's own scale,
+          // about twenty times smaller. Blocks are then butted together and
+          // spaced by BOND_LEN, so a copolymer that mixes the two drew one block
+          // full size and collapsed the other into a knot of overlapping atoms -
+          // which is what happens whenever a ring sits in one block's backbone
+          // and not the other's. Put every block on the canvas scale first.
+          normalizeBondScale(parsed);
           var A = parsed.atoms;
           var starIdx = [];
           for (var i = 0; i < A.length; i++) if (A[i].el === '*') starIdx.push(i);
