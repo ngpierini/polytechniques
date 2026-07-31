@@ -32,7 +32,7 @@
 </script>
 <script src="theme.js"></script>
 <script src="nav.js?v=11" defer></script>
-<script src="thermal-library.js?v=12"></script>
+<script src="thermal-library.js?v=13"></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
@@ -224,6 +224,10 @@
       <div class="ta-control ta-dsc-mix" style="display:none;">
         <span class="ta-control-label">Measured mixture peak <span class="ta-val" id="dsc-obs-val">&mdash;</span></span>
         <input type="number" class="ta-select" id="dsc-obs" placeholder="e.g. 221" step="0.1" style="text-align:right;">
+      </div>
+      <div class="ta-control" id="dsc-moist-wrap" style="display:none;">
+        <span class="ta-control-label">Moisture <span class="ta-val" id="dsc-moist-val">0%</span></span>
+        <input type="range" class="ta-range" id="dsc-moist" min="0" max="20" step="0.1" value="0">
       </div>
       <div class="ta-control" id="dsc-heat-wrap">
         <span class="ta-control-label">Heat <span class="ta-val" id="dsc-heat-val">First</span></span>
@@ -920,7 +924,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
 
 
     var state = {
-      mode: "single", id: "pet", heat: 1, rate: 10, endo: "down", zoom: "full", obs: null,
+      mode: "single", id: "pet", heat: 1, rate: 10, endo: "down", zoom: "full", obs: null, moist: 0,
       // Mixture builder: parts by mass, normalised to 100% at render time.
       mix: [{ id: "htpb-cured", parts: 70 }, { id: "caco3", parts: 30 }]
     };
@@ -938,6 +942,33 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
     // polymers here; a single fitted ratio would be wrong for most of them, so
     // none is attempted. The rate term is the robust part: cool faster and
     // crystallisation falls further behind.
+    // Gordon-Taylor water plasticisation. Tg of amorphous water is 136 K, and
+    // k weights how strongly the water disrupts the polymer.
+    //
+    // The carried tg belongs to a SPECIFIC water content - the one in the
+    // entry's own first TGA step, unless tgRefW says otherwise - so the dry Tg
+    // is backed out of it rather than stored, which keeps the two from drifting
+    // apart. Only dextran has a measured moisture series to fit k against; the
+    // rest fall back to a class-typical value and are flagged, the same way a
+    // modelled Tc is.
+    function hygro(m) { return !!(m && m.dehydT != null); }
+    var TG_WATER_K = 136;
+    var GT_K_DEFAULT = 6;
+    function refWaterOf(m) {
+      if (m.tgRefW != null) return m.tgRefW;
+      var s0 = m.tga && m.tga.steps && m.tga.steps.length ? m.tga.steps[0] : null;
+      return s0 && /water|moistur|dehydrat/i.test(s0.l || "") ? s0.f : 0;
+    }
+    function waterTg(m, w) {
+      if (m.tg === null || m.dehydT == null) return null;
+      var k = (m.gtK != null) ? m.gtK : GT_K_DEFAULT;
+      var wRef = refWaterOf(m), tgK = m.tg + 273.15;
+      if (wRef >= 1) return null;
+      var tgDry = (tgK * ((1 - wRef) + k * wRef) - k * wRef * TG_WATER_K) / (1 - wRef);
+      var now = ((1 - w) * tgDry + k * w * TG_WATER_K) / ((1 - w) + k * w);
+      return { tg: now - 273.15, tgDry: tgDry - 273.15, k: k, wRef: wRef, modelled: m.gtK == null };
+    }
+
     var NOMINAL_SUPERCOOL = 25;
     function coolingTc(m, dec) {
       if (m.tc != null) return { T: m.tc - 6 * dec, modelled: false };
@@ -947,8 +978,12 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
 
     // Turn a library entry into drawable features. Peaks carry their enthalpy in
     // J/g so the chart can autoscale the way an instrument autoranges.
-    function modelOf(m, rate, second, cooling) {
+    function modelOf(m, rate, second, cooling, moist) {
       var dec = Math.log10(rate / 10), steps = [], peaks = [];
+      // moist is the water mass fraction the user has dialled in. Null keeps
+      // the entry as carried, which is what blends do.
+      var wet = (moist != null && m.dehydT != null) ? waterTg(m, moist) : null;
+      var tgEff = wet ? wet.tg : m.tg;
       if (cooling) {
         // On the way down there is no melt to draw and no cold crystallisation:
         // the sample is already molten, so the only events are the freezing
@@ -960,10 +995,10 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
             modelled: tc.modelled || m.dHm == null
           });
         }
-        if (m.tg !== null) steps.push({ T: m.tg - 2 * dec, w: 14, h: (m.dCp || 0.3), cooling: true });
+        if (m.tg !== null) steps.push({ T: (wet ? wet.tg : m.tg) - 2 * dec, w: 14, h: (m.dCp || 0.3), cooling: true });
         return { steps: steps, peaks: peaks };
       }
-      if (m.tg !== null) steps.push({ T: m.tg + 2 * dec, w: 14, h: (m.dCp || 0.3) });
+      if (m.tg !== null) steps.push({ T: tgEff + 2 * dec, w: 14, h: (m.dCp || 0.3) });
       // A phase-separated copolymer has a SECOND glass transition, and drawing
       // only the first makes e.g. PS-b-PDMS indistinguishable from plain PDMS.
       // The temperature is sourced per entry; the step height is not, because
@@ -976,8 +1011,14 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       // content means little. It does not come back: on the second heat the
       // sample is dry, so the peak is drawn only on the first.
       if (m.dehydT != null && !second) {
-        peaks.push({ T: m.dehydT + 2 * dec, w: 34, J: (m.dehydH != null ? m.dehydH : 120), dir: -1,
-                     label: "dehydration", modelled: m.dehydH == null });
+        // Area scales with the water present: at 0% there is nothing to drive
+        // off and no peak at all.
+        var wNow = (moist != null) ? moist : refWaterOf(m);
+        var wScale = refWaterOf(m) > 0 ? (wNow / refWaterOf(m)) : (wNow > 0 ? 1 : 0);
+        if (wNow > 0.0005) {
+          peaks.push({ T: m.dehydT + 2 * dec, w: 34, J: (m.dehydH != null ? m.dehydH : 120) * wScale, dir: -1,
+                       label: "dehydration", modelled: m.dehydH == null });
+        }
       }
       if (m.tcc !== null) {
         // A controlled second heat has already crystallised the sample, so the
@@ -1299,7 +1340,7 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       var m = libById(state.id);
       if (!m) return;
       var second = state.heat === 2, cooling = state.heat === 3;
-      var pureModel = modelOf(m, state.rate, second, cooling);
+      var pureModel = modelOf(m, state.rate, second, cooling, hygro(m) ? state.moist : null);
       var models = [pureModel];
 
       // Autoscale: the tallest peak on the chart fills 0.8 of the plot.
@@ -1401,9 +1442,17 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
         return;
       }
       {
-        if (m.dehydT != null && !second) tiles += statTile("Dehydration", Math.round(m.dehydT) + " °C",
+        var wet = hygro(m) ? waterTg(m, state.moist) : null;
+        if (hygro(m)) tiles += statTile("Moisture", (state.moist * 100).toFixed(1) + " %",
+          Math.abs(state.moist - refWaterOf(m)) < 0.0005 ? "as carried in the library" : "dialled in");
+        if (wet) tiles += statTile("Tg at this moisture", Math.round(wet.tg) + " °C",
+          "dry Tg " + Math.round(wet.tgDry) + " °C, k = " + wet.k + (wet.modelled ? " (modelled)" : " (fitted)"));
+        if (m.dehydT != null && !second && (!hygro(m) || state.moist > 0.0005)) tiles += statTile("Dehydration", Math.round(m.dehydT) + " °C",
           m.dehydH != null ? "≈ " + m.dehydH + " J/g, endothermic" : "first heat only, height not to scale");
-        if (m.tg !== null) tiles += statTile("Tg", Math.round(m.tg + 2 * Math.log10(state.rate / 10)) + " °C", m.dCp ? "ΔCp ≈ " + m.dCp + " J/(g·K)" : "");
+        // When the moisture axis is live it already reports Tg, its dry value and
+        // k, so a second Tg tile carrying the library value would contradict both
+        // that tile and the marker on the chart.
+        if (m.tg !== null && !wet) tiles += statTile("Tg", Math.round(m.tg + 2 * Math.log10(state.rate / 10)) + " °C", m.dCp ? "ΔCp ≈ " + m.dCp + " J/(g·K)" : "");
         if (m.tg2 != null) tiles += statTile("Tg, 2nd phase", Math.round(m.tg2 + 2 * Math.log10(state.rate / 10)) + " °C", "step height not to scale");
         if (m.tcc !== null) tiles += statTile("Cold cryst. Tcc", Math.round(m.tcc) + " °C", "quenched sample");
         if (m.transT != null) tiles += statTile("Solid-solid transition", Math.round(m.transT) + " °C", m.transH != null ? "≈ " + m.transH + " J/g, endothermic" : "endothermic");
@@ -1420,13 +1469,22 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
         if (m.dehydT != null) bits.push(second
           ? "no dehydration peak, because the first heat already drove the water off"
           : "a broad dehydration endotherm near " + Math.round(m.dehydT) + " °C");
-        if (m.tg !== null) bits.push("a glass transition at " + Math.round(m.tg) + " °C");
+        if (m.tg !== null) bits.push("a glass transition at " + Math.round(wet ? wet.tg : m.tg) + " °C");
         if (m.tg2 != null) bits.push("a second, phase-separated glass transition at " + Math.round(m.tg2) + " °C");
         if (m.tcc !== null) bits.push("cold crystallisation near " + Math.round(m.tcc) + " °C");
         if (m.tm !== null) bits.push("melting at " + Math.round(m.tm) + " °C");
         if (m.decompT !== null) bits.push("an exothermic decomposition near " + Math.round(m.decompT) + " °C");
         msg += bits.length ? ("Shows " + bits.join(", ") + ". ") : "";
         msg += "Faster heating raises the apparent Tg (about 2 °C per tenfold rate increase) and makes peaks taller but broader.";
+        if (wet) {
+          msg += " <strong>Water is the master variable here.</strong> The Tg above is for " + (state.moist * 100).toFixed(1) +
+            "% water; bone dry this material sits near " + Math.round(wet.tgDry) + " °C, and every percent of water absorbed pulls it down. " +
+            "That is why a Tg quoted for a hygroscopic polymer without its moisture content does not mean much. The curve follows " +
+            "Gordon-Taylor with the glass transition of water at &minus;137 °C and k = " + wet.k +
+            (wet.modelled
+              ? ", a class-typical value rather than a measured one for this material - treat the direction and rough size as the lesson, not the number."
+              : ", fitted to this material's own measured moisture series.");
+        }
       }
       $("dsc-read").innerHTML = msg;
       registerExport("dsc", {
@@ -1450,7 +1508,9 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       for (i = 0; i < b.length; i++) b[i].style.display = isMix ? "" : "none";
       if (!isMix) {
         // A sample with no melt has nothing a second heat would reveal.
-        $("dsc-heat-wrap").style.display = (!m || m.tm === null) ? "none" : "";
+        $("dsc-heat-wrap").style.display = (!m || (m.tm === null && m.dehydT == null)) ? "none" : "";
+        // The moisture axis only means something for a material that holds water.
+        $("dsc-moist-wrap").style.display = hygro(m) ? "" : "none";
       } else {
         // The control is hidden in mixture mode, so make sure a stale value from
         // single mode cannot silently change the prediction.
@@ -1479,7 +1539,16 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       state.mix.push({ id: hasBinder ? "caco3" : "htpb", parts: 20 });
       buildMixRows(); render();
     });
-    $("dsc-material").addEventListener("change", function () { state.id = this.value; syncControls(); render(); });
+    $("dsc-material").addEventListener("change", function () {
+      state.id = this.value;
+      var mm = libById(state.id);
+      if (hygro(mm)) {
+        state.moist = refWaterOf(mm);
+        $("dsc-moist").value = (state.moist * 100).toFixed(1);
+        $("dsc-moist-val").textContent = (state.moist * 100).toFixed(1) + "%";
+      }
+      syncControls(); render();
+    });
     seg("dsc-heat", function (v) {
       state.heat = parseInt(v, 10);
       $("dsc-heat-val").textContent = v === "1" ? "First" : v === "3" ? "Cooling" : "Second";
@@ -1490,6 +1559,11 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
     });
     seg("dsc-endo", function (v) { state.endo = v; render(); });
     $("dsc-rate").addEventListener("input", function () { state.rate = parseFloat(this.value); $("dsc-rate-val").textContent = state.rate + " K/min"; render(); });
+    $("dsc-moist").addEventListener("input", function () {
+      state.moist = parseFloat(this.value) / 100;
+      $("dsc-moist-val").textContent = parseFloat(this.value).toFixed(1) + "%";
+      render();
+    });
     syncControls();
     render();
     wireExport("dsc");

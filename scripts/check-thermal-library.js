@@ -142,6 +142,26 @@ function checkEntry(e, idx, errors, warnings) {
   if (present(e.decompH) && !present(e.decompT)) {
     errors.push(where + ": decompH is set but decompT is null - an enthalpy with no exotherm to attach it to");
   }
+  // Gordon-Taylor water plasticisation. gtK is only meaningful for something
+  // that both holds water and has a glass transition for the water to move,
+  // and tgRefW says which water content the carried tg belongs to - without
+  // it the renderer falls back to the entry own first TGA step.
+  if (present(e.gtK)) {
+    if (!isNum(e.gtK) || e.gtK <= 0 || e.gtK > 20) {
+      errors.push(where + ": gtK must be a positive Gordon-Taylor constant below 20 (got " + e.gtK + ")");
+    }
+    if (!present(e.tg)) errors.push(where + ": gtK is set but tg is null - nothing for water to plasticise");
+    if (!present(e.dehydT)) errors.push(where + ": gtK is set but dehydT is null - a water-plasticised Tg on a material that holds no water");
+  }
+  if (present(e.tgRefW)) {
+    if (!isNum(e.tgRefW) || e.tgRefW < 0 || e.tgRefW > 0.5) {
+      errors.push(where + ": tgRefW must be a water MASS FRACTION in [0, 0.5] (got " + e.tgRefW + ") - 6.6 percent is 0.066, not 6.6");
+    }
+    if (!present(e.gtK)) {
+      warnings.push(where + " (" + (e.abbr || e.name) + "): tgRefW is set without gtK, so the reference moisture is recorded but never used");
+    }
+  }
+
   // Sorbed water leaves below about 150 C. A "dehydration" filed higher than
   // that is usually a CHEMICAL elimination - PVA losing water to a polyene near
   // 320 C, PAA forming anhydride near 290 C - which is a decomposition step and
