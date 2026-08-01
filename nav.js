@@ -106,6 +106,7 @@
     ["whats-new.html", "What's New", "changelog updates"],
     ["founder.html", "About the Founder", "nick pierini bio contact"],
     ["terms.html", "Terms of Use", "license proprietary copyright rights legal"],
+    ["privacy.html", "Privacy", "privacy policy data cookies analytics gdpr tracking"],
     ["home.html", "Home", "toolkit start"]
   ];
 
@@ -131,7 +132,7 @@
     var line = document.createElement("p");
     line.className = "footer-legal";
     line.style.cssText = "font-size:0.78rem;opacity:0.7;margin-top:8px;";
-    line.innerHTML = notice + ' PolyTechniques is proprietary. <a href="terms.html">Terms of Use</a>.';
+    line.innerHTML = notice + ' PolyTechniques is proprietary. <a href="terms.html">Terms of Use</a> &middot; <a href="privacy.html">Privacy</a>.';
 
     var footer = document.querySelector("footer.footer");
     if (footer) {

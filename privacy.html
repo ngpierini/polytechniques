@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy: PolyTechniques</title>
+<meta name="description" content="What PolyTechniques collects, what it does not, and what stays on your own device.">
+<meta name="copyright" content="© 2025-2026 Nicholas Pierini. All rights reserved.">
+<link rel="canonical" href="https://getpolytechniques.com/privacy.html">
+<script src="theme.js"></script>
+<script src="nav.js?v=13" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=60">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Privacy</h1>
+      <p class="subtitle">What this site collects, what it does not, and what never leaves your device</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <p class="guide-note">
+      PolyTechniques is a free polymer chemistry toolkit built and maintained by Nicholas Pierini. There is no account to create, nothing to buy, and no advertising. This page sets out exactly what happens to data when you use the site. Last updated August 2026.
+    </p>
+    <p class="guide-note">
+      <strong>The short version.</strong> This site sets no cookies of any kind. Your calculations, drawn structures and preferences are held in your own browser and are never sent anywhere. What does leave your device is an anonymous page-visit count, requests to two outside services that supply literature listings and an image-reading library, and &mdash; only if you choose to have a drawn structure recognised &mdash; that one image. Each is set out below.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Cookies</h3>
+    <p class="guide-note">
+      None. The site does not set cookies, and no third party embedded in it sets cookies either. That is why you are not asked to accept anything on arrival: there is nothing to consent to.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>What stays on your device</h3>
+    <p class="guide-note">
+      The tools save a number of things in your browser's local storage so the site is usable across visits. All of it is written and read by your own browser and <strong>none of it is transmitted to the site or to anyone else</strong>:
+    </p>
+    <ul class="guide-note">
+      <li>Your light or dark theme choice.</li>
+      <li>Unit preferences, such as whether molar mass and T<sub>g</sub> are shown in your chosen units.</li>
+      <li>Recently searched polymers, so the search box can offer them again.</li>
+      <li>Values typed into the calculators, so a page you return to is not blank.</li>
+      <li>Whether you dismissed the &ldquo;install this app&rdquo; suggestion, and a count of visits used only to decide whether to show it.</li>
+      <li>Your best score in the polymer chain game, and which chemistry questions you have already been shown.</li>
+      <li>A day-old copy of the literature listing on the home page, so it is not re-fetched on every visit.</li>
+    </ul>
+    <p class="guide-note">
+      You can erase all of it at any time by clearing site data for this domain in your browser settings. Nothing breaks; the tools simply start fresh.
+    </p>
+    <p class="guide-note">
+      The site also installs a <strong>service worker</strong>, which keeps a copy of the pages and data files on your device so the toolkit works with no connection at all &mdash; useful at a bench or on a restricted network. That cache is local to your browser and is not readable by the site operator.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Visit counting</h3>
+    <p class="guide-note">
+      The site uses <a href="https://www.goatcounter.com/" target="_blank" rel="noopener noreferrer">GoatCounter</a> to count page visits. It is used because it is the least invasive option that still answers the only question worth asking: which tools people actually use.
+    </p>
+    <p class="guide-note">
+      GoatCounter <strong>sets no cookies and stores no per-visitor identifier</strong>. It records the page visited, the referring page if there is one, and coarse technical details derived from your browser: rough browser and operating system, screen size, and country. To tell repeat visits apart within a day it computes a one-way hash that includes your IP address and browser string; the address itself is not stored, and the hash is discarded daily. There is no profile, no cross-site tracking, and no way for me to identify you from it.
+    </p>
+    <p class="guide-note">
+      GoatCounter is an independent service with its own <a href="https://www.goatcounter.com/help/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>. If your browser sends a Do Not Track signal, or you block the script, the site works exactly as before &mdash; nothing depends on it.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Images you upload</h3>
+    <p class="guide-note">
+      Polymer Search accepts a photograph or screenshot of a structure, a label or a datasheet. There are <strong>two different paths</strong>, and they differ in whether the image leaves your device. Neither runs unless you choose to upload something.
+    </p>
+    <p class="guide-note">
+      <strong>Reading printed text (OCR) happens entirely in your browser.</strong> The image is never uploaded. What is fetched is the OCR library itself, from the public CDN jsdelivr.net, which therefore sees that your browser requested a file &mdash; not what the image contains. The same is true of the PDF reader.
+    </p>
+    <p class="guide-note">
+      <strong>Recognising a drawn chemical structure does send the image.</strong> It is posted to this site, forwarded to Anthropic's API to be interpreted, and the result is returned to your browser:
+    </p>
+    <ul class="guide-note">
+      <li>The image is processed in transit and is <strong>not stored by this site</strong> &mdash; there is no database, no bucket and no log of uploaded images.</li>
+      <li>The call to Anthropic is made by the server, not by your browser, so <strong>your IP address is not exposed to Anthropic</strong>. Anthropic handles the request under its own terms and privacy policy.</li>
+      <li>The feature is free and therefore capped, and enforcing the cap is the one place your <strong>IP address is recorded</strong>: a per-day counter keyed to your address is held in Cloudflare KV purely to stop one user exhausting the daily budget. It expires automatically after two days and is used for nothing else.</li>
+    </ul>
+    <p class="guide-note">
+      Do not upload anything confidential. This is a free tool for reading published or hand-drawn structures, and it should not be used for proprietary or export-controlled material.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Other services the pages call</h3>
+    <p class="guide-note">
+      Two more third parties are contacted by the site itself. In both cases they receive your IP address and browser string, as any server does when your browser requests a file from it, and nothing else about you:
+    </p>
+    <ul class="guide-note">
+      <li><strong>api.crossref.org</strong> &mdash; the home page shows recent polymer literature, fetched live from Crossref. The query is fixed and identical for every visitor; nothing you type is sent.</li>
+      <li><strong>cdn.jsdelivr.net</strong> &mdash; hosts the in-browser OCR and PDF libraries described above. Requested only if you upload an image or a PDF.</li>
+    </ul>
+    <p class="guide-note">
+      Both are optional. On restricted networks that block them the pages still work; the literature panel falls back to a built-in list and the OCR feature says so plainly. The <a href="diagnostics.html">Diagnostics</a> page will tell you which of them your network allows.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Server logs and access control</h3>
+    <p class="guide-note">
+      The site is hosted on Cloudflare Pages, which keeps standard operational request logs on my behalf, as any web host does. Cloudflare also attaches an approximate country to each request. The site reads that country to decline service to a small number of jurisdictions and does not store it.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Advertising and sale of data</h3>
+    <p class="guide-note">
+      There is no advertising on this site, no ad network, no retargeting pixel and no analytics beyond the visit count described above. <strong>No data is sold, rented or shared with anyone</strong> for any purpose. If that ever changes, this page will change with it and the date above will move.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Links to other sites</h3>
+    <p class="guide-note">
+      Result cards link out to PubChem, Google Scholar, Google Patents, PubMed and ScienceDirect so you can find the literature on a polymer, and there is a PayPal donation link on the About page. Following any of them takes you to a service with its own privacy practices, over which this site has no control. These are ordinary links, not embedded content: nothing is sent until you click, and then only the polymer name carried in the link itself.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Children</h3>
+    <p class="guide-note">
+      This is a professional and educational tool for chemists and students. It is not directed at children under 13 and does not knowingly collect anything from them.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Your rights</h3>
+    <p class="guide-note">
+      Because the site holds no account, no cookie and no identifier for you, there is in practice no personal data of yours for me to look up, correct or export. The two exceptions are transient: the daily rate-limit counter described above, which expires on its own within two days, and Cloudflare's operational logs. If you are in the EU, UK, California or anywhere else with statutory data rights and you want to exercise them, write to me at the address below and I will do what the law requires.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Contact</h3>
+    <p class="guide-note">
+      Questions about anything on this page: <a href="mailto:ngpierini@gmail.com?subject=Privacy%20-%20PolyTechniques">ngpierini@gmail.com</a>. See also the <a href="terms.html">Terms of Use</a>.
+    </p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>PolyTechniques: free tools for polymer synthesis.</p>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
