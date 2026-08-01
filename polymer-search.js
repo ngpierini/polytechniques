@@ -2014,6 +2014,33 @@
         }).join('') +
         '</div>';
     }
+    // Is there anything for the Draw button to draw? An entry can sit in the
+    // library with atoms: [] - a natural bottlebrush, an architecture rather than
+    // a compound - and "atoms: []" is truthy, so the button used to be offered on
+    // all of them. Clicking it could only ever produce an apology, which is worse
+    // than not offering it: the reader learns there is no structure by trying.
+    function canDrawEntry(p) {
+      if (!p) return false;
+      if (p.atoms && p.atoms.length) return true;
+      // A brush is not its blocks laid end to end, so the compose-from-components
+      // path declines it. One that can be drawn carries its own atoms, caught above.
+      if (p.arch === 'bottlebrush') return false;
+      if (p.type !== 'copolymer' || !p.components || p.components.length < 2) return false;
+      // Every block has to have a structure of its own, or composing fails partway.
+      var db = window.POLYMER_DB || [];
+      return p.components.every(function (name) {
+        return db.some(function (c) { return c.name === name && c.atoms && c.atoms.length; });
+      });
+    }
+    // Why this one has no structure. The note on the entry usually says so in its
+    // last sentence ("Not drawn: ...", "Undrawn: ..."), which is more useful than
+    // a generic line, so prefer it and fall back to the architecture.
+    function noStructureReason(p) {
+      var m = (p.note || '').match(/(?:Not drawn|Undrawn|No structure is drawn|No separate structure is drawn)\b[:,]?\s*([^]*)$/i);
+      if (m && m[1]) return m[1].replace(/\s+/g, ' ').trim();
+      if (p.arch === 'bottlebrush') return 'a brush is an architecture, and its blocks are not laid end to end along one chain.';
+      return 'see the publication links below.';
+    }
     function polymerCard(p) {
       var props = [];
       if (p.tg) props.push('T<sub>g</sub> ≈ ' + escapeHtml(p.tg));
@@ -2025,26 +2052,39 @@
         '<div class="mol-result-meta">' + escapeHtml(p.monomer || '') + (p.cls ? ' &middot; ' + escapeHtml(p.cls) : '') + '</div>' +
         (props.length ? '<div class="mol-result-props">' + props.join(' &nbsp;&middot;&nbsp; ') + '</div>' : '') +
         (p.note ? '<div class="mol-result-note">' + escapeHtml(p.note) + '</div>' : '') +
-        ((p.atoms && p.bonds) || (p.type === 'copolymer' && p.components && p.components.length >= 2)
+        (canDrawEntry(p)
           ? '<div class="mol-result-actions">' +
               '<button type="button" class="mol-draw-btn" data-poly-name="' + escapeHtml(p.name) +
               '" title="Load this ' + (p.type === 'copolymer' ? 'copolymer, block by block,' : 'repeat unit') + ' into the editor and pull its publications">' +
               '&#9998; Draw &amp; find publications</button>' +
             '</div>'
-          : '') +
+          : '<div class="mol-result-actions mol-no-structure">' +
+              'No repeat unit on file &mdash; ' + escapeHtml(noStructureReason(p)) +
+            '</div>') +
         publicationLinks(p) +
         '</div>';
     }
-    function renderResults(list) {
+    // Clear the previous polymer's identification and publications WITHOUT
+    // touching the results list. The decline paths below need exactly this: they
+    // tell the reader to use the publication links on the card, so the card has
+    // to survive. They used to call renderResults([]), which also wiped the
+    // results - so clicking "Draw" on a polymer with no repeat unit replaced the
+    // card and its five publication links with "No matches.", and the message
+    // pointed at links the same click had just deleted.
+    function clearIdentification() {
       var resultsEl = document.getElementById('mol-results');
-      if (!resultsEl) return;
       var idEl = document.getElementById('mol-identify');   // only the no-match path shows it
       if (idEl) { idEl.hidden = true; idEl.innerHTML = ''; }
       // Restore the publications panel below the results (the no-match path
       // lifts it up under the identification; put it back for exact/browse).
       var pubEl = document.getElementById('mol-publications');
-      if (pubEl && resultsEl.nextSibling !== pubEl) resultsEl.parentNode.insertBefore(pubEl, resultsEl.nextSibling);
+      if (pubEl && resultsEl && resultsEl.nextSibling !== pubEl) resultsEl.parentNode.insertBefore(pubEl, resultsEl.nextSibling);
       renderPublications(null);   // structure-search paths refill this after
+    }
+    function renderResults(list) {
+      var resultsEl = document.getElementById('mol-results');
+      if (!resultsEl) return;
+      clearIdentification();
       if (!list.length) { resultsEl.innerHTML = '<p class="guide-note">No matches.</p>'; return; }
       resultsEl.innerHTML = list.map(polymerCard).join('');
     }
@@ -3089,7 +3129,7 @@
         smilesNote('No repeat unit on file for ' + p.name + ' — use the publication links on its card.');
         var noStructEl = document.getElementById('mol-status');
         if (noStructEl) noStructEl.textContent = '';
-        renderResults([]);
+        clearIdentification();   // keep the card: the message points at its links
         return;
       }
       smilesNote(rdkitPromise ? 'Drawing ' + p.name + '…' : 'Loading the chemistry engine (about 7 MB, one time; it stays cached)…');
@@ -3177,7 +3217,7 @@
         smilesNote(entry.name + ' has no repeat unit on file. Its components are not blocks along one chain, so it is not drawn as a block copolymer — use the publication links on its card.');
         var archEl = document.getElementById('mol-status');
         if (archEl) archEl.textContent = '';
-        renderResults([]);
+        clearIdentification();   // keep the card: the message points at its links
         return;
       }
       smilesNote(rdkitPromise ? 'Drawing ' + entry.name + '…' : 'Loading the chemistry engine (about 7 MB, one time; it stays cached)…');
@@ -3198,7 +3238,7 @@
             // stays on screen and reads as the result for this one.
             var bailEl = document.getElementById('mol-status');
             if (bailEl) bailEl.textContent = '';
-            renderResults([]);
+            clearIdentification();   // keep the card: the message points at its links
             return;
           }
           var mol = molFrom(RDKit, molblockFrom(comp.atoms, comp.bonds));
