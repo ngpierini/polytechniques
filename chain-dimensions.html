@@ -58,8 +58,6 @@
   .cd-wlc .cd-panel-s { fill: var(--text-dim); font-size: 10.5px; }
   .cd-wlc .cd-lp-t { fill: #e05252; font-size: 10px; font-weight: 600; }
   .cd-wlc .cd-frame { fill: none; stroke: var(--border); stroke-width: 1; }
-  .cd-cite { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; margin: 8px 0 0; }
-  .cd-cite li { margin-bottom: 4px; }
   .cd-regime { display: inline-block; padding: 2px 9px; border-radius: 999px;
     font-size: 0.78rem; font-weight: 600; }
   .cd-rod { background: #fde8e8; color: #9b1c1c; }
@@ -171,67 +169,6 @@
     <p class="guide-note" style="margin-top:12px;">
       <strong>It fails for aromatic backbones, and not by a little.</strong> Bisphenol-A polycarbonate has C<sub>&infin;</sub> = 2.4, which the formula turns into 0.22&nbsp;nm &mdash; against a measured value near 1.0&nbsp;nm. The ratio is defined <em>per backbone bond</em>, and a polycarbonate repeat is a rigid phenylene plus a long virtual bond, not the tetrahedral C&ndash;C the geometry assumes. Entries where the route does not apply are marked and no prediction is offered for them, rather than quietly printing a number that is wrong by a factor of four.
     </p>
-  </div>
-
-  <div class="card">
-    <h3>Measuring it: what an AFM actually sees</h3>
-    <p class="guide-note">
-      For DNA the most direct route to a persistence length is to <strong>look at a single molecule</strong> and trace it. The method that made that routine is set out in <strong>Vesenka</strong> and co-workers&rsquo; substrate-preparation paper: mica soaked overnight in <strong>33&nbsp;mM magnesium acetate</strong>, sonicated, then glow-discharged. The magnesium replaces potassium in the mica surface and gives the DNA phosphates something to bind to. Without that treatment the molecules are simply swept aside by the scanning stylus.
-    </p>
-    <p class="guide-note">
-      <strong>Humidity decides whether the experiment works at all.</strong> Below about 40% relative humidity a plasmid can be scanned for an hour without visible damage; above 60% only fleeting images are obtained before the molecules are pushed off the surface. That sensitivity is not a footnote about technique &mdash; it is the reason apparent contour lengths in that work agree with the sequence to 2% in one case and are 13&ndash;17% short in others.
-    </p>
-    <p class="guide-note">
-      <strong>The dimensions an AFM reports are not all equally trustworthy, and it is worth knowing which is which.</strong> Contour length is reliable: it is measured along the molecule and converted at 0.34&nbsp;nm per base pair, the same figure this page uses to turn a molar mass into a contour length. Cross-section is not. The same measurements give apparent DNA <em>widths</em> of 10&ndash;13&nbsp;nm against a true duplex diameter near 2&nbsp;nm, because the image is a convolution of the molecule with a tip of roughly 10&nbsp;nm radius, and apparent <em>heights</em> of 0.65&ndash;1.4&nbsp;nm, below the true 2&nbsp;nm, because a few nanonewtons of tip force flattens it. A persistence length traced from contours is sound; a diameter read off the same image is mostly a picture of the tip.
-    </p>
-    <p class="guide-note">
-      <strong>How far wrong can this go? About 60%.</strong> An early AFM study measured an <em>apparent</em> persistence length of <strong>80&nbsp;nm</strong> for &phi;X-174 duplex DNA under its imaging conditions, against the 50&nbsp;nm the same molecule has in solution. The same work found single-stranded poly(A) splitting into two populations, short bent molecules at an apparent 40&nbsp;nm and long straight ones at 600&nbsp;nm &mdash; a fifteen-fold spread within one sample, which is a good sign that what is being measured is the deposition and not the polymer.
-    </p>
-    <p class="guide-note">
-      There is a second trap in how the molecule reaches the surface. One free to rearrange <strong>equilibrates in the plane</strong> and should be fitted with two-dimensional worm-like chain statistics; one that sticks where it lands is <strong>kinetically trapped</strong> and is a flattened projection of a three-dimensional conformation, needing a different fit. Reading one with the other&rsquo;s model shifts the answer by close to a factor of two. Properly equilibrated DNA on mica returns about <strong>53&nbsp;nm</strong>, consistent with solution measurements.
-    </p>
-    <p class="guide-note">
-      Done properly the method is now reliable: imaging DNA <em>in liquid</em> under buffer conditions that let it equilibrate recovers the correct <strong>50&nbsp;nm</strong> from a 2D worm-like chain fit, and does so across a wide range of monovalent salt concentrations rather than at one lucky condition.
-    </p>
-    <p class="guide-note">
-      <strong>Grafting side chains onto DNA stiffens it, but not in the way that helps.</strong> A DNA bottlebrush &mdash; duplex DNA carrying a dense corona of polymer side chains &mdash; has been measured by nanopore and AFM at an effective persistence length near <strong>250&nbsp;nm</strong>, around 150&nbsp;nm once the DNA&rsquo;s own contribution is separated out, so the coating genuinely does rigidify the main chain. But the corona thickens the molecule faster than it stiffens it, so the effective <em>aspect ratio</em>, l<sub>p</sub>&thinsp;/&thinsp;thickness, actually falls. That ratio, not the persistence length alone, is what governs whether a semiflexible polymer forms a lyotropic liquid crystal &mdash; a reminder that a stiffness number in isolation rarely settles a question.
-    </p>
-    <p class="guide-note">
-      One correction worth carrying: <strong>G-wires</strong>, the nanowires self-assembled from stacked guanine quadruplexes that Vesenka&rsquo;s group helped introduce, are often described as stiffer than duplex DNA because each quadruplex unit is rigid. Characterisation of long multimers finds a local persistence length comparable to a single monomer. A stiff repeat unit does not make a stiff chain if the junctions between units rotate freely, which is why <strong>no G-wire entry appears in the database above</strong>: the reported values do not converge on a number worth quoting.
-    </p>
-    <ul class="cd-cite">
-      <li>Vesenka, Guthold, Tang, Keller, Delaine &amp; Bustamante, &ldquo;Substrate preparation for reliable imaging of DNA molecules with the scanning force microscope&rdquo;, <em>Ultramicroscopy</em> <strong>42&ndash;44</strong>, 1243&ndash;1249 (1992). <a href="https://doi.org/10.1016/0304-3991(92)90430-R" target="_blank" rel="noopener noreferrer">doi:10.1016/0304-3991(92)90430-R</a> &mdash; source of the magnesium-mica method, the humidity dependence and the width and height figures above.</li>
-      <li>Bustamante, Vesenka, Tang, Rees, Guthold &amp; Keller, &ldquo;Circular DNA molecules imaged in air by scanning force microscopy&rdquo;, <em>Biochemistry</em> <strong>31</strong> (1992). <a href="https://doi.org/10.1021/bi00116a005" target="_blank" rel="noopener noreferrer">doi:10.1021/bi00116a005</a></li>
-      <li>Vesenka, Marsh, Henderson et&nbsp;al., &ldquo;A new DNA nanostructure, the G-wire, imaged by scanning probe microscopy&rdquo;, <em>Nucleic Acids Research</em> <strong>23</strong>, 696&ndash;700 (1995).</li>
-      <li>Hansma, Laney, Bezanilla, Sinsheimer &amp; Hansma, &ldquo;Atomic force microscopy of long and short double-stranded, single-stranded and triple-stranded nucleic acids&rdquo; (1996) &mdash; the 80&nbsp;nm apparent value and the poly(A) 40/600&nbsp;nm split.</li>
-      <li>Heenan &amp; Perkins, &ldquo;Imaging DNA equilibrated onto mica in liquid using biochemically relevant deposition conditions&rdquo;, <em>ACS Nano</em> (2019) &mdash; the correct 50&nbsp;nm recovered in liquid across a wide salt range.</li>
-      <li>Storm, Aksimentiev et&nbsp;al., &ldquo;Liquid crystals of self-assembled DNA bottlebrushes&rdquo; (2015) &mdash; the 250&nbsp;nm effective persistence length and the aspect-ratio argument.</li>
-      <li>Rivetti, Guthold &amp; Bustamante, &ldquo;Scanning force microscopy of DNA deposited onto mica: equilibration versus kinetic trapping&rdquo;, <em>J. Mol. Biol.</em> <strong>264</strong>, 919&ndash;932 (1996) &mdash; the 53&nbsp;nm figure and the two-regime distinction.</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h3>Where the single-chain picture ends: topology</h3>
-    <p class="guide-note">
-      Everything above describes <strong>one chain, alone, free to adopt any shape</strong>. Two things break that, and DNA is the system where both have been measured.
-    </p>
-    <p class="guide-note">
-      The first is that <strong>DNA has more than one persistence length</strong>. This page uses the <em>bending</em> value of 50&nbsp;nm, which is what sets the shapes in the figure above. A double helix also resists being twisted, and its <strong>torsional persistence length is roughly 125&nbsp;nm</strong> &mdash; stiffer still. Nothing on this page models torsion, and for a closed loop that omission is not small: a circular molecule cannot shed twist by rotating its ends, because it has none.
-    </p>
-    <p class="guide-note">
-      The second is <strong>topology</strong>, the subject of <strong>Davide Michieletto</strong>&rsquo;s work at Edinburgh. A linear chain in a melt escapes its neighbours by sliding along its own contour; a ring has no ends to slide from. Entangled DNA becomes entangled at around 400&nbsp;base pairs, so a plasmid of any practical size is well past it. The sharpest demonstration that R<sub>g</sub> above is a <em>dilute</em> answer is this: simulations and light-scattering experiments on supercoiled plasmids find that supercoiling <strong>compacts</strong> a plasmid in dilute solution, as everyone expects &mdash; and <strong>swells</strong> the same plasmid when it is entangled with its neighbours, which nobody did. Larger and yet <em>more</em> mobile, because the supercoiled shape threads through its neighbours less. Same molecule, same sequence, same persistence length; opposite answer depending only on how crowded it is.
-    </p>
-    <p class="guide-note">
-      Because topology is set by chemistry it can also be changed on the fly. Restriction enzymes cutting supercoiled DNA to linear inside an entangled solution drive the viscosity <em>up</em> as they work, while fragmenting linear DNA drives it <em>down</em>, so a fluid can be designed whose viscosity rises and then falls on a schedule &mdash; with no change in concentration or chemistry, only in topology. Cells do the same thing deliberately, spending ATP on topoisomerases whose entire job is to cut and reseal strands.
-    </p>
-    <p class="guide-note">
-      <strong>So: treat every number above as the dilute, ideal-chain, bending-only answer.</strong> It is the right starting point and it is what scattering reports for a dilute sample. A concentrated DNA solution, a gel, or anything inside a nucleus is a topological problem before it is a conformational one.
-    </p>
-    <ul class="cd-cite">
-      <li>Smrek, Garamella, Robertson-Anderson &amp; Michieletto, &ldquo;Topological tuning of DNA mobility in entangled solutions of supercoiled plasmids&rdquo;, <em>Science Advances</em> <strong>7</strong>, eabf9260 (2021). <a href="https://doi.org/10.1126/sciadv.abf9260" target="_blank" rel="noopener noreferrer">doi:10.1126/sciadv.abf9260</a> &mdash; source of the 50&nbsp;nm bending and 125&nbsp;nm torsional persistence lengths, the ~400&nbsp;bp entanglement length, and the dilute-versus-entangled inversion.</li>
-      <li>Michieletto, Neill, Weir, Evans, Crist, Martinez &amp; Robertson-Anderson, &ldquo;Topological digestion drives time-varying rheology of entangled DNA fluids&rdquo;, <em>Nature Communications</em> <strong>13</strong>, 4389 (2022). <a href="https://doi.org/10.1038/s41467-022-31828-w" target="_blank" rel="noopener noreferrer">doi:10.1038/s41467-022-31828-w</a></li>
-      <li>Michieletto, <em>Topological Interactions in Ring Polymers</em>, Springer Theses (2016).</li>
-    </ul>
   </div>
 
   <div class="card">
