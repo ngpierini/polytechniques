@@ -81,21 +81,22 @@
 /chain-data.js
   Cache-Control: public, max-age=31536000, immutable
 
-# The vendored RDKit build: 6.9 MB of WebAssembly, by far the largest thing
-# served here, and the one that gains most from being cached. It is NOT
-# versioned in its URL, so it gets thirty days rather than a year - long
-# enough to be worth having, short enough that a future RDKit upgrade
-# propagates without anyone having to remember this file.
+# The vendored RDKit build (6.9 MB of WebAssembly, the largest thing served
+# here) deliberately has NO rule, and inherits `no-cache` from /* above.
 #
-# If RDKit is ever upgraded, rename it or give it a ?v= and move it to the
-# immutable list above, rather than lengthening this.
+# Not for want of trying. A `/vendor/*` rule came back MERGED with /* as
+# `no-cache, public, max-age=2592000`, and rewriting it as two exact paths
+# changed nothing - still merged, and cf-cache-status DYNAMIC, so not a stale
+# edge copy either. The root-level rules above override /* cleanly, so
+# something about these files (subdirectory, or the application/wasm type
+# Cloudflare does not edge-cache) makes them concatenate instead. Since
+# no-cache wins that merge, the rule bought nothing but a contradictory
+# header, so it is gone.
 #
-# Listed as two exact paths rather than /vendor/*. As a wildcard it MERGED
-# with the /* rule instead of overriding it, and came back as the
-# self-contradictory `no-cache, public, max-age=2592000` - where no-cache
-# wins, defeating the point. Exact paths override cleanly, as the versioned
-# assets above do.
-/vendor/RDKit_minimal.js
-  Cache-Control: public, max-age=2592000
-/vendor/RDKit_minimal.wasm
-  Cache-Control: public, max-age=2592000
+# What it costs: one conditional request per session, answered 304 with no
+# body - not a 6.9 MB re-download. The service worker caches the file
+# outright and serves it without touching the network at all, so this only
+# affects a first visit or a cold worker. Judged not worth further deploys.
+#
+# If RDKit is ever upgraded, give it a ?v= and add it to the immutable list
+# above; a versioned root-relative URL is the pattern that demonstrably works.
