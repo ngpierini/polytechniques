@@ -4825,6 +4825,924 @@ window.POLYMER_DB = [
     atoms: [], bonds: [],
     needsStructure: true,
     note: "The polymer a blood clot is made of, and the fastest structural polymerisation in the body: thrombin clips two short peptides off fibrinogen, exposing knobs that fit holes on the next molecule, and the monomers self-assemble into fibres within seconds. Factor XIII then crosslinks them covalently. Its extraordinary extensibility - fibres stretch several times their length before breaking - comes from protein domains unfolding, not from chain slippage. Undrawn as a protein assembly."
+  },
+  {
+    name: "Poly(isobornyl methacrylate)", aka: ["PIBOMA", "poly(isobornyl methacrylate)", "IBOMA"],
+    monomer: "isobornyl methacrylate", cls: "Addition (methacrylate)", cas: null,
+    tags: ["methacrylate", "coating", "bio-based", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S1", el: "*" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 9, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 14, b: 16, order: 1 }, { a: 11, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 16, b: 18, order: 1 }],
+    note: "A methacrylate with a rigid bicyclic cage where the ester alkyl usually is, which pushes the glass transition to about 180 C - some 70 degrees above PMMA - without any aromatic ring. The camphene it comes from is a turpentine derivative, so it is the rare case of a bio-based monomer that raises rather than lowers the service temperature."
+  },
+  {
+    name: "Poly(isobornyl acrylate)", aka: ["PIBOA", "poly(isobornyl acrylate)", "IBOA"],
+    monomer: "isobornyl acrylate", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "coating", "bio-based", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 8, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 13, b: 15, order: 1 }, { a: 10, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 15, b: 17, order: 1 }],
+    note: "The acrylate version of the same terpene cage, glassy near 90 C where an ordinary acrylate would be a rubber at room temperature. It is the standard hardening monomer in UV-curable coatings and inks, where its low volatility and low shrinkage matter as much as the temperature it buys."
+  },
+  {
+    name: "Poly(hexafluoroisopropyl methacrylate)", aka: ["PHFIPMA", "poly(1,1,1,3,3,3-hexafluoroisopropyl methacrylate)"],
+    monomer: "hexafluoroisopropyl methacrylate", cls: "Addition (methacrylate)", cas: null,
+    tags: ["methacrylate", "fluoropolymer", "optical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S1", el: "*" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "F" }, { id: 12, el: "F" }, { id: 13, el: "F" }, { id: 14, el: "C" }, { id: 15, el: "F" }, { id: 16, el: "F" }, { id: 17, el: "F" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 10, b: 12, order: 1 }, { a: 10, b: 13, order: 1 }, { a: 9, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 14, b: 16, order: 1 }, { a: 14, b: 17, order: 1 }],
+    note: "Six fluorines on the ester alcohol drop the refractive index to about 1.38, below any hydrocarbon polymer, which is what makes it a cladding for plastic optical fibre - light stays in the core because the sheath bends it less. The same fluorines make the neighbouring alcohol unusually acidic once the ester is cleaved, which is why the group also appears in photoresists."
+  },
+  {
+    name: "Poly(2-naphthyl methacrylate)", aka: ["P2NMA", "poly(2-naphthyl methacrylate)"],
+    monomer: "2-naphthyl methacrylate", cls: "Addition (methacrylate)", cas: null,
+    tags: ["methacrylate", "optical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S1", el: "*" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 17, order: 1 }, { a: 12, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 9, b: 18, order: 1 }],
+    note: "A methacrylate carrying a fused aromatic, giving a refractive index near 1.62 - high for an acrylic - and a fluorescent label built into every repeat unit. Naphthalene forms excimers when two rings stack, so the ratio of monomer to excimer emission reports directly on how tightly the chain is coiled, which is why this polymer turns up in conformational studies rather than in products."
+  },
+  {
+    name: "Poly(isodecyl methacrylate)", aka: ["PIDMA", "poly(isodecyl methacrylate)", "IDMA"],
+    monomer: "isodecyl methacrylate", cls: "Addition (methacrylate)", cas: null,
+    tags: ["methacrylate", "coating", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S1", el: "*" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 16, b: 18, order: 1 }],
+    note: "A long-tail methacrylate whose side chain is branched enough not to crystallise, so it stays a soft rubber down to about -60 C. Comb polymers of this kind are the backbone of viscosity index improvers in motor oil: the side chains stay collapsed in cold oil and extend as it warms, offsetting the thinning that would otherwise occur."
+  },
+  {
+    name: "Poly(3-sulfopropyl methacrylate)", aka: ["PSPMA", "poly(3-sulfopropyl methacrylate potassium salt)", "SPMA"],
+    monomer: "3-sulfopropyl methacrylate", cls: "Addition (methacrylate)", cas: null,
+    tags: ["methacrylate", "polyelectrolyte", "water-soluble", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S1", el: "*" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "S" }, { id: 13, el: "O" }, { id: 14, el: "O" }, { id: 15, el: "O" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: 14, order: 2 }, { a: 12, b: 15, order: 1 }],
+    note: "A strong polyacid tethered to a methacrylate backbone through a three-carbon spacer, so the charge sits well clear of the chain and stays dissociated at every pH. Grafted from a surface it forms polyelectrolyte brushes with remarkably low friction in water - the hydration layer around each sulfonate is what slides - which is the model system for how cartilage lubricates."
+  },
+  {
+    name: "Poly(2-methoxyethyl acrylate)", aka: ["PMEA", "poly(2-methoxyethyl acrylate)"],
+    monomer: "2-methoxyethyl acrylate", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "biomedical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }],
+    note: "One of the least thrombogenic synthetic surfaces known, and used to coat cardiopulmonary bypass circuits. The explanation is a population of water molecules that are neither bulk nor tightly bound - intermediate water, which freezes only on cooling well below zero - and blood proteins appear not to denature against it. Neither more nor less hydrophilic polymers show the effect."
+  },
+  {
+    name: "Poly(hydroxypropyl acrylate)", aka: ["PHPA", "poly(2-hydroxypropyl acrylate)", "HPA"],
+    monomer: "2-hydroxypropyl acrylate", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "coating", "water-soluble", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }],
+    note: "An acrylate with a secondary alcohol on every repeat, used to build the hydroxyl functionality that a two-pack isocyanate coating later crosslinks. The methyl next to the alcohol slows that reaction relative to the hydroxyethyl version, which is the point: it buys pot life without giving up crosslink density."
+  },
+  {
+    name: "Poly(2-carboxyethyl acrylate)", aka: ["PCEA", "poly(2-carboxyethyl acrylate)", "beta-carboxyethyl acrylate"],
+    monomer: "2-carboxyethyl acrylate", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "adhesive", "polyelectrolyte", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "O" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 10, b: 12, order: 1 }],
+    note: "A carboxylic acid held off the backbone by an ester spacer rather than attached directly as in acrylic acid. The distance matters for adhesion: the acid can reach a metal oxide surface without the chain having to distort, which is why small amounts of it are added to pressure-sensitive adhesives to improve their grip on steel."
+  },
+  {
+    name: "Poly(N-hydroxyethyl acrylamide)", aka: ["PHEAA", "poly(N-(2-hydroxyethyl)acrylamide)", "HEAA"],
+    monomer: "N-(2-hydroxyethyl)acrylamide", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "water-soluble", "biomedical", "hydrogel", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }],
+    note: "An acrylamide carrying both an amide and a free hydroxyl, so it hydrogen-bonds to water at two points per repeat and resists protein adsorption about as well as PEG does. Unlike polyacrylamide it carries no primary amide, so it cannot hydrolyse to acrylic acid and drift charged over time - the failure that limits polyacrylamide coatings."
+  },
+  {
+    name: "Poly(diacetone acrylamide)", aka: ["PDAAM", "poly(diacetone acrylamide)", "DAAM"],
+    monomer: "diacetone acrylamide", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "coating", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "O" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 12, b: 14, order: 2 }],
+    note: "The ketone on this monomer is the half of the pair that lets a water-based paint crosslink as it dries: adipic dihydrazide in the same can cannot reach the ketone while the polymer is inside a latex particle, but once the water leaves and the particles coalesce the hydrazone forms and the film becomes insoluble. Ambient cure with no catalyst and no isocyanate."
+  },
+  {
+    name: "Poly(N-tert-butylacrylamide)", aka: ["PNtBAM", "poly(N-tert-butylacrylamide)"],
+    monomer: "N-tert-butylacrylamide", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }],
+    note: "The hydrophobic member of the acrylamide family, insoluble in water where the isopropyl version dissolves below 32 C. Copolymerised with N-isopropylacrylamide it pulls the cloud point down in a nearly linear way, which is the standard method for tuning a thermoresponsive gel to body temperature rather than to 32 C."
+  },
+  {
+    name: "Poly(vinyl laurate)", aka: ["PVLa", "poly(vinyl laurate)", "poly(vinyl dodecanoate)"],
+    monomer: "vinyl laurate", cls: "Addition (vinyl)", cas: null,
+    tags: ["vinyl-halide", "coating", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }],
+    note: "A vinyl ester with a twelve-carbon tail, internally plasticised so far that it is tacky at room temperature. Copolymerised with vinyl acetate it lowers the film-forming temperature of an emulsion paint without any added plasticiser to migrate out later, which is the whole argument for using it."
+  },
+  {
+    name: "Poly(vinyl chloroacetate)", aka: ["PVCA", "poly(vinyl chloroacetate)"],
+    monomer: "vinyl chloroacetate", cls: "Addition (vinyl)", cas: null,
+    tags: ["vinyl-halide", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "Cl" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }],
+    note: "Poly(vinyl acetate) with a chlorine on the acetyl methyl, which turns an inert ester into an alkylating handle: the chloride displaces with amines or azide to give functional polymers, and the ester still hydrolyses to poly(vinyl alcohol) if that is wanted instead. Two independent chemistries on one repeat unit."
+  },
+  {
+    name: "Poly(allyl alcohol)", aka: ["PAA (allyl)", "poly(allyl alcohol)", "poly(2-propen-1-ol)"],
+    monomer: "allyl alcohol", cls: "Addition (vinyl)", cas: null,
+    tags: ["water-soluble", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 3, b: "S1", order: 1 }],
+    note: "The textbook case of degradative chain transfer: the radical abstracts an allylic hydrogen far more readily than it adds to the double bond, so the chain stops almost as soon as it starts and allyl monomers give only oligomers. Those oligomers are useful as polyols precisely because they are short and heavily functionalised, but the failure to propagate is why no allyl polymer is a commodity."
+  },
+  {
+    name: "Poly(allyl glycidyl ether)", aka: ["PAGE", "poly(allyl glycidyl ether)"],
+    monomer: "allyl glycidyl ether", cls: "Addition (vinyl)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 8, b: 10, order: 1 }],
+    note: "Carries an epoxide on every repeat unit, so a chain can be made first and functionalised afterwards by thiol-ene at the allyl group or ring-opening at the epoxide - two orthogonal handles that do not interfere. It is the usual comonomer for putting crosslink sites into a polyether elastomer."
+  },
+  {
+    name: "Poly(4-vinylphenylboronic acid)", aka: ["PVPBA", "poly(vinylphenylboronic acid)", "poly(4-vinylbenzeneboronic acid)"],
+    monomer: "4-vinylphenylboronic acid", cls: "Addition (vinyl)", cas: null,
+    tags: ["styrenic", "water-soluble", "biomedical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "B" }, { id: 10, el: "O" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }, { a: 8, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 5, b: 13, order: 1 }],
+    note: "Boronic acids form reversible cyclic esters with any adjacent pair of hydroxyls, which means this polymer binds sugars - and binds glucose in proportion to its concentration. That is the basis of the synthetic glucose-responsive insulin depot: as blood sugar rises it displaces the crosslinks and the gel releases its cargo. Making the response fast enough at physiological pH is the standing difficulty."
+  },
+  {
+    name: "Poly(4-vinylbiphenyl)", aka: ["PVBP", "poly(4-vinylbiphenyl)", "poly(vinyl biphenyl)"],
+    monomer: "4-vinylbiphenyl", cls: "Addition (vinyl)", cas: null,
+    tags: ["styrenic", "optical", "high-temperature", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 5, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 11, b: 16, order: 1 }],
+    note: "Two rings in a row rather than fused, so the pendant group is long and can rotate about the bond between them. That gives a glass transition near 145 C and a very high refractive index, and the twist between rings makes the polymer a useful host for phosphorescent emitters, where a rigid but non-planar spacer keeps the triplet energy high."
+  },
+  {
+    name: "Poly(1-decene)", aka: ["PDec", "poly(1-decene)", "PAO base stock"],
+    monomer: "1-decene", cls: "Addition (vinyl)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }],
+    note: "Oligomers of this are the polyalphaolefins that make up most fully synthetic motor oil - a hydrocarbon of uniform, branched structure with none of the waxy linear chains or reactive aromatics that a distilled mineral oil carries. The result pours at -50 C and oxidises far more slowly, which is the whole reason synthetic oil exists."
+  },
+  {
+    name: "Poly(3-methyl-1-butene)", aka: ["P3MB", "poly(3-methyl-1-butene)"],
+    monomer: "3-methyl-1-butene", cls: "Addition (vinyl)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }],
+    note: "Branching on the carbon immediately next to the backbone forces the chain into a rigid helix, and the isotactic polymer melts near 300 C - far above polypropylene, from a monomer only two carbons larger. It is the clearest demonstration that a melting point is set by chain stiffness rather than by molecular size, and it is useless in practice because it will not melt-process below its decomposition temperature."
+  },
+  {
+    name: "Poly(butylene carbonate)", aka: ["PBC", "poly(butylene carbonate)", "poly(tetramethylene carbonate)"],
+    monomer: "1,4-butanediol + dimethyl carbonate", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biodegradable", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 8, b: "S1", order: 1 }],
+    note: "An aliphatic polycarbonate, which despite the shared name has nothing structurally in common with the bisphenol A material that windows are made of - no aromatic ring, no rigidity, and it hydrolyses. Short chains of it are the soft segment in the polyurethanes chosen for implants, because a carbonate resists the enzymatic hydrolysis that eventually eats a polyester soft segment."
+  },
+  {
+    name: "Poly(hexamethylene carbonate)", aka: ["PHMC", "poly(hexamethylene carbonate)", "polycarbonate diol"],
+    monomer: "1,6-hexanediol + dimethyl carbonate", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biodegradable", "coating", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 10, b: "S1", order: 1 }],
+    note: "The polycarbonate diol behind the most durable polyurethane coatings and the longest-lived implantable elastomers. Six methylenes between carbonates is enough to crystallise slightly and enough to stay flexible, and the carbonate link resists both hydrolysis and oxidation better than the ester or ether soft segments it competes with - which is measured in years of implant life, not laboratory hours."
+  },
+  {
+    name: "Poly(thiophene-3-acetic acid)", aka: ["P3TAA", "poly(3-thiopheneacetic acid)"],
+    monomer: "thiophene-3-acetic acid", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "water-soluble", "polyelectrolyte", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "S" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 4, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 2, b: 10, order: 1 }, { a: 9, b: "S1", order: 1 }],
+    note: "A conjugated backbone made water-soluble by hanging a carboxylic acid off each ring, so it can be processed from water and used in contact with biology. Binding anything to those acids twists the backbone and shifts its colour and emission, which turns the polymer itself into the transducer - the principle behind conjugated-polymer biosensors."
+  },
+  {
+    name: "Poly(sulfobetaine acrylamide)", aka: ["PSBAm", "poly(sulfobetaine acrylamide)", "SBAm"],
+    monomer: "sulfobetaine acrylamide", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "zwitterionic", "water-soluble", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "N", charge: 1 }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "S" }, { id: 18, el: "O" }, { id: 19, el: "O" }, { id: 20, el: "O", charge: -1 }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 11, b: 13, order: 1 }, { a: 11, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: 19, order: 2 }, { a: 17, b: 20, order: 1 }],
+    note: "Zwitterionic polymers dissolve better in salt water than in pure water - the opposite of every ordinary polyelectrolyte - because added salt screens the attraction between a chain's own opposite charges. The upper critical solution temperature that follows is the basis for antifouling coatings that release accumulated fouling when the temperature or salinity changes."
+  },
+  {
+    name: "Poly(vinyl versatate)", aka: ["PVeoVa", "poly(vinyl neodecanoate)", "VeoVa"],
+    monomer: "vinyl versatate", cls: "Addition (vinyl)", cas: null,
+    tags: ["coating", "weather-resistant", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }],
+    note: "A vinyl ester of a branched acid whose carboxyl carbon carries no hydrogen at all, so the ester is shielded from hydrolysis by pure steric bulk. Copolymerised with vinyl acetate it is what lets an emulsion paint survive on an exterior wall, where plain poly(vinyl acetate) would slowly saponify in alkaline masonry."
+  },
+  {
+    name: "Poly(ether ether ketone ketone)", aka: ["PEEKK", "poly(ether ether ketone ketone)"],
+    monomer: "hydroquinone + terephthaloyl chloride derivatives", cls: "Step-growth (polyester)", cas: null,
+    tags: ["high-temperature", "engineering", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "O" }, { id: 26, el: "C" }, { id: 27, el: "C" }, { id: 28, el: "C" }, { id: 29, el: "C" }, { id: 30, el: "C" }, { id: 31, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 3, b: 8, order: 1 }, { a: 6, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 11, b: 16, order: 1 }, { a: 14, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 2 }, { a: 19, b: 24, order: 1 }, { a: 22, b: 25, order: 1 }, { a: 25, b: 26, order: 1 }, { a: 26, b: 27, order: 2 }, { a: 27, b: 28, order: 1 }, { a: 28, b: 29, order: 2 }, { a: 29, b: 30, order: 1 }, { a: 30, b: 31, order: 2 }, { a: 26, b: 31, order: 1 }, { a: 29, b: "S1", order: 1 }],
+    note: "One more ketone per repeat than PEEK, which stiffens the chain and lifts the melting point above 360 C. The whole polyaryletherketone family is a single design variable played out: ethers are the flexible joints and ketones the rigid ones, and the ratio between them sets the melt and glass transitions almost linearly. More ketone also means a narrower processing window."
+  },
+  {
+    name: "Poly(phenylene sulfide ketone)", aka: ["PPSK", "poly(phenylene sulfide ketone)"],
+    monomer: "sodium sulfide + dichlorobenzophenone", cls: "Step-growth (polyester)", cas: null,
+    tags: ["high-temperature", "engineering", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "S" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 3, b: 8, order: 1 }, { a: 6, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 11, b: 16, order: 1 }, { a: 14, b: "S1", order: 1 }],
+    note: "PPS with a ketone inserted between phenylenes, giving a melting point near 350 C against PPS's 285 C. It sits in the gap between commodity PPS and the far more expensive PEEK, and the sulfur retains PPS's near-total resistance to solvents - there is no known solvent for it below 200 C."
+  },
+  {
+    name: "Poly(thioether ketone)", aka: ["PTK", "poly(thioether ketone)", "PEKS"],
+    monomer: "4-mercaptobenzoic acid derivative", cls: "Step-growth (polyester)", cas: null,
+    tags: ["high-temperature", "engineering", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "S" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 3, b: 8, order: 1 }, { a: 6, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: "S1", order: 1 }],
+    note: "The thioether analogue of a polyetherketone, and of interest because the C-S bond is weaker than C-O and can be broken deliberately: thioether-linked networks exchange bonds at temperature, so a thermoset built this way can be reshaped and reprocessed. That is the vitrimer idea applied to a high-temperature backbone."
+  },
+  {
+    name: "PIM-1", aka: ["polymer of intrinsic microporosity", "PIM-1", "poly(benzodioxane nitrile)"],
+    monomer: "tetrahydroxyspirobisindane + tetrafluoroterephthalonitrile", cls: "Step-growth (polyester)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A polymer that is microporous without being a network: the spiro centre puts a rigid right-angle kink in the chain, so the chains cannot pack and the free volume between them stays open and connected. The result is a soluble, film-forming solid with the surface area of a zeolite, and it reset the upper bound on what a gas separation membrane could achieve. Not drawn: each pair of catechol oxygens closes a dioxin ring onto the nitrile ring, so the chain is a ladder with no two-ended repeat unit."
+  },
+  {
+    name: "Poly(triptycene)", aka: ["triptycene polymer", "poly(triptycene)", "iptycene polymer"],
+    monomer: "triptycene", cls: "Addition (vinyl)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 3, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 2, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 9, b: 15, order: 1 }, { a: 13, b: "S1", order: 1 }, { a: 9, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 2, b: 22, order: 1 }, { a: 17, b: 22, order: 1 }],
+    note: "Triptycene is three benzene rings locked at 120 degrees around a common axis, so it sweeps out a volume no neighbouring chain can enter. Built into a conjugated backbone it prevents the chain stacking that quenches fluorescence, which is why the amplifying fluorescent polymers used in trace vapour detection are built on it - one bound molecule quenches an entire chain's worth of excitation."
+  },
+  {
+    name: "Poly(spirobifluorene)", aka: ["PSBF", "poly(9,9'-spirobifluorene)", "spiro polymer"],
+    monomer: "9,9'-spirobifluorene", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "optical", "high-temperature", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: "S1", el: "*" }, { id: 26, el: "C" }, { id: 27, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 6, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 13, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 2 }, { a: 12, b: 24, order: 1 }, { a: 19, b: 24, order: 1 }, { a: 16, b: "S1", order: 1 }, { a: 12, b: 26, order: 1 }, { a: 5, b: 26, order: 1 }, { a: 26, b: 27, order: 2 }, { a: 2, b: 27, order: 1 }],
+    note: "Two fluorenes sharing one tetrahedral carbon, so the two halves sit at right angles. That single geometric fact solves polyfluorene's worst problem: the chains cannot stack into the aggregates that turn blue emission green over a device's lifetime. The glass transition also rises above 200 C, so the film does not reorganise in service."
+  },
+  {
+    name: "Poly(indenofluorene)", aka: ["PIF", "poly(indenofluorene)", "ladder-type poly(p-phenylene)"],
+    monomer: "indenofluorene", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "optical", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A partially ladder-type backbone: bridging carbons tie neighbouring phenylenes together so they cannot twist out of plane. Planarising the chain narrows the emission line and raises the fluorescence yield, which is the whole reason to go to the trouble - a twisted polyphenylene emits broadly and inefficiently. Not drawn: I could not fix the parent hydrocarbon's formula independently of my own sketch, so the usual arithmetic check would have proved nothing."
+  },
+  {
+    name: "Poly(cyclopentadithiophene)", aka: ["PCPDT", "poly(cyclopentadithiophene)", "CPDT polymer"],
+    monomer: "4,4-dihexylcyclopentadithiophene", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "S" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 4, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 9, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 8, b: 22, order: 1 }, { a: 22, b: 23, order: 2 }, { a: 23, b: 24, order: 1 }, { a: 7, b: 24, order: 1 }, { a: 23, b: "S1", order: 1 }],
+    note: "Two thiophenes bridged by a single carbon that carries the solubilising chains, so the alkyl groups point away from the plane instead of forcing the rings apart. The backbone stays flat, the band gap narrows, and the polymer absorbs deep into the near infrared - which is what a solar cell needs and a plain polythiophene cannot do."
+  },
+  {
+    name: "Poly(dithienosilole)", aka: ["PDTS", "poly(dithienosilole)", "silole polymer"],
+    monomer: "dithienosilole", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "Si" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "S" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 4, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }, { a: 8, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 7, b: 14, order: 1 }, { a: 13, b: "S1", order: 1 }],
+    note: "The same bridged bithiophene with silicon at the bridge instead of carbon. Silicon's empty d-orbitals mix with the ring system and pull the lowest unoccupied level down, narrowing the gap further than a carbon bridge can, and the longer Si-C bonds relieve strain enough that the film crystallises better. A single atom substitution worth about 0.2 eV."
+  },
+  {
+    name: "Poly(benzodithiophene)", aka: ["PBDT", "poly(benzodithiophene)", "BDT polymer"],
+    monomer: "benzo[1,2-b:4,5-b']dithiophene", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "S" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 4, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 7, b: 13, order: 1 }, { a: 12, b: "S1", order: 1 }],
+    note: "A benzene with a thiophene fused on each side, symmetric and rigidly planar, and the single most common electron-rich unit in high-performance organic solar cells - the donor half of PTB7, PM6 and most of what followed. Its virtue is dullness: it contributes a flat, well-behaved, deep-lying orbital and lets the acceptor unit do the tuning."
+  },
+  {
+    name: "Poly(isoindigo)", aka: ["PII", "poly(isoindigo)", "isoindigo polymer"],
+    monomer: "isoindigo", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["conductive", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "N" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 2, b: 7, order: 1 }, { a: 5, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 4, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 2 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 2 }, { a: 12, b: 21, order: 1 }, { a: 16, b: 21, order: 1 }, { a: 19, b: "S1", order: 1 }],
+    note: "Built on a dye related to indigo, and strongly electron-accepting because of the two lactam carbonyls pointing outward from the central double bond. Isoindigo copolymers give ambipolar transistors - electrons and holes move about equally well - which is rare and useful, and the starting material is cheap in a field where most acceptors are not."
+  },
+  {
+    name: "Poly(diketopyrrolopyrrole)", aka: ["PDPP", "poly(diketopyrrolopyrrole)", "DPP polymer"],
+    monomer: "thienyl diketopyrrolopyrrole", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "N" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "O" }, { id: 17, el: "N" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "S" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 11, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 8, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 15, b: 17, order: 1 }, { a: 7, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 13, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 22, b: 23, order: 1 }, { a: 19, b: 23, order: 1 }, { a: 22, b: "S1", order: 1 }],
+    note: "The pigment in Ferrari red, repurposed as a semiconductor. The fused bislactam core is a strong acceptor and its flanking thiophenes lock flat by hydrogen bonding to the carbonyls, giving the highest charge mobilities recorded in any polymer - above ten square centimetres per volt second, which is amorphous silicon's territory."
+  },
+  {
+    name: "Poly(azomethine)", aka: ["polyazomethine", "poly(Schiff base)", "polyimine"],
+    monomer: "dialdehyde + diamine", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["high-temperature", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "N" }, { id: 17, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 2, b: 7, order: 1 }, { a: 5, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 10, b: 15, order: 1 }, { a: 13, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 17, b: "S1", order: 1 }],
+    note: "Made by simply mixing a dialdehyde with a diamine and letting water leave - no catalyst, no metal, no purification. The imine bond is also reversible under acid, so these polymers depolymerise cleanly to their monomers and repolymerise, which has made them a favourite scaffold for covalent organic frameworks and self-healing networks."
+  },
+  {
+    name: "Poly(benzothiadiazole-alt-thiophene)", aka: ["PTBT", "poly(benzothiadiazole-alt-thiophene)", "BT polymer"],
+    monomer: "benzothiadiazole + thiophene", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "N" }, { id: 12, el: "N" }, { id: 13, el: "S" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 10, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 7, b: 15, order: 1 }, { a: 15, b: "S1", order: 1 }],
+    note: "The archetype of the donor-acceptor design: an electron-rich thiophene alternating with electron-poor benzothiadiazole gives a band gap neither unit has alone, because the occupied level sits on one and the empty level on the other. Nearly every low-band-gap polymer since has been a variation on this pairing."
+  },
+  {
+    name: "Poly(phenylene ethynylene vinylene)", aka: ["PPEV", "poly(phenylene ethynylene-alt-vinylene)"],
+    monomer: "diethynylbenzene + divinylbenzene route", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "optical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 2, b: 7, order: 1 }, { a: 5, b: 8, order: 1 }, { a: 8, b: 9, order: 3 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 10, b: 15, order: 1 }, { a: 13, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 17, b: "S1", order: 1 }],
+    note: "Alternating triple and double bonds between phenylenes, which fixes the two failings of its parents: the pure ethynylene polymer is too rigid to process and the pure vinylene too easily oxidised. The mixed backbone keeps the rod-like shape and the bright emission while remaining soluble."
+  },
+  {
+    name: "Poly(anthracene)", aka: ["PAnt", "poly(9,10-anthracenylene)", "polyanthracene"],
+    monomer: "anthracene", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "optical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 6, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 4, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 2, b: 15, order: 1 }, { a: 15, b: "S1", order: 1 }],
+    note: "Three linearly fused rings in the backbone, and the classic photodimerising unit: two anthracenes facing each other join across the 9,10 positions under ultraviolet light and come apart again on heating or at shorter wavelength. That makes it a reversible crosslink driven purely by light, with no initiator and no byproduct."
+  },
+  {
+    name: "Poly(thiazole)", aka: ["PTz", "poly(thiazole)", "polythiazole"],
+    monomer: "thiazole", cls: "Addition (vinyl)", cas: null,
+    tags: ["conductive", "high-temperature", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "S" }, { id: 5, el: "C" }, { id: 6, el: "N" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 2, b: 6, order: 1 }, { a: 5, b: "S1", order: 1 }],
+    note: "Thiophene with one carbon replaced by nitrogen, which lowers both frontier orbitals without disturbing the ring geometry - the cheapest way to turn a donor into an acceptor. The nitrogen also accepts a hydrogen bond, so thiazole polymers pack more tightly than their thiophene counterparts and are correspondingly harder to dissolve."
+  },
+  {
+    name: "Poly(bisbenzimidazobenzophenanthroline)", aka: ["BBL", "poly(benzimidazobenzophenanthroline)", "ladder BBL"],
+    monomer: "naphthalene tetracarboxylic dianhydride + tetraaminobenzene", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["conductive", "high-temperature", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A true ladder polymer - two parallel strands of bonds all the way along, so no single bond breaking can sever the chain. It is one of the few n-type organic semiconductors stable in air indefinitely, and it survives 500 C. Not drawn: the fused ladder repeat is large and its ring fusion pattern is easy to draw wrongly in a way no mass check would catch."
+  },
+  {
+    name: "Poly(naphthalene diimide)", aka: ["PNDI", "poly(naphthalimide)", "naphthalene diimide polyimide"],
+    monomer: "naphthalene tetracarboxylic dianhydride + hexamethylenediamine", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["conductive", "high-temperature", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "N" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "N" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: "S1", el: "*" }, { id: 19, el: "C" }, { id: 20, el: "O" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "O" }, { id: 27, el: "C" }, { id: 28, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: "S1", order: 1 }, { a: 11, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 19, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 2 }, { a: 24, b: 25, order: 1 }, { a: 2, b: 25, order: 1 }, { a: 25, b: 26, order: 2 }, { a: 24, b: 27, order: 1 }, { a: 5, b: 27, order: 1 }, { a: 27, b: 28, order: 2 }, { a: 8, b: 28, order: 1 }, { a: 21, b: 28, order: 1 }],
+    note: "Four carbonyls pulling on a naphthalene core make one of the strongest electron acceptors available from cheap starting material, and the reason the naphthalene diimides are the standard n-type unit in printed electronics. The same dianhydride is used to make ordinary high-temperature polyimides, so the unit works as both a structural and an electronic building block."
+  },
+  {
+    name: "Poly(perylene diimide)", aka: ["PPDI", "perylene diimide polymer", "PDI polymer"],
+    monomer: "perylene tetracarboxylic dianhydride + diamine", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["conductive", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The pigment behind automotive red paints and, in polymer form, the leading non-fullerene electron acceptor before the small-molecule acceptors overtook it. Its problem is its virtue: the flat perylene stacks so strongly that it crystallises into domains far larger than an exciton can cross. Not drawn - the fused perylene core is too easy to get wrong on paper, and I would not catch it by mass."
+  },
+  {
+    name: "Poly(diethylsiloxane)", aka: ["PDES", "poly(diethylsiloxane)"],
+    monomer: "diethyldichlorosilane", cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone", "liquid crystalline", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "Si" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 2, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 7, order: 1 }, { a: 7, b: "S1", order: 1 }],
+    note: "Two carbons per side group instead of one, and the polymer stops behaving like a silicone: it forms a mesophase between its melting and clearing points, a rare case of a flexible chain with no rigid unit forming a liquid crystal. The order comes from the side chains packing, not from the backbone, which is why it disappears again in the propyl homologue."
+  },
+  {
+    name: "Poly(phenylsilsesquioxane)", aka: ["PPSQ", "polysilsesquioxane", "poly(phenylsilsesquioxane)"],
+    monomer: "phenyltrichlorosilane", cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone", "high-temperature", "coating", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "Si" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: "S1", el: "*" }, { id: 11, el: "O" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 3, b: 8, order: 1 }, { a: 2, b: 9, order: 1 }, { a: 9, b: "S1", order: 1 }, { a: 2, b: 11, order: 1 }],
+    note: "A silicone in which each silicon carries one organic group and one and a half oxygens, so the structure is a cage or a ladder rather than a chain - halfway between a silicone and silica. The idealised repeat is drawn here; real material is a mixture of cages, ladders and incompletely condensed fragments, which is why its properties depend so strongly on cure history."
+  },
+  {
+    name: "Polystannane", aka: ["poly(dibutylstannane)", "polystannane", "tin chain polymer"],
+    monomer: "dibutyltin dihydride", cls: "Ring-opening (silicone)", cas: null,
+    tags: ["conductive", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "Sn" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 2, b: "S1", order: 1 }],
+    note: "A backbone of nothing but tin atoms. Sigma bonds between heavy main-group elements delocalise almost like a pi system, so this is a one-dimensional semiconductor built from single bonds - it absorbs in the visible and conducts when doped. It is also photosensitive to the point of being difficult to handle, which is where the interest in it as a resist comes from."
+  },
+  {
+    name: "Polypentenamer", aka: ["trans-polypentenamer", "poly(1-pentenylene)", "TPR"],
+    monomer: "cyclopentene", cls: "Addition (diene)", cas: null,
+    tags: ["elastomer", "tire", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: "S1", order: 1 }],
+    note: "Made by ring-opening cyclopentene, and one of the earliest metathesis polymers taken seriously as a commercial rubber. It has one double bond every five carbons where polybutadiene has one every four, so it crystallises on stretching and gives high green strength - the property a tyre builder needs before vulcanisation. It lost out to butadiene on monomer cost, not on performance."
+  },
+  {
+    name: "Poly(norbornene dicarboximide)", aka: ["PNDI (imide)", "poly(N-methylnorbornene dicarboximide)", "ROMP polyimide"],
+    monomer: "N-methyl norbornene dicarboximide", cls: "Addition (diene)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: "S1", el: "*" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "N" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 6, order: 1 }, { a: 6, b: "S1", order: 1 }, { a: 5, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 11, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: 15, order: 1 }, { a: 3, b: 15, order: 1 }, { a: 8, b: 15, order: 1 }],
+    note: "The standard ROMP monomer for making bottlebrushes and precise block copolymers: the imide nitrogen carries whatever is to be grafted, and the strained norbornene opens fast and cleanly under a ruthenium catalyst without touching the imide. Almost every grafting-through bottlebrush in the literature is built on this unit or a close relative."
+  },
+  {
+    name: "Poly(oxamide)", aka: ["polyoxamide", "poly(oxalamide)", "PA 6,2"],
+    monomer: "hexamethylenediamine + oxalate ester", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide", "engineering", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "N" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 10, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: "S1", order: 1 }],
+    note: "A nylon in which the two amide carbonyls are bonded directly to each other, the shortest possible diacid. The adjacent carbonyls force a rigid, planar linkage and the amide density is the highest of any polyamide, so it absorbs less water than nylon 6,6 despite having more amides - the hydrogen bonds are already fully satisfied within the crystal."
+  },
+  {
+    name: "Poly(hydrazide)", aka: ["polyhydrazide", "poly(terephthalic hydrazide)"],
+    monomer: "terephthalic dihydrazide", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["high-temperature", "fiber", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "N" }, { id: 3, el: "N" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 6, b: 11, order: 1 }, { a: 9, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: "S1", order: 1 }],
+    note: "Two nitrogens bonded to each other between the carbonyls. It is chiefly a precursor: heating it drives out water and closes each hydrazide into an oxadiazole ring, so a soluble, spinnable polymer can be made into fibre first and converted to an intractable heterocyclic one afterwards. The same trick as the poly(amic acid) route to polyimides."
+  },
+  {
+    name: "Poly(semicarbazide)", aka: ["polysemicarbazide", "poly(semicarbazide)"],
+    monomer: "diisocyanate + hydrazine", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "N" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "N" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: "S1", order: 1 }],
+    note: "A urea with an extra nitrogen inserted, made by reacting a diisocyanate with hydrazine rather than with a diamine. The four nitrogens per linkage give an exceptionally dense hydrogen-bonded network, so these are the hard segments in polyurethanes that must not soften - at the cost of being nearly insoluble once formed."
+  },
+  {
+    name: "Poly(thiosemicarbazide)", aka: ["polythiosemicarbazide", "poly(thiosemicarbazide)"],
+    monomer: "diisothiocyanate + hydrazine", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "N" }, { id: 3, el: "C" }, { id: 4, el: "S" }, { id: 5, el: "N" }, { id: 6, el: "N" }, { id: 7, el: "C" }, { id: 8, el: "S" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: "S1", order: 1 }],
+    note: "The sulfur analogue, and a powerful chelating polymer: the thiocarbonyl sulfur and the adjacent nitrogens form a pocket that grips soft heavy metals - mercury, lead, cadmium - far more tightly than a carboxylate resin does. It is used to strip those metals from water at concentrations where ion exchange stops working."
+  },
+  {
+    name: "Poly(hydroxyurethane)", aka: ["PHU", "non-isocyanate polyurethane", "NIPU"],
+    monomer: "cyclic carbonate + diamine", cls: "Step-growth (polyester)", cas: null,
+    tags: ["coating", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "N" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "N" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 8, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: "S1", order: 1 }],
+    note: "A polyurethane made without isocyanate: a five-membered cyclic carbonate opens with an amine to give the urethane directly, and the reaction leaves a hydroxyl behind on the neighbouring carbon. Since the cyclic carbonate itself can be made from carbon dioxide and an epoxide, the route avoids phosgene entirely - which is the whole point, isocyanate manufacture being the most hazardous step in the polyurethane industry."
+  },
+  {
+    name: "Poly(glycerol adipate)", aka: ["PGA (glycerol)", "poly(glycerol adipate)", "PGadipate"],
+    monomer: "glycerol + divinyl adipate", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biodegradable", "biomedical", "bio-based", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 8, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 14, b: "S1", order: 1 }],
+    note: "Glycerol has three hydroxyls but an enzyme will only use the two primary ones, so a lipase-catalysed polymerisation gives a linear polyester with a free secondary alcohol on every repeat unit. Chemical catalysis would give a crosslinked mess. That pendant hydroxyl is then the attachment point for drugs, and the selectivity is entirely the enzyme's doing."
+  },
+  {
+    name: "Poly(depsipeptide)", aka: ["polydepsipeptide", "poly(ester amide) alpha", "PDP"],
+    monomer: "morpholine-2,5-dione", cls: "Ring-opening (polyamide)", cas: null,
+    tags: ["biodegradable", "biopolymer", "biomedical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: "S1", order: 1 }],
+    note: "Alternating hydroxy acid and amino acid - lactic acid and glycine here - so it is half polyester and half polypeptide in strict alternation. The ester links set the degradation rate while the amino acid side chains provide functional groups, which is a degree of control neither poly(lactide) nor a polypeptide offers on its own."
+  },
+  {
+    name: "Poly(3-hydroxydecanoate)", aka: ["PHD", "P3HD", "poly(3-hydroxydecanoate)"],
+    monomer: "3-hydroxydecanoic acid (bacterial)", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biopolymer", "biodegradable", "elastomer", "bio-based", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 3, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: "S1", order: 1 }],
+    note: "Two carbons longer again, and by this point the side chains are long enough to crystallise on their own, so the polymer shows a side-chain melting transition well below the backbone's. It is a soft tacky solid used as a bio-based pressure-sensitive adhesive, and it composts - which most adhesives conspicuously do not."
+  },
+  {
+    name: "Poly(ketal)", aka: ["polyketal", "PK (ketal)", "acid-degradable polyketal"],
+    monomer: "diol + 2,2-dimethoxypropane", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biodegradable", "drug delivery", "biomedical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 6, b: 8, order: 1 }, { a: 6, b: "S1", order: 1 }],
+    note: "A backbone that is stable at blood pH and hydrolyses quickly one pH unit lower, which is exactly the drop between the bloodstream and the inside of an endosome. Unlike a polyester it produces no acid as it degrades, so it cannot catalyse its own breakdown or acidify the tissue around it - the recurring complaint against poly(lactide) implants."
+  },
+  {
+    name: "Poly(tetrafluoroethylene-alt-propylene)", aka: ["FEPM", "TFE/P", "Aflas", "tetrafluoroethylene propylene"],
+    monomer: "tetrafluoroethylene + propylene", cls: "Addition (vinyl)", cas: null,
+    tags: ["fluoropolymer", "elastomer", "oil-resistant", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "F" }, { id: 4, el: "F" }, { id: 5, el: "C" }, { id: 6, el: "F" }, { id: 7, el: "F" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 2, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 5, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: "S1", order: 1 }],
+    note: "The one fluoroelastomer that survives strong base and steam, because it has no vinylidene fluoride and therefore no acidic hydrogen for a base to abstract - the dehydrofluorination that destroys ordinary FKM in amine-treated oilfield fluids. It is standard for downhole seals, and its electrical insulation is good enough for oilfield cable jacketing."
+  },
+  {
+    name: "Poly(ether sulfone ketone)", aka: ["PESK", "poly(ether sulfone ketone)"],
+    monomer: "bisphenol + dihalodiphenyl sulfone and ketone", cls: "Step-growth (polyester)", cas: null,
+    tags: ["high-temperature", "engineering", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "S" }, { id: 10, el: "O" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "O" }, { id: 27, el: "C" }, { id: 28, el: "C" }, { id: 29, el: "C" }, { id: 30, el: "C" }, { id: 31, el: "C" }, { id: 32, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 3, b: 8, order: 1 }, { a: 6, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 2 }, { a: 9, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 12, b: 17, order: 1 }, { a: 15, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 2 }, { a: 19, b: 24, order: 1 }, { a: 22, b: 25, order: 1 }, { a: 25, b: 26, order: 2 }, { a: 25, b: 27, order: 1 }, { a: 27, b: 28, order: 2 }, { a: 28, b: 29, order: 1 }, { a: 29, b: 30, order: 2 }, { a: 30, b: 31, order: 1 }, { a: 31, b: 32, order: 2 }, { a: 27, b: 32, order: 1 }, { a: 30, b: "S1", order: 1 }],
+    note: "Sulfone and ketone in the same chain, which puts the glass transition above polysulfone's while retaining some crystallinity from the ketone - the two families' properties are usually mutually exclusive. It is one of the clearest illustrations that the aryl ether backbone is a construction kit rather than a fixed material."
+  },
+  {
+    name: "Salicylate polyanhydride", aka: ["PolyAspirin", "salicylic acid polyanhydride", "poly(anhydride ester)"],
+    monomer: "salicylic acid + sebacic acid", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biodegradable", "biomedical", "drug delivery", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 5, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 21, b: "S1", order: 1 }],
+    note: "The drug is the polymer. Salicylic acid is built into the backbone rather than dispersed in it, so hydrolysis of the anhydride releases aspirin's active metabolite at a rate set by the chain rather than by diffusion - weeks of steady delivery with no burst release and no inert carrier left behind."
+  },
+  {
+    name: "Poly(butylene sebacate)", aka: ["PBSe", "poly(butylene sebacate)", "poly(tetramethylene sebacate)"],
+    monomer: "1,4-butanediol + sebacic acid", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biodegradable", "bio-based", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 8, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 2 }, { a: 18, b: "S1", order: 1 }],
+    note: "A long-chain aliphatic polyester whose diacid comes from castor oil, so it is bio-based at the acid end without any fermentation step. The ten-carbon spacing makes it softer and lower melting than poly(butylene succinate), and it is used to plasticise stiffer biodegradable polyesters without adding a migratory small molecule."
+  },
+  {
+    name: "Poly(ethylene azelate)", aka: ["PEAz", "poly(ethylene azelate)"],
+    monomer: "ethylene glycol + azelaic acid", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biodegradable", "bio-based", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 15, b: "S1", order: 1 }],
+    note: "Azelaic acid has nine carbons - an odd number, from ozonolysis of oleic acid - and odd-numbered diacids pack badly, so this polyester melts some 20 degrees below its even-numbered neighbours. The odd-even alternation in aliphatic polyester melting points is one of the cleanest structure-property relationships in the field."
+  },
+  {
+    name: "Poly(decamethylene adipate)", aka: ["PDA (polyester)", "poly(decamethylene adipate)"],
+    monomer: "1,10-decanediol + adipic acid", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biodegradable", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 14, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 2 }, { a: 20, b: "S1", order: 1 }],
+    note: "Ten methylenes between esters, so the chain is mostly polyethylene by mass and behaves accordingly - it crystallises into the same orthorhombic cell that polyethylene does, with the ester groups accommodated as defects. It is the point at which an aliphatic polyester stops being a polyester with hydrocarbon spacers and becomes a polyethylene with ester defects."
+  },
+  {
+    name: "Poly(diol citrate)", aka: ["POC", "poly(octamethylene citrate)", "citrate elastomer"],
+    monomer: "citric acid + 1,8-octanediol", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biodegradable", "biomedical", "elastomer", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "Made by melting citric acid with a diol and letting it condense - no catalyst, no solvent, no initiator, which is about as simple as a synthesis gets. Citric acid's third carboxyl becomes the crosslink, so the network density is set purely by cure time, and the residual carboxyls and hydroxyls make the surface unusually friendly to cells. Undrawn as a network."
+  },
+  {
+    name: "Poly(carbonate urethane)", aka: ["PCU", "polycarbonate urethane", "Bionate"],
+    monomer: "polycarbonate diol + diisocyanate + chain extender", cls: "Step-growth (polyester)", cas: null,
+    tags: ["elastomer", "biomedical", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The material chosen when a polyurethane must last decades inside a body: the polycarbonate soft segment resists the oxidative attack that cracks polyether urethanes and the enzymatic hydrolysis that eats polyester ones. Pacemaker lead insulation is the demanding case, where a crack means a reoperation. Undrawn: a segmented block copolymer whose behaviour is set by segment lengths, not by one repeat unit."
+  },
+  {
+    name: "Poly(phthalazinone ether ketone)", aka: ["PPEK", "poly(phthalazinone ether ketone)", "PPESK"],
+    monomer: "phenolphthalein azine + dihalobenzophenone", cls: "Step-growth (polyester)", cas: null,
+    tags: ["high-temperature", "engineering", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The twisted, non-coplanar phthalazinone unit prevents the chain packing, so this polyaryletherketone is amorphous and soluble in ordinary solvents while still having a glass transition above 260 C - higher than PEEK's. Solubility at that temperature rating is rare enough to be the point. Undrawn pending a repeat unit I can check rather than infer."
+  },
+  {
+    name: "Poly(carborane siloxane)", aka: ["Dexsil", "carborane siloxane", "poly(m-carboranylenesiloxane)"],
+    monomer: "carborane + dichlorosilane", cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone", "high-temperature", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "An icosahedral boron cage spliced into a silicone chain, giving a rubber that survives above 400 C in air where ordinary silicone unzips at 300. The cage is aromatic in three dimensions and essentially inert, and it blocks the backbiting depolymerisation that normally destroys a siloxane. Undrawn: the twelve-vertex closo cage is not a structure a flat bond list represents honestly."
+  },
+  {
+    name: "Poly(pyrrone)", aka: ["pyrrone", "polyimidazopyrrolone", "BBB polymer"],
+    monomer: "aromatic dianhydride + tetraamine", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["high-temperature", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A ladder polymer from the 1960s aerospace programmes, formed by condensing a dianhydride with a tetraamine so each junction closes two fused rings rather than one. It loses almost no mass below 600 C. It also proved impossible to process, which is the standard fate of ladder polymers and the reason polyimides won. Undrawn as a fused ladder."
+  },
+  {
+    name: "Poly(benzoxazinone)", aka: ["polybenzoxazinone", "poly(benzoxazine-2,4-dione)"],
+    monomer: "aminobenzoic acid derivatives", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["high-temperature", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A heterocyclic backbone used mainly as a reactive intermediate: the benzoxazinone ring opens with an amine or an alcohol to give an amide or ester with a phenol left over, so it is a way of building a rigid chain and then modifying it at every repeat unit. Undrawn pending a checked structure."
+  },
+  {
+    name: "Ethylene acrylic elastomer (AEM)", aka: ["AEM", "Vamac", "ethylene-methyl acrylate elastomer"],
+    monomer: "ethylene + methyl acrylate + cure-site monomer", cls: "Addition (acrylate)", cas: null,
+    tags: ["elastomer", "oil-resistant", "acrylate", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "Sits between acrylic rubber and nitrile in both temperature range and price, and is the usual choice for turbocharger hose and engine mounts. The ethylene gives low-temperature flexibility the pure acrylate lacks. Undrawn: a random terpolymer defined by its monomer ratio."
+  },
+  {
+    name: "Carboxylated nitrile rubber", aka: ["XNBR", "carboxylated NBR", "carboxylated acrylonitrile butadiene rubber"],
+    monomer: "butadiene + acrylonitrile + acrylic acid", cls: "Addition (diene)", cas: null,
+    tags: ["elastomer", "oil-resistant", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "Nitrile rubber with a few percent of carboxyl groups, which zinc oxide then crosslinks into ionic clusters alongside the ordinary sulfur network. The ionic crosslinks are strong but exchangeable, so the rubber has unusually high tear strength and abrasion resistance - the reason disposable examination gloves are made of it. Undrawn: a random terpolymer."
+  },
+  {
+    name: "Organosolv lignin", aka: ["organosolv lignin", "ethanol lignin", "sulfur-free lignin"],
+    monomer: "coniferyl and sinapyl alcohol", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biopolymer", "bio-based", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "Lignin extracted with hot aqueous ethanol rather than with sulfite or sulfide, so it carries no sulfur and dissolves in ordinary organic solvents - which is what makes it usable as a polymer feedstock rather than as boiler fuel. It is the fraction of lignin closest to its native structure, and the closest thing to a route from wood to aromatic chemicals. Undrawn: a randomly branched network with at least three distinct monomer units."
+  },
+  {
+    name: "Beta-glucan", aka: ["cereal beta-glucan", "oat beta-glucan", "mixed-linkage glucan"],
+    monomer: "D-glucose (beta-1,3 and beta-1,4)", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biopolymer", "water-soluble", "bio-based", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "Glucose joined by a mixture of beta-1,3 and beta-1,4 links in an irregular sequence, which is precisely why it dissolves where pure beta-1,4 cellulose does not - the occasional 1,3 kink breaks up the flat ribbon before it can crystallise. The viscous solution it forms in the gut is what lowers cholesterol, and it is one of very few food claims with a solid mechanism. Undrawn: the linkage sequence is irregular."
+  },
+  {
+    name: "Galactomannan", aka: ["galactomannan", "mannan-galactose polysaccharide"],
+    monomer: "D-mannose backbone with D-galactose branches", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biopolymer", "water-soluble", "bio-based", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The family that guar, locust bean and fenugreek gums belong to, all a beta-1,4 mannan differing only in how often a galactose hangs off it. That ratio alone determines whether the gum thickens cold water, gels with borate, or synergises with xanthan - a single structural variable spanning the whole commercial range. Undrawn: the substitution is statistical."
+  },
+  {
+    name: "Humic acid", aka: ["humic substances", "humate", "soil organic matter"],
+    monomer: "decayed plant aromatics and carbohydrates", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biopolymer", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "What is left when plant matter has decayed as far as biology can take it, and by mass one of the largest pools of organic carbon on Earth. Whether it is a polymer at all is disputed - the current view is a supramolecular association of smaller molecules rather than covalent chains. Undrawn, necessarily: it has no defined structure and possibly no defined molecule."
+  },
+  {
+    name: "Eumelanin", aka: ["melanin", "eumelanin", "DHI melanin"],
+    monomer: "5,6-dihydroxyindole", cls: "Addition (vinyl)", cas: null,
+    tags: ["biopolymer", "conductive", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The pigment of skin, hair and the substantia nigra, and a broadband absorber across the whole ultraviolet and visible range - a property no ordinary chromophore has. The absorption is now attributed to chemical disorder: many slightly different oligomers whose bands overlap into a continuum. Undrawn because that disorder is the structure."
+  },
+  {
+    name: "Heparosan", aka: ["heparosan", "N-acetylheparosan", "unsulfated heparin precursor"],
+    monomer: "glucuronic acid + N-acetylglucosamine", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biopolymer", "water-soluble", "biomedical", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The unsulfated backbone from which heparin is built, made by bacteria including E. coli K5. Because it is not sulfated it does not bind proteins and is not anticoagulant, yet the body recognises it as self - so it circulates for a long time without provoking a response, which is the argument for it as a PEG replacement. Undrawn: a disaccharide repeat whose linkage positions I will not draw without a source to check against."
+  },
+  {
+    name: "Peptidoglycan", aka: ["murein", "peptidoglycan", "bacterial cell wall polymer"],
+    monomer: "N-acetylglucosamine + N-acetylmuramic acid + peptide", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["biopolymer", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A single covalently closed molecule wrapped around an entire bacterium - sugar chains stitched together by short peptides, and the reason a cell holds its shape against several atmospheres of internal pressure. Penicillin blocks the enzyme that makes the peptide crosslink, which is why the drug kills growing cells and leaves resting ones alone. Undrawn: a two-dimensional network, not a chain."
+  },
+  {
+    name: "Teichoic acid", aka: ["teichoic acid", "lipoteichoic acid", "poly(glycerol phosphate)"],
+    monomer: "glycerol or ribitol phosphate", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biopolymer", "polyelectrolyte", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A polyphosphate ester threaded through the wall of Gram-positive bacteria, and the source of the negative charge that makes those organisms take up the Gram stain. It manages the wall's cation supply and is a principal target of the immune system. Undrawn: the sugar and alanine substituents vary between species and with growth conditions."
+  },
+  {
+    name: "Lipopolysaccharide", aka: ["LPS", "endotoxin", "lipopolysaccharide"],
+    monomer: "lipid A + core oligosaccharide + O-antigen", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biopolymer", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The outer leaflet of a Gram-negative bacterium, and the molecule the innate immune system reacts to most violently - nanogram quantities cause fever, which is why every injectable and every implant is tested for it. The repeating O-antigen is what serotyping distinguishes. Undrawn: three chemically distinct regions, only one of which repeats."
+  },
+  {
+    name: "Poly(hydroxybutyrate-co-hydroxyhexanoate)", aka: ["PHBH", "PHBHx", "Nodax", "Green Planet"],
+    monomer: "3-hydroxybutyrate + 3-hydroxyhexanoate", cls: "Step-growth (polyester)", cas: null,
+    tags: ["biopolymer", "biodegradable", "bio-based", "packaging", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The polyhydroxyalkanoate that finally solved PHB's brittleness: a few mole percent of the six-carbon comonomer disrupts the crystal enough to give real elongation, and unlike most bioplastics it degrades in seawater as well as in compost. It is the first bio-based plastic certified for marine biodegradation at scale. Undrawn: a random copolymer whose comonomer fraction is the design variable."
+  },
+  {
+    name: "Polyhedral oligomeric silsesquioxane", aka: ["POSS", "polyhedral oligomeric silsesquioxane", "silsesquioxane cage"],
+    monomer: "trialkoxysilane", cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone", "high-temperature", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A silica cage a nanometre across with organic groups on every corner, so it behaves as a soluble, precisely defined nanoparticle rather than as a filler - every one is identical, which no ground mineral can claim. Copolymerised into a chain it raises the glass transition and the decomposition temperature at a few percent loading. Undrawn: a closed cage, not a repeat unit."
+  },
+  {
+    name: "Polyphosphate", aka: ["inorganic polyphosphate", "polyP", "sodium hexametaphosphate"],
+    monomer: "orthophosphate", cls: "Step-growth (polyester)", cas: null,
+    tags: ["water-soluble", "polyelectrolyte", "biopolymer", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A chain of phosphates joined by anhydride bonds - chemically the same linkage ATP stores energy in, extended to hundreds of units. It is found in every cell from bacteria to human platelets, and industrially it sequesters calcium, which is why it is in detergents and processed cheese. Undrawn: a wholly inorganic backbone the structure editor here does not represent."
+  },
+  {
+    name: "Polysilicate", aka: ["water glass", "sodium silicate", "polysilicic acid"],
+    monomer: "silicic acid", cls: "Step-growth (polyester)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "Silicate tetrahedra condensing into chains, sheets and eventually a three-dimensional gel - the same polymerisation that makes glass, run in water at room temperature. It was among the first inorganic materials understood in polymer terms, and the sol-gel process that follows from it is how most oxide coatings are made. Undrawn: an inorganic network."
+  },
+  {
+    name: "Poly(aluminium chloride)", aka: ["PAC", "polyaluminium chloride", "PACl"],
+    monomer: "aluminium hydroxychloride", cls: "Step-growth (polyester)", cas: null,
+    tags: ["water-soluble", "specialty"],
+    verified: false,
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "Pre-hydrolysed aluminium salts that have already condensed into charged polynuclear clusters before they reach the water being treated, so they coagulate over a far wider pH range than alum and leave less residual aluminium behind. Nearly all municipal drinking water passes through this. Undrawn: an inorganic cluster of variable nuclearity."
+  },
+  {
+    name: "Poly(methyl cyanoacrylate)", aka: ["PMCA", "poly(methyl 2-cyanoacrylate)", "Eastman 910"],
+    monomer: "methyl 2-cyanoacrylate", cls: "Addition (vinyl)", cas: null,
+    tags: ["adhesive", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "N" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "O" }, { id: 10, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 3 }, { a: 3, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }],
+    note: "The original superglue, discovered twice by accident while looking for something else - once in a gunsight programme, once in a search for heat-resistant canopies. It is the fastest-setting and strongest of the family and the one least suited to skin: it degrades to formaldehyde and cyanoacetate quickly enough to irritate, which is why the medical grades all use longer esters."
+  },
+  {
+    name: "Poly(ethyl cyanoacrylate)", aka: ["PECA", "poly(ethyl 2-cyanoacrylate)", "Super Glue"],
+    monomer: "ethyl 2-cyanoacrylate", cls: "Addition (vinyl)", cas: null,
+    tags: ["adhesive", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "N" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 3 }, { a: 3, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }],
+    note: "The ester in almost every consumer superglue, chosen as the compromise between the methyl version's speed and its irritancy. Its other use is forensic: warmed in a chamber, the vapour polymerises preferentially on the residues of a latent fingerprint, developing it as a white ridge pattern on surfaces where powder will not work."
+  },
+  {
+    name: "Poly(methyl alpha-chloroacrylate)", aka: ["PMCA (chloro)", "poly(methyl 2-chloroacrylate)"],
+    monomer: "methyl alpha-chloroacrylate", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "optical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "Cl" }, { id: "S1", el: "*" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }],
+    note: "PMMA with chlorine in place of the alpha-methyl, which raises the glass transition to about 145 C and the refractive index with it. It was used as an electron-beam resist because the C-Cl bond breaks cleanly under the beam and the chain scission is more efficient than PMMA's - a faster resist at the same resolution."
+  },
+  {
+    name: "Poly(dimethylaminopropyl methacrylamide)", aka: ["PDMAPMA", "poly(N-(3-dimethylaminopropyl)methacrylamide)", "DMAPMA"],
+    monomer: "N-(3-dimethylaminopropyl)methacrylamide", cls: "Addition (methacrylate)", cas: null,
+    tags: ["water-soluble", "polyelectrolyte", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S1", el: "*" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "N" }, { id: 13, el: "C" }, { id: 14, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 12, b: 14, order: 1 }],
+    note: "A tertiary amine on a methacrylamide rather than a methacrylate backbone, which matters because the amide will not hydrolyse the way the corresponding aminoethyl methacrylate does - a cationic polymer that stays cationic in water for years. It is used in hair conditioners and as a flocculant, and quaternises readily if a permanent charge is wanted."
+  },
+  {
+    name: "Poly(dimethyl itaconate)", aka: ["PDMI", "poly(dimethyl itaconate)"],
+    monomer: "dimethyl itaconate", cls: "Addition (methacrylate)", cas: null,
+    tags: ["bio-based", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "O" }, { id: 13, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 3, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 10, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }],
+    note: "Itaconic acid comes from fermenting sugar with Aspergillus, so this is a bio-based route to a methacrylate-like polymer with no petrochemical monomer. The extra methylene between backbone and second ester makes the chain unusually stiff for an acrylic, with a glass transition near 90 C, and itaconate esters are the leading candidate to displace methyl methacrylate on renewable grounds."
+  },
+  {
+    name: "Poly(dibutyl fumarate)", aka: ["PDBF", "poly(dibutyl fumarate)"],
+    monomer: "dibutyl fumarate", cls: "Addition (vinyl)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S1", el: "*" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: 14, el: "O" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 2, b: 10, order: 1 }, { a: 10, b: "S1", order: 1 }, { a: 10, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }],
+    note: "A 1,2-disubstituted monomer, which normally means it will not homopolymerise at all - the transition state is too crowded. Fumarate esters are the exception: they polymerise slowly to give a chain so stiff and extended that it behaves as a semi-rigid rod in solution, and unusually the propagating radical is stable enough to see by spectroscopy."
+  },
+  {
+    name: "Poly(diethyl fumarate)", aka: ["PDEF", "poly(diethyl fumarate)"],
+    monomer: "diethyl fumarate", cls: "Addition (vinyl)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S1", el: "*" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "O" }, { id: 13, el: "C" }, { id: 14, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 2, b: 8, order: 1 }, { a: 8, b: "S1", order: 1 }, { a: 8, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 10, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }],
+    note: "The shorter ester of the same family, and stiffer still - substituents on every backbone carbon leave the chain almost no rotational freedom, so the glass transition sits above 130 C. The trans geometry is what allows it to polymerise where the cis maleate barely can, which is one of the cleanest demonstrations that monomer geometry rather than electronics can decide whether a polymer forms."
+  },
+  {
+    name: "Poly(2,6-diphenyl-1,4-phenylene oxide)", aka: ["Tenax TA", "PPPO", "poly(2,6-diphenylphenylene oxide)"],
+    monomer: "2,6-diphenylphenol", cls: "Step-growth (polyester)", cas: null,
+    tags: ["high-temperature", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 5, b: 10, order: 1 }, { a: 4, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 3, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 15, b: 20, order: 1 }, { a: 12, b: "S1", order: 1 }],
+    note: "The phenyl version of the polymer in Noryl, and the standard adsorbent for trapping volatile organics from air: it is stable to 350 C, so a trapped sample can be driven off thermally straight into a chromatograph without any solvent. Its low affinity for water is what makes it work on humid samples where charcoal fails."
+  },
+  {
+    name: "Poly(cyclohexyl vinyl ether)", aka: ["PCHVE", "poly(cyclohexyl vinyl ether)"],
+    monomer: "cyclohexyl vinyl ether", cls: "Addition (vinyl)", cas: null,
+    tags: ["coating", "weather-resistant", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 6, b: 11, order: 1 }],
+    note: "Vinyl ethers cannot be polymerised by radicals but go readily by cation, and they alternate perfectly with fluoroolefins - which is the basis of the FEVE resins used on architectural aluminium. The cyclohexyl ring provides hardness and the fluoroolefin the weathering, giving coatings warranted for thirty years of sunlight."
+  },
+  {
+    name: "Poly(2-chloroethyl vinyl ether)", aka: ["PCEVE", "poly(2-chloroethyl vinyl ether)"],
+    monomer: "2-chloroethyl vinyl ether", cls: "Addition (vinyl)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "Cl" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }],
+    note: "A vinyl ether carrying a displaceable chloride, so a cationic polymerisation gives a well-defined chain that can then be converted wholesale to esters, amines or azides. It is one of the few monomers that combines living cationic polymerisation with a reactive handle, which is why it appears wherever a precisely defined functional polyether is needed."
+  },
+  {
+    name: "Poly(perfluorooctylethyl acrylate)", aka: ["PFOEA", "poly(perfluoroalkyl acrylate)", "fluorinated acrylate"],
+    monomer: "perfluorooctylethyl acrylate", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "fluoropolymer", "coating", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "F" }, { id: 12, el: "F" }, { id: 13, el: "C" }, { id: 14, el: "F" }, { id: 15, el: "F" }, { id: 16, el: "C" }, { id: 17, el: "F" }, { id: 18, el: "F" }, { id: 19, el: "C" }, { id: 20, el: "F" }, { id: 21, el: "F" }, { id: 22, el: "C" }, { id: 23, el: "F" }, { id: 24, el: "F" }, { id: 25, el: "C" }, { id: 26, el: "F" }, { id: 27, el: "F" }, { id: 28, el: "C" }, { id: 29, el: "F" }, { id: 30, el: "F" }, { id: 31, el: "C" }, { id: 32, el: "F" }, { id: 33, el: "F" }, { id: 34, el: "F" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 10, b: 12, order: 1 }, { a: 10, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 13, b: 15, order: 1 }, { a: 13, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 16, b: 18, order: 1 }, { a: 16, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 19, b: 21, order: 1 }, { a: 19, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 22, b: 24, order: 1 }, { a: 22, b: 25, order: 1 }, { a: 25, b: 26, order: 1 }, { a: 25, b: 27, order: 1 }, { a: 25, b: 28, order: 1 }, { a: 28, b: 29, order: 1 }, { a: 28, b: 30, order: 1 }, { a: 28, b: 31, order: 1 }, { a: 31, b: 32, order: 1 }, { a: 31, b: 33, order: 1 }, { a: 31, b: 34, order: 1 }],
+    note: "The side chains crystallise into a comb of perfluorinated rods standing perpendicular to the surface, which is what gives a surface energy near 10 millinewtons per metre - low enough to repel oil as well as water. It was the active ingredient of stain-repellent textile finishes until the long perfluoroalkyl chain was found to degrade to PFOA and the industry moved to six-carbon versions."
+  },
+  {
+    name: "Poly(trifluoroethyl acrylate)", aka: ["PTFEA", "poly(2,2,2-trifluoroethyl acrylate)"],
+    monomer: "2,2,2-trifluoroethyl acrylate", cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylate", "fluoropolymer", "optical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "F" }, { id: 11, el: "F" }, { id: 12, el: "F" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }, { a: 9, b: 12, order: 1 }],
+    note: "Three fluorines are enough to drop the refractive index to about 1.41 and to make the polymer transparent well into the infrared, where the C-H overtones of an ordinary acrylate absorb. It is used as the low-index cladding in polymer waveguides and as a soft, low-surface-energy block in fluorinated elastomers."
+  },
+  {
+    name: "Poly(trifluoromethyl ethylene oxide)", aka: ["PTFPO", "poly(3,3,3-trifluoropropylene oxide)", "fluorinated polyether"],
+    monomer: "3,3,3-trifluoropropylene oxide", cls: "Ring-opening", cas: null,
+    tags: ["fluoropolymer", "elastomer", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "F" }, { id: 7, el: "F" }, { id: 8, el: "F" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 5, b: 8, order: 1 }, { a: 4, b: "S1", order: 1 }],
+    note: "A polyether with a trifluoromethyl on every repeat, so it keeps the low glass transition of poly(propylene oxide) while gaining fuel and solvent resistance the hydrocarbon version has none of. It stays flexible below -50 C, which is the combination a low-temperature fuel-system seal needs and which fluorosilicones only partly deliver."
+  },
+  {
+    name: "Poly(tert-butyl vinyl ether)", aka: ["PTBVE", "poly(tert-butyl vinyl ether)"],
+    monomer: "tert-butyl vinyl ether", cls: "Addition (vinyl)", cas: null,
+    tags: ["specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 6, b: 8, order: 1 }, { a: 6, b: 9, order: 1 }],
+    note: "The most hindered of the common vinyl ethers, and glassy near 90 C where the methyl version is a rubber below room temperature - the whole difference is how freely the pendant group can rotate. Acid cleaves the tert-butyl ether cleanly to poly(vinyl alcohol), so it also serves as a protected precursor that dissolves in hydrocarbons."
+  },
+  {
+    name: "Poly(hexafluoroisopropylidene oxide)", aka: ["PHFPO", "hexafluoroisopropylidene polyether"],
+    monomer: "hexafluoroacetone-derived epoxide", cls: "Ring-opening", cas: null,
+    tags: ["fluoropolymer", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "F" }, { id: 6, el: "F" }, { id: 7, el: "F" }, { id: 8, el: "C" }, { id: 9, el: "F" }, { id: 10, el: "F" }, { id: 11, el: "F" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 4, b: 6, order: 1 }, { a: 4, b: 7, order: 1 }, { a: 3, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 3, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: "S1", order: 1 }],
+    note: "Two trifluoromethyls on the same backbone carbon, the same hexafluoroisopropylidene group that separates the rings in fluorinated polyimides. It disrupts chain packing severely, so the polymer has high free volume and correspondingly high gas permeability - the structural motif behind most of the fluorinated gas separation membranes."
   }
 ];
 
