@@ -3080,6 +3080,18 @@
     // the source of the molblock differs (library graph, not a pasted SMILES).
     function loadPolymerStructure(p) {
       if (!p || !p.atoms || !p.bonds) return;
+      // An entry can be in the library without a drawable repeat unit - a natural
+      // bottlebrush, a macrocycle whose point is that it has no ends, a synthetic
+      // route rather than one compound. Say so before loading the chemistry
+      // engine, and clear the search line: leaving the previous polymer's result
+      // sitting there reads as the answer for this one.
+      if (!p.atoms.length) {
+        smilesNote('No repeat unit on file for ' + p.name + ' — use the publication links on its card.');
+        var noStructEl = document.getElementById('mol-status');
+        if (noStructEl) noStructEl.textContent = '';
+        renderResults([]);
+        return;
+      }
       smilesNote(rdkitPromise ? 'Drawing ' + p.name + '…' : 'Loading the chemistry engine (about 7 MB, one time; it stays cached)…');
       ensureRDKit().then(function (RDKit) {
         var mol = molFrom(RDKit, molblockFrom(p.atoms, p.bonds));

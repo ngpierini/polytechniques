@@ -1105,6 +1105,128 @@ window.POLYMER_DB = [
     monomer: "drug-bearing PEG-norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "polyether", "drug delivery", "biomedical", "water-soluble", "specialty"],
     note: "The argument for grafting-through in one line: the drug is attached to the macromonomer before polymerisation, so loading is fixed by the monomer rather than left to a post-polymerisation coupling that never quite goes to completion. Every repeat carries its drug, and the batch has one composition rather than a distribution of them. The first version carried doxorubicin and camptothecin on the same PEG-norbornene macromonomer through a photocleavable linker, and was about thirty times more toxic to cells after irradiation than before. The later work made the linker the design variable rather than the payload: tuning traceless linkers so that release kinetics measured in vitro predicted what the drug did in a tumour, which turned prodrug design into something you can calculate instead of screen. Johnson, Lu, Burts and co-workers, Macromolecules 2010, 43, 10326; Vohidov and co-workers (Johnson group, MIT), J. Am. Chem. Soc. 2021, 143, 4714."
+  },
+  {
+    name: "Janus bottlebrush", aka: ["Janus bottlebrush polymer", "A-branch-B bottlebrush", "Janus brush", "core-shell Janus brush"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polystyrene", "Poly(lactide)"],
+    monomer: "A-branch-B diblock macromonomer with norbornene at the junction", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "styrenic", "polyester", "self-assembly", "specialty"],
+    note: "A bottlebrush that is two-faced along its own length rather than divided into blocks down the backbone. The trick is where the polymerisable group sits: a diblock side chain is made first and the norbornene is installed at the junction between the two blocks, so on polymerisation each repeat projects one polystyrene arm and one polylactide arm from the same point. The backbone then runs down the middle of a molecule that is polystyrene on one side and polylactide on the other, which is a shape that cannot be reached by making the two side chains separately. Kawamoto, Zhong and co-workers (Johnson group, MIT, with Ross and Alexander-Katz), J. Am. Chem. Soc. 2016, 138, 11501."
+  },
+  {
+    name: "Poly(oligo(ethylene glycol) methyl ether methacrylate)", aka: ["POEGMA", "POEGMEMA", "PEGMA brush", "oligo(ethylene glycol) methacrylate brush", "PEG methacrylate brush"],
+    arch: "bottlebrush",
+    monomer: "oligo(ethylene glycol) methyl ether methacrylate", cls: "Addition (methacrylate)", cas: "25736-86-1",
+    tags: ["bottlebrush", "methacrylate", "polyether", "water-soluble", "biomedical", "specialty"],
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }],
+    repeats: [
+      { ends: ["S0", "S1"], label: "m", role: "backbone" },
+      { unit: [7, 8, 9], cuts: [[6, 7], [9, 10]], label: "n", role: "sidechain" }
+    ],
+    note: "The bottlebrush most people actually use, and the one that needs no special chemistry to make. The monomer is sold ready-made as a methacrylate carrying a short methyl-capped PEG tail, so an ordinary radical polymerisation of it gives a brush directly - no macromonomer synthesis, no metathesis catalyst. Grafting density is perfect by construction because every repeat is a macromonomer. Short tails (n of about 4 to 9) give a comb rather than a true brush, and the transition is gradual, which is why the same material gets called both. Sold as OEGMA300 and OEGMA500 after the tail's nominal mass; the CAS is for the monomer, since the polymer is defined by whichever tail length was bought. Widely used as a non-fouling, PEG-like coating where the polyether has to stay attached to something."
+  },
+  {
+    name: "Poly(norbornene)-graft-polystyrene", aka: ["PNB-g-PS", "polystyrene bottlebrush", "PS bottlebrush", "polynorbornene-g-PS"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Polystyrene"],
+    monomer: "polystyrene-functional norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "styrenic", "self-assembly", "specialty"],
+    note: "The hydrophobic counterpart to the PEG bottlebrush, and the block that supplies the high-refractive-index or glassy half of most bottlebrush assemblies. Polystyrene is made first by a controlled radical polymerisation and then joined to a norbornene, commonly by copper-catalysed azide-alkyne coupling of an azide-terminated chain to a norbornene alkyne, before being polymerised through the ring. Because the side chains are glassy and immiscible with PEG, the two brushes segregate rather than mix, which is what makes them useful together. Structure not drawn: the norbornene alkyne precursor differs between reports, so the linker joining side chain to backbone would have to be invented."
+  },
+  {
+    name: "Brush block copolymer photonic crystal", aka: ["photonic bottlebrush", "brush block copolymer", "structurally coloured brush polymer", "polyisocyanate brush block copolymer"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Polystyrene"],
+    monomer: "rigid polyisocyanate macromonomers of differing side group", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "self-assembly", "optical", "specialty"],
+    note: "Colour from architecture rather than from any dye. Two bottlebrush blocks of different composition segregate into layers, and because a crowded brush is forced into an extended cylinder rather than a coil, the layer spacing lands in the hundreds of nanometres where visible and near-infrared light is reflected. Brushes also order in minutes rather than the long annealing a linear block copolymer of the same period would need, because there are no entanglements to unpick. The polymers that established this used rigid helical polyisocyanate side chains from hexyl and 4-phenylbutyl isocyanate, reached molar masses of 1.5 to 7 MDa, and reflected across the ultraviolet, visible and near-infrared - the near-infrared version was proposed as a heat-rejecting paint. Miyake, Weitekamp, Piunova and Grubbs, J. Am. Chem. Soc. 2012, 134, 14249."
+  },
+  {
+    name: "Macrocyclic bottlebrush", aka: ["cyclic bottlebrush", "ring bottlebrush polymer", "macrocyclic brush"],
+    arch: "bottlebrush",
+    monomer: "cyclic polymer backbone by ring-expansion polymerisation, then grafting-from", cls: "Addition (vinyl)", cas: null,
+    tags: ["bottlebrush", "self-assembly", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A bottlebrush with no chain ends. The backbone is grown as a macrocycle by ring-expansion polymerisation, then side chains are grown outward from every repeat by atom transfer radical polymerisation, giving molar masses into the megadaltons that can be seen directly as rings by atomic force microscopy. Removing the ends changes real behaviour and not just the drawing: a ring cannot reptate, so it relaxes and diffuses differently from a linear brush of the same mass, and it has no end groups to react or degrade from. Pal, Miao, Garrison, Veige and Sumerlin, Macromolecules 2020, 53, 9717. Structure not drawn: the repeat unit alone cannot express that the backbone closes on itself, which is the whole point of the molecule."
+  },
+  {
+    name: "Core-shell cyclic bottlebrush", aka: ["nanobowl bottlebrush", "amphiphilic cyclic bottlebrush", "core-shell brush macrocycle"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polystyrene", "Poly(acrylic acid)"],
+    monomer: "cyclic backbone grafted with polystyrene-block-poly(acrylic acid) side chains", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "styrenic", "self-assembly", "specialty"],
+    note: "A macrocyclic bottlebrush whose side chains are themselves diblocks, hydrophobic polystyrene next to the backbone and hydrophilic poly(acrylic acid) outside, so each molecule is a core-shell cylinder closed into a ring. Exchanging the solvent from tetrahydrofuran to water walks the assemblies through spheres, then porous spheres, then nanobowls - spheres with a single large opening. A linear bottlebrush of matched backbone and side-chain lengths stops at porous spheres under the same conditions, so the ring topology is doing the work, apparently by changing how fast the aggregate's interior stiffens as solvent leaves. Pal, Garrison, Miao, Diodati, Veige and Sumerlin, Macromolecules 2022, 55, 7446."
+  },
+  {
+    name: "Cationic bottlebrush polymer", aka: ["pDMAEMA bottlebrush", "bottleplex", "cationic brush vector", "gene delivery bottlebrush"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(2-(dimethylamino)ethyl methacrylate)"],
+    monomer: "pDMAEMA macromonomer with a norbornene end", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "methacrylate", "water-soluble", "drug delivery", "biomedical", "specialty"],
+    note: "A polycation shaped as a brush instead of a chain, made to carry plasmid DNA into cells. Backbone length was varied over degrees of polymerisation of 13, 20, 26 and 37 while every side chain was held at 57 units, which separates the effect of architecture from the effect of chemistry - the linear macromonomer is the control, and it is the same molecule that makes up the arms. The complexes with DNA, called bottleplexes, gave up to about sixty times more cells expressing the delivered gene than the linear building block, and expression rose with backbone length. Both architectures got the DNA inside cells about equally well, so the advantage lies after uptake rather than in it. Dalal, Kumar, Ohnsorg, Brown and Reineke, ACS Macro Lett. 2021, 10, 886."
+  },
+  {
+    name: "Linear-bottlebrush-linear triblock hydrogel", aka: ["LBL copolymer", "PNIPAM-bbPEG-PNIPAM", "injectable bottlebrush hydrogel", "bottlebrush triblock gel"],
+    type: "copolymer", arch: "bottlebrush", components: ["Poly(ethylene oxide)", "Poly(N-isopropylacrylamide)"],
+    monomer: "PEG macromonomer for the brush block, N-isopropylacrylamide for the linear ends", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "polyether", "hydrogel", "biomedical", "specialty"],
+    note: "An injectable gel that solves two opposite problems with one architecture. The middle block is a PEG bottlebrush, which is compact and barely entangled, so the solution stays thin enough to push through a needle; the linear poly(N-isopropylacrylamide) ends are thermoresponsive and aggregate the moment they reach body temperature, so it sets on arrival with no crosslinking chemistry and nothing to leach. The result matches the deformation response of adipose and brain tissue, stays below about 1 kPa in modulus while surviving 700 percent deformation, and does not expel its water on gelling, which is the usual failure of a physically set gel. Vashahi, Martinez and co-workers (Sheiko and Matyjaszewski groups), Sci. Adv. 2022. See also the dry analogue, the PMMA-bottlebrush-PDMS-PMMA thermoplastic elastomer that this work uses as its comparison."
+  },
+  {
+    name: "DNA-backbone bottlebrush", aka: ["DNA-backboned bottlebrush polymer", "PEGylated oligonucleotide hairpin", "DNA-g-PEG brush"],
+    type: "copolymer", arch: "bottlebrush", components: ["Deoxyribonucleic acid", "Poly(ethylene oxide)"],
+    monomer: "site-specifically PEGylated oligonucleotide", cls: "Bottlebrush copolymer (nucleic acid hybrid)", cas: null,
+    tags: ["copolymer", "bottlebrush", "biopolymer", "water-soluble", "drug delivery", "biomedical", "specialty"],
+    note: "The inverse of the usual arrangement: the DNA is the backbone and the synthetic polymer is the corona. PEG chains are attached at chosen positions along an oligonucleotide hairpin, so the sequence still does its job - the hairpins undergo hybridisation chain reaction essentially as well as unmodified ones - while the crowded PEG shell keeps nucleases off. The result resists enzymatic digestion, melts at a higher temperature, and stays in the blood longer, which is what a DNA nanostructure needs before it can be a therapeutic rather than a demonstration. Jia, Wang, Lu and co-workers (Ke Zhang group, Northeastern), Nano Lett. 2018, 18, 7378."
+  },
+  {
+    name: "Oligonucleotide macromonomer bottlebrush", aka: ["protDNA bottlebrush", "DNA-PEG bottlebrush", "Y-shaped DNA macromonomer brush"],
+    type: "copolymer", arch: "bottlebrush", components: ["Deoxyribonucleic acid", "Poly(ethylene oxide)"],
+    monomer: "norbornene-protected-oligonucleotide-PEG macromonomer", cls: "Bottlebrush copolymer (nucleic acid hybrid)", cas: null,
+    tags: ["copolymer", "bottlebrush", "biopolymer", "water-soluble", "self-assembly", "biomedical", "specialty"],
+    note: "A way of deciding where in a bottlebrush the DNA sits. Protecting an oligonucleotide so it dissolves in organic solvent lets it be built into a macromonomer alongside PEG, and a custom norbornene phosphoramidite puts the polymerisable group wherever it is wanted along that macromonomer. Put the norbornene at the far end and the result is a linear norbornene-DNA-PEG arm with PEG at the periphery; put it at the junction and the arm is Y-shaped, with DNA and PEG both projecting from the backbone. The same components therefore give a brush with the PEG buried or exposed, which is an unusual amount of control over where each block ends up. Lu, Cai and co-workers (Ke Zhang group, Northeastern), Macromolecules 2022, 55, 2235."
+  },
+  {
+    name: "DNA-grafted polypeptide bottlebrush", aka: ["DNA-polypeptide molecular brush", "polypeptide bottlebrush", "DNA-g-polypeptide"],
+    arch: "bottlebrush",
+    monomer: "alkyne-bearing polypeptide backbone, then azide-DNA by click coupling", cls: "Ring-opening (polyamide)", cas: null,
+    tags: ["bottlebrush", "biopolymer", "self-assembly", "biomedical", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A bottlebrush built by grafting-onto, with a polypeptide backbone made by ring-opening polymerisation of an N-carboxyanhydride and DNA strands clicked onto it afterwards. Grafting-onto is the awkward one of the three strategies - the side chains have to find their attachment points against increasing crowding, so density is never guaranteed the way grafting-through guarantees it - but it is the only route when both blocks must be made under conditions the other would not survive, which is the case for a polypeptide and an oligonucleotide. Chen, Li, Liu and Li (Chinese Academy of Sciences and Tsinghua), Macromolecules 2012. Not listed as a copolymer of two library entries: the library has no polypeptide to point at, and naming a stand-in would put a component in the data that is not in the molecule."
+  },
+  {
+    name: "Poly(vinyl alcohol)-graft-poly(ethylene oxide)", aka: ["PVA-g-PEO", "PVA-g-PEO bottlebrush", "polyvinyl alcohol bottlebrush"],
+    type: "copolymer", arch: "bottlebrush", components: ["Poly(vinyl alcohol)", "Poly(ethylene oxide)"],
+    monomer: "poly(vinyl alcohol) backbone grafted with poly(ethylene oxide)", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "polyether", "water-soluble", "specialty"],
+    note: "The model system for asking what a bottlebrush actually looks like in water, chosen because both blocks are simple, water-soluble and well parameterised for simulation. Atomistic molecular dynamics on cyclic and linear versions found the side-chain length to be the variable that matters most: short side chains leave the backbone flexible and the molecule coil-like, and only past a certain length does the crowding force the extended cylinder that the word bottlebrush implies. The cyclic and linear forms converge as side chains lengthen, because a long enough corona hides what the backbone is doing. Chen and Dormidontova, Macromolecules 2023, 56, 3286. Structure not drawn: the graft junction depends on how the poly(vinyl alcohol) hydroxyls were derivatised, which varies between preparations."
+  },
+  {
+    name: "Aggrecan", aka: ["aggrecan proteoglycan", "cartilage proteoglycan", "bottlebrush proteoglycan", "CSPG core protein"],
+    arch: "bottlebrush",
+    monomer: "core protein bearing chondroitin sulfate and keratan sulfate chains", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["bottlebrush", "biopolymer", "biomedical", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The bottlebrush that biology got to first. A protein backbone carries a hundred or so sulfated glycosaminoglycan chains, and many aggrecan molecules in turn attach to a single hyaluronan chain, so cartilage is packed with brushes hanging off brushes. The side chains are densely negatively charged, so they repel each other, hold water under load, and give cartilage its compressive stiffness - the same crowding argument as a synthetic brush, arrived at without a catalyst. Around cells the layer is thick enough to gate access to the surface: adding aggrecan to chondrocytes or mesenchymal stem cells thickened the pericellular matrix about two and a half times, from roughly 7 to 18 micrometres, and the layer sieves nanoparticles by size while trapping positively charged molecules on the sulfate. Chang, McLane and co-workers (Curtis group, Georgia Tech), Biophys. J. 2016."
+  },
+  {
+    name: "Mucin", aka: ["mucin glycoprotein", "MUC5AC", "MUC2", "salivary mucin", "bottlebrush glycoprotein"],
+    arch: "bottlebrush",
+    monomer: "serine- and threonine-rich protein backbone bearing O-linked glycans", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["bottlebrush", "biopolymer", "biomedical", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The other biological bottlebrush, and the reason mucus behaves as it does. Long stretches of the protein backbone are rich in serine and threonine, and each carries an O-linked sugar chain, so the glycosylated regions are brushes while the sparsely glycosylated regions between them stay flexible and can crosslink. The crowded glycans hold water, make the molecule extended and stiff, and give mucus its lubricity and its selectivity as a barrier - a synthetic brush is often justified by pointing at exactly these properties. Studied here as the natural template rather than from any single paper; treat the composition as variable, since mucins differ by tissue and their glycosylation is not a fixed structure."
+  },
+  {
+    name: "Bottlebrush by grafting-onto", aka: ["grafting-onto bottlebrush", "graft-onto molecular brush", "coupled-side-chain bottlebrush"],
+    arch: "bottlebrush",
+    monomer: "reactive backbone plus end-functional side chains, coupled together", cls: "Addition (vinyl)", cas: null,
+    tags: ["bottlebrush", "self-assembly", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The third route to a bottlebrush, and the one that trades certainty for freedom. Backbone and side chains are made separately, each under whatever conditions suit it, and joined afterwards through a reactive pair - usually an azide and an alkyne, because that coupling still works when the site is crowded. The freedom is real: the two blocks never have to tolerate each other's chemistry, which is the only way to combine, say, a polypeptide with an oligonucleotide. The cost is that the last side chains have to reach attachment points already surrounded by the ones that got there first, so grafting density falls short of one per repeat and is never quite known. Grafting-through guarantees density but needs a macromonomer; grafting-from gives long backbones but crowds the growing radicals; grafting-onto is the fallback when neither block can be made in the other's presence. Reviewed by Verduzco, Li, Pesek and Stein, Chem. Soc. Rev. 2015, 44, 2405, and by Mullner, Chem. Commun. 2022, 58, 5683."
   }
 ];
 
