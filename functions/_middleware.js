@@ -23,11 +23,19 @@
 //     control; this file is the version-controlled backup that travels with the
 //     repo and documents the intent.
 
-// ISO 3166-1 alpha-2 codes to refuse. Hong Kong (HK) and Macao (MO) are
-// separate codes from mainland China and are NOT included; add them here if
-// they should be covered. Belarus (BY) is often grouped with RU for sanctions
-// purposes and is likewise left out unless deliberately added.
-const BLOCKED_COUNTRIES = ["CN", "RU"];
+// ISO 3166-1 alpha-2 codes to refuse.
+//
+//   CN  China (mainland only - see below)
+//   RU  Russia
+//   TR  Turkey        (ISO still uses TR although the country now prefers Turkiye)
+//   SG  Singapore
+//
+// Deliberately NOT included, each a one-line addition if wanted: Hong Kong (HK)
+// and Macao (MO), which have their own codes separate from mainland China;
+// Belarus (BY), often grouped with Russia for sanctions; and Tor exit nodes,
+// which Cloudflare reports as the pseudo-code T1 rather than any country, so a
+// Tor user in a blocked country does not match this list.
+const BLOCKED_COUNTRIES = ["CN", "RU", "TR", "SG"];
 
 const REFUSAL = "This site is not available from your location.\n";
 
