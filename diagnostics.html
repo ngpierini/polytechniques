@@ -7,7 +7,7 @@
 <meta name="description" content="Self-test that reports which browser and network capabilities work on this computer, to explain why the interactive tools may not run on a locked-down (e.g. government or corporate) network.">
 <meta name="robots" content="noindex">
 <link rel="canonical" href="https://getpolytechniques.com/diagnostics.html">
-<script src="theme.js"></script>
+<script src="theme.js?v=1"></script>
 <script src="nav.js?v=13" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
@@ -348,7 +348,7 @@
 
 <script>
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
 }
 </script>
 <script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>

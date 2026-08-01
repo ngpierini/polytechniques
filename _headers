@@ -32,6 +32,20 @@
 # The service worker decides when every other cached file is replaced, so it
 # must never be stale itself. Called out separately from the default so it
 # cannot be swept into a long-lived rule by a later edit.
+#
+# NOTE: this rule does not currently take effect. The zone's Browser Cache TTL
+# is set to 4 hours, and that setting RAISES any shorter freshness the origin
+# asks for - so `no-cache` here comes back as `max-age=14400`, while
+# style.css's year is respected because it is longer. Verified against the
+# deployed site: sw.js and theme.js returned max-age=14400 with
+# cf-cache-status REVALIDATED, everything else obeyed this file.
+#
+# Two mitigations are in place, so nothing is actually stale: theme.js is now
+# versioned like every other asset, and every page registers the worker with
+# updateViaCache: "none", which makes the browser fetch sw.js bypassing its
+# HTTP cache entirely. The rule is kept because it becomes correct the moment
+# Browser Cache TTL is set to "Respect Existing Headers" in the Cloudflare
+# dashboard (Caching -> Configuration), which is the real fix.
 /sw.js
   Cache-Control: no-cache
 
@@ -75,5 +89,13 @@
 #
 # If RDKit is ever upgraded, rename it or give it a ?v= and move it to the
 # immutable list above, rather than lengthening this.
-/vendor/*
+#
+# Listed as two exact paths rather than /vendor/*. As a wildcard it MERGED
+# with the /* rule instead of overriding it, and came back as the
+# self-contradictory `no-cache, public, max-age=2592000` - where no-cache
+# wins, defeating the point. Exact paths override cleanly, as the versioned
+# assets above do.
+/vendor/RDKit_minimal.js
+  Cache-Control: public, max-age=2592000
+/vendor/RDKit_minimal.wasm
   Cache-Control: public, max-age=2592000
