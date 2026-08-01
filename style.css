@@ -2615,3 +2615,27 @@ input.input-invalid {
 .pu-simple-only { display: none; }
 #panel-pu.pu-simple .pu-simple-only { display: revert; }
 #panel-pu.pu-simple .pu-advanced-only { display: none; }
+
+/* ---------- Sponsor slot ----------
+   One cookieless ad unit, injected by nav.js and only when a publisher id is
+   configured. Deliberately quiet: it sits below the content, carries a label
+   so it is never mistaken for site content, and collapses to nothing if the
+   network fails to load or serves no ad. Anything that shifts the page after
+   load would be worse than the revenue is worth. */
+.ad-slot {
+  margin: 28px auto 8px;
+  max-width: 760px;
+  padding: 0 16px;
+  text-align: center;
+}
+.ad-slot[hidden] { display: none; }
+.ad-slot-label {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  opacity: 0.65;
+  margin-bottom: 6px;
+}
+.ad-slot [data-ea-publisher] { display: inline-block; max-width: 100%; }

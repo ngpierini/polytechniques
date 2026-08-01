@@ -110,6 +110,81 @@
     ["home.html", "Home", "toolkit start"]
   ];
 
+  // ---- Sponsor slot (EthicalAds), injected site-wide ----
+  //
+  // Paste the publisher id from ethicalads.io between the quotes below. Until
+  // then NOTHING is injected and no third-party request is made, so the site
+  // and its privacy policy stay exactly as they are today.
+  //
+  // When you do set it, update the "Advertising" section of privacy.html at the
+  // same time - it currently states that the site carries no advertising, and
+  // that must stop being a promise the moment an ad can appear.
+  var AD_PUBLISHER = "";
+  //
+  // EthicalAds was chosen over an ad network of the usual sort for one reason:
+  // it sets no cookies and builds no profile, so it needs no consent banner and
+  // costs the reader nothing. It targets on page content and coarse geography
+  // only. If it is ever swapped for something that sets a cookie, a banner and
+  // a policy rewrite become mandatory, not optional.
+  //
+  // Pages that do not get one: the game (an ad beside a game reads as an
+  // advergame), the two legal pages, the diagnostics self-test and the 404,
+  // where an ad would be noise at the exact moment someone is confused.
+  var NO_AD_PAGES = ["polymer-chain-game", "terms", "privacy", "diagnostics", "404", "index", "polyurethane"];
+
+  function addAdSlot() {
+    try {
+      if (!AD_PUBLISHER) return;
+      var page = (location.pathname.split("/").pop() || "home").replace(/\.html$/, "");
+      if (!page) page = "home";
+      if (NO_AD_PAGES.indexOf(page) !== -1) return;
+      if (document.querySelector(".ad-slot")) return;
+
+      var main = document.querySelector("main");
+      // Any footer, not footer.footer: 21 pages use that class but
+      // chain-dimensions.html uses "site-footer", and the narrow selector
+      // silently dropped the slot to the end of <main> there instead.
+      var footer = document.querySelector("footer");
+      if (!main && !footer) return;
+
+      // Built hidden and revealed only once the network has actually put
+      // something in the box. A bare "SPONSOR" label above empty space is
+      // worse than no slot, and a slot that appears late shifts the page
+      // under the reader's cursor.
+      var slot = document.createElement("div");
+      slot.className = "ad-slot";
+      slot.hidden = true;
+      var label = document.createElement("span");
+      label.className = "ad-slot-label";
+      label.textContent = "Sponsor";
+      var box = document.createElement("div");
+      box.setAttribute("data-ea-publisher", AD_PUBLISHER);
+      box.setAttribute("data-ea-type", "image");
+      slot.appendChild(label);
+      slot.appendChild(box);
+
+      if (footer && footer.parentNode) footer.parentNode.insertBefore(slot, footer);
+      else main.appendChild(slot);
+
+      var reveal = function () { if (box.children.length) slot.hidden = false; };
+      if ("MutationObserver" in window) {
+        var mo = new MutationObserver(function () {
+          if (box.children.length) { slot.hidden = false; mo.disconnect(); }
+        });
+        mo.observe(box, { childList: true });
+        setTimeout(function () { mo.disconnect(); reveal(); }, 8000);
+      } else {
+        setTimeout(reveal, 3000);
+      }
+
+      var s = document.createElement("script");
+      s.async = true;
+      s.src = "https://media.ethicalads.io/media/client/ethicalads.min.js";
+      s.onerror = function () { slot.remove(); };
+      document.head.appendChild(s);
+    } catch (e) { /* an ad must never break a page */ }
+  }
+
   // ---- Proprietary copyright notice, injected site-wide ----
   // Keeps a single source of truth for the notice instead of hand-editing
   // every page footer. Adds a machine-readable <meta name="copyright"> and a
@@ -357,6 +432,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     addLegalNotice();
+    addAdSlot();
     watchTables();
 
     var topbar = document.querySelector("header.topbar");
