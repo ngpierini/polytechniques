@@ -1075,7 +1075,7 @@ window.POLYMER_DB = [
     type: "copolymer", arch: "bottlebrush", components: ["Deoxyribonucleic acid", "Poly(ethylene oxide)"],
     monomer: "DNA macromonomer, or synthetic backbone grafted with DNA", cls: "Bottlebrush copolymer (nucleic acid hybrid)", cas: null,
     tags: ["copolymer", "bottlebrush", "biopolymer", "self-assembly", "drug delivery", "biomedical", "specialty"],
-    note: "A bottlebrush with DNA as one of its two components, either as side chains grafted from a synthetic backbone or as a main chain wearing a synthetic corona. The corona stiffens the DNA substantially: effective persistence lengths near 250 nm have been measured by nanopore and by AFM, against 50 nm for bare duplex DNA. That stiffening does not by itself buy liquid crystallinity, because the corona thickens the molecule faster than it rigidifies it, so the effective aspect ratio of persistence length over diameter actually falls. See the Chain Dimensions tool, where those numbers appear and a persistence length can be turned into a real chain size."
+    note: "A bottlebrush with DNA as one of its two components, either as side chains grafted from a synthetic backbone or as a main chain wearing a synthetic corona. The corona stiffens the DNA substantially: effective persistence lengths near 250 nm have been measured by nanopore and by AFM, against 50 nm for bare duplex DNA. The stiffening does not translate into a more rod-like molecule, because the corona thickens it faster than it rigidifies it, so the effective aspect ratio of persistence length over diameter falls. It does not follow that liquid crystallinity is lost: a measured case still formed lyotropic phases, and at a lower concentration than bare DNA, because what the corona costs in aspect ratio it more than repays in excluded volume. See the Chain Dimensions tool, where those numbers appear and a persistence length can be turned into a real chain size, and the self-assembled DNA bottlebrush entry for the measurement."
   },
   {
     name: "Brush-arm star polymer", aka: ["BASP", "brush-arm star", "PEG BASP", "brush-first star polymer"],
@@ -1227,6 +1227,108 @@ window.POLYMER_DB = [
     atoms: [], bonds: [],
     needsStructure: true,
     note: "The third route to a bottlebrush, and the one that trades certainty for freedom. Backbone and side chains are made separately, each under whatever conditions suit it, and joined afterwards through a reactive pair - usually an azide and an alkyne, because that coupling still works when the site is crowded. The freedom is real: the two blocks never have to tolerate each other's chemistry, which is the only way to combine, say, a polypeptide with an oligonucleotide. The cost is that the last side chains have to reach attachment points already surrounded by the ones that got there first, so grafting density falls short of one per repeat and is never quite known. Grafting-through guarantees density but needs a macromonomer; grafting-from gives long backbones but crowds the growing radicals; grafting-onto is the fallback when neither block can be made in the other's presence. Reviewed by Verduzco, Li, Pesek and Stein, Chem. Soc. Rev. 2015, 44, 2405, and by Mullner, Chem. Commun. 2022, 58, 5683."
+  },
+  {
+    name: "Self-assembled DNA bottlebrush", aka: ["protein-grafted DNA bottlebrush", "electrostatic DNA brush", "C4K12 DNA bottlebrush"],
+    arch: "bottlebrush",
+    monomer: "duplex DNA with a diblock protein polymer adsorbed along it", cls: "Step-growth (polyester)", cas: null,
+    tags: ["bottlebrush", "biopolymer", "water-soluble", "self-assembly", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A bottlebrush held together by charge rather than by covalent bonds, built to settle whether a dense corona makes a semiflexible chain behave more like a rod. An engineered protein with a twelve-lysine binding block and a four-hundred-residue random coil sticks along DNA electrostatically, giving a brush about 30 nm thick with roughly one side chain every 2.7 nm of duplex. The corona did stiffen the DNA, but it thickened it more, so the effective aspect ratio fell - confirming the theory that a brush coating only raises aspect ratio for very long side chains at very high density. Liquid crystallinity survived anyway, appearing at 8 mg/mL of DNA, about ten times more dilute than bare DNA, and going hexagonal by 12 mg/mL. The lesson is that lower aspect ratio and easier ordering are not contradictory, because the corona also adds excluded volume. Storm, Kornreich and co-workers (de Vries group, Wageningen), J. Phys. Chem. B 2015."
+  },
+  {
+    name: "Neurofilament", aka: ["neurofilament sidearm", "NF-M", "NF-H", "neurofilament projection domain"],
+    arch: "bottlebrush",
+    monomer: "intermediate filament core protein with unstructured projection domains", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["bottlebrush", "biopolymer", "self-assembly", "biomedical", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The bottlebrush that fills the inside of an axon. A semiflexible filament core carries long unstructured polypeptide projection domains, heavily phosphorylated and so strongly charged, which stick out and hold neighbouring filaments apart. That spacing is what sets the calibre of an axon and therefore how fast it conducts, so the brush is doing a mechanical job with a direct physiological readout. Like other natural bottlebrushes they form lyotropic ordered phases, which is why synthetic semiflexible-core brushes are studied as models for them. Treat the composition as variable: the projection domains differ between the medium and heavy subunits and their phosphorylation state is not fixed."
+  },
+  {
+    name: "Lubricin", aka: ["PRG4", "proteoglycan 4", "superficial zone protein", "bottlebrush lubricant glycoprotein"],
+    arch: "bottlebrush",
+    monomer: "mucin-like O-glycosylated central domain with binding end domains", cls: "Step-growth (polyamide)", cas: null,
+    tags: ["bottlebrush", "biopolymer", "biomedical", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The boundary lubricant of a joint, and a bottlebrush with grips on both ends. A heavily O-glycosylated mucin-like middle section forms the brush - hydrophilic, negatively charged, holding a water layer - while the end domains bind to the cartilage surface, so the molecule self-assembles into a telechelic brush anchored at both ends with the loop standing proud. Two such layers slide over each other without interdigitating, which is exactly the argument made for synthetic polymer brushes as lubricants, and it is why lubricin is copied by mimics for contact lenses, sensors and antifouling coatings. Losing it is associated with cartilage damage after joint injury."
+  },
+  {
+    name: "Bottlebrush oil-additive friction modifier", aka: ["bottlebrush friction modifier", "anchor group bottlebrush", "graft copolymer lubricant additive", "poly(lauryl acrylate) brush"],
+    arch: "bottlebrush",
+    monomer: "lauryl acrylate macromonomer with a poly(4-acryloylmorpholine) anchor block", cls: "Addition (acrylate)", cas: null,
+    tags: ["bottlebrush", "acrylate", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A bottlebrush designed to do in an oil what a surface-grafted brush does in water. The grafted poly(lauryl acrylate) part dissolves in the oil and stands away from the surface; a short polar poly(4-acryloylmorpholine) block anchors the molecule to the metal, so the polymer builds its own brush layer wherever the surfaces meet rather than needing to be grafted there. RAFT polymerisation let grafting density and the position of the anchor along the chain be varied independently, which is the point - the architecture, not the chemistry, is the variable. Friction coefficients fell by about half at low additive levels. Worth the trouble given that roughly a fifth of the world's energy goes on overcoming friction. Kerr, Hakkinen and co-workers (Perrier group, Warwick), ACS Appl. Mater. Interfaces 2023, 15, 48574."
+  },
+  {
+    name: "Polypentenamer bottlebrush", aka: ["PCP bottlebrush", "polypentenamer-g-polystyrene", "cyclopentene-based bottlebrush"],
+    arch: "bottlebrush",
+    monomer: "cyclopentene-based macromonomer, polymerised by ROMP", cls: "Ring-opening", cas: null,
+    tags: ["bottlebrush", "styrenic", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "The same architecture on a thinner backbone, and a clean test of how much the backbone matters. Polynorbornene carries a fused imide ring at every repeat, which takes up room next to the backbone and pushes the side chains outward; a polypentenamer backbone, made by ring-opening cyclopentene, has nothing there. The grafts can then occupy space close to the backbone, so the molecule packs denser and its intrinsic viscosity scales more weakly with molar mass - for polystyrene grafts the scaling exponent was 0.11 against 0.19 for the polynorbornene analogue, nearly a factor of two. If a bottlebrush is being used because it is a stiff extended cylinder, the choice of backbone is part of the design rather than a detail. Leo, Jang and co-workers (Kennemur group, Florida State), ACS Polymers Au 2024, 4, 235."
+  },
+  {
+    name: "Bottlebrush by RAFT grafting-through", aka: ["RAFT bottlebrush", "RAFT macromonomer brush", "graft-through RAFT polymer"],
+    arch: "bottlebrush",
+    monomer: "vinyl-terminated macromonomer polymerised under RAFT control", cls: "Addition (vinyl)", cas: null,
+    tags: ["bottlebrush", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "Grafting-through without a metathesis catalyst. A macromonomer is made with an ordinary polymerisable end - usually a methacrylate - and then polymerised under reversible addition-fragmentation chain transfer control, which tolerates water, acids, amines and unprotected functional groups that would stop a ruthenium catalyst. The trade is conversion: a growing radical adds a whole polymer chain each time, so the reaction slows badly as it proceeds and backbones stay shorter than ROMP reaches. Where ROMP wins on backbone length and speed, RAFT wins on what the side chain is allowed to contain, which is why it is the usual choice for charged or biologically functional brushes."
+  },
+  {
+    name: "Comb polymer", aka: ["comb copolymer", "graft copolymer (comb)", "loosely grafted brush"],
+    arch: "bottlebrush",
+    monomer: "backbone bearing side chains at less than every repeat", cls: "Addition (vinyl)", cas: null,
+    tags: ["bottlebrush", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "What a bottlebrush is before it becomes one. Graft a backbone loosely, or with short side chains, and the grafts stay out of each other's way: the backbone keeps its normal flexibility and the molecule is still a coil, just a branched one. Raise the grafting density or lengthen the side chains and the grafts begin to overlap, the steric cost of a coiled backbone becomes unpayable, and the molecule straightens into the extended cylinder that earns the name bottlebrush. There is no sharp line between the two, which is why the same material is called a comb in one paper and a brush in the next, and why quoting a grafting density and a side-chain length says more than either word does."
+  },
+  {
+    name: "Bottlebrush polyelectrolyte", aka: ["polyelectrolyte brush", "charged bottlebrush", "molecular polyelectrolyte brush"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(acrylic acid)"],
+    monomer: "macromonomer with an ionisable side chain", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "water-soluble", "specialty"],
+    note: "A bottlebrush whose side chains repel each other electrically as well as sterically, so the molecule stretches further than crowding alone would manage and its size responds to salt and pH. Adding salt screens the charge and lets the corona collapse; removing it swells the molecule again. This is the synthetic version of what aggrecan does in cartilage and what neurofilament sidearms do in an axon - hold water, resist compression, and keep neighbours at a distance - and it is why charged brushes are studied as lubricants and as compression-resistant coatings. The listed components are representative: the same architecture is made with sulfonate, quaternary ammonium and zwitterionic side chains."
+  },
+  {
+    name: "Poly(norbornene)-graft-poly(caprolactone)", aka: ["PNB-g-PCL", "polycaprolactone bottlebrush", "PCL bottlebrush"],
+    type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(caprolactone)"],
+    monomer: "polycaprolactone-functional norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "polyester", "biodegradable", "biomedical", "specialty"],
+    note: "The slow-degrading member of the polyester bottlebrush family. Polycaprolactone side chains are made by ring-opening a lactone from an alcohol on the norbornene, then the macromonomer is polymerised through its ring, the same route as the polylactide brush. The difference is timescale: caprolactone esters hydrolyse far more slowly than lactide ones, so where a polylactide brush is chosen to disappear over weeks to months, a caprolactone brush is chosen to persist and then go, which suits a scaffold or a depot that has to hold its shape first. It is also semicrystalline and much softer, so the two are not interchangeable even before degradation starts."
+  },
+  {
+    name: "Core-shell bottlebrush", aka: ["core-shell brush", "block-side-chain bottlebrush", "amphiphilic bottlebrush"],
+    arch: "bottlebrush",
+    monomer: "backbone grafted with diblock side chains", cls: "Ring-opening (polyamide)", cas: null,
+    tags: ["bottlebrush", "polyester", "polyether", "self-assembly", "biomedical", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "A bottlebrush that is layered outward rather than along its length: every side chain is itself a diblock, so the molecule has an inner shell of one polymer and an outer shell of another around a single backbone. Make the inner block hydrophobic and the outer one hydrophilic and each molecule becomes a unimolecular micelle - a carrier that cannot fall apart on dilution the way an ordinary micelle does below its critical concentration, which is the usual reason a drug-loaded micelle fails in the bloodstream. One route couples pre-made polylactide-block-poly(ethylene glycol) side chains onto a poly(gamma-propyl-L-glutamate) backbone by azide-alkyne click chemistry. Compare the Janus bottlebrush, which divides the same two polymers along the molecule instead of around it. Reviewed by Verduzco, Li, Pesek and Stein, Chem. Soc. Rev. 2015, 44, 2405."
+  },
+  {
+    name: "Poly(methyl methacrylate)-bottlebrush poly(dimethylsiloxane) thermoplastic elastomer", aka: ["PMMA-bbPDMS-PMMA", "bottlebrush thermoplastic elastomer", "dry linear-bottlebrush-linear elastomer"],
+    type: "copolymer", arch: "bottlebrush", components: ["Poly(dimethylsiloxane)", "Poly(methyl methacrylate)"],
+    monomer: "PDMS macromonomer for the brush block, methyl methacrylate for the linear ends", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
+    tags: ["copolymer", "bottlebrush", "elastomer", "silicone", "methacrylate", "thermoplastic elastomer", "specialty"],
+    note: "The dry counterpart of the injectable bottlebrush gel, and the reason that architecture works at all. A bottlebrush poly(dimethylsiloxane) middle block supplies a network strand that is soft and barely entangled; glassy poly(methyl methacrylate) end blocks aggregate into hard domains that act as physical crosslinks, so the material is an elastomer that can still be melted and reshaped. No solvent is present, so there is nothing to evaporate or leach - the softness comes from the architecture rather than from a plasticiser. It is mechanically the weaker of the pair: the aqueous PNIPAM-bottlebrush-PEG version reaches about 3.5 MPa at break against roughly 0.6 MPa here, which is the comparison the injectable work used to make its case."
+  },
+  {
+    name: "Synthetic mucin mimic", aka: ["lubricin mimic", "bottlebrush glycopolymer", "mucin-mimetic brush", "biolubricant mimic"],
+    arch: "bottlebrush",
+    monomer: "glycosylated or polyelectrolyte side chains on a surface-binding backbone", cls: "Addition (vinyl)", cas: null,
+    tags: ["bottlebrush", "biomedical", "water-soluble", "specialty"],
+    atoms: [], bonds: [],
+    needsStructure: true,
+    note: "What happens when the natural bottlebrush lubricants are copied rather than harvested. Mucin and lubricin both work by holding a water layer on a surface and refusing to interdigitate with the layer opposite, and both are hard to produce in quantity with consistent glycosylation. A synthetic version keeps the architecture - a hydrophilic, often charged brush with an end group that binds the surface - and drops the sugars for something easier to make, which is enough to recover much of the lubrication. Reported mimics are used on cartilage, contact lenses and antifouling coatings, sometimes paired with a surface-binding protein to improve wear protection. The composition is deliberately open here: this is an architecture with a design brief, not one compound."
   }
 ];
 
