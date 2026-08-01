@@ -4500,14 +4500,34 @@
         clearTimeout(recentTimer);
         if (!q) { renderResults([]); if (statusEl) statusEl.textContent = ''; return; }
         var db = window.POLYMER_DB || [];
-        var matches = db.filter(function (p) {
-          if (p.name.toLowerCase().indexOf(q) !== -1) return true;
+        // How well an entry answers the query. Substring alone is not enough to
+        // order by: an abbreviation typed exactly should beat one that merely
+        // occurs inside a longer alias, or "PSS" lands on PEDOT (whose alias
+        // mentions PEDOT:PSS) and "PBI" on a bottlebrush called PBiBEM-g-PMMA,
+        // ahead of the polymers actually abbreviated that way. Lower is better;
+        // null means no match at all.
+        function rank(p) {
+          var name = p.name.toLowerCase();
+          var akas = (p.aka || []).map(function (a) { return a.toLowerCase(); });
+          if (name === q) return 0;
+          if (akas.indexOf(q) !== -1) return 1;
+          if (name.indexOf(q) === 0) return 2;
+          if (akas.some(function (a) { return a.indexOf(q) === 0; })) return 3;
+          if (name.indexOf(q) !== -1) return 4;
+          if (akas.some(function (a) { return a.indexOf(q) !== -1; })) return 5;
           // Every result card prints "CAS <rn>", so people paste one back in.
           // These are the polymer registry numbers, not the monomer's, so a
           // monomer RN off a bottle label deliberately does not match here.
-          if (p.cas && p.cas.toLowerCase().indexOf(q) !== -1) return true;
-          return (p.aka || []).some(function (a) { return a.toLowerCase().indexOf(q) !== -1; });
-        }).slice(0, 20);
+          if (p.cas && p.cas.toLowerCase().indexOf(q) !== -1) return 6;
+          return null;
+        }
+        var scored = [];
+        db.forEach(function (p, i) {
+          var r = rank(p);
+          if (r !== null) scored.push({ p: p, r: r, i: i });
+        });
+        scored.sort(function (a, b) { return a.r - b.r || a.i - b.i; });
+        var matches = scored.slice(0, 20).map(function (s) { return s.p; });
         if (matches.length) {
           if (statusEl) statusEl.textContent = matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ':';
           renderResults(matches);
