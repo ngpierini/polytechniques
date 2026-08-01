@@ -4529,7 +4529,17 @@
         scored.sort(function (a, b) { return a.r - b.r || a.i - b.i; });
         var matches = scored.slice(0, 20).map(function (s) { return s.p; });
         if (matches.length) {
-          if (statusEl) statusEl.textContent = matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ':';
+          // Some abbreviations genuinely belong to more than one polymer - PPO
+          // is both poly(propylene oxide) and poly(phenylene oxide), PEA both
+          // the ethyl acrylate and the ethylene adipate. Ranking has to put one
+          // of them first, which silently looks like an answer, so say when the
+          // query is ambiguous rather than letting the order imply a winner.
+          var exact = scored.filter(function (s) { return s.r <= 1; });
+          if (statusEl) {
+            statusEl.textContent = exact.length > 1
+              ? exact.length + ' polymers are known as "' + nameInput.value.trim() + '" — all shown:'
+              : matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ':';
+          }
           renderResults(matches);
         } else {
           rescueNameSearch(q, statusEl);

@@ -142,7 +142,7 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 6, b: 8, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
-    name: "Poly(2-hydroxyethyl methacrylate)", aka: ["PHEMA", "pHEMA"], monomer: "2-Hydroxyethyl methacrylate",
+    name: "Poly(2-hydroxyethyl methacrylate)", aka: ["PHEMA"], monomer: "2-Hydroxyethyl methacrylate",
     cls: "Addition (methacrylate)", cas: "25249-16-5", tg: "55 °C", tags: ["acrylic", "methacrylate", "biomedical"],
     note: "Common hydrogel-forming polymer (contact lenses) once hydrated.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -1332,7 +1332,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyacetylene", aka: ["PA", "poly(acetylene)", "polyethyne"],
-    monomer: "acetylene", cls: "Addition (vinyl)", cas: null,
+    monomer: "acetylene", cls: "Addition (vinyl)", cas: "25067-58-7",
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }],
@@ -1341,7 +1341,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polythiophene", aka: ["PT", "poly(thiophene)"],
-    monomer: "thiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "thiophene", cls: "Addition (vinyl)", cas: "25233-34-5",
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: "S1", el: "*" }],
@@ -1377,7 +1377,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyaniline", aka: ["PANI", "emeraldine", "poly(aniline)", "aniline black"],
-    monomer: "aniline", cls: "Addition (vinyl)", cas: null,
+    monomer: "aniline", cls: "Addition (vinyl)", cas: "25233-30-1",
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "N" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S1", el: "*" }],
@@ -1386,7 +1386,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(p-phenylene vinylene)", aka: ["PPV", "poly(1,4-phenylene vinylene)"],
-    monomer: "p-xylylene precursor (Gilch or Wessling route)", cls: "Addition (vinyl)", cas: null,
+    monomer: "p-xylylene precursor (Gilch or Wessling route)", cls: "Addition (vinyl)", cas: "26009-24-5",
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S1", el: "*" }],
@@ -1440,7 +1440,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(allylamine)", aka: ["PAH", "poly(allylamine hydrochloride)", "poly(allyl amine)"],
-    monomer: "allylamine", cls: "Addition (vinyl)", cas: null,
+    monomer: "allylamine", cls: "Addition (vinyl)", cas: "30551-89-4",
     tags: ["water-soluble", "polyelectrolyte", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "N" }, { id: "S1", el: "*" }],
@@ -1512,7 +1512,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Cellulose", aka: ["cellulose", "alpha-cellulose", "cotton linters"],
-    monomer: "D-glucose (beta-1,4 linked)", cls: "Step-growth (polyester)", cas: null,
+    monomer: "D-glucose (beta-1,4 linked)", cls: "Step-growth (polyester)", cas: "9004-34-6",
     tags: ["biopolymer", "biobased", "biodegradable", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: "S1", el: "*" }],
@@ -1530,7 +1530,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Chitosan", aka: ["chitosan", "deacetylated chitin", "poly(D-glucosamine)"],
-    monomer: "D-glucosamine (beta-1,4 linked)", cls: "Step-growth (polyester)", cas: null,
+    monomer: "D-glucosamine (beta-1,4 linked)", cls: "Step-growth (polyester)", cas: "9012-76-4",
     tags: ["biopolymer", "biobased", "biodegradable", "water-soluble", "polyelectrolyte", "biomedical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: "S1", el: "*" }],
@@ -1539,7 +1539,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Amylose", aka: ["amylose", "starch (linear fraction)", "alpha-1,4-glucan"],
-    monomer: "D-glucose (alpha-1,4 linked)", cls: "Step-growth (polyester)", cas: null,
+    monomer: "D-glucose (alpha-1,4 linked)", cls: "Step-growth (polyester)", cas: "9005-82-7",
     tags: ["biopolymer", "biobased", "biodegradable", "specialty"],
     verified: false,
     atoms: [], bonds: [],
@@ -1548,7 +1548,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Hyaluronan", aka: ["hyaluronic acid", "HA", "hyaluronate", "sodium hyaluronate"],
-    monomer: "glucuronic acid + N-acetylglucosamine disaccharide", cls: "Step-growth (polyester)", cas: null,
+    monomer: "glucuronic acid + N-acetylglucosamine disaccharide", cls: "Step-growth (polyester)", cas: "9004-61-9",
     tags: ["biopolymer", "water-soluble", "polyelectrolyte", "biomedical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "O" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "O" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "N" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: 19, el: "C" }, { id: 20, el: "O" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "O" }, { id: 24, el: "O" }, { id: 25, el: "C" }, { id: "S1", el: "*" }, { id: 27, el: "C" }, { id: 28, el: "O" }],
@@ -1566,7 +1566,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Dextran", aka: ["dextran", "alpha-1,6-glucan"],
-    monomer: "D-glucose (alpha-1,6 linked)", cls: "Step-growth (polyester)", cas: null,
+    monomer: "D-glucose (alpha-1,6 linked)", cls: "Step-growth (polyester)", cas: "9004-54-0",
     tags: ["biopolymer", "water-soluble", "biomedical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: "S1", el: "*" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "O" }],
@@ -1575,7 +1575,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Lignin", aka: ["lignin", "kraft lignin", "lignosulfonate"],
-    monomer: "coniferyl, sinapyl and p-coumaryl alcohol", cls: "Step-growth (polyester)", cas: null,
+    monomer: "coniferyl, sinapyl and p-coumaryl alcohol", cls: "Step-growth (polyester)", cas: "9005-53-2",
     tags: ["biopolymer", "biobased", "specialty"],
     verified: false,
     atoms: [], bonds: [],
@@ -1584,7 +1584,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(L-lysine)", aka: ["PLL", "poly-L-lysine", "polylysine"],
-    monomer: "L-lysine N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: null,
+    monomer: "L-lysine N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: "25104-18-1",
     tags: ["biopolymer", "water-soluble", "polyelectrolyte", "drug delivery", "biomedical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "N" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S1", el: "*" }],
@@ -1638,7 +1638,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polybenzimidazole", aka: ["PBI", "poly(2,2'-m-phenylene-5,5'-bibenzimidazole)", "Celazole"],
-    monomer: "3,3'-diaminobenzidine + isophthalic acid", cls: "Step-growth (polyamide)", cas: null,
+    monomer: "3,3'-diaminobenzidine + isophthalic acid", cls: "Step-growth (polyamide)", cas: "32075-68-6",
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "N" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "N" }, { id: 11, el: "C" }, { id: 12, el: "N" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "N" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: "S1", el: "*" }],
@@ -1692,7 +1692,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinylidene fluoride-co-hexafluoropropylene)", aka: ["PVDF-HFP", "Kynar Flex", "P(VDF-HFP)"],
-    monomer: "vinylidene fluoride + hexafluoropropylene", cls: "Addition (vinyl)", cas: null,
+    monomer: "vinylidene fluoride + hexafluoropropylene", cls: "Addition (vinyl)", cas: "1184966-74-2",
     tags: ["copolymer", "fluoropolymer", "elastomer", "specialty"],
     verified: false,
     atoms: [], bonds: [],
@@ -1701,7 +1701,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Perfluoroalkoxy alkane", aka: ["PFA", "perfluoroalkoxy", "Teflon PFA"],
-    monomer: "tetrafluoroethylene + perfluoropropyl vinyl ether", cls: "Addition (vinyl)", cas: null,
+    monomer: "tetrafluoroethylene + perfluoropropyl vinyl ether", cls: "Addition (vinyl)", cas: "80701-91-3",
     tags: ["fluoropolymer", "high-temperature", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "F" }, { id: 4, el: "F" }, { id: 5, el: "C" }, { id: 6, el: "F" }, { id: 7, el: "F" }, { id: 8, el: "C" }, { id: 9, el: "F" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "F" }, { id: 13, el: "F" }, { id: 14, el: "C" }, { id: 15, el: "F" }, { id: 16, el: "F" }, { id: 17, el: "C" }, { id: 18, el: "F" }, { id: 19, el: "F" }, { id: 20, el: "F" }, { id: 21, el: "C" }, { id: 22, el: "F" }, { id: 23, el: "F" }, { id: "S1", el: "*" }],
@@ -1728,7 +1728,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(dichlorophosphazene)", aka: ["polyphosphazene", "poly(dichlorophosphazene)", "inorganic rubber"],
-    monomer: "hexachlorocyclotriphosphazene", cls: "Ring-opening", cas: null,
+    monomer: "hexachlorocyclotriphosphazene", cls: "Ring-opening", cas: "26085-02-9",
     tags: ["elastomer", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "N" }, { id: 3, el: "P" }, { id: 4, el: "Cl" }, { id: 5, el: "Cl" }, { id: "S1", el: "*" }],
@@ -1737,7 +1737,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(1-butene)", aka: ["PB-1", "polybutene-1", "poly(butene-1)"],
-    monomer: "1-butene", cls: "Addition (vinyl)", cas: null,
+    monomer: "1-butene", cls: "Addition (vinyl)", cas: "9003-28-5",
     tags: ["commodity", "packaging", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: "S1", el: "*" }],
@@ -1746,7 +1746,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(4-methyl-1-pentene)", aka: ["PMP", "TPX", "poly(4-methylpentene-1)"],
-    monomer: "4-methyl-1-pentene", cls: "Addition (vinyl)", cas: null,
+    monomer: "4-methyl-1-pentene", cls: "Addition (vinyl)", cas: "25068-26-2",
     tags: ["commodity", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S1", el: "*" }],
@@ -1764,7 +1764,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(4-chlorostyrene)", aka: ["P4ClS", "poly(p-chlorostyrene)"],
-    monomer: "4-chlorostyrene", cls: "Addition (vinyl)", cas: null,
+    monomer: "4-chlorostyrene", cls: "Addition (vinyl)", cas: "24991-47-7",
     tags: ["styrenic", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "Cl" }, { id: 10, el: "C" }, { id: 11, el: "C" }],
@@ -1836,7 +1836,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(ethylene furanoate)", aka: ["PEF", "poly(ethylene 2,5-furandicarboxylate)"],
-    monomer: "2,5-furandicarboxylic acid + ethylene glycol", cls: "Step-growth (polyester)", cas: null,
+    monomer: "2,5-furandicarboxylic acid + ethylene glycol", cls: "Step-growth (polyester)", cas: "28728-19-0",
     tags: ["biobased", "packaging", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "O" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: "S1", el: "*" }],

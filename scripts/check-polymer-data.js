@@ -109,6 +109,20 @@ function checkEntry(entry, idx, errors) {
   if (entry.tags !== undefined && !Array.isArray(entry.tags)) {
     errors.push(where + ": \"tags\" must be an array if present");
   }
+  // The same alias twice in one entry is always a slip - it cannot make the
+  // entry more findable, and it did hide in "PHEMA"/"pHEMA" for a long time
+  // because the two differ only in case. Compared case-insensitively for that
+  // reason. Two ENTRIES sharing an alias is a different matter and allowed:
+  // PPO really does mean both poly(propylene oxide) and poly(phenylene oxide).
+  if (Array.isArray(entry.aka)) {
+    const seenAka = Object.create(null);
+    entry.aka.forEach(function (a) {
+      if (typeof a !== "string") { errors.push(where + ": alias entries must be strings"); return; }
+      const k = a.trim().toLowerCase();
+      if (seenAka[k]) errors.push(where + ": alias \"" + a + "\" duplicates \"" + seenAka[k] + "\" in the same entry");
+      else seenAka[k] = a;
+    });
+  }
   // Copolymer entries have no single repeat unit: they carry a components list
   // of library homopolymer names instead of atoms/bonds. Validate the list and
   // skip the structure/class checks (referential integrity is checked in main).
