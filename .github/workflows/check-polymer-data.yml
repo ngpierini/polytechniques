@@ -51,6 +51,10 @@ jobs:
 
       - run: node scripts/check-chain-data.js
 
+      # Fails if an indexable page is missing from sitemap.xml, which is
+      # hand-maintained and had silently dropped one of the main tools.
+      - run: node scripts/check-sitemap.js
+
       # Backstop for the pre-commit hook, which lives only in a local clone.
       - run: node scripts/check-no-energetic.js
 
