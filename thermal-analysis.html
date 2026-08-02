@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=66">
+<link rel="stylesheet" href="style.css?v=67">
 <style>
   /* Page-scoped styles for the interactive thermal-analysis charts. Colours are
      pulled from the site's CSS variables so light/dark both work; the extra
@@ -700,6 +700,14 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
   function libById(id) { var i; for (i = 0; i < LIB.length; i++) if (LIB[i].id === id) return LIB[i]; return null; }
   function libLabel(m) { return m.abbr ? (m.name + " (" + m.abbr + ")") : m.name; }
   // Populate a <select> with optgroups, keeping only materials the test can draw.
+  function deepLinkId(fallback) {
+    try {
+      var want = new URLSearchParams(location.search).get("m");
+      if (want && LIB.some(function (m) { return m.id === want; })) return want;
+    } catch (e) {}
+    return fallback;
+  }
+
   function fillSelect(sel, ok, preferId) {
     var html = "", c, i, group, first = null;
     for (c = 0; c < CLS_ORDER.length; c++) {
@@ -1524,7 +1532,10 @@ Predict a copolymer or blend T<sub>g</sub> before you measure it with the <a hre
       buildMixUI("dsc-mix-rows", state.mix, dscOk, render);
     }
 
-    state.id = fillSelect($("dsc-material"), dscOk, "pet");
+    // ?m=<id> opens the DSC tab on one material, so a result card in Polymer
+    // Search can hand off here. fillSelect already falls back when the id is
+    // not in the drawable set, so a stale link degrades to the default.
+    state.id = fillSelect($("dsc-material"), dscOk, deepLinkId("pet"));
     buildMixRows();
     seg("dsc-mode", function (v) { state.mode = v; syncControls(); render(); });
     seg("dsc-zoom", function (v) { state.zoom = v; render(); });

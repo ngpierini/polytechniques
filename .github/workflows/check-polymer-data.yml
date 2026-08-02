@@ -51,6 +51,9 @@ jobs:
 
       - run: node scripts/check-chain-data.js
 
+      - name: Cross-reference between the polymer, thermal and chain datasets is current
+        run: node scripts/build-xref.js --check
+
       # Fails if an indexable page is missing from sitemap.xml, which is
       # hand-maintained and had silently dropped one of the main tools.
       - run: node scripts/check-sitemap.js

@@ -2041,6 +2041,23 @@
       if (p.arch === 'bottlebrush') return 'a brush is an architecture, and its blocks are not laid end to end along one chain.';
       return 'see the publication links below.';
     }
+    // The other tools on the site hold real measured data for some of these
+    // polymers, and a card had no way to say so. These links are drawn only
+    // where the target actually has the material - the cross-reference is
+    // precomputed by scripts/build-xref.js, because deciding it live would mean
+    // loading a 200 KB thermal library on every visit to this page, and a link
+    // that lands on "not in this library" is worse than no link.
+    function crossToolLinks(p) {
+      var x = (window.POLYMER_XREF || {})[p.name];
+      if (!x) return '';
+      var out = [];
+      if (x.t) out.push('<a class="mol-xref-link" href="thermal-analysis.html?m=' +
+        encodeURIComponent(x.t) + '">&#128293; DSC / TGA / DMA</a>');
+      if (x.c) out.push('<a class="mol-xref-link" href="chain-dimensions.html?m=' +
+        encodeURIComponent(x.c) + '">&#128207; Chain dimensions</a>');
+      return out.length ? '<div class="mol-xref">' + out.join('') + '</div>' : '';
+    }
+
     function polymerCard(p) {
       var props = [];
       if (p.tg) props.push('T<sub>g</sub> ≈ ' + escapeHtml(p.tg));
@@ -2061,6 +2078,7 @@
           : '<div class="mol-result-actions mol-no-structure">' +
               'No repeat unit on file &mdash; ' + escapeHtml(noStructureReason(p)) +
             '</div>') +
+        crossToolLinks(p) +
         publicationLinks(p) +
         '</div>';
     }

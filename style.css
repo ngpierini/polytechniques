@@ -2455,6 +2455,20 @@ input.input-invalid {
 }
 .mol-more-btn { display: block; margin: 14px auto 0; }
 
+/* Hand-offs to the tools that hold measured data for this polymer. Drawn only
+   where the target actually has it, so the row is often absent. */
+.mol-xref { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.mol-xref-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 10px;
+}
+.mol-xref-link:hover { border-color: var(--primary); background: var(--primary-dim); }
+
 /* ---------- Calculator tab-row utility buttons ---------- */
 .mw-unit-toggle, .share-recipe-btn {
   margin-left: auto;

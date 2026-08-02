@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=66">
+<link rel="stylesheet" href="style.css?v=67">
 <style>
   .cd-controls { display: flex; flex-wrap: wrap; gap: 14px; margin: 4px 0 12px; }
   .cd-control { display: flex; flex-direction: column; gap: 4px; flex: 1 1 220px; min-width: 0; }
@@ -232,7 +232,18 @@
     rigid: "Rigid rods", aromatic: "Aromatic backbones"
   };
 
-  var state = { id: "ps", mIdx: 0, mass: 100000 };
+  // ?m=<id> opens straight on one polymer, so a result card in Polymer Search
+  // can hand off to this page. The id is validated against the dataset rather
+  // than trusted: a stale or hand-edited link falls back to the default instead
+  // of leaving the select on a value that does not exist.
+  function deepLinkId(fallback) {
+    try {
+      var want = new URLSearchParams(location.search).get("m");
+      if (want && DATA.some(function (e) { return e.id === want; })) return want;
+    } catch (e) {}
+    return fallback;
+  }
+  var state = { id: deepLinkId("ps"), mIdx: 0, mass: 100000 };
 
   function fillMaterials() {
     var sel = $("cd-material"), html = "", c, i, group;
