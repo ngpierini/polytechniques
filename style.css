@@ -2674,3 +2674,15 @@ input.input-invalid {
 tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent); font-weight: 600; }
 .xl-solv-row, .tg-ref-row { cursor: pointer; }
 .xl-solv-row:hover { background: color-mix(in srgb, var(--primary) 10%, transparent); }
+
+/* The step-growth hockey stick. Sized by its viewBox so it scales with the
+   card; height capped so it never dominates the numbers it illustrates. */
+.sg-curve {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  margin: 16px auto 4px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+}

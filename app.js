@@ -3831,6 +3831,9 @@ function stepGrowthTemplate() {
         The endcapper is taken to carry the group in excess, or group B if the two are balanced. Leave the unit mass at zero for X<sub>n</sub> alone.
       </p>
       <div class="stat-grid" id="sg-stats" style="margin-top:16px;"></div>
+      <svg id="sg-curve" class="sg-curve" viewBox="0 0 720 320" preserveAspectRatio="xMidYMid meet"
+           role="img" aria-label="Degree of polymerization against conversion on a logarithmic scale"></svg>
+
       <div class="table-scroll" id="sg-table-wrap" style="margin-top:12px;">
         <table class="recipe" id="sg-table">
           <thead><tr><th>Conversion p</th><th>X<sub>n</sub></th><th>M<sub>n</sub> (g/mol)</th></tr></thead>
@@ -4086,6 +4089,118 @@ function wireStepGrowthPanel() {
     detail.innerHTML = lines.join("<br>");
   }
 
+  // ---- the hockey stick, drawn ----
+  //
+  // Xn against p with a LOG y axis, which is the only way the shape reads:
+  // on a linear axis the whole curve is flat until it disappears vertically
+  // off the top, and the interesting part - that each further decade of Xn
+  // costs another factor of ten in unreacted groups - is invisible.
+  //
+  // SVG rather than canvas, following the chain-dimensions figure: it stays
+  // crisp at any size and picks up the theme through CSS variables, so it
+  // needs no redraw when the theme is switched.
+  const SGV = { w: 720, h: 320, l: 62, r: 18, t: 16, b: 42, decades: 4 };
+
+  function sgX(p) { return SGV.l + p * (SGV.w - SGV.l - SGV.r); }
+  function sgY(xn) {
+    const lo = 0, hi = SGV.decades;                       // log10(1) .. log10(10^4)
+    const v = Math.min(Math.max(Math.log10(Math.max(xn, 1)), lo), hi);
+    return SGV.h - SGV.b - (v - lo) / (hi - lo) * (SGV.h - SGV.t - SGV.b);
+  }
+
+  function drawCurve() {
+    const svg = $("sg-curve");
+    if (!svg) return;
+    const p = num("sg-p"), nA = num("sg-na"), nB = num("sg-nb"), mono = num("sg-mono") || 0;
+    if (!isFinite(nA) || !isFinite(nB) || nA <= 0 || nB <= 0) { svg.innerHTML = ""; return; }
+    const r = ratio(nA, nB, mono);
+    const ceiling = carothersXn(r, 1);
+
+    const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+    const parts = [];
+    const plotW = SGV.w - SGV.l - SGV.r, plotH = SGV.h - SGV.t - SGV.b;
+
+    parts.push('<rect x="' + SGV.l + '" y="' + SGV.t + '" width="' + plotW + '" height="' + plotH +
+      '" fill="none" stroke="var(--border)" stroke-width="1"/>');
+
+    // y gridlines, one per decade
+    for (let d = 0; d <= SGV.decades; d++) {
+      const y = sgY(Math.pow(10, d));
+      parts.push('<line x1="' + SGV.l + '" y1="' + y + '" x2="' + (SGV.w - SGV.r) + '" y2="' + y +
+        '" stroke="var(--border)" stroke-width="1" opacity="0.7"/>');
+      // plain values rather than exponent notation: at four decades the
+      // numbers are short enough to read directly, and 10,000 says more to
+      // someone sizing a polyester than 10^4 does
+      parts.push('<text x="' + (SGV.l - 8) + '" y="' + (y + 4) +
+        '" text-anchor="end" font-size="12" fill="var(--text-dim)">' +
+        Math.pow(10, d).toLocaleString() + "</text>");
+    }
+    // x ticks
+    [0, 0.2, 0.4, 0.6, 0.8, 1].forEach((tp) => {
+      const x = sgX(tp);
+      parts.push('<line x1="' + x + '" y1="' + (SGV.h - SGV.b) + '" x2="' + x + '" y2="' + (SGV.h - SGV.b + 5) +
+        '" stroke="var(--text-dim)" stroke-width="1"/>');
+      parts.push('<text x="' + x + '" y="' + (SGV.h - SGV.b + 19) +
+        '" text-anchor="middle" font-size="12" fill="var(--text-dim)">' + tp.toFixed(1) + "</text>");
+    });
+    parts.push('<text x="' + (SGV.l + plotW / 2) + '" y="' + (SGV.h - 6) +
+      '" text-anchor="middle" font-size="12" fill="var(--text-dim)">Conversion p</text>');
+    parts.push('<text x="14" y="' + (SGV.t + plotH / 2) + '" text-anchor="middle" font-size="12" ' +
+      'fill="var(--text-dim)" transform="rotate(-90 14 ' + (SGV.t + plotH / 2) + ')">Degree of polymerization</text>');
+
+    // the balanced case as a faint reference whenever the charge is not balanced
+    const path = (rr) => {
+      const pts = [];
+      for (let i = 0; i <= 600; i++) {
+        const pp = i / 600;
+        const x = carothersXn(rr, pp);
+        if (!isFinite(x) || x > Math.pow(10, SGV.decades)) {
+          // runs off the top: stop cleanly at the ceiling of the axis
+          pts.push([sgX(pp), sgY(Math.pow(10, SGV.decades))]);
+          break;
+        }
+        pts.push([sgX(pp), sgY(x)]);
+      }
+      return pts.map((q, i) => (i ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" ");
+    };
+
+    if (Math.abs(r - 1) > 1e-9) {
+      parts.push('<path d="' + path(1) + '" fill="none" stroke="var(--text-dim)" stroke-width="1.5" ' +
+        'stroke-dasharray="4 4" opacity="0.55"/>');
+      // the ceiling this stoichiometry imposes, as a hard horizontal limit
+      if (isFinite(ceiling) && ceiling <= Math.pow(10, SGV.decades)) {
+        const yc = sgY(ceiling);
+        parts.push('<line x1="' + SGV.l + '" y1="' + yc + '" x2="' + (SGV.w - SGV.r) + '" y2="' + yc +
+          '" stroke="var(--danger)" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.9"/>');
+        // Label at the LEFT end of the ceiling line. On the right it collided
+        // with the operating-point label, which for any interesting
+        // stoichiometry sits high and far right - exactly where this line is.
+        parts.push('<text x="' + (SGV.l + 6) + '" y="' + (yc - 6) +
+          '" text-anchor="start" font-size="12" fill="var(--danger)">ceiling ' + ceiling.toFixed(0) + '</text>');
+      }
+    }
+
+    parts.push('<path d="' + path(r) + '" fill="none" stroke="var(--primary)" stroke-width="2.5"/>');
+
+    // where you actually are
+    if (isFinite(p) && p >= 0 && p <= 1) {
+      const xn = carothersXn(r, p);
+      if (isFinite(xn) && xn >= 1) {
+        const cx = sgX(p), cy = sgY(xn);
+        parts.push('<line x1="' + cx + '" y1="' + (SGV.h - SGV.b) + '" x2="' + cx + '" y2="' + cy +
+          '" stroke="var(--primary)" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>');
+        parts.push('<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="var(--primary)"/>');
+        const anchor = p > 0.72 ? "end" : "start";
+        const dx = p > 0.72 ? -10 : 10;
+        parts.push('<text x="' + (cx + dx) + '" y="' + (cy - 10) + '" text-anchor="' + anchor +
+          '" font-size="13" font-weight="600" fill="var(--primary)">p ' + esc(p) + ' &#8594; X&#8345; ' +
+          (xn > 9999 ? "&#8805;10&#8308;" : xn.toFixed(0)) + '</text>');
+      }
+    }
+
+    svg.innerHTML = parts.join("");
+  }
+
   // ---- working backwards from a target ----
   // Xn = (1+r)/(1+r-2rp) inverts to p = (1+r)(1 - 1/Xn) / 2r, and at p = 1 the
   // ceiling Xn = (1+r)/(1-r) inverts to r = (Xn-1)/(Xn+1). The second is the
@@ -4151,7 +4266,7 @@ function wireStepGrowthPanel() {
 
   ["sg-p", "sg-na", "sg-nb", "sg-mono", "sg-m0"].forEach((id) => {
     const el = $(id);
-    if (el) el.addEventListener("input", () => { recalcDP(); recalcTarget(); });
+    if (el) el.addEventListener("input", () => { recalcDP(); recalcTarget(); drawCurve(); });
   });
   ["sg-t-val"].forEach((id) => { const el = $(id); if (el) el.addEventListener("input", recalcTarget); });
   $("sg-t-mode").addEventListener("change", recalcTarget);
@@ -4167,6 +4282,7 @@ function wireStepGrowthPanel() {
   addGelRow("Diacid (B₂)", 1.5, 2, "B");
   recalcDP();
   recalcTarget();
+  drawCurve();
   recalcGel();
 
   // Registers this tab with STATE_REGISTRY, which is what the preset bar AND
@@ -4198,7 +4314,7 @@ function wireStepGrowthPanel() {
         $("sg-gel-rows").innerHTML = "";
         s.gel.forEach(function (g) { addGelRow(g.n, g.m, g.f, g.t); });
       }
-      recalcDP(); recalcTarget(); recalcGel();
+      recalcDP(); recalcTarget(); drawCurve(); recalcGel();
     });
 }
 
