@@ -1367,21 +1367,33 @@
   // The player interpolates over its own (possibly halved) tick period while
   // the enemies interpolate over the unchanged world step, so they keep gliding
   // smoothly at normal speed even when the player is heated.
-  // --- Ambient layer: wormlike chains drifting behind the board -------------
+  // --- Ambient layer: an 8-bit chemistry lab behind the board ---------------
   //
-  // Decoration, but not arbitrary decoration. Each strand is a discrete
-  // wormlike chain: a walk whose direction turns by a small random angle at
-  // every segment, which is the same model the Chain Dimensions page samples.
-  // Undulating it with a travelling sine is a fair caricature of reptation -
-  // the chain wriggling along its own contour through the tube its neighbours
-  // make - so what drifts past behind the maze is the physics the game is
-  // about, at a scale the maze cannot show.
+  // The two strips either side of the maze are a synthetic chemistry lab drawn
+  // on a pixel grid, so it belongs to the same visual world as the board. It is
+  // modelled on a real bench: a fume hood with a sliding sash, a reflux setup
+  // clamped to a lattice rod over a stirrer-hotplate, a reagent shelf, and a
+  // chemist who walks the aisle between stations, charges the flask and works
+  // the stirrers.
+  //
+  // Proportions are the thing that makes a scene like this read. The worktop
+  // sits at roughly hip height on the figure and the figure's head clears it,
+  // which is why the deck and floor lines are pinned to the sprite's height
+  // rather than to fractions of the canvas.
+  //
+  // Everything static - walls, cabinets, shelf, bottles - is rendered once into
+  // an offscreen canvas when the size changes. Only what actually moves is
+  // drawn per frame: the sash, the bubbles, the indicator LEDs, the vapour, the
+  // droplets and the chemist.
   //
   // It runs on its own rAF loop, independent of the game tick, and pauses with
   // the game. It never reads or writes game state.
   var ambient = $("game-ambient");
   var actx = ambient ? ambient.getContext("2d") : null;
-  var strands = [], monomers = [], ambientFrame = null, ambientSized = 0;
+  var rooms = [], ambientFrame = null, lastAmbientT = 0;
+
+  var PXL = 5;                        // one pixel block
+  function snap(v) { return Math.round(v / PXL) * PXL; }
 
   function ambientPalette() {
     var w = (params && params.wall) || wallPalette || LEVELS[0].wall;
@@ -1401,195 +1413,503 @@
     return bands.length ? bands : null;
   }
 
+  var LAB = {
+    k: "#12161f",   // outline, deep frame
+    d: "#1e2430",   // cabinet body
+    D: "#161b25",   // cabinet shadow
+    w: "#a8b3c4",   // hood frame, light metal
+    W: "#dbe3ee",   // highlight
+    p: "#7d8798",   // metal
+    P: "#525b6a",   // metal shadow
+    b: "#0a0e18",   // hood interior
+    c: "#eef2f8",   // lab coat
+    C: "#c0c8d6",   // coat shadow
+    s: "#d9a06a",   // skin
+    h: "#3a2a1d",   // hair
+    g: "#9fe8ff",   // glass, goggles
+    t: "#2b3140",   // trousers
+    m: "#7fd8ff",   // gloved hand
+    y: "#f2c14b",   // safety yellow
+    r: "#e2604f",   // hot plate, red LED
+    n: "#5fdc8a",   // green LED
+    o: "#8a5f34"    // amber reagent bottle
+  };
+
+  // The chemist, side on: two walk frames and two working frames. The arm
+  // rising and falling is enough to read as pipetting or turning a dial.
+  var CHEM = {
+    walkA: [
+      "....hhhh...",
+      "...hhhhhh..",
+      "...hssssg..",
+      "...hssssg..",
+      "....ssss...",
+      "....ss.....",
+      "...ccccc...",
+      "..Cccccccc.",
+      "..Cccccccs.",
+      "..Ccccccc..",
+      "..Ccccccc..",
+      "..CCCCCCC..",
+      "...CCCCC...",
+      "...tttt....",
+      "...tt.tt...",
+      "...tt.tt...",
+      "..kkk.kkk.."
+    ],
+    walkB: [
+      "....hhhh...",
+      "...hhhhhh..",
+      "...hssssg..",
+      "...hssssg..",
+      "....ssss...",
+      "....ss.....",
+      "...ccccc...",
+      ".cCcccccc..",
+      "sCccccccc..",
+      "..Ccccccc..",
+      "..Ccccccc..",
+      "..CCCCCCC..",
+      "...CCCCC...",
+      "...tttt....",
+      "..tt...tt..",
+      ".tt.....tt.",
+      "kkk.....kkk"
+    ],
+    workA: [
+      "....hhhh...",
+      "...hhhhhh..",
+      "...hssssg..",
+      "...hssssg..",
+      "....ssss...",
+      "....ss.....",
+      "...ccccc...",
+      "..Ccccccccm",
+      "..Ccccccc..",
+      "..Ccccccc..",
+      "..Ccccccc..",
+      "..CCCCCCC..",
+      "...CCCCC...",
+      "...tttt....",
+      "...tt.tt...",
+      "...tt.tt...",
+      "..kkk.kkk.."
+    ],
+    workB: [
+      "....hhhh...",
+      "...hhhhhh..",
+      "...hssssg..",
+      "...hssssg..",
+      "....ssss...",
+      "....ss.....",
+      "...ccccc...",
+      "..Ccccccc..",
+      "..Ccccccccm",
+      "..Ccccccc.m",
+      "..Ccccccc..",
+      "..CCCCCCC..",
+      "...CCCCC...",
+      "...tttt....",
+      "...tt.tt...",
+      "...tt.tt...",
+      "..kkk.kkk.."
+    ]
+  };
+  var CHEM_W = 11, CHEM_H = 17;
+
+  function fill(ctx, x, y, w, h, col, alpha) {
+    ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+    ctx.fillStyle = col;
+    ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+  }
+
+  // Character grids are how this art was actually authored on the machines
+  // being imitated, and they are far easier to read and correct than a list of
+  // fill calls. "." is transparent, "T" takes the level tint.
+  function sprite(ctx, grid, x, y, alpha, flip, tint) {
+    for (var r = 0; r < grid.length; r++) {
+      var row = grid[r];
+      for (var c = 0; c < row.length; c++) {
+        var ch = row.charAt(flip ? row.length - 1 - c : c);
+        if (ch === ".") continue;
+        var col = ch === "T" ? tint : LAB[ch];
+        if (!col) continue;
+        fill(ctx, x + c * PXL, y + r * PXL, PXL, PXL, col, alpha);
+      }
+    }
+  }
+
+  // --- Room construction ----------------------------------------------------
+
   function buildAmbient(w, h) {
-    strands = [];
+    rooms = [];
     var bands = marginBands(w);
-    if (!bands) { monomers = []; bgLayers = null; return; }   // no room beside the board
-    // Long strands read as chains; too many and it becomes soup behind the
-    // board, so this stays deliberately sparse.
-    var count = w > 900 ? 7 : w > 600 ? 5 : 4;
-    for (var i = 0; i < count; i++) {
-      var segs = 26 + Math.floor(Math.random() * 14);
-      var band = bands[i % bands.length];
-      var pts = [], ang = Math.random() * Math.PI * 2;
-      var x = band.x0 + Math.random() * (band.x1 - band.x0), y = Math.random() * h;
-      var step = 7 + Math.random() * 5;
-      for (var j = 0; j < segs; j++) {
-        // A small turn per segment is what sets the persistence length: the
-        // tighter the spread, the stiffer the chain looks.
-        ang += (Math.random() - 0.5) * 0.9;
-        x += Math.cos(ang) * step;
-        y += Math.sin(ang) * step;
-        pts.push({ x: x, y: y });
-      }
-      strands.push({
-        pts: pts,
-        phase: Math.random() * Math.PI * 2,
-        speed: 0.00035 + Math.random() * 0.0004,   // reptation rate
-        amp: 2 + Math.random() * 3,
-        band: band,
-        drift: { x: 0, y: (Math.random() < 0.5 ? -1 : 1) * (0.12 + Math.random() * 0.16) },
-        width: 1.8 + Math.random() * 2.0,
-        alpha: 0.34 + Math.random() * 0.26,
-        tint: Math.floor(Math.random() * 2)
-      });
-    }
-    bgLayers = buildScene(w, h, bands);
-    monomers = [];
-    var bandW = bands.reduce(function (t, b2) { return t + (b2.x1 - b2.x0); }, 0);
-    var mcount = Math.round(bandW * h / 9000);
-    for (var k = 0; k < mcount; k++) {
-      var mb = bands[k % bands.length];
-      monomers.push({
-        band: mb,
-        x: mb.x0 + Math.random() * (mb.x1 - mb.x0), y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.22, vy: (Math.random() - 0.5) * 0.22,
-        r: 1.0 + Math.random() * 1.6, a: 0.28 + Math.random() * 0.26
-      });
+    if (!bands) return;
+    // The wider band gets the chemist; the other is the analytical end of the
+    // same room. Doubling up an identical scene either side would read as
+    // wallpaper rather than as one lab.
+    var order = bands.slice().sort(function (a, b) { return (b.x1 - b.x0) - (a.x1 - a.x0); });
+    for (var i = 0; i < order.length; i++) {
+      var room = makeRoom(order[i], h, i === 0 ? "synth" : "analysis");
+      if (room) rooms.push(room);
     }
   }
 
-  // --- Background: an 8-bit polymer scene ----------------------------------
-  //
-  // Drawn on an 8px pixel grid so it belongs to the same visual world as the
-  // maze, and composed of things that are actually in the chemistry rather than
-  // abstract shapes. Four parallax layers, back to front:
-  //
-  //   1  lamellar stacks - the folded-chain crystal, drawn as stacked ribbons.
-  //      Real semicrystalline polymer looks like this under a microscope.
-  //   2  a chain-folding ribbon that traverses and folds back on itself, the
-  //      way a chain re-enters a lamella.
-  //   3  drifting repeat units: a backbone of blocks with pendant groups, the
-  //      same skeletal shape the Polymer Search page draws.
-  //   4  free monomer, still unreacted, moving fastest because it is smallest.
-  //
-  // Parallax speeds are ordered by size, which is also how diffusion works: the
-  // small things move quickly and the crystal does not move at all.
-  var PX = 8;                       // the pixel grid everything snaps to
-  var bgLayers = null, bgT0 = Date.now();
+  function makeRoom(band, h, kind) {
+    var x0 = snap(band.x0), x1 = snap(band.x1), w = x1 - x0;
+    var cells = Math.floor(w / PXL);
+    if (cells < 20 || h < 220) return null;      // too narrow to read as a room
 
-  function snap(v) { return Math.round(v / PX) * PX; }
+    // Deck at hip height on the figure, floor a little under half a figure
+    // below it. Get this wrong and the chemist looks like a child at a counter.
+    var floorY = snap(h - PXL * 12);
+    var deckY = snap(floorY - PXL * 9);
+    var room = {
+      x0: x0, w: w, h: h, kind: kind,
+      ceilY: snap(h * 0.03),
+      deckY: deckY, floorY: floorY,
+      bubbles: [], drops: [], puffs: [],
+      react: 0, lastBubble: 0, stations: [], beakers: [], chem: null
+    };
 
-  function buildScene(w, h, bands) {
-    var pal = ambientPalette();
-    var lam = [], folds = [], units = [], mono = [];
-    bands.forEach(function (band, bi) {
-      var bw = band.x1 - band.x0;
+    // The hood is the anchor; the bench takes what is left, and is dropped
+    // rather than squeezed if there is not room for it to read.
+    // Sized so the bench keeps enough width to hold a stirrer and still leave
+    // the chemist somewhere to stand: a hood that eats the band gives him no
+    // second station and he never walks.
+    var hoodCells = Math.min(24, Math.max(16, cells - 24));
+    room.hood = { x: x0 + PXL, w: hoodCells * PXL, top: snap(h * 0.11) };
+    // The reflux setup sits at the right of the hood so the chemist, who works
+    // from the left, never stands in front of the thing he is watching.
+    room.hood.flaskX = room.hood.x + room.hood.w - PXL * 11;
+    room.hood.rodX = room.hood.x + room.hood.w - PXL * 4;
 
-      // 1. lamellar stacks: runs of parallel ribbons, the folded-chain crystal
-      var stacks = 2 + Math.floor(bw / 130);
-      for (var s = 0; s < stacks; s++) {
-        var rows = 4 + Math.floor(Math.random() * 4);
-        lam.push({
-          x: snap(band.x0 + Math.random() * Math.max(1, bw - 60)),
-          y: snap(Math.random() * h),
-          wid: snap(34 + Math.random() * Math.min(70, bw * 0.55)),
-          rows: rows,
-          gap: PX * 2,
-          speed: 0.05 + Math.random() * 0.05,
-          band: band,
-          phase: Math.random() * Math.PI * 2
-        });
+    // The analytical end keeps a clear column at the far edge for the safety
+    // shower, which otherwise ends up planted through the reagent shelf.
+    var rest = x0 + w - (room.hood.x + room.hood.w) - PXL * (kind === "analysis" ? 8 : 2);
+    room.bench = rest >= PXL * 14
+      ? { x: room.hood.x + room.hood.w + PXL * 2, w: snap(rest) }
+      : null;
+    if (room.bench) {
+      // Leave the right-hand end of the bench clear: that is where the chemist
+      // stands, and a stirrer plate under his feet would look wrong.
+      var free = room.bench.w / PXL - 13;
+      var nb = Math.max(1, Math.floor(free / 7));
+      for (var b = 0; b < nb; b++) {
+        room.beakers.push({ x: room.bench.x + PXL * (1 + b * 7), phase: b * 1.7, hot: b % 2 === 0 });
       }
+    }
 
-      // 2. a folding chain: across, turn, back, turn - re-entrant folding
-      for (var f = 0; f < 1 + (bw > 150 ? 1 : 0); f++) {
-        folds.push({
-          x: snap(band.x0 + PX * 2), y: snap(Math.random() * h),
-          wid: snap(Math.max(PX * 4, bw - PX * 5)),
-          legs: 3 + Math.floor(Math.random() * 3),
-          gap: PX * 3,
-          speed: 0.12 + Math.random() * 0.08,
-          band: band, phase: Math.random() * Math.PI * 2
-        });
-      }
-
-      // 3. repeat units with pendant groups
-      var n = 3 + Math.floor(bw / 70);
-      for (var u = 0; u < n; u++) {
-        units.push({
-          x: snap(band.x0 + Math.random() * bw), y: snap(Math.random() * h),
-          len: 3 + Math.floor(Math.random() * 3),
-          speed: 0.22 + Math.random() * 0.16,
-          up: Math.random() < 0.5,
-          band: band, phase: Math.random() * Math.PI * 2
-        });
-      }
-
-      // 4. free monomer
-      var m = Math.round(bw * h / 5200);
-      for (var k = 0; k < m; k++) {
-        mono.push({
-          x: band.x0 + Math.random() * bw, y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
-          band: band
-        });
-      }
+    // Stations the chemist works. workX is where he stands; facing 1 turns him
+    // to his left, which is how he ends up looking at what he is holding.
+    var span = CHEM_W * PXL;
+    function place(x) { return Math.max(x0, Math.min(x0 + w - span, snap(x))); }
+    room.stations.push({
+      kind: "hood",
+      workX: place(room.hood.flaskX - PXL * 11), facing: 0,
+      dropY: deckY - PXL * 7
     });
-    return { lam: lam, folds: folds, units: units, mono: mono, pal: pal };
+    // A second station is what makes him a person working a lab rather than an
+    // ornament, so it is placed at the far end of the aisle whether or not
+    // there turned out to be room for a bench to work at.
+    var far = place(room.bench ? room.bench.x + room.bench.w - span - PXL : x0 + w - span);
+    if (Math.abs(far - room.stations[0].workX) > PXL * 8) {
+      room.stations.push({ kind: "bench", workX: far, facing: 1, dropY: deckY - PXL * 5 });
+    }
+
+    if (kind === "synth") {
+      room.chem = {
+        x: room.stations[0].workX, target: 0, state: "work",
+        timer: 3, phase: 0, flip: false, lastPour: 0
+      };
+    }
+    room.statics = paintStatics(room);
+    return room;
   }
 
-  function px(x, y, wpx, hpx, color, alpha) {
-    actx.globalAlpha = alpha;
-    actx.fillStyle = color;
-    actx.fillRect(snap(x), snap(y), wpx, hpx);
+  // Everything that never moves, rendered once.
+  function paintStatics(room) {
+    var cv = document.createElement("canvas");
+    cv.width = room.w; cv.height = room.h;
+    var g = cv.getContext("2d");
+    var h = room.h, W = room.w;
+    var floor = room.floorY;
+
+    // Back wall, floor, and the skirting where they meet. Blocking in the tone
+    // separation is what gives a flat pixel scene its depth.
+    fill(g, 0, 0, W, floor, "#0d111b");
+    fill(g, 0, floor, W, h - floor, "#151a28");
+    fill(g, 0, floor, W, PXL, LAB.P);
+    for (var tx = 0; tx < W; tx += PXL * 9) fill(g, tx, floor + PXL * 4, PXL * 7, PXL, "#101623");
+
+    // Ceiling: a service duct and a fluorescent tube, which is what is over
+    // your head in every one of those reference shots.
+    fill(g, 0, room.ceilY, W, PXL * 3, LAB.P);
+    for (var dx = 0; dx < W; dx += PXL * 3) fill(g, dx, room.ceilY, PXL, PXL * 3, LAB.p);
+    fill(g, PXL * 2, room.ceilY + PXL * 5, W - PXL * 4, PXL, LAB.W, 0.8);
+    fill(g, PXL * 2, room.ceilY + PXL * 6, W - PXL * 4, PXL, LAB.p, 0.45);
+
+    paintHood(g, room);
+    if (room.bench) paintBench(g, room);
+
+    if (room.kind === "analysis") {
+      // A yellow safety shower and eyewash: the one splash of colour in a real
+      // lab, and the thing your eye lands on in every photograph of one.
+      var sx = W - PXL * 4;
+      fill(g, sx, room.ceilY + PXL * 3, PXL, room.deckY - room.ceilY - PXL * 3, LAB.y);
+      fill(g, sx - PXL * 3, room.ceilY + PXL * 8, PXL * 7, PXL, LAB.y);
+      fill(g, sx - PXL * 2, room.ceilY + PXL * 9, PXL * 5, PXL, LAB.y, 0.55);
+      fill(g, sx - PXL * 4, room.ceilY + PXL * 10, PXL * 2, PXL * 5, LAB.y, 0.9);   // pull handle
+    } else {
+      // A wall clock over the door end. Nobody notices it; the room feels wrong
+      // without something at eye level on the bare wall.
+      var cx = W - PXL * 5;
+      fill(g, cx, room.ceilY + PXL * 9, PXL * 4, PXL * 4, LAB.W, 0.55);
+      fill(g, cx + PXL, room.ceilY + PXL * 10, PXL * 2, PXL * 2, LAB.k, 0.9);
+    }
+    return cv;
   }
 
-  function drawScene(w, h) {
-    var sc = bgLayers, pal = ambientPalette();
-    var t = (Date.now() - bgT0) / 1000;
+  function paintHood(g, room) {
+    var H = room.hood, x = H.x - room.x0, w = H.w, top = H.top;
+    var deck = room.deckY, floor = room.floorY;
 
-    // 1. lamellae - stacked ribbons, breathing very slightly
-    sc.lam.forEach(function (L) {
-      L.y += L.speed;
-      if (L.y > h + L.rows * L.gap + PX) L.y = -L.rows * L.gap - PX;
-      var breathe = 1 + Math.sin(t * 0.5 + L.phase) * 0.06;
-      for (var r = 0; r < L.rows; r++) {
-        px(L.x, L.y + r * L.gap, Math.round(L.wid * breathe), PX, pal[1], 0.16);
+    fill(g, x, top, w, deck - top, LAB.k);                        // carcass
+    fill(g, x + PXL, top + PXL, w - PXL * 2, deck - top - PXL * 2, LAB.b);  // interior
+    fill(g, x, top, w, PXL * 2, LAB.w);                           // head rail
+    fill(g, x, top + PXL * 2, w, PXL, LAB.P);
+    fill(g, x, deck - PXL, w, PXL * 2, LAB.k);                    // worktop lip
+    fill(g, x, deck, w, PXL, LAB.P);
+
+    // Exhaust duct off the top of the hood, up to the ceiling run.
+    fill(g, x + w - PXL * 8, room.ceilY + PXL * 3, PXL * 4, top - room.ceilY - PXL * 3, LAB.p);
+    fill(g, x + w - PXL * 8, room.ceilY + PXL * 3, PXL, top - room.ceilY - PXL * 3, LAB.P);
+
+    // Pegboard back wall: the perforated panel the lattice rods bolt through.
+    for (var py = top + PXL * 6; py < deck - PXL * 10; py += PXL * 4) {
+      for (var px = x + PXL * 3; px < x + w - PXL * 3; px += PXL * 4) {
+        fill(g, px, py, PXL, PXL, "#161d2d");
       }
-      // tie molecules: the strands that bridge one lamella to the next and are
-      // most of why a semicrystalline polymer is tough at all
-      px(L.x + L.wid * 0.4, L.y, PX, L.rows * L.gap, pal[0], 0.10);
-    });
+    }
 
-    // 2. folding chains
-    sc.folds.forEach(function (F) {
-      F.y += F.speed;
-      if (F.y > h + F.legs * F.gap + PX) F.y = -F.legs * F.gap - PX;
-      var wob = Math.sin(t * 1.1 + F.phase) * PX;
-      for (var l = 0; l < F.legs; l++) {
-        var yy = F.y + l * F.gap;
-        px(F.x, yy, F.wid, PX, pal[0], 0.22);           // the run
-        // the fold at alternating ends
-        var fx = (l % 2 === 0) ? F.x + F.wid - PX : F.x;
-        px(fx + wob * 0.25, yy, PX, F.gap, pal[0], 0.22);
-      }
-    });
+    // Lattice rods: an upright bolted to the deck and a horizontal crossbar.
+    var rod = H.rodX - room.x0;
+    fill(g, rod, top + PXL * 5, PXL, deck - top - PXL * 6, LAB.p);
+    fill(g, rod - PXL, deck - PXL * 2, PXL * 3, PXL, LAB.P);
+    fill(g, x + PXL * 3, top + PXL * 8, w - PXL * 6, PXL, LAB.p, 0.75);
 
-    // 3. repeat units: backbone blocks with a pendant group hanging off
-    sc.units.forEach(function (U) {
-      U.y += U.up ? -U.speed : U.speed;
-      if (U.y < -PX * 6) U.y = h + PX * 4;
-      if (U.y > h + PX * 6) U.y = -PX * 4;
-      var sway = Math.sin(t * 1.6 + U.phase) * PX;
-      for (var b = 0; b < U.len; b++) {
-        var bx = U.x + b * PX * 2 + sway * 0.3;
-        px(bx, U.y, PX, PX, pal[0], 0.30);              // backbone atom
-        px(bx + PX, U.y, PX, PX, pal[1], 0.18);         // bond
-        if (b % 2 === 1) px(bx, U.y - PX * 1.5, PX, PX, pal[1], 0.24);  // pendant group
-      }
-    });
+    // Spare glassware parked at the left of the deck, out of the chemist's way.
+    // Glass against a black hood interior needs its near wall picking out in
+    // white, or it reads as a hole rather than as a vessel.
+    var sp = x + PXL * 2;
+    fill(g, sp, deck - PXL * 5, PXL * 4, PXL * 4, LAB.g, 0.30);           // beaker
+    fill(g, sp, deck - PXL * 5, PXL, PXL * 4, LAB.W, 0.30);
+    fill(g, sp + PXL * 6, deck - PXL * 7, PXL, PXL * 6, LAB.W, 0.40);     // cylinder
+    fill(g, sp + PXL * 5, deck - PXL, PXL * 3, PXL, LAB.g, 0.45);
+    fill(g, sp + PXL * 10, deck - PXL * 4, PXL * 3, PXL * 3, LAB.o, 0.9); // solvent bottle
+    fill(g, sp + PXL * 11, deck - PXL * 5, PXL, PXL, LAB.k);
 
-    // 4. free monomer, single lit pixels
-    sc.mono.forEach(function (M) {
-      M.x += M.vx; M.y += M.vy;
-      var b = M.band;
-      if (M.x < b.x0) M.x = b.x1; else if (M.x > b.x1) M.x = b.x0;
-      if (M.y < 0) M.y = h; else if (M.y > h) M.y = 0;
-      px(M.x, M.y, PX, PX, pal[0], 0.22);
-    });
+    // Base cabinet with drawer pulls, and the colour-coded service taps.
+    fill(g, x, deck + PXL, w, floor - deck - PXL, LAB.d);
+    fill(g, x, deck + PXL, PXL, floor - deck - PXL, LAB.D);
+    for (var dy = deck + PXL * 3; dy < floor - PXL * 2; dy += PXL * 4) {
+      fill(g, x + PXL * 2, dy, w - PXL * 4, PXL, LAB.D);
+      fill(g, x + w / 2 - PXL, dy, PXL * 2, PXL, LAB.p, 0.8);
+    }
+    var tap = [LAB.y, LAB.n, LAB.g];
+    for (var t = 0; t < 3; t++) {
+      fill(g, x + PXL, deck + PXL * (3 + t * 3), PXL * 2, PXL, tap[t], 0.9);
+    }
+  }
 
+  function paintBench(g, room) {
+    var B = room.bench, x = B.x - room.x0, w = B.w;
+    var deck = room.deckY, floor = room.floorY;
+
+    // Reagent shelf over the bench, stacked with amber bottles.
+    var shelf = deck - PXL * 18;
+    fill(g, x, shelf, w, PXL, LAB.p);
+    fill(g, x, shelf + PXL, w, PXL, LAB.P);
+    for (var bx = x + PXL; bx < x + w - PXL * 3; bx += PXL * 4) {
+      var bh = PXL * (3 + ((bx / PXL) % 3));
+      fill(g, bx, shelf - bh, PXL * 3, bh, LAB.o);
+      fill(g, bx, shelf - bh + PXL, PXL * 3, PXL, LAB.W, 0.32);   // label
+      fill(g, bx + PXL, shelf - bh - PXL, PXL, PXL, LAB.k);       // cap
+    }
+
+    fill(g, x, deck - PXL, w, PXL * 2, LAB.k);                    // worktop
+    fill(g, x, deck, w, PXL, LAB.P);
+    fill(g, x, deck + PXL, w, floor - deck - PXL, LAB.d);
+    for (var dy = deck + PXL * 4; dy < floor - PXL * 2; dy += PXL * 5) {
+      fill(g, x + PXL, dy, w - PXL * 2, PXL, LAB.D);
+    }
+
+    // Stirrer-hotplates. The beaker and its contents are drawn live.
+    for (var i = 0; i < room.beakers.length; i++) {
+      var sx = room.beakers[i].x - room.x0;
+      fill(g, sx - PXL, deck - PXL * 3, PXL * 6, PXL * 2, LAB.w);  // plate top
+      fill(g, sx - PXL, deck - PXL, PXL * 6, PXL, LAB.P);          // body
+    }
+  }
+
+  // --- Per-frame drawing ----------------------------------------------------
+
+  function drawScene(w, h, dt) {
+    var tint = ambientPalette()[0], t = Date.now() / 1000;
+    for (var i = 0; i < rooms.length; i++) drawRoom(rooms[i], t, dt, tint);
     actx.globalAlpha = 1;
+  }
+
+  function drawRoom(room, t, dt, tint) {
+    var A = 0.66;                       // background, not foreground
+    actx.globalAlpha = A;
+    actx.drawImage(room.statics, room.x0, 0);
+
+    var H = room.hood;
+
+    // The sash rides up and down. It is the one control every fume hood has and
+    // the one detail anyone who has used one will recognise instantly.
+    var sash = snap(H.top + PXL * 4 + (Math.sin(t * 0.26) * 0.5 + 0.5) * PXL * 6);
+    fill(actx, H.x + PXL, H.top + PXL, H.w - PXL * 2, sash - H.top - PXL, LAB.g, A * 0.14);
+    fill(actx, H.x + PXL, sash, H.w - PXL * 2, PXL, LAB.w, A);
+    fill(actx, H.x + PXL, sash + PXL, H.w - PXL * 2, PXL, LAB.W, A * 0.45);
+
+    // Airflow monitor, blinking to say the hood is running.
+    fill(actx, H.x + PXL, H.top + PXL * 4, PXL * 3, PXL * 2, LAB.k, A);
+    fill(actx, H.x + PXL * 2, H.top + PXL * 4, PXL, PXL,
+      (t * 1.4 % 1) < 0.7 ? LAB.n : LAB.k, A);
+
+    drawReflux(room, t, dt, tint, A);
+    if (room.beakers.length) drawBench(room, t, tint, A);
+    if (room.chem) drawChemist(room, t, dt, tint, A);
+
+    // Droplets the chemist has released, falling into what he is charging.
+    for (var d = room.drops.length - 1; d >= 0; d--) {
+      var dr = room.drops[d];
+      dr.y += dr.vy * dt; dr.vy += 300 * dt;
+      fill(actx, dr.x, snap(dr.y), PXL, PXL, tint, A);
+      if (dr.y >= dr.ty) {
+        room.drops.splice(d, 1);
+        room.react = Math.min(5, room.react + 2.4);   // the addition sets it going
+      }
+    }
+    actx.globalAlpha = 1;
+  }
+
+  function drawReflux(room, t, dt, tint, A) {
+    var H = room.hood, deck = room.deckY;
+    var fx = H.flaskX, base = deck - PXL * 2;
+    room.react = Math.max(0, room.react - dt);
+    var hot = room.react > 0;
+
+    // Heating mantle, with its element glowing while the reaction runs.
+    fill(actx, fx - PXL, base - PXL * 2, PXL * 8, PXL * 2, LAB.w, A);
+    fill(actx, fx - PXL, base, PXL * 8, PXL, LAB.P, A);
+    fill(actx, fx + PXL * 5, base - PXL, PXL, PXL, hot ? LAB.r : LAB.n, A);
+    if (hot) fill(actx, fx, base - PXL * 3, PXL * 6, PXL, LAB.r, A * 0.35);
+
+    // Round-bottom flask, charged to a level that rises as liquid is added.
+    var fy = base - PXL * 7;
+    fill(actx, fx + PXL, fy, PXL * 4, PXL * 5, LAB.g, A * 0.42);
+    fill(actx, fx, fy + PXL, PXL * 6, PXL * 4, LAB.g, A * 0.42);
+    fill(actx, fx, fy + PXL, PXL, PXL * 4, LAB.W, A * 0.30);            // rim highlight
+    var lvl = PXL * (hot ? 4 : 3);
+    fill(actx, fx, fy + PXL * 5 - lvl, PXL * 6, lvl, tint, A * 0.85);
+    fill(actx, fx + PXL * 2, fy - PXL * 2, PXL * 2, PXL * 2, LAB.g, A * 0.45);  // neck
+
+    // Condenser above it: water jacket, hose stubs, clamped back to the rod.
+    var cy = fy - PXL * 12;
+    fill(actx, fx + PXL * 2, cy, PXL * 2, PXL * 10, LAB.g, A * 0.5);
+    fill(actx, fx + PXL * 2, cy, PXL * 2, PXL, LAB.p, A);
+    fill(actx, fx + PXL, cy + PXL * 8, PXL, PXL, LAB.p, A);            // water in
+    fill(actx, fx + PXL * 4, cy + PXL, PXL, PXL, LAB.p, A);            // water out
+    fill(actx, fx + PXL * 4, cy + PXL * 4, H.rodX - fx - PXL * 4, PXL, LAB.p, A * 0.9);
+    fill(actx, fx + PXL * 4, base - PXL * 9, H.rodX - fx - PXL * 4, PXL, LAB.p, A * 0.9);
+
+    // Bubbles: the reaction actually running, faster while it is hot.
+    if (Date.now() - room.lastBubble > (hot ? 130 : 430)) {
+      room.lastBubble = Date.now();
+      room.bubbles.push({ x: snap(fx + PXL * (1 + Math.floor(Math.random() * 4))), y: fy + PXL * 4, life: 0 });
+    }
+    for (var b = room.bubbles.length - 1; b >= 0; b--) {
+      var bu = room.bubbles[b];
+      bu.life += dt;
+      if (bu.life > 2.4) { room.bubbles.splice(b, 1); continue; }
+      fill(actx, bu.x, snap(bu.y - bu.life * 40), PXL, PXL, tint, A * (1 - bu.life / 2.4));
+    }
+
+    // Vapour drawn up the back of the hood, which is the whole point of it.
+    if (hot && Math.random() < 0.3) {
+      room.puffs.push({ x: snap(fx + PXL * (1 + Math.floor(Math.random() * 4))), y: cy - PXL, life: 0 });
+    }
+    for (var p = room.puffs.length - 1; p >= 0; p--) {
+      var pf = room.puffs[p];
+      pf.life += dt;
+      if (pf.life > 1.8) { room.puffs.splice(p, 1); continue; }
+      fill(actx, pf.x, snap(pf.y - pf.life * 34), PXL, PXL, LAB.W, A * 0.3 * (1 - pf.life / 1.8));
+    }
+  }
+
+  function drawBench(room, t, tint, A) {
+    var deck = room.deckY;
+    for (var i = 0; i < room.beakers.length; i++) {
+      var bk = room.beakers[i], x = bk.x, y = deck - PXL * 8;
+      fill(actx, x, y, PXL * 4, PXL * 5, LAB.g, A * 0.38);              // beaker
+      fill(actx, x, y, PXL, PXL * 5, LAB.W, A * 0.28);                 // near wall
+      fill(actx, x - PXL, y, PXL, PXL, LAB.g, A * 0.5);                // spout
+      // The level breathes with the stir vortex, so the bench is not a photo.
+      var lvl = PXL * (2 + Math.round((Math.sin(t * 1.6 + bk.phase) + 1) * 0.5));
+      fill(actx, x, y + PXL * 5 - lvl, PXL * 4, lvl, tint, A * 0.7);
+      fill(actx, x, y + PXL * 5 - lvl, PXL * 4, PXL, LAB.W, A * 0.25);  // meniscus
+      // Stirrer indicator on the plate, each running at its own rate.
+      fill(actx, x + PXL * 3, deck - PXL * 2, PXL, PXL,
+        ((t * (1.1 + i * 0.4)) % 1) < 0.5 ? (bk.hot ? LAB.r : LAB.n) : LAB.k, A);
+    }
+  }
+
+  // --- The chemist ----------------------------------------------------------
+  //
+  // A two-state loop: walk the aisle to a station, then work it for a few
+  // seconds. While working he periodically releases a droplet into whatever is
+  // in front of him, which is what sets the reaction going.
+  function drawChemist(room, t, dt, tint, A) {
+    var c = room.chem, st = room.stations[c.target];
+    c.timer -= dt;
+    c.phase += dt;
+
+    if (c.state === "walk") {
+      var dx = st.workX - c.x, step = 32 * dt;
+      if (Math.abs(dx) <= step) {
+        c.x = st.workX; c.state = "work"; c.timer = 5 + Math.random() * 4;
+      } else {
+        c.x += (dx < 0 ? -step : step);
+        c.flip = dx < 0;
+      }
+    } else {
+      c.flip = st.facing === 1;
+      if (c.timer <= 0) {
+        if (room.stations.length > 1) {
+          c.state = "walk";
+          c.target = (c.target + 1) % room.stations.length;
+        } else {
+          c.timer = 5 + Math.random() * 4;
+        }
+      }
+      // Charge the vessel: a droplet from the hand into what is in front of it.
+      // Flipping mirrors the sprite, so the hand column mirrors with it.
+      if (t - c.lastPour > 3.2) {
+        c.lastPour = t;
+        room.drops.push({
+          x: snap(c.x + (c.flip ? 0 : PXL * 10)),
+          y: room.deckY - PXL * 13, vy: 18, ty: st.dropY
+        });
+      }
+    }
+
+    var grid = c.state === "walk"
+      ? (Math.floor(c.phase * 4.5) % 2 ? CHEM.walkB : CHEM.walkA)
+      : (Math.floor(c.phase * 2.2) % 2 ? CHEM.workB : CHEM.workA);
+    sprite(actx, grid, snap(c.x), room.floorY - PXL * (CHEM_H - 1), Math.min(1, A + 0.22), c.flip, tint);
   }
 
   function sizeAmbient() {
@@ -1605,74 +1925,12 @@
   function drawAmbient() {
     if (!actx || !sizeAmbient()) return;
     var w = ambient.width, h = ambient.height, now = Date.now();
+    // Clamped so a pause, or a backgrounded tab, does not teleport the chemist
+    // across the room on the first frame back.
+    var dt = lastAmbientT ? Math.min(0.05, (now - lastAmbientT) / 1000) : 0.016;
+    lastAmbientT = now;
     actx.clearRect(0, 0, w, h);
-    var pal = ambientPalette();
-    // The pixel scene sits behind the smooth strands: blocky crystal and
-    // monomer first, then the wormlike chains drawn over it.
-    if (bgLayers) drawScene(w, h);
-
-    for (var m = 0; m < monomers.length; m++) {
-      var mo = monomers[m];
-      mo.x += mo.vx; mo.y += mo.vy;
-      var bb = mo.band;
-      if (bb) {
-        if (mo.x < bb.x0) mo.x = bb.x1; else if (mo.x > bb.x1) mo.x = bb.x0;
-      } else if (mo.x < -4) { mo.x = w + 4; } else if (mo.x > w + 4) { mo.x = -4; }
-      if (mo.y < -4) mo.y = h + 4; else if (mo.y > h + 4) mo.y = -4;
-      actx.globalAlpha = mo.a;
-      actx.fillStyle = pal[1];
-      actx.beginPath();
-      actx.arc(mo.x, mo.y, mo.r, 0, Math.PI * 2);
-      actx.fill();
-    }
-
-    for (var i = 0; i < strands.length; i++) {
-      var st = strands[i], pts = st.pts;
-      // Drift the whole strand, wrapping generously so a chain never pops in
-      // or out at the edge of the board.
-      for (var d = 0; d < pts.length; d++) {
-        pts[d].x += st.drift.x; pts[d].y += st.drift.y;
-      }
-      // Wrap vertically just past the strand's own extent. The generous ±260
-      // used while these drifted horizontally left a long dead gap once the
-      // drift turned vertical and the canvas is only ~400px tall.
-      var top = pts[0].y, bot = pts[0].y;
-      for (var q = 1; q < pts.length; q++) {
-        if (pts[q].y < top) top = pts[q].y;
-        if (pts[q].y > bot) bot = pts[q].y;
-      }
-      var span = bot - top + 24;
-      if (bot < -12) shiftStrand(st, 0, h + span);
-      else if (top > h + 12) shiftStrand(st, 0, -(h + span));
-
-      actx.globalAlpha = st.alpha;
-      actx.strokeStyle = pal[st.tint];
-      actx.shadowColor = pal[st.tint];
-      actx.shadowBlur = 6;
-      actx.lineWidth = st.width;
-      actx.lineJoin = "round";
-      actx.lineCap = "round";
-      actx.beginPath();
-      for (var p = 0; p < pts.length; p++) {
-        // Displace perpendicular to the local contour, with the phase running
-        // along the chain: the wave travels down the strand rather than the
-        // whole thing swinging like a rope.
-        var prev = pts[p === 0 ? 0 : p - 1], next = pts[p === pts.length - 1 ? p : p + 1];
-        var tx = next.x - prev.x, ty = next.y - prev.y;
-        var len = Math.hypot(tx, ty) || 1;
-        var nx = -ty / len, ny = tx / len;
-        var wave = Math.sin(now * st.speed + st.phase + p * 0.55) * st.amp;
-        var X = pts[p].x + nx * wave, Y = pts[p].y + ny * wave;
-        if (p === 0) actx.moveTo(X, Y); else actx.lineTo(X, Y);
-      }
-      actx.stroke();
-      actx.shadowBlur = 0;
-    }
-    actx.globalAlpha = 1;
-  }
-
-  function shiftStrand(st, dx, dy) {
-    for (var i = 0; i < st.pts.length; i++) { st.pts[i].x += dx; st.pts[i].y += dy; }
+    if (rooms.length) drawScene(w, h, dt);
   }
 
   function ambientLoop() {
