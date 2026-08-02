@@ -42,6 +42,83 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="style.css?v=65">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+<style>
+  /* ---- Arcade band ----
+     The game was a line of text in the "More" list at the foot of the page,
+     which is where things go to be missed. It is a 25-level game with its own
+     art, so it gets a band of its own directly under the two primary tools.
+     Everything else on this page is a soft rounded card; this one is hard
+     edged, dark and pixelated on purpose, because looking like the game is
+     what tells you it is one. */
+  .arcade {
+    display: grid;
+    grid-template-columns: minmax(260px, 400px) 1fr;
+    gap: 28px;
+    align-items: center;
+    padding: 22px;
+    background: #0d111b;
+    border-radius: 0;
+    box-shadow: 0 0 0 4px #0b0e17, 0 0 0 8px #1b2136;
+    color: #eef2f8;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .arcade:hover { box-shadow: 0 0 0 4px #0b0e17, 0 0 0 8px #3a4668; }
+  /* A row of colour blocks along the top, the same eight hues the title screen
+     cycles through, so the band and the game read as one thing. */
+  .arcade-strip {
+    position: absolute; top: 0; left: 0; right: 0; height: 6px;
+    display: flex;
+  }
+  .arcade-strip span { flex: 1 1 0; }
+  .arcade-screen {
+    display: block;
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+    box-shadow: 0 0 0 4px #0b0e17;
+  }
+  .arcade-eyebrow {
+    font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em;
+    text-transform: uppercase; color: #5fdc8a; margin-bottom: 8px;
+  }
+  .arcade h2 {
+    margin: 0 0 10px; font-size: 1.6rem; line-height: 1.15; color: #fff;
+  }
+  .arcade p { margin: 0 0 16px; color: rgba(255,255,255,0.78); font-size: 0.95rem; line-height: 1.5; }
+  .arcade-facts {
+    display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; padding: 0; list-style: none;
+  }
+  .arcade-facts li {
+    font-size: 0.74rem; font-weight: 700; letter-spacing: 0.04em;
+    padding: 5px 9px; background: #1b2136; color: #9fe8ff;
+  }
+  /* The same NES menu block as the button on the game's own title screen. */
+  .arcade-btn {
+    display: inline-block;
+    background: #d13b2e; color: #ffe14d;
+    font-weight: 800; font-size: 0.9rem; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 12px 20px 14px;
+    box-shadow:
+      inset 4px 4px 0 0 #ff8f73,
+      inset -4px -4px 0 0 #7d1a10,
+      0 0 0 4px #0b0e17,
+      0 6px 0 0 #0b0e17;
+    margin-bottom: 6px;
+  }
+  .arcade:hover .arcade-btn { background: #e8492f; }
+  .arcade:active .arcade-btn { transform: translateY(3px); box-shadow: inset 4px 4px 0 0 #ff8f73, inset -4px -4px 0 0 #7d1a10, 0 0 0 4px #0b0e17, 0 3px 0 0 #0b0e17; }
+
+  @media (max-width: 760px) {
+    .arcade { grid-template-columns: 1fr; gap: 18px; padding: 18px; }
+    .arcade h2 { font-size: 1.3rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .arcade:active .arcade-btn { transform: none; }
+  }
+</style>
 </head>
 <body>
 
@@ -89,6 +166,28 @@
       <span class="home-card-arrow">Search polymers &rarr;</span>
     </a>
   </div>
+
+  <a class="arcade" href="polymer-chain-game.html">
+    <div class="arcade-strip" aria-hidden="true">
+      <span style="background:#ff5d5d"></span><span style="background:#ffa53d"></span>
+      <span style="background:#ffe14d"></span><span style="background:#5fdc8a"></span>
+      <span style="background:#4dd2ff"></span><span style="background:#7f9dff"></span>
+      <span style="background:#c77dff"></span><span style="background:#ff7ad9"></span>
+    </div>
+    <canvas id="arcade-canvas" class="arcade-screen" aria-hidden="true"></canvas>
+    <div class="arcade-text">
+      <div class="arcade-eyebrow">Free browser game</div>
+      <h2>Build a Polymer Chain</h2>
+      <p>An 8-bit maze game about the thing this whole site is for. Collect every monomer bead while O&#8322;, an inhibitor and a chain transfer agent hunt your growing radical &mdash; and the real score is not points, it is your dispersity.</p>
+      <ul class="arcade-facts">
+        <li>25 levels</li>
+        <li>Polyethylene &rarr; carbyne</li>
+        <li>&#272; is the score</li>
+        <li>Plays offline</li>
+      </ul>
+      <span class="arcade-btn">Insert coin &#9656; Play free</span>
+    </div>
+  </a>
 
   <section class="home-section">
     <h2 class="home-section-label">Plan a polymerization</h2>
@@ -205,13 +304,6 @@
   <section class="home-section">
     <h2 class="home-section-label">More</h2>
     <div class="home-list">
-      <a class="home-row" href="polymer-chain-game.html" style="--card-accent:#4fd1c5">
-        <span class="home-row-icon">🎮</span>
-        <span class="home-row-text">
-          <span class="home-row-title">Build a Polymer Chain</span>
-          <span class="home-row-desc">A maze game: collect every monomer bead and dodge O&#8322;, an inhibitor, and a chain transfer agent.</span>
-        </span>
-      </a>
       <a class="home-row" href="founder.html" style="--card-accent:#f472b6">
         <span class="home-row-icon">👋</span>
         <span class="home-row-text">
@@ -763,5 +855,140 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 <script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+// A live slice of the game on the front page: a chain end running a lap of a
+// maze, eating beads, with a terminator on its tail. A screenshot would have
+// done the job for less, but the game's whole pitch is that it moves, and this
+// is about forty lines and no image to keep in sync with the real thing.
+(function () {
+  var cv = document.getElementById("arcade-canvas");
+  if (!cv || !cv.getContext) return;
+  var ctx = cv.getContext("2d");
+
+  var CELL = 16;
+  var MAP = [
+    "####################",
+    "#..................#",
+    "#.####.#####.#####.#",
+    "#.#..#.#...#.#...#.#",
+    "#.#..#.#...#.#...#.#",
+    "#.####.#####.#####.#",
+    "#..................#",
+    "#.####.#####.#####.#",
+    "#.#..#.#...#.#...#.#",
+    "#..................#",
+    "####################"
+  ];
+  var COLS = MAP[0].length, ROWS = MAP.length;
+  cv.width = COLS * CELL;
+  cv.height = ROWS * CELL;
+
+  // Level one's palette, so the strip on the front page and the first thing
+  // you see when you click through are the same blue.
+  var WALL = { face: "#2a53c4", hi: "#5b83e6", lo: "#16307a" };
+
+  // The lap: down the four sides of the open ring just inside the wall.
+  var PATH = [];
+  (function buildPath() {
+    var c, r;
+    for (c = 1; c <= COLS - 2; c++) PATH.push([c, 1]);
+    for (r = 2; r <= ROWS - 2; r++) PATH.push([COLS - 2, r]);
+    for (c = COLS - 3; c >= 1; c--) PATH.push([c, ROWS - 2]);
+    for (r = ROWS - 3; r >= 2; r--) PATH.push([1, r]);
+  })();
+
+  var eaten = {};
+  var pos = 0, chaser = -7, last = 0, acc = 0;
+  var STEP_MS = 150;
+
+  function key(c, r) { return c + "," + r; }
+  function open(c, r) { return MAP[r].charAt(c) === "."; }
+
+  function drawWall(x, y) {
+    ctx.fillStyle = WALL.face; ctx.fillRect(x, y, CELL, CELL);
+    ctx.fillStyle = WALL.hi; ctx.fillRect(x, y, CELL, 2); ctx.fillRect(x, y, 2, CELL);
+    ctx.fillStyle = WALL.lo;
+    ctx.fillRect(x, y + CELL - 2, CELL, 2); ctx.fillRect(x + CELL - 2, y, 2, CELL);
+  }
+
+  function at(i) { return PATH[((i % PATH.length) + PATH.length) % PATH.length]; }
+
+  function draw() {
+    ctx.fillStyle = "#080b14";
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    for (var r = 0; r < ROWS; r++) {
+      for (var c = 0; c < COLS; c++) {
+        var x = c * CELL, y = r * CELL;
+        if (!open(c, r)) { drawWall(x, y); continue; }
+        if (eaten[key(c, r)]) continue;
+        ctx.fillStyle = "#cfe6ff";
+        ctx.fillRect(x + CELL / 2 - 2, y + CELL / 2 - 2, 3, 3);
+      }
+    }
+    // The chain already built, tapering off behind the radical.
+    for (var t = 1; t <= 10; t++) {
+      var p = at(pos - t);
+      ctx.globalAlpha = 0.75 * (1 - t / 11);
+      ctx.fillStyle = "#8fffe0";
+      ctx.fillRect(p[0] * CELL + CELL / 2 - 3, p[1] * CELL + CELL / 2 - 3, 5, 5);
+    }
+    ctx.globalAlpha = 1;
+    // The propagating chain end.
+    var me = at(pos);
+    ctx.fillStyle = "#e8fff6";
+    ctx.fillRect(me[0] * CELL + CELL / 2 - 5, me[1] * CELL + CELL / 2 - 5, 9, 9);
+    ctx.fillStyle = "#8fffe0";
+    ctx.fillRect(me[0] * CELL + CELL / 2 - 7, me[1] * CELL + CELL / 2 - 1, 2, 2);
+    ctx.fillRect(me[0] * CELL + CELL / 2 + 5, me[1] * CELL + CELL / 2 - 1, 2, 2);
+    // O2, on its tail.
+    var ch = at(chaser);
+    ctx.fillStyle = "#ef6a6a";
+    ctx.fillRect(ch[0] * CELL + CELL / 2 - 5, ch[1] * CELL + CELL / 2 - 5, 10, 10);
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(ch[0] * CELL + CELL / 2 - 3, ch[1] * CELL + CELL / 2 - 3, 3, 3);
+    ctx.fillRect(ch[0] * CELL + CELL / 2 + 1, ch[1] * CELL + CELL / 2 - 3, 3, 3);
+  }
+
+  function step() {
+    pos++;
+    chaser++;
+    var p = at(pos);
+    eaten[key(p[0], p[1])] = true;
+    if (pos % PATH.length === 0) eaten = {};      // fresh monomer, next lap
+  }
+
+  var running = false, raf = null;
+  function frame(now) {
+    if (!running) return;
+    if (!last) last = now;
+    acc += Math.min(200, now - last);
+    last = now;
+    while (acc >= STEP_MS) { acc -= STEP_MS; step(); }
+    draw();
+    raf = requestAnimationFrame(frame);
+  }
+
+  function start() { if (running) return; running = true; last = 0; raf = requestAnimationFrame(frame); }
+  function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = null; }
+
+  var still = false;
+  try { still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  draw();
+  if (still) return;                              // one frame is enough
+
+  // Nothing runs while the band is scrolled away, so a home page left open in
+  // a tab is not quietly animating a canvas nobody is looking at.
+  if (window.IntersectionObserver) {
+    new IntersectionObserver(function (entries) {
+      if (entries[0] && entries[0].isIntersecting) start(); else stop();
+    }, { threshold: 0.15 }).observe(cv);
+  } else {
+    start();
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) stop(); else if (window.IntersectionObserver) { /* observer restarts it */ } else start();
+  });
+})();
+</script>
 </body>
 </html>
