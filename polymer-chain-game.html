@@ -215,6 +215,14 @@
         <div class="value" id="game-lives" style="color:#8fffe0;letter-spacing:2px;">&#9679;&#9679;&#9679;</div>
       </div>
       <div class="stat">
+        <div class="label">Chains</div>
+        <div class="value" id="game-chains" style="font-size:1rem;">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Dispersity &#272;</div>
+        <div class="value" id="game-disp" style="font-size:1rem;">&mdash;</div>
+      </div>
+      <div class="stat">
         <div class="label">Status</div>
         <div class="value" id="game-status" style="font-size:1rem;">Ready</div>
       </div>
@@ -224,7 +232,7 @@
       <canvas id="game-canvas"></canvas>
       <div class="game-overlay" id="game-overlay">
         <h4 id="game-overlay-title">Build a Polymer Chain</h4>
-        <p id="game-overlay-text">Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O&#8322;, the inhibitor, and the chain transfer agent, they'll terminate your chain on contact. They start penned up in a holding cage and release one at a time, so the first few seconds of each level are the safest. Grab an initiator ring to make them edible, or the flame for a 10 second speed boost.</p>
+        <p id="game-overlay-text">Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. O&#8322; and the inhibitor terminate your chain and cost a life. The chain transfer agent does not kill you &mdash; it hands the radical on, ending the chain you were building and starting a new one where you stand, which widens your dispersity. They start penned up in a holding cage and release one at a time, so the first few seconds of each level are the safest. Grab an initiator ring to make them edible, or the flame for a 10 second speed boost.</p>
         <button type="button" id="game-start-btn">Start polymerizing</button>
       </div>
     </div>
@@ -261,11 +269,14 @@
       <li>Twenty-five levels, each named for a real polymer and tinted to match. Act one climbs from easygoing polyethylene to Kevlar; act two eases off briefly, then works up through the engineering plastics and super fibers to carbyne, the theoretical linear-carbon chain that closes the game. Every maze is its own symmetric layout, and the pace and the hunting sharpen as you climb.</li>
       <li>From level 3 on, side openings in the outer wall are <strong>tunnels</strong>: walk off one edge and you reappear on the far side. Only the chain end fits through, so a tunnel is a guaranteed escape from anything on your tail.</li>
       <li>Enemies start held in a cage at the center of the maze and release one by one after a brief pause, mimicking a classic maze chase game. The longer a level runs, the more of them are loose.</li>
-      <li>You have <strong>3 lives</strong>. Touching an enemy costs one life. Your chain end disintegrates, then you respawn at the start with the beads you already collected still counted. Lose all three and the game is over.</li>
+      <li>You have <strong>3 lives</strong>. Touching O&#8322;, the inhibitor or a rival radical costs one life. Your chain end disintegrates, then you respawn at the start with the beads you already collected still counted. Lose all three and the game is over.</li>
       <li>Grab an <strong>initiator</strong>, the flashing hollow ring, to flip the tables for a few seconds. Enemies are quenched and edible, and running into one sends it straight back to the cage instead of ending your life. Four initiators sit in the corners of each maze, one per corner.</li>
-      <li>Grab the <strong>heat</strong>, the flickering flame, for a 10 second speed boost. You move at double pace while the terminators carry on at their usual speed, which is the easiest way to clear a stubborn stretch of maze. There's only one per level, somewhere in the middle, so spend it well.</li>
+      <li>Grab the <strong>heat</strong>, the flickering flame, for a 10 second speed boost. You move at double pace while the terminators carry on at their usual speed. It is not free: above its ceiling temperature a chain depropagates, so while the flame runs your chain sheds a unit every few steps. Speed costs molar mass. There's only one per level, so spend it where the maze, not the mass, is the problem.</li>
       <li>Each terminator hunts differently, so watch which one is closing in. <strong>O&#8322;</strong> comes straight at you. The <strong>inhibitor</strong> ignores you and squats on the densest patch of unreacted monomer, so the beads it is guarding cost the most to reach. The <strong>chain transfer agent</strong> aims at where you are heading rather than where you are, and will cut you off if you hold a straight line. The <strong>rival radical</strong> mirrors your position across the maze and tends to arrive head on.</li>
       <li>Their eyes give them away: a hunter that has locked onto you is looking right at you, while one that is still wandering has its eyes elsewhere. None of them can turn around in a corridor, so once one commits you know where it must come out.</li>
+      <li>The <strong>chain transfer agent</strong> is the exception: it costs no life. It ends the chain you are building and starts a new one where you stand, exactly as transfer does in reality. Sometimes that is worth taking to escape a corner &mdash; but every cut chain widens your dispersity.</li>
+      <li><strong>Dispersity &#272;</strong> is the real score. Each chain you finish, however it ended, is one molecule in a distribution; &#272; is how uneven that distribution is. One unbroken chain gives &#272; = 1.000. Get terminated four times and you have made four ragged chains and a &#272; near 2, which is what uncontrolled free-radical polymerization actually produces. Clearing a level is easy; clearing it as a living polymerisation is not.</li>
+      <li>M<sub>n</sub> in the readout is the chain you are <em>currently</em> growing, not the level total, so it drops to zero the moment a chain ends and climbs again as the new one grows.</li>
       <li>Points come from repeat units, and from quenching terminators while an initiator is running. Each one caught in the same window is worth double the last, up to four, so clearing several on one ring is where the score is.</li>
       <li>On a phone you can swipe anywhere on the board to steer instead of using the pad.</li>
       <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly, on every level.</li>
@@ -319,6 +330,17 @@
   };
   var HEAT_MS = 10000;      // heat boost lasts 10 seconds of wall clock
   var HEAT_TICK_MUL = 0.5;  // player ticks twice as fast; enemies move every other tick
+  // Above its ceiling temperature a chain depropagates as fast as it grows, so
+  // the heat boost is not free: while it runs the growing chain sheds a unit
+  // every few ticks. Speed costs molar mass, which is exactly what heating a
+  // polymerisation does.
+  var DEPROP_EVERY_TICKS = 6;
+  // A transfer agent does NOT terminate the kinetic chain - it moves the
+  // radical to a new molecule. Touching one therefore costs no life; it ends
+  // the chain you were building and starts a fresh one where you stand. The
+  // cooldown stops a single agent shredding a chain into fragments while you
+  // are pinned against it.
+  var TRANSFER_COOLDOWN_MS = 2500;
 
   var DIFFICULTY_MOD = {
     normal: { tickMul: 1, chaseAdd: 0, graceMul: 1 },
@@ -632,6 +654,36 @@
   var lives, powerTicksRemaining, initiators, heatSpot, heatUntil, wasHeated, subTicks, lastWorldTime;
   var deathTint, lastBeadAt, points, eatChain, popups;
   var levelName = LEVELS[0].name, wallPalette = LEVELS[0].wall, currentTunnels = [];
+  // Chain bookkeeping. Every time a chain ends - terminated by a radical
+  // scavenger, or transferred away by a CTA - its length is filed in chains[]
+  // and a new one starts. At the end of a level those lengths ARE a molecular
+  // weight distribution, so the level can be scored on its dispersity rather
+  // than only on whether you survived it.
+  var chains, chainUnits, depropCounter, transferFlashUntil, lastTransferAt;
+
+  // Number- and weight-average degree of polymerisation over the chains built,
+  // and their ratio. One chain of any length gives D exactly 1; the spread only
+  // appears once a chain has been cut short and another started.
+  function chainStats(extra) {
+    var all = (chains || []).slice();
+    if (extra > 0) all.push(extra);
+    var lens = all.filter(function (x) { return x > 0; });
+    if (!lens.length) return { n: 0, xn: 0, xw: 0, d: null };
+    var sum = 0, sumSq = 0;
+    lens.forEach(function (x) { sum += x; sumSq += x * x; });
+    var xn = sum / lens.length;
+    var xw = sumSq / sum;
+    return { n: lens.length, xn: xn, xw: xw, d: xn > 0 ? xw / xn : null };
+  }
+
+  // Ends the chain in progress and starts a new one. `reason` is only used for
+  // the status line; the bookkeeping is the same however the chain ended.
+  function cutChain() {
+    if (chainUnits > 0) chains.push(chainUnits);
+    chainUnits = 0;
+    depropCounter = 0;
+    updateScoreHud();
+  }
 
   // Best time per level, kept per difficulty since hard mode is a different run.
   function loadBests() {
@@ -659,8 +711,20 @@
 
   function updateScoreHud() {
     $("game-score").textContent = beadEaten + " / " + beadTotal;
-    $("game-mn").textContent = formatMass(beadEaten);
+    // Mn is a property of a CHAIN, not of the level, so this shows the chain
+    // currently growing rather than every bead eaten since the level began.
+    // It falls when a chain is cut and when heat depropagates it.
+    $("game-mn").textContent = formatMass(chainUnits || 0);
     $("game-points").textContent = (points || 0).toLocaleString();
+    var st = chainStats(chainUnits);
+    var el = $("game-disp");
+    if (el) {
+      el.textContent = st.d == null ? "&mdash;" : st.d.toFixed(3);
+      el.innerHTML = st.d == null ? "&mdash;" : st.d.toFixed(3);
+      el.style.color = st.d == null ? "" : (st.d < 1.2 ? "#8fffe0" : st.d < 1.8 ? "#f2b84b" : "#ef6a6a");
+    }
+    var cEl = $("game-chains");
+    if (cEl) cEl.textContent = String(st.n || (chainUnits > 0 ? 1 : 0));
   }
 
   function updateTimeHud() {
@@ -786,7 +850,12 @@
       }
     }
     beadEaten = 0;
-    player = { r: PLAYER_START.r, c: PLAYER_START.c, prevR: PLAYER_START.r, prevC: PLAYER_START.c, dir: null, nextDir: null };
+    chains = [];
+    chainUnits = 0;
+    depropCounter = 0;
+    lastTransferAt = 0;
+    transferFlashUntil = 0;
+    player = { r: PLAYER_START.r, c: PLAYER_START.c, prevR: PLAYER_START.r, prevC: PLAYER_START.c, dir: null, nextDir: null, nextDirAt: 0 };
     spawnEnemies();
     initiators = placeInitiators();
     heatSpot = placeHeat();
@@ -817,9 +886,12 @@
   // collected, and the remaining initiators, but return the player to the
   // start and re-cage every enemy so the level continues from where it was.
   function respawn() {
-    player = { r: PLAYER_START.r, c: PLAYER_START.c, prevR: PLAYER_START.r, prevC: PLAYER_START.c, dir: null, nextDir: null };
+    player = { r: PLAYER_START.r, c: PLAYER_START.c, prevR: PLAYER_START.r, prevC: PLAYER_START.c, dir: null, nextDir: null, nextDirAt: 0 };
     spawnEnemies();
     path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
+    chainUnits = 0;
+    depropCounter = 0;
+    lastTransferAt = 0;
     ticksElapsed = 0;
     powerTicksRemaining = 0;
     heatUntil = 0;
@@ -859,10 +931,30 @@
     right: { dr: 0, dc: 1 }
   };
 
+  // How long a turn stays queued. Long enough that pressing just before an
+  // intersection still works, short enough that a press you have forgotten
+  // about cannot steer you at a junction several corridors later.
+  var INPUT_BUFFER_MS = 420;
+
   function setNextDir(d) {
     if (state === "idle") { startRun(); }
-    if (state !== "playing") return;
+    // Accept steering during the death animation and the ready pause too. The
+    // press is buffered and applied the moment play resumes, so the first move
+    // after a respawn is not silently swallowed.
+    if (state !== "playing" && state !== "dying") return;
     player.nextDir = d;
+    player.nextDirAt = Date.now();
+    // Reversing is always legal - you came from that cell - so commit to it at
+    // once rather than leaving it to the next tick to discover.
+    if (state === "playing" && player.dir && isReverse(d, player.dir)) {
+      player.dir = d;
+      player.nextDir = null;
+    }
+  }
+
+  function isReverse(a, b) {
+    return (a === "up" && b === "down") || (a === "down" && b === "up") ||
+           (a === "left" && b === "right") || (a === "right" && b === "left");
   }
 
   // Where a move in direction dirName would put the player, or null if blocked.
@@ -1021,8 +1113,17 @@
 
     player.prevR = player.r;
     player.prevC = player.c;
-    if (player.nextDir && playerDest(player.nextDir)) {
-      player.dir = player.nextDir;
+    // Apply a queued turn, then CLEAR it. Leaving it set was the cause of the
+    // controls feeling possessed: a single press stayed queued indefinitely and
+    // re-steered the player at every later junction where that direction
+    // happened to be legal, long after they had stopped asking for it.
+    if (player.nextDir) {
+      if (Date.now() - (player.nextDirAt || 0) > INPUT_BUFFER_MS) {
+        player.nextDir = null;
+      } else if (playerDest(player.nextDir)) {
+        player.dir = player.nextDir;
+        player.nextDir = null;
+      }
     }
     if (player.dir) {
       var dest = playerDest(player.dir);
@@ -1041,11 +1142,25 @@
     var ateHere = false;
     if (beadPresent[player.r][player.c]) {
       beadPresent[player.r][player.c] = false;
-      beadEaten++;
+      beadEaten++;          // level progress: a bead once eaten stays eaten
+      chainUnits++;         // this chain's length: falls again if it is cut or depropagates
       ateHere = true;
       lastBeadAt = Date.now();
       points += POINTS_PER_UNIT;
       updateScoreHud();
+    }
+
+    // Depropagation while the boost runs. It only shortens the chain being
+    // built - the beads stay eaten, so the level still finishes - which is the
+    // honest version: monomer went back to monomer, but you have already been
+    // down that corridor.
+    if (heatActive() && chainUnits > 0) {
+      depropCounter++;
+      if (depropCounter >= DEPROP_EVERY_TICKS) {
+        depropCounter = 0;
+        chainUnits--;
+        updateScoreHud();
+      }
     }
     path.push({ r: player.r, c: player.c, bead: ateHere });
 
@@ -1094,8 +1209,29 @@
         });
         updateScoreHud();
       } else {
-        startDeath(collided[0]);
-        return;
+        // A radical scavenger ends the kinetic chain and costs a life. A
+        // transfer agent does not: it hands the radical on, so the chain you
+        // were building stops and a new one begins where you stand. If both
+        // arrive on the same step the terminator wins - being transferred does
+        // not save you from oxygen.
+        var killer = null;
+        for (var ki = 0; ki < collided.length; ki++) {
+          if (collided[ki].name !== "CTA") { killer = collided[ki]; break; }
+        }
+        if (killer) {
+          startDeath(killer);
+          return;
+        }
+        var now = Date.now();
+        if (now - lastTransferAt > TRANSFER_COOLDOWN_MS) {
+          lastTransferAt = now;
+          var lost = chainUnits;
+          cutChain();
+          path = [{ r: player.r, c: player.c, bead: false }];   // the drawn tail restarts too
+          transferFlashUntil = now + 900;
+          if (lost > 0) addPopup(player.r, player.c, "transferred");
+          refreshStatus();
+        }
       }
     }
 
@@ -1114,9 +1250,21 @@
               ? " Your first time on this level: " + elapsed.toFixed(1) + "s."
               : " New best: " + elapsed.toFixed(1) + "s, beating " + prevBest.toFixed(1) + "s.")
           : " You finished in " + elapsed.toFixed(1) + "s, best is " + prevBest.toFixed(1) + "s.";
+        // The level is over, so the chain still growing is finished too and
+        // belongs in the distribution.
+        cutChain();
+        var st = chainStats(0);
+        var dNote;
+        if (st.n <= 1) {
+          dNote = " One unbroken chain, so Đ = 1.000 — a living polymerisation, which is the best this level can be played.";
+        } else {
+          dNote = " " + st.n + " chains, X" + "ₙ" + " " + st.xn.toFixed(0) + ", Đ = " + st.d.toFixed(3) +
+            (st.d < 1.3 ? " — tight." : st.d < 1.9 ? " — broad; every cut chain widens it." :
+             " — that is free-radical territory, and it came from being terminated.");
+        }
         showOverlay(
           "Level " + currentLevel + ": " + levelName + " complete!",
-          "M" + "ₙ" + " reached " + formatMass(beadEaten) + " for " + points.toLocaleString() + " points." + timeNote +
+          "M" + "ₙ" + " " + formatMass(st.xn) + " for " + points.toLocaleString() + " points." + timeNote + dNote +
             " On to level " + (currentLevel + 1) + " of " + LEVELS.length + ": " + LEVELS[currentLevel].name + ".",
           "Next level"
         );
@@ -1165,6 +1313,7 @@
   function refreshStatus() {
     if (state !== "playing") return;
     var hot = heatActive(), init = powerTicksRemaining > 0;
+    if (Date.now() < (transferFlashUntil || 0)) { $("game-status").textContent = "Chain transferred"; return; }
     $("game-status").textContent = init && hot ? "Initiated + heated!" : init ? "Initiated!" : hot ? "Heated!" : "Polymerizing";
   }
 
@@ -1192,6 +1341,7 @@
   function startDeath(hit) {
     state = "dying";
     deathReason = hit.name;
+    cutChain();   // the chain stops here; its length joins the distribution
     clearInterval(tickTimer);
     lives--;
     updateLivesHud();
@@ -1803,7 +1953,7 @@
   render();
   showOverlay(
     "Build a Polymer Chain",
-    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. Avoid O₂, the inhibitor, the chain transfer agent, and, from level 8 on, a rival radical. You get 3 lives per game. Grab a flashing initiator ring to turn the enemies edible for a few seconds and knock them back to the cage, or the flame for a 10 second speed boost. Twenty-five levels named for real polymers, from polyethylene to carbyne, all rendered in 8-bit.",
+    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. O₂, the inhibitor and — from level 8 — a rival radical will terminate you, costing one of your 3 lives. The chain transfer agent will not: it hands the radical on, ending the chain you were building and starting a new one where you stand. That matters, because the real score is dispersity Đ. One unbroken chain gives Đ = 1.000; every chain cut short widens it toward the 2 that uncontrolled radical polymerisation actually gives you. Grab an initiator ring to make the terminators edible, or the flame for speed — though above its ceiling temperature a chain depropagates, so heat costs you molar mass while it runs.",
     "Start polymerizing"
   );
 })();
