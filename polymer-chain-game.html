@@ -65,6 +65,16 @@
     border-radius: 8px; padding: 7px 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
   }
   .game-fs-btn:hover { border-color: var(--primary); color: var(--primary); }
+  /* Volume sits in the play bar with the buttons, sized to match them. */
+  .game-vol { display: inline-flex; align-items: center; padding: 0 6px; }
+  .game-vol input[type="range"] {
+    width: 92px; accent-color: var(--primary); cursor: pointer; vertical-align: middle;
+  }
+  @media (max-width: 560px) { .game-vol input[type="range"] { width: 64px; } }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
   .game-fs-icon { font-size: 1.05rem; line-height: 1; }
 
   .game-rotate-hint { display: none; }
@@ -188,6 +198,14 @@
 
     <div class="game-play" id="game-play">
     <div class="game-play-bar">
+      <button type="button" class="game-fs-btn" id="game-music-btn" aria-label="Toggle music">
+        <span class="game-fs-icon" aria-hidden="true">&#9834;</span>
+        <span class="game-fs-label">Sound on</span>
+      </button>
+      <label class="game-vol" title="Music volume">
+        <span class="sr-only">Music volume</span>
+        <input type="range" id="game-vol" min="0" max="100" step="1" value="55" aria-label="Music volume">
+      </label>
       <button type="button" class="game-fs-btn" id="game-pause-btn" aria-label="Pause the game">
         <span class="game-fs-icon" aria-hidden="true">&#10073;&#10073;</span>
         <span class="game-fs-label">Pause</span>
@@ -288,6 +306,7 @@
       <li><strong>Dispersity &#272;</strong> is the real score. Each chain you finish, however it ended, is one molecule in a distribution; &#272; is how uneven that distribution is. One unbroken chain gives &#272; = 1.000. Get terminated four times and you have made four ragged chains and a &#272; near 2, which is what uncontrolled free-radical polymerization actually produces. Clearing a level is easy; clearing it as a living polymerisation is not.</li>
       <li>M<sub>n</sub> in the readout is the chain you are <em>currently</em> growing, not the level total, so it drops to zero the moment a chain ends and climbs again as the new one grows.</li>
       <li>Points come from repeat units, and from quenching terminators while an initiator is running. Each one caught in the same window is worth double the last, up to four, so clearing several on one ring is where the score is.</li>
+      <li>The music is synthesised in the browser rather than played from a file, and it <strong>escalates with the level</strong>: sparse bass and hi-hat at polyethylene, then a lead, an arpeggio, a kick drum and finally a detuned growl and double-time hats by carbyne, with the tempo climbing from 128 to about 170 BPM. Use <strong>Sound</strong> and the volume slider above the board; both are remembered.</li>
       <li>Press <strong>P</strong> (or <strong>Esc</strong>) to pause, or use the Pause button. The clock stops with everything else, so a pause costs you nothing on the leaderboard.</li>
       <li>On a phone you can swipe anywhere on the board to steer instead of using the pad.</li>
       <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly, on every level.</li>
@@ -897,6 +916,7 @@
   // collected, and the remaining initiators, but return the player to the
   // start and re-cage every enemy so the level continues from where it was.
   function respawn() {
+    startMusic();
     player = { r: PLAYER_START.r, c: PLAYER_START.c, prevR: PLAYER_START.r, prevC: PLAYER_START.c, dir: null, nextDir: null, nextDirAt: 0 };
     spawnEnemies();
     path = [{ r: PLAYER_START.r, c: PLAYER_START.c, bead: false }];
@@ -1287,6 +1307,7 @@
   }
 
   function startRun() {
+    startMusic();
     // startRun always begins a fresh set of lives: it fires from an idle start,
     // a full-game win, or a game over (lives exhausted). Losing a single life
     // mid-run goes through respawn(), not here. A game over re-loads the same
@@ -1304,6 +1325,7 @@
   }
 
   function advanceLevel() {
+    startMusic();
     loadLevel(currentLevel + 1);
     resetGame();
     state = "playing";
@@ -1527,6 +1549,7 @@
     if (state === "playing") {
       state = "paused";
       pausedAt = Date.now();
+      stopMusic();
       clearInterval(tickTimer);
       tickTimer = null;
       if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
@@ -1554,8 +1577,203 @@
       refreshStatus();
       var pb2 = $("game-pause-btn"); if (pb2) pb2.querySelector(".game-fs-label").textContent = "Pause";
       startAmbient();
+      startMusic();
       beginTicking();
     }
+  }
+
+  // --- Chiptune ------------------------------------------------------------
+  //
+  // Synthesised here rather than loaded from a file, which settles the licence
+  // question outright: there is no recording, only oscillators. The melody
+  // below is original - written in the idiom (minor key, square lead over a
+  // walking bass, arpeggiated turnaround) rather than transcribed from any
+  // existing arcade soundtrack, which would be somebody's copyright.
+  //
+  // A lookahead scheduler rather than one timer per note: setInterval drifts,
+  // and a drifting clock is audible immediately in music. The interval only
+  // decides WHEN to queue notes; every note is timed against the audio clock.
+  var MUSIC_KEY = "polytechniques_game_music";
+  var VOL_KEY = "polytechniques_game_volume";
+  // 0..1 from the slider. MAX_GAIN keeps even full volume under the point where
+  // square waves start to sound harsh through laptop speakers.
+  var MAX_GAIN = 0.30;
+  var musicVolume = 0.55;
+  try {
+    var sv = parseFloat(localStorage.getItem(VOL_KEY));
+    if (isFinite(sv) && sv >= 0 && sv <= 1) musicVolume = sv;
+  } catch (e) {}
+  function baseGain() { return musicVolume * MAX_GAIN; }
+  var audioCtx = null, musicTimer = null, masterGain = null;
+  var musicStep = 0, nextNoteTime = 0, musicOn = true;
+  try { musicOn = localStorage.getItem(MUSIC_KEY) !== "off"; } catch (e) {}
+
+  var LOOKAHEAD_MS = 25, SCHEDULE_AHEAD_S = 0.12;
+
+  function midi(n) { return 440 * Math.pow(2, (n - 69) / 12); }
+
+  // Sixteen steps. -1 is a rest. Original lines in A minor, transposed and
+  // layered by level so the score escalates with the game.
+  var BASS      = [45, -1, 45, -1, 43, -1, 43, -1, 41, -1, 41, -1, 40, -1, 40, 42];
+  var BASS_HARD = [45, 45, 45, 57, 43, 43, 43, 55, 41, 41, 41, 53, 40, 40, 42, 44];  // driving eighths
+  var LEAD      = [69, 72, 76, 72, 74, -1, 72, -1, 69, 67, 69, 72, 76, 74, 72, 69];
+  var LEAD_BUSY = [69, 72, 76, 79, 76, 74, 72, 74, 69, 72, 76, 81, 79, 76, 74, 72];
+  var ARP       = [81, 84, 88, 84, 79, 83, 86, 83, 77, 81, 84, 81, 76, 79, 83, 79];
+  var HATS      = [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1];
+  var HATS_FAST = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+  var KICK      = [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0];
+
+  // Five acts of five levels. Each adds a voice rather than just getting
+  // louder: sparse bass and hats at polyethylene, a full driving arrangement by
+  // carbyne. Tempo climbs across the whole run.
+  //
+  //   bass  which bass line
+  //   lead  0 none, 1 the tune, 2 the busy variant
+  //   arp   a fast counter-line an octave up
+  //   kick  a low thud on the downbeats
+  //   fast  double-time hats
+  //   grit  a second detuned bass oscillator, which beats against the first
+  function musicPlan() {
+    var act = Math.min(4, Math.floor((currentLevel - 1) / 5));
+    var plans = [
+      { bass: BASS,      lead: 0, arp: false, kick: false, fast: false, grit: false },
+      { bass: BASS,      lead: 1, arp: false, kick: false, fast: false, grit: false },
+      { bass: BASS,      lead: 1, arp: true,  kick: false, fast: false, grit: false },
+      { bass: BASS_HARD, lead: 2, arp: true,  kick: true,  fast: false, grit: false },
+      { bass: BASS_HARD, lead: 2, arp: true,  kick: true,  fast: true,  grit: true  }
+    ];
+    var p = plans[act];
+    // 128 BPM at polyethylene up to about 172 at carbyne.
+    p.bpm = 128 + (currentLevel - 1) * 1.8;
+    // Transpose by act, and drop the second degree a semitone in the last two
+    // acts: a Phrygian flat-2 is the cheapest way to make a minor key menacing.
+    p.key = act * 2;
+    p.dark = act >= 3;
+    return p;
+  }
+  function stepSeconds() { return 60 / musicPlan().bpm / 4; }
+
+  // Flatten the second scale degree for the late acts. In A minor that is B
+  // natural to B flat, which is the note that does all the work.
+  function shade(n, dark) {
+    if (!dark || n < 0) return n;
+    return (((n % 12) + 12) % 12) === 11 ? n - 1 : n;
+  }
+
+  function ensureAudio() {
+    if (audioCtx) return audioCtx;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try { audioCtx = new AC(); } catch (e) { return null; }
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = baseGain();   // arcade music should sit under the game
+    masterGain.connect(audioCtx.destination);
+    return audioCtx;
+  }
+
+  // One pulse-wave voice with a short envelope. The envelope matters: a bare
+  // oscillator start/stop clicks, and a hundred clicks a minute is fatiguing.
+  function blip(freq, when, dur, type, peak) {
+    if (!audioCtx) return;
+    var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type || "square";
+    o.frequency.setValueAtTime(freq, when);
+    g.gain.setValueAtTime(0.0001, when);
+    g.gain.exponentialRampToValueAtTime(peak || 0.5, when + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+    o.connect(g); g.connect(masterGain);
+    o.start(when); o.stop(when + dur + 0.02);
+  }
+
+  // Hi-hat: a very short burst of noise, which is how the 8-bit machines did
+  // percussion - they had a noise channel and nothing else.
+  function hat(when) {
+    if (!audioCtx) return;
+    var len = Math.floor(audioCtx.sampleRate * 0.03);
+    var buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    var src = audioCtx.createBufferSource(); src.buffer = buf;
+    var g = audioCtx.createGain(); g.gain.value = 0.06;
+    var hp = audioCtx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 6000;
+    src.connect(hp); hp.connect(g); g.connect(masterGain);
+    src.start(when);
+  }
+
+  // A low thud. A short sine swept downward is the whole trick.
+  function kick(when) {
+    if (!audioCtx) return;
+    var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(140, when);
+    o.frequency.exponentialRampToValueAtTime(45, when + 0.10);
+    g.gain.setValueAtTime(0.0001, when);
+    g.gain.exponentialRampToValueAtTime(0.55, when + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + 0.14);
+    o.connect(g); g.connect(masterGain);
+    o.start(when); o.stop(when + 0.16);
+  }
+
+  function scheduleStep(step, when) {
+    var p = musicPlan(), i = step % 16, sec = 60 / p.bpm / 4;
+    var b = p.bass[i], l = p.lead === 2 ? LEAD_BUSY[i] : p.lead === 1 ? LEAD[i] : -1;
+
+    if (b > 0) {
+      var bn = midi(shade(b, p.dark) + p.key);
+      blip(bn, when, sec * 1.7, "square", 0.42);
+      // Detuned twin: the two beat against each other into a growl. Only in the
+      // last act, where it should sound like the reaction is getting away.
+      if (p.grit) blip(bn * 1.006, when, sec * 1.7, "sawtooth", 0.16);
+    }
+    if (l > 0) blip(midi(shade(l, p.dark) + p.key), when, sec * 0.85, "square", 0.20);
+    if (p.arp) {
+      var a = ARP[i];
+      if (a > 0) blip(midi(shade(a, p.dark) + p.key), when, sec * 0.5, "triangle", 0.13);
+    }
+    if (p.kick && KICK[i]) kick(when);
+    if ((p.fast ? HATS_FAST : HATS)[i]) hat(when);
+  }
+
+  function musicLoop() {
+    if (!audioCtx) return;
+    while (nextNoteTime < audioCtx.currentTime + SCHEDULE_AHEAD_S) {
+      scheduleStep(musicStep, nextNoteTime);
+      // Read the step length fresh each time, so a level change retimes the
+      // music from the next note rather than at the end of a bar.
+      nextNoteTime += stepSeconds();
+      musicStep++;
+    }
+  }
+
+  function startMusic() {
+    if (!musicOn || musicTimer) return;
+    if (!ensureAudio()) return;
+    // Browsers suspend a context created outside a gesture; resume is a no-op
+    // when it is already running.
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    nextNoteTime = audioCtx.currentTime + 0.06;
+    musicTimer = setInterval(musicLoop, LOOKAHEAD_MS);
+    musicLoop();
+  }
+
+  function stopMusic() {
+    if (musicTimer) { clearInterval(musicTimer); musicTimer = null; }
+    if (audioCtx && masterGain) {
+      // Fade rather than cut, or stopping mid-note pops.
+      var now = audioCtx.currentTime;
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+      masterGain.gain.linearRampToValueAtTime(0.0001, now + 0.08);
+      setTimeout(function () { if (masterGain) masterGain.gain.value = baseGain(); }, 120);
+    }
+  }
+
+  function toggleMusic() {
+    musicOn = !musicOn;
+    try { localStorage.setItem(MUSIC_KEY, musicOn ? "on" : "off"); } catch (e) {}
+    var btn = $("game-music-btn");
+    if (btn) btn.querySelector(".game-fs-label").textContent = musicOn ? "Sound on" : "Sound off";
+    if (musicOn && state === "playing") startMusic(); else stopMusic();
   }
 
   function frameLoop() {
@@ -1568,6 +1786,7 @@
   function startDeath(hit) {
     state = "dying";
     deathReason = hit.name;
+    stopMusic();
     cutChain();   // the chain stops here; its length joins the distribution
     clearInterval(tickTimer);
     lives--;
@@ -2176,6 +2395,22 @@
     setNextDir(d);
   });
 
+  $("game-music-btn").addEventListener("click", toggleMusic);
+
+  (function wireVolume() {
+    var vol = $("game-vol");
+    if (!vol) return;
+    vol.value = Math.round(musicVolume * 100);
+    vol.addEventListener("input", function () {
+      musicVolume = Math.max(0, Math.min(1, (parseFloat(vol.value) || 0) / 100));
+      try { localStorage.setItem(VOL_KEY, String(musicVolume)); } catch (e) {}
+      // Apply live so dragging the slider is audible immediately, but only
+      // when music is actually running - otherwise this would fight the fade
+      // that stopMusic is in the middle of.
+      if (masterGain && musicTimer) masterGain.gain.value = baseGain();
+    });
+  })();
+
   $("game-pause-btn").addEventListener("click", function () {
     if (state === "playing" || state === "paused") togglePause();
   });
@@ -2188,6 +2423,10 @@
 
   state = "idle";
   lives = LIVES_START;
+  (function () {
+    var mb = $("game-music-btn");
+    if (mb) mb.querySelector(".game-fs-label").textContent = musicOn ? "Sound on" : "Sound off";
+  })();
   startAmbient();
   loadLevel(1);
   resetGame();
