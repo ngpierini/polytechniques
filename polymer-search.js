@@ -2220,6 +2220,10 @@
     // signal: a 19%-similar polypropylene tells the user nothing about their
     // azlactone. Weak cards still render, but folded away.
     var SIM_STRONG = 0.4;
+    // Below this a Morgan/Tanimoto score is not telling you anything useful
+    // about a repeat unit, so there is no point listing it at all.
+    var SIM_WEAK_FLOOR = 0.25;
+    var SIM_MAX_SHOWN = 15;
     function renderRanked(ranked) {
       var resultsEl = document.getElementById('mol-results');
       if (!resultsEl) return;
@@ -4046,7 +4050,15 @@
         }
         var ranked = lib.map(function (e) {
           return { p: e.p, sim: tanimoto(fp, e.fp) };
-        }).sort(function (x, y) { return y.sim - x.sim; }).slice(0, 5);
+        }).sort(function (x, y) { return y.sim - x.sim; });
+        // Five was an arbitrary cut that could drop a genuinely close relative
+        // just off the end. Keep everything that clears the weak floor, capped
+        // so a broad fragment cannot return the whole library, and never fewer
+        // than the five it used to show. renderRanked already folds anything
+        // below SIM_STRONG into a collapsed section, so widening this does not
+        // make the answer noisier - it just stops hiding the tail.
+        var keep = ranked.filter(function (r) { return r.sim >= SIM_WEAK_FLOOR; }).length;
+        ranked = ranked.slice(0, Math.max(5, Math.min(SIM_MAX_SHOWN, keep)));
         statusEl.textContent = 'No exact match in the reference library. Closest structures by similarity:';
         renderRanked(ranked);
         // Not in the library: name it from its structure via PubChem and search
