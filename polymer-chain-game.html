@@ -41,7 +41,12 @@
 <style>
   /* The canvas has a fixed 494x390 internal resolution; let it scale down to
      fit narrow screens while keeping its aspect ratio and crisp 8-bit pixels. */
-  #game-canvas { max-width: 100%; height: auto; image-rendering: pixelated; }
+  #game-canvas { max-width: 100%; height: auto; image-rendering: pixelated; position: relative; z-index: 1; }
+  .game-stage { position: relative; }
+  #game-ambient {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    z-index: 0; pointer-events: none; border-radius: inherit;
+  }
   @media (max-width: 560px) {
     .game-stage { padding: 6px; }
     .game-controls { gap: 18px; }
@@ -183,6 +188,10 @@
 
     <div class="game-play" id="game-play">
     <div class="game-play-bar">
+      <button type="button" class="game-fs-btn" id="game-pause-btn" aria-label="Pause the game">
+        <span class="game-fs-icon" aria-hidden="true">&#10073;&#10073;</span>
+        <span class="game-fs-label">Pause</span>
+      </button>
       <button type="button" class="game-fs-btn" id="game-fs-btn" aria-label="Play fullscreen">
         <span class="game-fs-icon" aria-hidden="true">&#9974;</span>
         <span class="game-fs-label">Fullscreen</span>
@@ -229,6 +238,7 @@
     </div>
 
     <div class="game-stage">
+      <canvas id="game-ambient" aria-hidden="true"></canvas>
       <canvas id="game-canvas"></canvas>
       <div class="game-overlay" id="game-overlay">
         <h4 id="game-overlay-title">Build a Polymer Chain</h4>
@@ -278,6 +288,7 @@
       <li><strong>Dispersity &#272;</strong> is the real score. Each chain you finish, however it ended, is one molecule in a distribution; &#272; is how uneven that distribution is. One unbroken chain gives &#272; = 1.000. Get terminated four times and you have made four ragged chains and a &#272; near 2, which is what uncontrolled free-radical polymerization actually produces. Clearing a level is easy; clearing it as a living polymerisation is not.</li>
       <li>M<sub>n</sub> in the readout is the chain you are <em>currently</em> growing, not the level total, so it drops to zero the moment a chain ends and climbs again as the new one grows.</li>
       <li>Points come from repeat units, and from quenching terminators while an initiator is running. Each one caught in the same window is worth double the last, up to four, so clearing several on one ring is where the score is.</li>
+      <li>Press <strong>P</strong> (or <strong>Esc</strong>) to pause, or use the Pause button. The clock stops with everything else, so a pause costs you nothing on the leaderboard.</li>
       <li>On a phone you can swipe anywhere on the board to steer instead of using the pad.</li>
       <li>Pick <strong>Hard mode</strong> above before starting for a shorter head start and enemies that chase far more relentlessly, on every level.</li>
     </ul>
@@ -1331,6 +1342,222 @@
   // The player interpolates over its own (possibly halved) tick period while
   // the enemies interpolate over the unchanged world step, so they keep gliding
   // smoothly at normal speed even when the player is heated.
+  // --- Ambient layer: wormlike chains drifting behind the board -------------
+  //
+  // Decoration, but not arbitrary decoration. Each strand is a discrete
+  // wormlike chain: a walk whose direction turns by a small random angle at
+  // every segment, which is the same model the Chain Dimensions page samples.
+  // Undulating it with a travelling sine is a fair caricature of reptation -
+  // the chain wriggling along its own contour through the tube its neighbours
+  // make - so what drifts past behind the maze is the physics the game is
+  // about, at a scale the maze cannot show.
+  //
+  // It runs on its own rAF loop, independent of the game tick, and pauses with
+  // the game. It never reads or writes game state.
+  var ambient = $("game-ambient");
+  var actx = ambient ? ambient.getContext("2d") : null;
+  var strands = [], monomers = [], ambientFrame = null, ambientSized = 0;
+
+  function ambientPalette() {
+    var w = (params && params.wall) || wallPalette || LEVELS[0].wall;
+    return [w.hi, w.face];
+  }
+
+  // The two visible bands, left and right of the board. Everything is drawn
+  // into these; the middle is covered by the maze and would be wasted.
+  function marginBands(w) {
+    var stage = ambient.parentNode, board = $("game-canvas");
+    if (!board) return null;
+    var sr = stage.getBoundingClientRect(), br = board.getBoundingClientRect();
+    var left = Math.max(0, br.left - sr.left), right = Math.min(w, br.right - sr.left);
+    var bands = [];
+    if (left > 26) bands.push({ x0: 0, x1: left });
+    if (w - right > 26) bands.push({ x0: right, x1: w });
+    return bands.length ? bands : null;
+  }
+
+  function buildAmbient(w, h) {
+    strands = [];
+    var bands = marginBands(w);
+    if (!bands) { monomers = []; return; }   // no room beside the board
+    // Long strands read as chains; too many and it becomes soup behind the
+    // board, so this stays deliberately sparse.
+    var count = w > 900 ? 7 : w > 600 ? 5 : 4;
+    for (var i = 0; i < count; i++) {
+      var segs = 26 + Math.floor(Math.random() * 14);
+      var band = bands[i % bands.length];
+      var pts = [], ang = Math.random() * Math.PI * 2;
+      var x = band.x0 + Math.random() * (band.x1 - band.x0), y = Math.random() * h;
+      var step = 7 + Math.random() * 5;
+      for (var j = 0; j < segs; j++) {
+        // A small turn per segment is what sets the persistence length: the
+        // tighter the spread, the stiffer the chain looks.
+        ang += (Math.random() - 0.5) * 0.9;
+        x += Math.cos(ang) * step;
+        y += Math.sin(ang) * step;
+        pts.push({ x: x, y: y });
+      }
+      strands.push({
+        pts: pts,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.00035 + Math.random() * 0.0004,   // reptation rate
+        amp: 2 + Math.random() * 3,
+        band: band,
+        drift: { x: 0, y: (Math.random() < 0.5 ? -1 : 1) * (0.12 + Math.random() * 0.16) },
+        width: 1.8 + Math.random() * 2.0,
+        alpha: 0.34 + Math.random() * 0.26,
+        tint: Math.floor(Math.random() * 2)
+      });
+    }
+    monomers = [];
+    var bandW = bands.reduce(function (t, b2) { return t + (b2.x1 - b2.x0); }, 0);
+    var mcount = Math.round(bandW * h / 9000);
+    for (var k = 0; k < mcount; k++) {
+      var mb = bands[k % bands.length];
+      monomers.push({
+        band: mb,
+        x: mb.x0 + Math.random() * (mb.x1 - mb.x0), y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.22, vy: (Math.random() - 0.5) * 0.22,
+        r: 1.0 + Math.random() * 1.6, a: 0.28 + Math.random() * 0.26
+      });
+    }
+  }
+
+  function sizeAmbient() {
+    if (!ambient) return false;
+    var rect = ambient.getBoundingClientRect();
+    var w = Math.max(1, Math.round(rect.width)), h = Math.max(1, Math.round(rect.height));
+    if (w === ambient.width && h === ambient.height) return true;
+    ambient.width = w; ambient.height = h;
+    buildAmbient(w, h);
+    return true;
+  }
+
+  function drawAmbient() {
+    if (!actx || !sizeAmbient()) return;
+    var w = ambient.width, h = ambient.height, now = Date.now();
+    actx.clearRect(0, 0, w, h);
+    var pal = ambientPalette();
+
+    for (var m = 0; m < monomers.length; m++) {
+      var mo = monomers[m];
+      mo.x += mo.vx; mo.y += mo.vy;
+      var bb = mo.band;
+      if (bb) {
+        if (mo.x < bb.x0) mo.x = bb.x1; else if (mo.x > bb.x1) mo.x = bb.x0;
+      } else if (mo.x < -4) { mo.x = w + 4; } else if (mo.x > w + 4) { mo.x = -4; }
+      if (mo.y < -4) mo.y = h + 4; else if (mo.y > h + 4) mo.y = -4;
+      actx.globalAlpha = mo.a;
+      actx.fillStyle = pal[1];
+      actx.beginPath();
+      actx.arc(mo.x, mo.y, mo.r, 0, Math.PI * 2);
+      actx.fill();
+    }
+
+    for (var i = 0; i < strands.length; i++) {
+      var st = strands[i], pts = st.pts;
+      // Drift the whole strand, wrapping generously so a chain never pops in
+      // or out at the edge of the board.
+      for (var d = 0; d < pts.length; d++) {
+        pts[d].x += st.drift.x; pts[d].y += st.drift.y;
+      }
+      // Wrap vertically just past the strand's own extent. The generous ±260
+      // used while these drifted horizontally left a long dead gap once the
+      // drift turned vertical and the canvas is only ~400px tall.
+      var top = pts[0].y, bot = pts[0].y;
+      for (var q = 1; q < pts.length; q++) {
+        if (pts[q].y < top) top = pts[q].y;
+        if (pts[q].y > bot) bot = pts[q].y;
+      }
+      var span = bot - top + 24;
+      if (bot < -12) shiftStrand(st, 0, h + span);
+      else if (top > h + 12) shiftStrand(st, 0, -(h + span));
+
+      actx.globalAlpha = st.alpha;
+      actx.strokeStyle = pal[st.tint];
+      actx.shadowColor = pal[st.tint];
+      actx.shadowBlur = 6;
+      actx.lineWidth = st.width;
+      actx.lineJoin = "round";
+      actx.lineCap = "round";
+      actx.beginPath();
+      for (var p = 0; p < pts.length; p++) {
+        // Displace perpendicular to the local contour, with the phase running
+        // along the chain: the wave travels down the strand rather than the
+        // whole thing swinging like a rope.
+        var prev = pts[p === 0 ? 0 : p - 1], next = pts[p === pts.length - 1 ? p : p + 1];
+        var tx = next.x - prev.x, ty = next.y - prev.y;
+        var len = Math.hypot(tx, ty) || 1;
+        var nx = -ty / len, ny = tx / len;
+        var wave = Math.sin(now * st.speed + st.phase + p * 0.55) * st.amp;
+        var X = pts[p].x + nx * wave, Y = pts[p].y + ny * wave;
+        if (p === 0) actx.moveTo(X, Y); else actx.lineTo(X, Y);
+      }
+      actx.stroke();
+      actx.shadowBlur = 0;
+    }
+    actx.globalAlpha = 1;
+  }
+
+  function shiftStrand(st, dx, dy) {
+    for (var i = 0; i < st.pts.length; i++) { st.pts[i].x += dx; st.pts[i].y += dy; }
+  }
+
+  function ambientLoop() {
+    drawAmbient();
+    ambientFrame = requestAnimationFrame(ambientLoop);
+  }
+  function startAmbient() { if (!ambientFrame && actx) ambientLoop(); }
+  function stopAmbient() {
+    if (ambientFrame) { cancelAnimationFrame(ambientFrame); ambientFrame = null; }
+  }
+  window.addEventListener("resize", function () { if (ambient) { ambient.width = 0; sizeAmbient(); } });
+
+  // --- Pause ---------------------------------------------------------------
+  //
+  // Everything in this game is timed off the wall clock: elapsed, the heat
+  // window, the transfer cooldown, the tick and world interpolation. Simply
+  // stopping the timer would leave all of those running, so the player would
+  // come back to an expired boost and a ruined best time. Pausing therefore
+  // records when it began and, on resume, shifts every stored timestamp
+  // forward by exactly how long the game sat still.
+  var pausedAt = 0;
+
+  function togglePause() {
+    if (state === "playing") {
+      state = "paused";
+      pausedAt = Date.now();
+      clearInterval(tickTimer);
+      tickTimer = null;
+      if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+      stopAmbient();
+      $("game-status").textContent = "Paused";
+      var pb = $("game-pause-btn"); if (pb) pb.querySelector(".game-fs-label").textContent = "Resume";
+      showOverlay("Paused",
+        "The reaction is on hold. Nothing decays, nothing propagates, and the clock has stopped. " +
+        "Press P or Escape to carry on.",
+        "Resume");
+    } else if (state === "paused") {
+      var delta = Date.now() - pausedAt;
+      startTime += delta;
+      levelStartTime += delta;
+      lastTickTime += delta;
+      lastWorldTime += delta;
+      if (heatUntil) heatUntil += delta;
+      if (lastBeadAt) lastBeadAt += delta;
+      if (lastTransferAt) lastTransferAt += delta;
+      if (transferFlashUntil) transferFlashUntil += delta;
+      if (player && player.nextDirAt) player.nextDirAt += delta;
+      pausedAt = 0;
+      state = "playing";
+      hideOverlay();
+      refreshStatus();
+      var pb2 = $("game-pause-btn"); if (pb2) pb2.querySelector(".game-fs-label").textContent = "Pause";
+      startAmbient();
+      beginTicking();
+    }
+  }
+
   function frameLoop() {
     var tp = Math.min(1, (Date.now() - lastTickTime) / effectiveTickMs());
     var te = Math.min(1, (Date.now() - lastWorldTime) / params.tickMs);
@@ -1935,19 +2162,33 @@
     W: "up", S: "down", A: "left", D: "right"
   };
   window.addEventListener("keydown", function (e) {
+    if (e.key === "p" || e.key === "P") {
+      if (state === "playing" || state === "paused") { e.preventDefault(); togglePause(); }
+      return;
+    }
+    if (e.key === "Escape" && !document.body.classList.contains("game-immersive") &&
+        (state === "playing" || state === "paused")) {
+      e.preventDefault(); togglePause(); return;
+    }
     var d = KEY_MAP[e.key];
     if (!d) return;
     if (state === "idle" || state === "playing") e.preventDefault();
     setNextDir(d);
   });
 
+  $("game-pause-btn").addEventListener("click", function () {
+    if (state === "playing" || state === "paused") togglePause();
+  });
+
   $("game-start-btn").addEventListener("click", function () {
-    if (pendingAdvance) advanceLevel();
+    if (state === "paused") togglePause();
+    else if (pendingAdvance) advanceLevel();
     else startRun();
   });
 
   state = "idle";
   lives = LIVES_START;
+  startAmbient();
   loadLevel(1);
   resetGame();
   render();
