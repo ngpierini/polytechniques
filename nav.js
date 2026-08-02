@@ -110,22 +110,37 @@
     ["home.html", "Home", "toolkit start"]
   ];
 
-  // ---- Sponsor slot (EthicalAds), injected site-wide ----
+  // ---- Ad slot (Google AdSense), injected site-wide ----
   //
-  // Paste the publisher id from ethicalads.io between the quotes below. Until
-  // then NOTHING is injected and no third-party request is made, so the site
-  // and its privacy policy stay exactly as they are today.
+  // Both values come from the AdSense dashboard once the site is approved, and
+  // BOTH are required: the client identifies the account, the slot identifies
+  // the individual ad unit created under it. While either is empty nothing is
+  // injected and no request is made to Google, so the site behaves exactly as
+  // it does today.
+  var ADSENSE_CLIENT = "";   // e.g. ca-pub-0000000000000000
+  var ADSENSE_SLOT = "";     // e.g. 1234567890
   //
-  // When you do set it, update the "Advertising" section of privacy.html at the
-  // same time - it currently states that the site carries no advertising, and
-  // that must stop being a promise the moment an ad can appear.
-  var AD_PUBLISHER = "";
+  // THREE THINGS MUST BE DONE BEFORE THOSE ARE SET, not after:
   //
-  // EthicalAds was chosen over an ad network of the usual sort for one reason:
-  // it sets no cookies and builds no profile, so it needs no consent banner and
-  // costs the reader nothing. It targets on page content and coarse geography
-  // only. If it is ever swapped for something that sets a cookie, a banner and
-  // a policy rewrite become mandatory, not optional.
+  //  1. ads.txt at the site root, one line:
+  //       google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+  //     with the real publisher number. Without it AdSense eventually
+  //     restricts serving. Deliberately absent until the number is known - a
+  //     wrong ads.txt is worse than no ads.txt.
+  //
+  //  2. A Google-certified consent management platform, switched on in the
+  //     AdSense dashboard under Privacy & messaging. This is not optional and
+  //     a hand-written banner does NOT satisfy it: Google requires a certified
+  //     CMP for traffic from the EEA and the UK, and this site blocks neither.
+  //     Google's own Privacy & messaging CMP is free and is the simple choice.
+  //
+  //  3. privacy.html rewritten. It currently states the site sets no cookies
+  //     at all, which stops being true the moment AdSense loads.
+  //
+  // Manual placement, not Auto ads. Auto ads let Google insert units wherever
+  // it judges best, which on a page of calculators and drawn structures means
+  // between an input and its result. One unit, below the content, where it
+  // cannot come between a reader and the tool.
   //
   // Pages that do not get one: the game (an ad beside a game reads as an
   // advergame), the two legal pages, the diagnostics self-test and the 404,
@@ -134,7 +149,7 @@
 
   function addAdSlot() {
     try {
-      if (!AD_PUBLISHER) return;
+      if (!ADSENSE_CLIENT || !ADSENSE_SLOT) return;
       var page = (location.pathname.split("/").pop() || "home").replace(/\.html$/, "");
       if (!page) page = "home";
       if (NO_AD_PAGES.indexOf(page) !== -1) return;
@@ -147,41 +162,55 @@
       var footer = document.querySelector("footer");
       if (!main && !footer) return;
 
-      // Built hidden and revealed only once the network has actually put
-      // something in the box. A bare "SPONSOR" label above empty space is
-      // worse than no slot, and a slot that appears late shifts the page
-      // under the reader's cursor.
+      // Built hidden and revealed only once Google reports the unit filled.
+      // AdSense stamps data-ad-status on the <ins>, so that is the honest
+      // signal to watch: an "ADVERTISEMENT" label over blank space is worse
+      // than no slot, and a slot that expands late shifts the page under the
+      // reader. Unfilled or silent, and the whole thing is removed.
       var slot = document.createElement("div");
       slot.className = "ad-slot";
       slot.hidden = true;
       var label = document.createElement("span");
       label.className = "ad-slot-label";
-      label.textContent = "Sponsor";
-      var box = document.createElement("div");
-      box.setAttribute("data-ea-publisher", AD_PUBLISHER);
-      box.setAttribute("data-ea-type", "image");
+      label.textContent = "Advertisement";
+      var ins = document.createElement("ins");
+      ins.className = "adsbygoogle";
+      ins.style.display = "block";
+      ins.setAttribute("data-ad-client", ADSENSE_CLIENT);
+      ins.setAttribute("data-ad-slot", ADSENSE_SLOT);
+      ins.setAttribute("data-ad-format", "auto");
+      ins.setAttribute("data-full-width-responsive", "true");
       slot.appendChild(label);
-      slot.appendChild(box);
+      slot.appendChild(ins);
 
       if (footer && footer.parentNode) footer.parentNode.insertBefore(slot, footer);
       else main.appendChild(slot);
 
-      var reveal = function () { if (box.children.length) slot.hidden = false; };
       if ("MutationObserver" in window) {
         var mo = new MutationObserver(function () {
-          if (box.children.length) { slot.hidden = false; mo.disconnect(); }
+          var st = ins.getAttribute("data-ad-status");
+          if (st === "filled") { slot.hidden = false; mo.disconnect(); }
+          else if (st === "unfilled") { slot.remove(); mo.disconnect(); }
         });
-        mo.observe(box, { childList: true });
-        setTimeout(function () { mo.disconnect(); reveal(); }, 8000);
-      } else {
-        setTimeout(reveal, 3000);
+        mo.observe(ins, { attributes: true, attributeFilter: ["data-ad-status"] });
+        setTimeout(function () {
+          mo.disconnect();
+          if (ins.getAttribute("data-ad-status") !== "filled") slot.remove();
+        }, 10000);
       }
 
       var s = document.createElement("script");
       s.async = true;
-      s.src = "https://media.ethicalads.io/media/client/ethicalads.min.js";
+      s.crossOrigin = "anonymous";
+      s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" +
+        encodeURIComponent(ADSENSE_CLIENT);
       s.onerror = function () { slot.remove(); };
       document.head.appendChild(s);
+
+      // Pushed before the library has loaded on purpose: adsbygoogle is an
+      // array Google drains once it arrives, so queueing here is the documented
+      // order and avoids a race with the async script.
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (e) { /* an ad must never break a page */ }
   }
 
