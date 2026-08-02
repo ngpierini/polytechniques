@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crosslink Density: PolyTechniques</title>
+<meta name="description" content="Crosslink density and molar mass between crosslinks from equilibrium swelling (Flory-Rehner) or from the rubbery plateau modulus, with the two compared side by side.">
+<link rel="canonical" href="https://getpolytechniques.com/crosslink-density.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Crosslink Density: PolyTechniques">
+<meta property="og:description" content="Mc and crosslink density from equilibrium swelling or from the rubbery plateau modulus.">
+<meta property="og:url" content="https://getpolytechniques.com/crosslink-density.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Crosslink Density: PolyTechniques">
+<meta name="twitter:description" content="Two independent routes to Mc, and what it means when they disagree.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Crosslink Density",
+  "url": "https://getpolytechniques.com/crosslink-density.html",
+  "description": "Crosslink density and molar mass between crosslinks from equilibrium swelling or the rubbery plateau modulus.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js?v=1"></script>
+<script src="nav.js?v=17" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=64">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Crosslink Density</h1>
+      <p class="subtitle">M<sub>c</sub> from equilibrium swelling or from the rubbery plateau, and what it means when they disagree</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>Two routes to the same number</h3>
+    <p class="guide-note">
+      A cured network has one number that matters more than any other: the molar mass between crosslinks, M<sub>c</sub>. It sets the modulus, the swelling, the tear energy and how far the material can stretch before it breaks. There are two ordinary ways to measure it, and they are worth doing both, because where they disagree is informative rather than annoying.
+    </p>
+    <p class="guide-note">
+      <strong>Swelling</strong> works because a crosslinked polymer in a good solvent expands until two things balance: the free energy gained by mixing with solvent, and the entropy lost by stretching the network strands. Flory and Rehner wrote that balance down. It needs no instrument beyond a balance and a fume hood, which is why it is still the standard bench measurement on a cured binder.
+    </p>
+    <div class="guide-formula">
+      &minus;[ ln(1&minus;v<sub>2</sub>) + v<sub>2</sub> + &chi;v<sub>2</sub><sup>2</sup> ] = V<sub>1</sub> &nu; ( v<sub>2</sub><sup>1/3</sup> &minus; v<sub>2</sub>&frasl;2 )
+    </div>
+    <p class="guide-note">
+      <strong>Modulus</strong> works because rubber elasticity is entropic: the stiffness of a network above its T<sub>g</sub> comes from strands resisting being straightened, so the plateau modulus counts strands directly.
+    </p>
+    <div class="guide-formula">
+      G = &rho;RT &divide; M<sub>c</sub> &nbsp;&nbsp;&nbsp; (and E &asymp; 3G for an incompressible rubber)
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>From equilibrium swelling</h3>
+    <div class="calc-grid">
+      <label>Dry mass (g)
+        <input type="number" id="xl-mdry" step="any" min="0" value="0.500">
+      </label>
+      <label>Swollen mass (g)
+        <input type="number" id="xl-mswell" step="any" min="0" value="1.850">
+      </label>
+      <label>Polymer density (g/cm&sup3;)
+        <input type="number" id="xl-rhop" step="any" min="0" value="1.00">
+      </label>
+      <label>Solvent density (g/cm&sup3;)
+        <input type="number" id="xl-rhos" step="any" min="0" value="0.867">
+      </label>
+      <label>Solvent molar volume V&#8321; (cm&sup3;/mol)
+        <input type="number" id="xl-v1" step="any" min="0" value="106.9">
+      </label>
+      <label>Interaction parameter &chi;
+        <input type="number" id="xl-chi" step="any" value="0.34">
+      </label>
+    </div>
+    <div class="actions" style="justify-content:flex-start; margin-top:8px; gap:8px;">
+      <button type="button" class="copy-btn" id="xl-solv-btn">Fill solvent from the table below</button>
+    </div>
+    <div class="stat-grid" id="xl-swell-stats" style="margin-top:16px;"></div>
+    <div id="xl-swell-detail" class="guide-note" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="card">
+    <h3>From the rubbery plateau</h3>
+    <div class="calc-grid">
+      <label>Plateau modulus
+        <input type="number" id="xl-mod" step="any" min="0" value="1.0">
+      </label>
+      <label>Units
+        <select id="xl-mod-unit">
+          <option value="E-MPa">E&prime; in MPa (tensile)</option>
+          <option value="G-MPa">G&prime; in MPa (shear)</option>
+          <option value="E-Pa">E&prime; in Pa</option>
+          <option value="G-Pa">G&prime; in Pa</option>
+        </select>
+      </label>
+      <label>Temperature of the plateau (&deg;C)
+        <input type="number" id="xl-temp" step="any" value="25">
+      </label>
+      <label>Polymer density (g/cm&sup3;)
+        <input type="number" id="xl-rhop2" step="any" min="0" value="1.00">
+      </label>
+    </div>
+    <p class="guide-note" style="margin-top:8px;">
+      Read the modulus well above T<sub>g</sub>, where the curve has flattened. Taking it on the shoulder of the transition is the commonest way to get a number several times too high.
+    </p>
+    <div class="stat-grid" id="xl-mod-stats" style="margin-top:16px;"></div>
+  </div>
+
+  <div class="card">
+    <h3>Comparing the two</h3>
+    <div id="xl-compare" class="guide-note"></div>
+  </div>
+
+  <div class="card">
+    <h3>Solvent reference</h3>
+    <p class="guide-note">
+      Molar volume is the solvent's molar mass divided by its density, and is well defined. &chi; is not: it depends on the polymer, on temperature, and mildly on concentration, and a value quoted without naming the polymer is close to meaningless. The figures below are molar volumes and densities only &mdash; take &chi; from a source for your specific polymer&ndash;solvent pair, or fit it from swelling in two solvents.
+    </p>
+    <div class="table-scroll">
+      <table class="recipe" id="xl-solv-table">
+        <thead><tr><th>Solvent</th><th>M (g/mol)</th><th>Density (g/cm&sup3;)</th><th>V<sub>1</sub> (cm&sup3;/mol)</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>What to distrust</h3>
+    <p class="guide-note">
+      <strong>&chi; dominates the swelling answer.</strong> It enters as &chi;v<sub>2</sub><sup>2</sup> against a logarithm, and moving it from 0.34 to 0.45 can change &nu; by a factor of two without anything about the sample changing. If you only have a guess at &chi;, treat the swelling result as an order of magnitude.
+    </p>
+    <p class="guide-note">
+      <strong>Both routes count only elastically effective strands.</strong> Dangling ends, loops that start and finish at the same junction, and unattached sol fraction all carry no load and hold no network. That is why extracting the sol fraction before weighing matters, and why a lightly cured sample reads worse than its chemistry suggests.
+    </p>
+    <p class="guide-note">
+      <strong>The equation shown is the affine model.</strong> It assumes junctions move exactly as the bulk does. The phantom model, in which junctions fluctuate, replaces the v<sub>2</sub>&frasl;2 term with 2v<sub>2</sub>&frasl;f and gives a lower &nu; for the same swelling &mdash; typically by a factor of (1 &minus; 2/f). For a tetrafunctional network that is a factor of two, so quote which model you used.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <p class="guide-note">
+      Before the network forms, <a href="step-growth.html">Step-Growth &amp; Gel Point</a> predicts when it will. <a href="thermal-analysis.html">Thermal Analysis</a> is where the plateau modulus is measured, and <a href="chain-dimensions.html">Chain Dimensions</a> covers the uncrosslinked chain in solution.
+    </p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Swelling results are only as good as &chi;. Where the two routes disagree, say which one you quoted and why.</p>
+</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function num(id) { var v = parseFloat($(id).value); return isFinite(v) ? v : NaN; }
+
+  var R = 8.314;   // J/mol/K
+
+  // Molar volume is M/density and nothing else, so these are arithmetic rather
+  // than tabulated opinions. No chi values here on purpose: chi belongs to a
+  // polymer-solvent PAIR, and a table of them without the polymer named would
+  // be worse than useless.
+  var SOLVENTS = [
+    { name: "Toluene", M: 92.14, rho: 0.867 },
+    { name: "Tetrahydrofuran", M: 72.11, rho: 0.889 },
+    { name: "Chloroform", M: 119.38, rho: 1.489 },
+    { name: "Dichloromethane", M: 84.93, rho: 1.326 },
+    { name: "Acetone", M: 58.08, rho: 0.784 },
+    { name: "Cyclohexane", M: 84.16, rho: 0.779 },
+    { name: "n-Hexane", M: 86.18, rho: 0.659 },
+    { name: "Ethyl acetate", M: 88.11, rho: 0.902 },
+    { name: "Benzene", M: 78.11, rho: 0.876 },
+    { name: "Water", M: 18.02, rho: 0.997 },
+    { name: "N,N-Dimethylformamide", M: 73.09, rho: 0.944 },
+    { name: "Dimethyl sulfoxide", M: 78.13, rho: 1.100 }
+  ];
+  SOLVENTS.forEach(function (s) { s.V1 = s.M / s.rho; });
+
+  var lastSwell = null, lastMod = null;
+
+  function fillSolvTable() {
+    document.querySelector("#xl-solv-table tbody").innerHTML = SOLVENTS.map(function (s, i) {
+      return '<tr class="xl-solv-row" data-idx="' + i + '" title="Click to use this solvent">' +
+        "<td>" + s.name + "</td><td class=\"num\">" + s.M.toFixed(2) + "</td>" +
+        "<td class=\"num\">" + s.rho.toFixed(3) + "</td>" +
+        "<td class=\"num\">" + s.V1.toFixed(1) + "</td></tr>";
+    }).join("");
+    document.querySelector("#xl-solv-table tbody").addEventListener("click", function (e) {
+      var tr = e.target.closest(".xl-solv-row");
+      if (!tr) return;
+      var s = SOLVENTS[parseInt(tr.getAttribute("data-idx"), 10)];
+      $("xl-rhos").value = s.rho;
+      $("xl-v1").value = s.V1.toFixed(1);
+      recalcSwell();
+    });
+  }
+
+  function recalcSwell() {
+    var mDry = num("xl-mdry"), mSw = num("xl-mswell"),
+        rhoP = num("xl-rhop"), rhoS = num("xl-rhos"),
+        V1 = num("xl-v1"), chi = num("xl-chi");
+    var stats = $("xl-swell-stats"), detail = $("xl-swell-detail");
+    lastSwell = null;
+
+    if (![mDry, mSw, rhoP, rhoS, V1, chi].every(isFinite) ||
+        mDry <= 0 || rhoP <= 0 || rhoS <= 0 || V1 <= 0) {
+      stats.innerHTML = '<div class="error-msg">Fill in every field; masses, densities and molar volume must be positive.</div>';
+      detail.innerHTML = ""; updateCompare(); return;
+    }
+    if (mSw < mDry) {
+      stats.innerHTML = '<div class="error-msg">The swollen mass is below the dry mass. Check the two are the right way round.</div>';
+      detail.innerHTML = ""; updateCompare(); return;
+    }
+
+    var volP = mDry / rhoP, volS = (mSw - mDry) / rhoS;
+    var v2 = volP / (volP + volS);
+    var Q = (volP + volS) / volP;            // volumetric swelling ratio
+
+    if (v2 >= 1) {
+      stats.innerHTML = '<div class="error-msg">No solvent was taken up, so there is nothing to calculate.</div>';
+      detail.innerHTML = ""; updateCompare(); return;
+    }
+
+    var numer = -(Math.log(1 - v2) + v2 + chi * v2 * v2);
+    var denom = V1 * (Math.pow(v2, 1 / 3) - v2 / 2);
+    var nu = numer / denom;                   // mol of chains per cm3
+    var Mc = nu > 0 ? rhoP / nu : Infinity;
+
+    if (!(nu > 0)) {
+      stats.innerHTML = '<div class="error-msg">This combination gives a non-positive crosslink density, which means the model does not describe it &mdash; usually &chi; is too high for the swelling observed, or the sample had not reached equilibrium.</div>';
+      detail.innerHTML = ""; updateCompare(); return;
+    }
+
+    lastSwell = { Mc: Mc, nu: nu, v2: v2 };
+
+    stats.innerHTML =
+      '<div class="stat"><div class="label">M<sub>c</sub></div><div class="value">' +
+        Math.round(Mc).toLocaleString() + '</div><div class="sub">g/mol between crosslinks</div></div>' +
+      '<div class="stat"><div class="label">Crosslink density</div><div class="value">' +
+        (nu * 1e6).toPrecision(3) + '</div><div class="sub">mol/m&sup3; of elastic chains</div></div>' +
+      '<div class="stat"><div class="label">Polymer fraction v<sub>2</sub></div><div class="value">' +
+        v2.toFixed(4) + '</div><div class="sub">swelling ratio Q = ' + Q.toFixed(2) + '</div></div>';
+
+    detail.innerHTML =
+      "Mixing term ln(1&minus;v<sub>2</sub>) + v<sub>2</sub> + &chi;v<sub>2</sub><sup>2</sup> = " +
+      (-numer).toPrecision(4) + ", elastic term v<sub>2</sub><sup>1/3</sup> &minus; v<sub>2</sub>/2 = " +
+      (denom / V1).toPrecision(4) + ". " +
+      "A &chi; of " + (chi + 0.05).toFixed(2) + " instead of " + chi.toFixed(2) + " would give M<sub>c</sub> = " +
+      (function () {
+        var n2 = -(Math.log(1 - v2) + v2 + (chi + 0.05) * v2 * v2) / denom;
+        return n2 > 0 ? Math.round(rhoP / n2).toLocaleString() + " g/mol" : "no solution";
+      })() + " &mdash; which is the sensitivity worth remembering.";
+    updateCompare();
+  }
+
+  function recalcMod() {
+    var mod = num("xl-mod"), tC = num("xl-temp"), rhoP = num("xl-rhop2");
+    var unit = $("xl-mod-unit").value;
+    var stats = $("xl-mod-stats");
+    lastMod = null;
+
+    if (![mod, tC, rhoP].every(isFinite) || mod <= 0 || rhoP <= 0) {
+      stats.innerHTML = '<div class="error-msg">Enter a positive modulus, a temperature and a density.</div>';
+      updateCompare(); return;
+    }
+    var T = tC + 273.15;
+    if (T <= 0) {
+      stats.innerHTML = '<div class="error-msg">Temperature is below absolute zero.</div>';
+      updateCompare(); return;
+    }
+
+    var pa = mod * (unit.indexOf("MPa") !== -1 ? 1e6 : 1);
+    var G = unit.charAt(0) === "E" ? pa / 3 : pa;     // E = 3G for an incompressible rubber
+
+    // Mc = rho R T / G, with rho in kg/m3 -> Mc in kg/mol, then to g/mol
+    var rhoSI = rhoP * 1000;
+    var Mc = rhoSI * R * T / G * 1000;
+    var nu = G / (R * T);                              // mol/m3
+
+    lastMod = { Mc: Mc, nu: nu };
+
+    stats.innerHTML =
+      '<div class="stat"><div class="label">M<sub>c</sub></div><div class="value">' +
+        Math.round(Mc).toLocaleString() + '</div><div class="sub">g/mol between crosslinks</div></div>' +
+      '<div class="stat"><div class="label">Crosslink density</div><div class="value">' +
+        nu.toPrecision(3) + '</div><div class="sub">mol/m&sup3; of elastic chains</div></div>' +
+      '<div class="stat"><div class="label">Shear modulus used</div><div class="value">' +
+        (G / 1e6).toPrecision(3) + '</div><div class="sub">MPa' +
+        (unit.charAt(0) === "E" ? ", from E&prime;/3" : ", as entered") + '</div></div>';
+    updateCompare();
+  }
+
+  function updateCompare() {
+    var el = $("xl-compare");
+    if (!lastSwell || !lastMod) {
+      el.innerHTML = "Fill in both calculators above and the two answers are compared here.";
+      return;
+    }
+    var ratio = lastSwell.Mc / lastMod.Mc;
+    var msg;
+    if (ratio > 0.66 && ratio < 1.5) {
+      msg = "The two agree within about a factor of 1.5, which for these methods is as close as they normally come. Quote either, and say which.";
+    } else if (ratio > 1) {
+      msg = "Swelling gives an M<sub>c</sub> about " + ratio.toFixed(1) + "&times; the modulus value &mdash; it sees a looser network. " +
+        "The usual causes are a &chi; set too low, a sample not yet at equilibrium, or sol fraction that was never extracted and is counted as network.";
+    } else {
+      msg = "Swelling gives an M<sub>c</sub> about " + (1 / ratio).toFixed(1) + "&times; <em>tighter</em> than the modulus value. " +
+        "That usually means &chi; is set too high, or the modulus was read on the shoulder of the transition rather than on the plateau, which inflates it and makes M<sub>c</sub> look small.";
+    }
+    el.innerHTML =
+      "<strong>Swelling:</strong> M<sub>c</sub> = " + Math.round(lastSwell.Mc).toLocaleString() + " g/mol &nbsp;&middot;&nbsp; " +
+      "<strong>Modulus:</strong> M<sub>c</sub> = " + Math.round(lastMod.Mc).toLocaleString() + " g/mol<br>" + msg;
+  }
+
+  ["xl-mdry", "xl-mswell", "xl-rhop", "xl-rhos", "xl-v1", "xl-chi"].forEach(function (id) {
+    $(id).addEventListener("input", recalcSwell);
+  });
+  ["xl-mod", "xl-temp", "xl-rhop2"].forEach(function (id) {
+    $(id).addEventListener("input", recalcMod);
+  });
+  $("xl-mod-unit").addEventListener("change", recalcMod);
+  $("xl-solv-btn").addEventListener("click", function () {
+    document.querySelector("#xl-solv-table").scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  fillSolvTable();
+  recalcSwell();
+  recalcMod();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
+}
+</script>
+<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

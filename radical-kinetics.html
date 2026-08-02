@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free-Radical Kinetics: PolyTechniques</title>
+<meta name="description" content="Rate of polymerization, radical concentration, kinetic chain length and degree of polymerization for a free-radical reaction, including chain transfer and initiator half-life.">
+<link rel="canonical" href="https://getpolytechniques.com/radical-kinetics.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Free-Radical Kinetics: PolyTechniques">
+<meta property="og:description" content="Rp, kinetic chain length and DPn for a free-radical polymerization, with chain transfer and initiator half-life.">
+<meta property="og:url" content="https://getpolytechniques.com/radical-kinetics.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free-Radical Kinetics: PolyTechniques">
+<meta name="twitter:description" content="Why more initiator gives you faster polymerization and shorter chains, quantitatively.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Free-Radical Kinetics",
+  "url": "https://getpolytechniques.com/radical-kinetics.html",
+  "description": "Rate of polymerization, kinetic chain length and degree of polymerization for a free-radical reaction.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js?v=1"></script>
+<script src="nav.js?v=17" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=64">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Free-Radical Kinetics</h1>
+      <p class="subtitle">Why more initiator buys speed and costs chain length, quantitatively</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>The square-root law, and the trade it forces</h3>
+    <p class="guide-note">
+      Under the steady-state assumption &mdash; radicals formed as fast as they are destroyed &mdash; the whole of conventional free-radical polymerization follows from three rate constants. Initiator decomposes, radicals add monomer, and two radicals meet and stop:
+    </p>
+    <div class="guide-formula">
+      [M&bull;] = ( f k<sub>d</sub>[I] &divide; k<sub>t</sub> )<sup>1/2</sup> &nbsp;&nbsp;&nbsp;
+      R<sub>p</sub> = k<sub>p</sub>[M] ( f k<sub>d</sub>[I] &divide; k<sub>t</sub> )<sup>1/2</sup>
+    </div>
+    <p class="guide-note">
+      The exponent of one half is the whole story. Doubling the initiator multiplies the rate by only 1.41, and it divides the chain length by the same factor &mdash; because the kinetic chain length is the ratio of propagation to initiation, and initiation went up faster than propagation did.
+    </p>
+    <div class="guide-formula">
+      &nu; = R<sub>p</sub> &divide; R<sub>i</sub> = k<sub>p</sub>[M] &divide; 2( f k<sub>d</sub> k<sub>t</sub> [I] )<sup>1/2</sup>
+    </div>
+    <p class="guide-note">
+      You cannot have both. That single constraint is the reason controlled radical methods were worth inventing: RAFT, ATRP and NMP break the link between rate and chain length by making chains grow together and reversibly, instead of a few at a time and irreversibly.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Kinetics calculator</h3>
+    <div class="calc-grid">
+      <label>k<sub>p</sub> (L/mol&middot;s)
+        <input type="number" id="rk-kp" step="any" min="0" value="165">
+      </label>
+      <label>k<sub>t</sub> (L/mol&middot;s)
+        <input type="number" id="rk-kt" step="any" min="0" value="6.0e7">
+      </label>
+      <label>k<sub>d</sub> (s&#8315;&sup1;)
+        <input type="number" id="rk-kd" step="any" min="0" value="8.5e-6">
+      </label>
+      <label>Initiator efficiency f
+        <input type="number" id="rk-f" step="any" min="0" max="1" value="0.6">
+      </label>
+      <label>[I] (mol/L)
+        <input type="number" id="rk-i" step="any" min="0" value="0.010">
+      </label>
+      <label>[M] (mol/L)
+        <input type="number" id="rk-m" step="any" min="0" value="8.7">
+      </label>
+      <label>Termination mode
+        <select id="rk-term">
+          <option value="2">Combination &mdash; DPn is twice the chain length</option>
+          <option value="1">Disproportionation &mdash; DPn equals the chain length</option>
+        </select>
+      </label>
+      <label>Monomer molar mass (g/mol)
+        <input type="number" id="rk-mw" step="any" min="0" value="104.15">
+      </label>
+    </div>
+    <div class="stat-grid" id="rk-stats" style="margin-top:16px;"></div>
+    <div id="rk-detail" class="guide-note" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="card">
+    <h3>Chain transfer</h3>
+    <p class="guide-note">
+      Transfer moves the radical to another molecule. The kinetic chain carries on, so the <em>rate</em> is barely touched, but the growing chain is cut short. Mayo's equation adds each transfer route as an independent way of ending a chain:
+    </p>
+    <div class="guide-formula">
+      1 &divide; DP<sub>n</sub> = 1 &divide; DP<sub>n,0</sub> + &Sigma; C<sub>S</sub> [S] &divide; [M]
+    </div>
+    <div class="dyn-row-labels rk-cta-labels">
+      <span>Transfer agent</span>
+      <span>C<sub>S</sub></span>
+      <span>[S] (mol/L)</span>
+      <span class="dyn-label-spacer"></span>
+    </div>
+    <div id="rk-cta-rows" class="dyn-rows"></div>
+    <div class="actions" style="justify-content:flex-start; margin-top:6px; gap:8px;">
+      <button type="button" class="copy-btn" id="rk-cta-add">+ Add transfer agent</button>
+      <button type="button" class="copy-btn" id="rk-cta-thiol">Load a dodecanethiol example</button>
+    </div>
+    <div class="stat-grid" id="rk-cta-stats" style="margin-top:16px;"></div>
+    <p class="guide-note" style="margin-top:10px;">
+      A transfer constant near 1 is what makes a good regulator: agent and monomer are consumed at the same rate, so the ratio [S]/[M] holds steady and every chain is cut to the same length. A C<sub>S</sub> far above 1 exhausts the agent early and leaves the last chains long; far below 1 and the agent survives to the end and cuts the late chains hardest.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Initiator half-life</h3>
+    <p class="guide-note">
+      A rule of thumb that saves a lot of wasted reactions: run for about ten half-lives to consume the initiator, and pick an initiator whose half-life at your temperature is roughly a tenth of the intended run. An initiator with a ten-hour half-life at 60&nbsp;&deg;C will barely have started after twenty minutes there.
+    </p>
+    <div class="stat-grid" id="rk-half-stats"></div>
+  </div>
+
+  <div class="card">
+    <h3>Where these numbers come from</h3>
+    <p class="guide-note">
+      <strong>k<sub>p</sub></strong> is the best-known of the three. Pulsed-laser polymerization with SEC gives it directly, and IUPAC has benchmarked values for the common monomers; it is reliable to a few percent.
+    </p>
+    <p class="guide-note">
+      <strong>k<sub>t</sub> is not a constant at all.</strong> Termination is diffusion-controlled, so it falls as the medium thickens &mdash; by orders of magnitude across a bulk polymerization. That is the Trommsdorff effect: k<sub>t</sub> collapses, radicals accumulate, the rate accelerates and the reaction can run away. Any single k<sub>t</sub> is a value at one conversion, and the numbers usually quoted are for low conversion. Treat every result here as the state of the reaction at the beginning.
+    </p>
+    <p class="guide-note">
+      <strong>f</strong> is typically 0.5&ndash;0.8 and is rarely measured for the system at hand. It appears under a square root, so an error of a factor of two in f moves R<sub>p</sub> by only 41% &mdash; the one forgiving parameter here.
+    </p>
+    <p class="guide-note">
+      Enter constants from a source for your monomer, solvent and temperature. The defaults loaded above are order-of-magnitude figures for styrene with AIBN near 60&nbsp;&deg;C, present so the page does something on arrival, not as reference data.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <p class="guide-note">
+      For a controlled polymerization the chain length is set by stoichiometry rather than kinetics &mdash; see the <a href="calculator.html">recipe calculator</a> &mdash; and the breadth of the distribution by the <a href="dispersity-predictor.html">dispersity predictor</a>. For step-growth, where conversion rather than rate sets the chain length, see <a href="step-growth.html">Step-Growth &amp; Gel Point</a>.
+    </p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Steady-state, low-conversion kinetics. k<sub>t</sub> falls sharply as conversion climbs, so treat every result as the start of the reaction.</p>
+</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function num(id) { var v = parseFloat($(id).value); return isFinite(v) ? v : NaN; }
+
+  var state = { dp0: null, rp: null, m: null };
+
+  function recalc() {
+    var kp = num("rk-kp"), kt = num("rk-kt"), kd = num("rk-kd"),
+        f = num("rk-f"), I = num("rk-i"), M = num("rk-m"),
+        mode = parseFloat($("rk-term").value), mw = num("rk-mw") || 0;
+    var stats = $("rk-stats"), detail = $("rk-detail"), half = $("rk-half-stats");
+    state.dp0 = null; state.rp = null; state.m = M;
+
+    if (![kp, kt, kd, f, I, M].every(isFinite) || kp <= 0 || kt <= 0 || kd <= 0 || I <= 0 || M <= 0) {
+      stats.innerHTML = '<div class="error-msg">Every rate constant and concentration must be a positive number.</div>';
+      detail.innerHTML = ""; half.innerHTML = ""; recalcTransfer(); return;
+    }
+    if (f <= 0 || f > 1) {
+      stats.innerHTML = '<div class="error-msg">Initiator efficiency f is a fraction between 0 and 1.</div>';
+      detail.innerHTML = ""; half.innerHTML = ""; recalcTransfer(); return;
+    }
+
+    var Ri = 2 * f * kd * I;                       // radicals generated per L per s
+    var radical = Math.sqrt(f * kd * I / kt);      // steady-state [M.]
+    var Rp = kp * M * radical;                     // mol/L/s
+    var kinChain = Rp / Ri;
+    var dp0 = mode * kinChain;
+
+    state.dp0 = dp0; state.rp = Rp;
+
+    // Time to a given conversion, holding [M] and [I] constant, is only a guide:
+    // both fall as the reaction runs, so this is the initial slope extrapolated.
+    var tHalfConv = 0.5 * M / Rp;
+
+    stats.innerHTML =
+      '<div class="stat"><div class="label">R<sub>p</sub></div><div class="value">' + Rp.toExponential(3) +
+        '</div><div class="sub">mol/L&middot;s &mdash; ' + (Rp / M * 100).toExponential(2) + '%/s of monomer</div></div>' +
+      '<div class="stat"><div class="label">Kinetic chain length</div><div class="value">' +
+        Math.round(kinChain).toLocaleString() + '</div><div class="sub">monomers per radical formed</div></div>' +
+      '<div class="stat"><div class="label">DP<sub>n</sub> (no transfer)</div><div class="value">' +
+        Math.round(dp0).toLocaleString() + '</div><div class="sub">' +
+        (mw > 0 ? "M<sub>n</sub> &asymp; " + Math.round(dp0 * mw).toLocaleString() + " g/mol" : "enter a monomer mass for M<sub>n</sub>") +
+        '</div></div>' +
+      '<div class="stat"><div class="label">[M&bull;]</div><div class="value">' + radical.toExponential(3) +
+        '</div><div class="sub">mol/L at steady state</div></div>';
+
+    detail.innerHTML =
+      "Initiation R<sub>i</sub> = " + Ri.toExponential(3) + " mol/L&middot;s. " +
+      "At this initial rate, 50% conversion would take about " + fmtTime(tHalfConv) +
+      " &mdash; an extrapolation of the starting slope, not a prediction, since [M] and [I] both fall as it runs. " +
+      "Doubling [I] would give R<sub>p</sub> = " + (Rp * Math.SQRT2).toExponential(3) +
+      " and DP<sub>n</sub> = " + Math.round(dp0 / Math.SQRT2).toLocaleString() + ": 41% faster, 29% shorter.";
+
+    var tHalf = Math.log(2) / kd;
+    half.innerHTML =
+      '<div class="stat"><div class="label">Initiator half-life</div><div class="value">' + fmtTime(tHalf) +
+        '</div><div class="sub">at the k<sub>d</sub> entered above</div></div>' +
+      '<div class="stat"><div class="label">Ten half-lives</div><div class="value">' + fmtTime(tHalf * 10) +
+        '</div><div class="sub">99.9% of initiator consumed</div></div>' +
+      '<div class="stat"><div class="label">Suggested run</div><div class="value">' + fmtTime(tHalf * 3) +
+        '</div><div class="sub">87% consumed; past here the rate is falling fast</div></div>';
+
+    recalcTransfer();
+  }
+
+  function fmtTime(s) {
+    if (!isFinite(s) || s <= 0) return "&mdash;";
+    if (s < 90) return s.toFixed(1) + " s";
+    if (s < 5400) return (s / 60).toFixed(1) + " min";
+    if (s < 172800) return (s / 3600).toFixed(1) + " h";
+    return (s / 86400).toFixed(1) + " days";
+  }
+
+  // ---------- chain transfer ----------
+  function makeCtaRow(name, cs, conc) {
+    var row = document.createElement("div");
+    row.className = "dyn-row rk-cta-row";
+    row.innerHTML =
+      '<input type="text" class="rk-cta-name" placeholder="Agent" value="' + (name || "") + '">' +
+      '<input type="number" class="rk-cta-cs" placeholder="Cs" step="any" min="0" value="' + (cs != null ? cs : "") + '">' +
+      '<input type="number" class="rk-cta-s" placeholder="[S]" step="any" min="0" value="' + (conc != null ? conc : "") + '">' +
+      '<button type="button" class="dyn-row-remove" aria-label="Remove agent">&times;</button>';
+    row.querySelector(".dyn-row-remove").addEventListener("click", function () { row.remove(); recalcTransfer(); });
+    row.addEventListener("input", recalcTransfer);
+    return row;
+  }
+
+  function recalcTransfer() {
+    var stats = $("rk-cta-stats");
+    var rows = document.querySelectorAll(".rk-cta-row");
+    if (state.dp0 == null) { stats.innerHTML = ""; return; }
+    if (!rows.length) {
+      stats.innerHTML = '<div class="stat"><div class="label">DP<sub>n</sub> with transfer</div><div class="value">' +
+        Math.round(state.dp0).toLocaleString() + '</div><div class="sub">no transfer agent added</div></div>';
+      return;
+    }
+
+    var sum = 0, terms = [];
+    [].forEach.call(rows, function (row) {
+      var cs = parseFloat(row.querySelector(".rk-cta-cs").value);
+      var s = parseFloat(row.querySelector(".rk-cta-s").value);
+      if (!isFinite(cs) || !isFinite(s) || cs < 0 || s < 0) return;
+      var t = cs * s / state.m;
+      sum += t;
+      terms.push({ name: row.querySelector(".rk-cta-name").value || "agent", t: t });
+    });
+
+    var dp = 1 / (1 / state.dp0 + sum);
+    var drop = (1 - dp / state.dp0) * 100;
+    var dominant = terms.length ? terms.reduce(function (a, b) { return b.t > a.t ? b : a; }) : null;
+
+    stats.innerHTML =
+      '<div class="stat"><div class="label">DP<sub>n</sub> with transfer</div><div class="value">' +
+        Math.round(dp).toLocaleString() + '</div><div class="sub">was ' + Math.round(state.dp0).toLocaleString() +
+        ' without</div></div>' +
+      '<div class="stat"><div class="label">Chain length lost</div><div class="value">' + drop.toFixed(1) +
+        '%</div><div class="sub">' + (dominant && sum > 0
+          ? dominant.name + " accounts for " + (dominant.t / sum * 100).toFixed(0) + "% of it"
+          : "no active agent entered") + '</div></div>' +
+      '<div class="stat"><div class="label">&Sigma; C<sub>S</sub>[S]/[M]</div><div class="value">' +
+        (sum > 0 ? sum.toExponential(3) : "0") + '</div><div class="sub">compare with 1/DP<sub>n,0</sub> = ' +
+        (1 / state.dp0).toExponential(3) + '</div></div>';
+  }
+
+  ["rk-kp", "rk-kt", "rk-kd", "rk-f", "rk-i", "rk-m", "rk-mw"].forEach(function (id) {
+    $(id).addEventListener("input", recalc);
+  });
+  $("rk-term").addEventListener("change", recalc);
+  $("rk-cta-add").addEventListener("click", function () {
+    $("rk-cta-rows").appendChild(makeCtaRow("", null, null));
+  });
+  $("rk-cta-thiol").addEventListener("click", function () {
+    $("rk-cta-rows").innerHTML = "";
+    $("rk-cta-rows").appendChild(makeCtaRow("1-Dodecanethiol", 15, 0.01));
+    recalcTransfer();
+  });
+
+  recalc();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
+}
+</script>
+<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

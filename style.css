@@ -2639,3 +2639,38 @@ input.input-invalid {
   margin-bottom: 6px;
 }
 .ad-slot [data-ea-publisher] { display: inline-block; max-width: 100%; }
+
+/* ---------------------------------------------------------------------
+   Fixed-field calculator grid
+   For tools whose inputs are a known set rather than a variable list of
+   rows: step-growth, crosslink density, radical kinetics. Each label wraps
+   its own input so the pair never separates across a wrap point.
+--------------------------------------------------------------------- */
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+/* A block label, NOT a flex column. Making the label a flex container turns
+   every inline node inside it into a separate flex item, so "k<sub>p</sub>
+   (L/mol s)" stacked the k, the subscript and the units on three lines. */
+.calc-grid label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  font-weight: 600;
+  line-height: 1.4;
+}
+.calc-grid label input, .calc-grid label select {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* The conversion ladder highlights the row matching the entered p, so the
+   point being made - that the last fraction of a percent does the work -
+   is anchored to where the user actually is. */
+tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent); font-weight: 600; }
+.xl-solv-row, .tg-ref-row { cursor: pointer; }
+.xl-solv-row:hover { background: color-mix(in srgb, var(--primary) 10%, transparent); }

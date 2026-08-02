@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step-Growth &amp; Gel Point: PolyTechniques</title>
+<meta name="description" content="Degree of polymerization from conversion and stoichiometric imbalance (Carothers), and the gel point of a multifunctional formulation by both Carothers and Flory-Stockmayer.">
+<link rel="canonical" href="https://getpolytechniques.com/step-growth.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Step-Growth &amp; Gel Point: PolyTechniques">
+<meta property="og:description" content="Carothers degree of polymerization with stoichiometric imbalance, and gel point by Carothers and Flory-Stockmayer.">
+<meta property="og:url" content="https://getpolytechniques.com/step-growth.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Step-Growth &amp; Gel Point: PolyTechniques">
+<meta name="twitter:description" content="Why a polyester stalls at low molar mass, and when a multifunctional formulation gels.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Step-Growth & Gel Point",
+  "url": "https://getpolytechniques.com/step-growth.html",
+  "description": "Degree of polymerization from conversion and stoichiometric imbalance, and the gel point of a multifunctional formulation.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js?v=1"></script>
+<script src="nav.js?v=17" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5b8def">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=64">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Step-Growth &amp; Gel Point</h1>
+      <p class="subtitle">Why a polyester stalls at low molar mass, and when a multifunctional formulation gels</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>The tyranny of the last percent</h3>
+    <p class="guide-note">
+      Step-growth is unforgiving in a way chain-growth is not. Any two species can react with each other, so the chain length is set entirely by how far the reaction has gone: at 90% conversion the average chain is ten units long, at 99% it is a hundred, and at 99.9% a thousand. Nothing is a polymer until the very end of the reaction, which is why a polyester or polyamide has to be driven to conversions that would be considered excellent in any other kind of chemistry and are merely adequate here.
+    </p>
+    <div class="guide-formula">
+      X<sub>n</sub> = 1 &divide; (1 &minus; p) &nbsp;&nbsp;&nbsp; (equal groups, no excess)
+    </div>
+    <p class="guide-note">
+      Stoichiometry is the second trap. An excess of one monomer eventually caps every chain end with the group in surplus, and from that point nothing can grow further no matter how long the reaction runs. Carothers' extension covers it, with <em>r</em> the ratio of the two functional groups taken so that it never exceeds one:
+    </p>
+    <div class="guide-formula">
+      X<sub>n</sub> = (1 + r) &divide; (1 + r &minus; 2rp) &nbsp;&nbsp;&nbsp; r = N<sub>A</sub> &divide; N<sub>B</sub> &le; 1
+    </div>
+    <p class="guide-note">
+      A monofunctional impurity or a deliberate endcapper counts <strong>twice</strong> in that ratio, because it consumes a group and terminates a chain rather than extending it: r = N<sub>A</sub> &divide; (N<sub>B</sub> + 2N<sub>B'</sub>). This is why a 1% monofunctional contaminant is far more damaging than a 1% stoichiometric error, and why acid value on a diol delivery is worth checking before the reactor is charged.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Degree of polymerization</h3>
+    <div class="calc-grid">
+      <label>Conversion p (0&ndash;1)
+        <input type="number" id="sg-p" step="any" min="0" max="1" value="0.99">
+      </label>
+      <label>Equivalents of group A
+        <input type="number" id="sg-na" step="any" min="0" value="1">
+      </label>
+      <label>Equivalents of group B
+        <input type="number" id="sg-nb" step="any" min="0" value="1">
+      </label>
+      <label>Monofunctional endcapper (mol)
+        <input type="number" id="sg-mono" step="any" min="0" value="0">
+      </label>
+      <label>Mass per structural unit (g/mol)
+        <input type="number" id="sg-m0" step="any" min="0" value="0">
+      </label>
+    </div>
+    <p class="guide-note" style="margin-top:8px;">
+      The endcapper is assumed to carry the group in excess, or group B if the two are balanced. Leave the unit mass at zero if you only want X<sub>n</sub>.
+    </p>
+    <div class="stat-grid" id="sg-stats" style="margin-top:16px;"></div>
+    <div class="table-scroll" id="sg-table-wrap" style="margin-top:12px;">
+      <table class="recipe" id="sg-table">
+        <thead><tr><th>Conversion p</th><th>X<sub>n</sub></th><th>M<sub>n</sub> (g/mol)</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Gel point</h3>
+    <p class="guide-note">
+      Add a monomer with three or more reactive groups and the chains stop being chains. Branches join branches, and at a well-defined conversion one molecule spans the whole vessel: the mixture stops flowing and cannot be recovered. Predicting that conversion is the difference between a cured part and a solid reactor.
+    </p>
+    <p class="guide-note">
+      Two models, and they disagree in a way worth understanding. <strong>Carothers</strong> asks when the number-average chain length becomes infinite, which is necessarily <em>after</em> the first infinite molecule appears &mdash; so it predicts gelation <strong>late</strong>. <strong>Flory&ndash;Stockmayer</strong> asks when the first infinite network appears, but assumes every reaction is intermolecular; real systems waste some conversion on intramolecular loops, which do not build the network &mdash; so it predicts gelation <strong>early</strong>. The true gel point sits between them, usually nearer Flory&ndash;Stockmayer.
+    </p>
+    <div class="guide-formula">
+      Carothers: p<sub>gel</sub> = 2 &divide; f<sub>avg</sub> &nbsp;&nbsp;&nbsp;&nbsp; Flory&ndash;Stockmayer: &alpha;<sub>c</sub> = 1 &divide; (f<sub>b</sub> &minus; 1)
+    </div>
+    <div class="dyn-row-labels sg-gel-labels">
+      <span>Component</span>
+      <span>Moles</span>
+      <span>Functionality f</span>
+      <span>Group</span>
+      <span class="dyn-label-spacer"></span>
+    </div>
+    <div id="sg-gel-rows" class="dyn-rows"></div>
+    <div class="actions" style="justify-content:flex-start; margin-top:6px; gap:8px;">
+      <button type="button" class="copy-btn" id="sg-gel-add">+ Add component</button>
+      <button type="button" class="copy-btn" id="sg-gel-demo">Load A&#8323; + B&#8322; example</button>
+    </div>
+    <div class="stat-grid" id="sg-gel-stats" style="margin-top:16px;"></div>
+    <div id="sg-gel-detail" class="guide-note" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="card">
+    <h3>What these leave out</h3>
+    <p class="guide-note">
+      Both models assume every group of a kind is equally reactive and stays that way. That is Flory's equal-reactivity principle, and it holds better than it has any right to for small monomers in a well-stirred melt. It fails when the second group on a monomer is deactivated by the first reacting (substitution effects), when viscosity climbs far enough that diffusion rather than chemistry sets the rate &mdash; which always happens near the gel point &mdash; and when the chains are long enough that an end group has trouble finding a partner.
+    </p>
+    <p class="guide-note">
+      Neither model knows anything about side reactions. A polyester that transesterifies, or a urethane forming allophanate above 120&nbsp;&deg;C, is building network by a route the functionality count never saw.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <p class="guide-note">
+      Past the gel point, <a href="crosslink-density.html">Crosslink Density</a> takes over: it measures what the network became rather than predicting when it formed. For chain-growth the equivalent design calculation is <a href="radical-kinetics.html">Free-Radical Kinetics</a>, and the <a href="calculator.html#pu">polyurethane calculator</a> applies the same stoichiometry to an NCO/OH system.
+    </p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Predictions assume equal reactivity and no side reactions. Confirm the gel point experimentally before committing a batch.</p>
+</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function num(id) { var v = parseFloat($(id).value); return isFinite(v) ? v : NaN; }
+
+  // ---------- degree of polymerization ----------
+  // Carothers with stoichiometric imbalance. A monofunctional species counts
+  // twice in the ratio because it both consumes a group and stops a chain,
+  // which is why trace monofunctional impurity is so much worse than an equal
+  // percentage of stoichiometric error.
+  function ratio(nA, nB, mono) {
+    var lo = Math.min(nA, nB), hi = Math.max(nA, nB);
+    return lo / (hi + 2 * mono);
+  }
+  function carothersXn(r, p) {
+    var d = 1 + r - 2 * r * p;
+    return d <= 0 ? Infinity : (1 + r) / d;
+  }
+
+  function recalcDP() {
+    var p = num("sg-p"), nA = num("sg-na"), nB = num("sg-nb"),
+        mono = num("sg-mono") || 0, m0 = num("sg-m0") || 0;
+    var stats = $("sg-stats"), wrap = $("sg-table-wrap"),
+        body = document.querySelector("#sg-table tbody");
+
+    if (!isFinite(p) || p < 0 || p > 1 || !isFinite(nA) || !isFinite(nB) || nA <= 0 || nB <= 0) {
+      stats.innerHTML = '<div class="error-msg">Enter a conversion between 0 and 1 and a positive number of equivalents for both groups.</div>';
+      wrap.style.display = "none";
+      return;
+    }
+
+    var r = ratio(nA, nB, mono);
+    var xn = carothersXn(r, p);
+    var xnMax = carothersXn(r, 1);
+    var mn = m0 > 0 ? xn * m0 : null;
+
+    var imbalance = Math.abs(nA - nB) / Math.max(nA, nB) * 100;
+    var note = mono > 0
+      ? "monofunctional counted twice, as it caps a chain"
+      : (imbalance < 1e-9 ? "groups balanced" : imbalance.toFixed(2) + "% excess of one group");
+
+    stats.innerHTML =
+      '<div class="stat"><div class="label">X<sub>n</sub> at p = ' + p + '</div><div class="value">' +
+        (isFinite(xn) ? xn.toFixed(1) : "&infin;") + '</div><div class="sub">' +
+        (mn ? "M<sub>n</sub> &asymp; " + Math.round(mn).toLocaleString() + " g/mol" : "enter a unit mass for M<sub>n</sub>") + '</div></div>' +
+      '<div class="stat"><div class="label">Stoichiometric ratio r</div><div class="value">' + r.toFixed(4) +
+        '</div><div class="sub">' + note + '</div></div>' +
+      '<div class="stat"><div class="label">Ceiling at p = 1</div><div class="value">' +
+        (isFinite(xnMax) ? xnMax.toFixed(1) : "&infin;") + '</div><div class="sub">' +
+        (isFinite(xnMax) ? "the best this stoichiometry can ever reach" : "unbounded: groups exactly balanced") + '</div></div>';
+
+    // the point of the table is that the last fraction of a percent does the work
+    var ladder = [0.90, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999];
+    wrap.style.display = "";
+    body.innerHTML = ladder.map(function (pp) {
+      var x = carothersXn(r, pp);
+      var cls = Math.abs(pp - p) < 1e-9 ? ' class="sg-current"' : "";
+      return "<tr" + cls + "><td class=\"num\">" + pp + "</td><td class=\"num\">" +
+        (isFinite(x) ? x.toFixed(1) : "&infin;") + "</td><td class=\"num\">" +
+        (m0 > 0 && isFinite(x) ? Math.round(x * m0).toLocaleString() : "&mdash;") + "</td></tr>";
+    }).join("");
+  }
+
+  ["sg-p", "sg-na", "sg-nb", "sg-mono", "sg-m0"].forEach(function (id) {
+    $(id).addEventListener("input", recalcDP);
+  });
+
+  // ---------- gel point ----------
+  function makeGelRow(name, mol, f, group) {
+    var row = document.createElement("div");
+    row.className = "dyn-row sg-gel-row";
+    row.innerHTML =
+      '<input type="text" class="sg-g-name" placeholder="Component" value="' + (name || "") + '">' +
+      '<input type="number" class="sg-g-mol" placeholder="Moles" step="any" min="0" value="' + (mol != null ? mol : "") + '">' +
+      '<input type="number" class="sg-g-f" placeholder="f" step="1" min="1" value="' + (f != null ? f : "") + '">' +
+      '<select class="sg-g-type"><option value="A">A</option><option value="B">B</option></select>' +
+      '<button type="button" class="dyn-row-remove" aria-label="Remove component">&times;</button>';
+    row.querySelector(".sg-g-type").value = group || "A";
+    row.querySelector(".dyn-row-remove").addEventListener("click", function () { row.remove(); recalcGel(); });
+    row.addEventListener("input", recalcGel);
+    row.addEventListener("change", recalcGel);
+    return row;
+  }
+  function addGelRow(name, mol, f, group) {
+    $("sg-gel-rows").appendChild(makeGelRow(name, mol, f, group));
+  }
+
+  function recalcGel() {
+    var stats = $("sg-gel-stats"), detail = $("sg-gel-detail");
+    var comps = [];
+    [].forEach.call(document.querySelectorAll(".sg-gel-row"), function (row) {
+      var mol = parseFloat(row.querySelector(".sg-g-mol").value);
+      var f = parseFloat(row.querySelector(".sg-g-f").value);
+      if (!isFinite(mol) || !isFinite(f) || mol <= 0 || f < 1) return;
+      comps.push({
+        name: row.querySelector(".sg-g-name").value || "component",
+        mol: mol, f: Math.round(f),
+        type: row.querySelector(".sg-g-type").value
+      });
+    });
+
+    if (comps.length < 2) {
+      stats.innerHTML = '<div class="error-msg">Add at least two components with moles and a functionality.</div>';
+      detail.innerHTML = "";
+      return;
+    }
+    var hasA = comps.some(function (c) { return c.type === "A"; });
+    var hasB = comps.some(function (c) { return c.type === "B"; });
+    if (!hasA || !hasB) {
+      stats.innerHTML = '<div class="error-msg">A gelling system needs both an A group and a B group. Mark which monomer carries which.</div>';
+      detail.innerHTML = "";
+      return;
+    }
+
+    var eqA = 0, eqB = 0, nMol = 0, eqTotal = 0;
+    comps.forEach(function (c) {
+      var e = c.mol * c.f;
+      if (c.type === "A") eqA += e; else eqB += e;
+      nMol += c.mol; eqTotal += e;
+    });
+
+    // Carothers: number-average functionality over ALL molecules, but only the
+    // limiting group can react, so the excess is discounted first. With a large
+    // excess this is what stops f_avg being flattered by groups that will never
+    // find a partner.
+    var limiting = Math.min(eqA, eqB);
+    var fAvgAll = eqTotal / nMol;
+    var fAvg = 2 * limiting / nMol;
+    var pC = fAvg > 0 ? 2 / fAvg : Infinity;
+
+    // Flory-Stockmayer on the limiting group.
+    //   alpha = r p^2 rho / (1 - r p^2 (1-rho)),  gel at alpha = 1/(fb - 1)
+    // rho is the fraction of limiting-group equivalents sitting on branch units
+    // (f >= 3); fb is the functionality of those branch units.
+    var limitType = eqA <= eqB ? "A" : "B";
+    var r = limiting / Math.max(eqA, eqB);
+    var branch = comps.filter(function (c) { return c.type === limitType && c.f >= 3; });
+    var branchEq = branch.reduce(function (s, c) { return s + c.mol * c.f; }, 0);
+    var limitEq = comps.filter(function (c) { return c.type === limitType; })
+                       .reduce(function (s, c) { return s + c.mol * c.f; }, 0);
+    var rho = limitEq > 0 ? branchEq / limitEq : 0;
+    var branchMol = branch.reduce(function (s, c) { return s + c.mol; }, 0);
+    var fb = branchMol > 0 ? branchEq / branchMol : 0;
+    var mixedBranch = branch.length > 1 &&
+      branch.some(function (c) { return c.f !== branch[0].f; });
+
+    var pFS = null, fsNote = "";
+    if (!branch.length) {
+      fsNote = "no branch unit on the limiting group, so no gel forms &mdash; this is a linear system";
+    } else {
+      var ac = 1 / (fb - 1);
+      var denom = r * (rho + ac * (1 - rho));
+      var p2 = denom > 0 ? ac / denom : Infinity;
+      pFS = Math.sqrt(p2);
+      if (pFS > 1) { fsNote = "exceeds 1, so this formulation cannot gel at any conversion"; pFS = null; }
+    }
+
+    stats.innerHTML =
+      '<div class="stat"><div class="label">Flory&ndash;Stockmayer p<sub>gel</sub></div><div class="value">' +
+        (pFS != null ? pFS.toFixed(4) : "&mdash;") + '</div><div class="sub">first infinite network; gels early</div></div>' +
+      '<div class="stat"><div class="label">Carothers p<sub>gel</sub></div><div class="value">' +
+        (isFinite(pC) && pC <= 1 ? pC.toFixed(4) : (pC > 1 ? "&gt; 1" : "&mdash;")) +
+        '</div><div class="sub">infinite X<sub>n</sub>; gels late</div></div>' +
+      '<div class="stat"><div class="label">Average functionality</div><div class="value">' + fAvg.toFixed(3) +
+        '</div><div class="sub">on the limiting group (' + limitType + ')</div></div>';
+
+    var lines = [];
+    lines.push("<strong>Groups:</strong> " + eqA.toFixed(3) + " equivalents of A against " + eqB.toFixed(3) +
+      " of B, so " + limitType + " is limiting and r = " + r.toFixed(4) + ".");
+    if (fAvgAll !== fAvg) {
+      lines.push("<strong>Note:</strong> counting every group regardless of partner would give f<sub>avg</sub> = " +
+        fAvgAll.toFixed(3) + "; the value above discounts the " +
+        (Math.abs(eqA - eqB)).toFixed(3) + " equivalents in excess, which can never react.");
+    }
+    if (branch.length) {
+      lines.push("<strong>Branching:</strong> " + (rho * 100).toFixed(1) +
+        "% of the limiting group sits on units with f &ge; 3, of functionality f<sub>b</sub> = " + fb.toFixed(2) + ".");
+      if (mixedBranch) {
+        lines.push("<em>Caution:</em> more than one branch functionality is present. Flory&ndash;Stockmayer is evaluated at their average, which is an approximation; the exact treatment needs the weight-average branch functionality.");
+      }
+      if (pFS != null && isFinite(pC) && pC <= 1) {
+        lines.push("<strong>Expect the real gel point between " + pFS.toFixed(3) + " and " + pC.toFixed(3) +
+          "</strong>, usually nearer the lower figure. Intramolecular loops consume conversion without building network, which pushes the measured value up from Flory&ndash;Stockmayer.");
+      }
+    } else if (fsNote) {
+      lines.push("<strong>No gel:</strong> " + fsNote + ".");
+    }
+    detail.innerHTML = lines.join("<br>");
+  }
+
+  $("sg-gel-add").addEventListener("click", function () { addGelRow("", null, null, "A"); });
+  $("sg-gel-demo").addEventListener("click", function () {
+    $("sg-gel-rows").innerHTML = "";
+    addGelRow("Triol (A₃)", 1, 3, "A");
+    addGelRow("Diacid (B₂)", 1.5, 2, "B");
+    recalcGel();
+  });
+
+  addGelRow("Triol (A₃)", 1, 3, "A");
+  addGelRow("Diacid (B₂)", 1.5, 2, "B");
+  recalcDP();
+  recalcGel();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
+}
+</script>
+<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
