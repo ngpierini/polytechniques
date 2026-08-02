@@ -1397,10 +1397,50 @@
     $("game-status").textContent = init && hot ? "Initiated + heated!" : init ? "Initiated!" : hot ? "Heated!" : "Polymerizing";
   }
 
+  // Anything that throws inside tick() used to end the run for good. The timer
+  // keeps firing into the same exception, and if the throw landed after the
+  // level was flagged complete there was no overlay and no button either: a
+  // finished board with no way off it and nothing on screen to say why.
+  //
+  // The bug that caused it is fixed, but "a bug here bricks the game" is the
+  // part worth removing. Whatever goes wrong now, the player gets a button, and
+  // the message comes with it so a screenshot is enough to diagnose the next
+  // one instead of guessing from the state it left behind.
+  var GAME_BUILD = "2026-08-02c";
+  function safeTick() {
+    try {
+      tick();
+      return true;
+    } catch (err) {
+      var msg = String((err && err.message) || err);
+      try { console.error("Build a Polymer Chain: tick failed", err); } catch (ignored) {}
+      clearInterval(tickTimer);
+      tickTimer = null;
+      if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+      if (beadEaten >= beadTotal && currentLevel < LEVELS.length) {
+        // The level really was finished, so the way on has to keep working.
+        state = "levelComplete";
+        pendingAdvance = true;
+        $("game-status").textContent = "Level complete";
+        showOverlay("Level " + currentLevel + ": " + levelName + " complete!",
+          "On to level " + (currentLevel + 1) + " of " + LEVELS.length + ". " +
+          "(Something went wrong writing the summary: " + msg + " — build " + GAME_BUILD + ")",
+          "Next level");
+      } else {
+        state = "paused";
+        pausedAt = Date.now();
+        $("game-status").textContent = "Paused";
+        showOverlay("Something went wrong",
+          msg + " — build " + GAME_BUILD + ". Press Resume to carry on.", "Resume");
+      }
+      return false;
+    }
+  }
+
   function beginTicking() {
     if (tickTimer) clearInterval(tickTimer);
     tickTimer = setInterval(function () {
-      tick();
+      if (!safeTick()) return;
       elapsed = (Date.now() - startTime) / 1000;
       updateTimeHud();
       // Polled rather than set on pickup: the boost expires on a clock, so
@@ -3502,10 +3542,26 @@
     if (state === "playing" || state === "paused") togglePause();
   });
 
+  // This button is the only control that is ever the sole way forward, so it
+  // must not be possible for one press to consume the overlay and then throw:
+  // that leaves the player looking at a board they cannot use.
   $("game-start-btn").addEventListener("click", function () {
-    if (state === "paused") togglePause();
-    else if (pendingAdvance) advanceLevel();
-    else startRun();
+    try {
+      if (state === "paused") togglePause();
+      else if (pendingAdvance) advanceLevel();
+      else startRun();
+    } catch (err) {
+      var msg = String((err && err.message) || err);
+      try { console.error("Build a Polymer Chain: start button failed", err); } catch (ignored) {}
+      if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
+      if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+      state = "idle";
+      pendingAdvance = false;
+      $("game-status").textContent = "Ready";
+      showOverlay("Something went wrong",
+        msg + " — build " + GAME_BUILD + ". Start again from level " + currentLevel + ".",
+        "Start polymerizing");
+    }
   });
 
   state = "idle";
