@@ -4532,10 +4532,242 @@
     }
     renderRecent();
 
+    // ---------- Facet search: the library's own metadata ----------
+    //
+    // Every entry carries tags and a class, curated alongside the structures,
+    // and none of it used to be searchable: the ranking only looked at name,
+    // aka and CAS. "Biodegradable" returned nothing while 67 entries were
+    // tagged biodegradable; "polyester" returned the 10 with the word in their
+    // name out of the 165 that are one. This indexes what was already there.
+    //
+    // It sits BELOW every name tier, so an abbreviation still beats a category:
+    // typing PMMA gives you PMMA, not the forty methacrylates.
+    var FACET_TIER = 20;         // first facet rank, above every name tier
+    var facetIndexCache = null;
+
+    function facetNorm(s) {
+      return String(s || '').toLowerCase().replace(/[‐-―]/g, '-').replace(/\s+/g, ' ').trim();
+    }
+
+    // A class reads "Step-growth (polyester)" or "Addition (vinyl)". People
+    // type "polyester", "step-growth" or "vinyl", so index the whole string and
+    // each parenthesised or hyphenated part of it as separate terms.
+    function classTerms(cls) {
+      var c = facetNorm(cls);
+      if (!c) return [];
+      var out = [c];
+      var inner = c.match(/\(([^)]+)\)/);
+      if (inner) out.push(facetNorm(inner[1]));
+      var head = c.replace(/\s*\([^)]*\)/g, '').trim();
+      if (head && out.indexOf(head) === -1) out.push(head);
+      return out;
+    }
+
+    function facetTermsOf(p) {
+      if (p._facets) return p._facets;
+      var terms = [];
+      (p.tags || []).forEach(function (t) { terms.push(facetNorm(t)); });
+      classTerms(p.cls).forEach(function (t) { if (terms.indexOf(t) === -1) terms.push(t); });
+      if (p.arch) terms.push(facetNorm(p.arch));
+      if (p.type) terms.push(facetNorm(p.type));
+      try { Object.defineProperty(p, '_facets', { value: terms, enumerable: false }); } catch (e) { p._facets = terms; }
+      return terms;
+    }
+
+    // Counted once so the chip row can show how many entries each facet holds -
+    // a category chip with no number is a promise you cannot check.
+    function facetIndex() {
+      if (facetIndexCache) return facetIndexCache;
+      var db = window.POLYMER_DB || [];
+      var tagCount = {}, clsCount = {};
+      db.forEach(function (p) {
+        (p.tags || []).forEach(function (t) {
+          var k = facetNorm(t);
+          if (k) tagCount[k] = (tagCount[k] || 0) + 1;
+        });
+        classTerms(p.cls).forEach(function (t) { clsCount[t] = (clsCount[t] || 0) + 1; });
+      });
+      function toList(obj) {
+        return Object.keys(obj).map(function (k) { return { term: k, n: obj[k] }; })
+          .sort(function (a, b) { return b.n - a.n || (a.term < b.term ? -1 : 1); });
+      }
+      facetIndexCache = { tags: toList(tagCount), classes: toList(clsCount) };
+      return facetIndexCache;
+    }
+
+    // Does this entry answer this single term? Names count too, so a mixed
+    // query like "biodegradable polyester" and one like "polylactide hydrogel"
+    // both work without the caller knowing which words are which.
+    function termMatches(p, term) {
+      var facets = facetTermsOf(p);
+      for (var i = 0; i < facets.length; i++) {
+        if (facets[i] === term || facets[i].indexOf(term) !== -1) return true;
+      }
+      if (facetNorm(p.name).indexOf(term) !== -1) return true;
+      var aka = p.aka || [];
+      for (var j = 0; j < aka.length; j++) {
+        if (facetNorm(aka[j]).indexOf(term) !== -1) return true;
+      }
+      return facetNorm(p.monomer).indexOf(term) !== -1;
+    }
+
+    // Whole query first, then word-by-word intersection. Order matters: "drug
+    // delivery" is one tag, so splitting it up front would turn an exact
+    // category into a two-word AND that happens to give the same answer for the
+    // wrong reason - and "self-assembly" would break outright.
+    function facetQuery(q) {
+      var query = facetNorm(q);
+      if (query.length < 3) return null;
+      var db = window.POLYMER_DB || [];
+      var whole = db.filter(function (p) { return facetTermsOf(p).indexOf(query) !== -1; });
+      if (whole.length) return { list: whole, terms: [query], exact: true };
+
+      var words = query.split(' ').filter(function (w) { return w.length >= 3; });
+      if (!words.length) return null;
+      // Every word has to land on something, or "polyester recipe" would quietly
+      // answer as if you had only typed "polyester".
+      for (var i = 0; i < words.length; i++) {
+        var anyHit = false;
+        for (var j = 0; j < db.length; j++) {
+          if (termMatches(db[j], words[i])) { anyHit = true; break; }
+        }
+        if (!anyHit) return null;
+      }
+      var list = db.filter(function (p) {
+        return words.every(function (w) { return termMatches(p, w); });
+      });
+      return list.length ? { list: list, terms: words, exact: false } : null;
+    }
+
+    // ---------- Chips, and paging a category that runs to 165 entries ----------
+
+    var activeFacets = [];
+    var pendingRest = null;
+
+    function renderMore(rest, label) {
+      var resultsEl = document.getElementById('mol-results');
+      if (!resultsEl || !rest.length) return;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'copy-btn mol-more-btn';
+      btn.textContent = 'Show the other ' + rest.length + ' ' + label;
+      btn.addEventListener('click', function () {
+        btn.remove();
+        resultsEl.insertAdjacentHTML('beforeend', rest.map(polymerCard).join(''));
+      });
+      resultsEl.appendChild(btn);
+    }
+
+    // A category answer is a list, not a ranking, so it pages instead of being
+    // silently cut to the first twenty the way a name search can afford to be.
+    var FACET_PAGE = 24;
+    function renderFacetResults(list, statusEl, message) {
+      renderResults(list.slice(0, FACET_PAGE));
+      if (statusEl) statusEl.textContent = message;
+      if (list.length > FACET_PAGE) renderMore(list.slice(FACET_PAGE), 'polymers');
+    }
+
+    function facetLabel(term) {
+      return term.charAt(0).toUpperCase() + term.slice(1);
+    }
+
+    function runActiveFacets() {
+      var statusEl = document.getElementById('mol-status');
+
+    var nameInput = document.getElementById('mol-name-search');
+      if (!activeFacets.length) {
+        renderResults([]);
+        if (statusEl) statusEl.textContent = '';
+        renderFacetBar();
+        return;
+      }
+      if (nameInput) nameInput.value = '';
+      var db = window.POLYMER_DB || [];
+      var list = db.filter(function (p) {
+        return activeFacets.every(function (t) { return termMatches(p, t); });
+      });
+      renderFacetBar();
+      renderFacetResults(list, statusEl,
+        list.length
+          ? list.length + ' ' + (list.length === 1 ? 'polymer is' : 'polymers are') + ' ' +
+            activeFacets.map(facetLabel).join(' + ') + ':'
+          : 'Nothing is ' + activeFacets.map(facetLabel).join(' + ') + '. Remove a filter to widen it.');
+    }
+
+    function chipButton(term, count, on) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'mol-facet-chip' + (on ? ' is-on' : '');
+      b.textContent = facetLabel(term) + (count != null ? ' ' + count : '');
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.addEventListener('click', function () {
+        var at = activeFacets.indexOf(term);
+        if (at === -1) activeFacets.push(term); else activeFacets.splice(at, 1);
+        runActiveFacets();
+      });
+      return b;
+    }
+
+    var facetBarOpen = false;
+
+    function renderFacetBar() {      var wrap = document.getElementById('mol-facets');
+      if (!wrap) return;
+      var idx = facetIndex();
+      wrap.innerHTML = '';
+      wrap.hidden = false;
+
+      var head = document.createElement('div');
+      head.className = 'mol-facet-head';
+      var label = document.createElement('span');
+      label.className = 'mol-recent-label';
+      label.textContent = 'Browse ' + (window.POLYMER_DB || []).length + ' polymers:';
+      head.appendChild(label);
+      wrap.appendChild(head);
+
+      var row = document.createElement('div');
+      row.className = 'mol-facet-row';
+      // Classes first: they partition the library, so they are the honest way
+      // in. Tags overlap and are the second cut.
+      var classes = idx.classes.filter(function (c) { return c.n >= 15 && c.term.indexOf('(') === -1; });
+      var tags = idx.tags.filter(function (t) { return t.n >= 12; });
+      var shown = facetBarOpen ? classes.concat(tags) : classes.slice(0, 6).concat(tags.slice(0, 8));
+      shown.forEach(function (f) {
+        row.appendChild(chipButton(f.term, f.n, activeFacets.indexOf(f.term) !== -1));
+      });
+      // Anything switched on that this view would otherwise hide still shows,
+      // or a filter could be active with no way to switch it off.
+      activeFacets.forEach(function (t) {
+        if (!shown.some(function (f) { return f.term === t; })) row.appendChild(chipButton(t, null, true));
+      });
+      wrap.appendChild(row);
+
+      var more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'mol-recent-clear';
+      more.textContent = facetBarOpen ? 'Fewer categories' : 'All ' + (classes.length + tags.length) + ' categories';
+      more.addEventListener('click', function () { facetBarOpen = !facetBarOpen; renderFacetBar(); });
+      head.appendChild(more);
+
+      if (activeFacets.length) {
+        var clear = document.createElement('button');
+        clear.type = 'button';
+        clear.className = 'mol-recent-clear';
+        clear.textContent = 'Clear filters';
+        clear.addEventListener('click', function () { activeFacets = []; runActiveFacets(); });
+        head.appendChild(clear);
+      }
+    }
+
+    // Called here, after the block above: renderFacetBar reads activeFacets,
+    // and a var declared later in this handler is still undefined when the
+    // line runs, so calling it any earlier threw and left an empty bar.
+    renderFacetBar();
+
     var nameInput = document.getElementById('mol-name-search');
     if (nameInput) {
       nameInput.addEventListener('input', function () {
         var q = nameInput.value.trim().toLowerCase();
+        if (activeFacets.length) { activeFacets = []; renderFacetBar(); }
         var statusEl = document.getElementById('mol-status');
         clearTimeout(recentTimer);
         if (!q) { renderResults([]); if (statusEl) statusEl.textContent = ''; return; }
@@ -4567,7 +4799,40 @@
           if (r !== null) scored.push({ p: p, r: r, i: i });
         });
         scored.sort(function (a, b) { return a.r - b.r || a.i - b.i; });
-        var matches = scored.slice(0, 20).map(function (s) { return s.p; });
+        // A typed category is answered from the same box as a typed name, and
+        // which of the two leads depends on what was typed.
+        //
+        // When the query IS a category ("polyester" is a class term), the
+        // category leads in library order and only an exact name or alias goes
+        // ahead of it. Letting the name tiers lead put Poly(ester urethane)
+        // above PET, PLA and PCL - an alias that happens to start with the same
+        // letters, ranked above the polymers the word actually means.
+        //
+        // When the query is a name that also happens to touch a category, the
+        // name hits lead and the category widens the list underneath.
+        var facet = facetQuery(q);
+        var matches, added = 0;
+        if (facet && facet.exact) {
+          var lead = [], rest = [];
+          scored.forEach(function (s) { (s.r <= 1 ? lead : rest).push(s.p); });
+          matches = lead.slice();
+          var have = {};
+          matches.forEach(function (p) { have[p.name] = 1; });
+          facet.list.forEach(function (p) {
+            if (!have[p.name]) { have[p.name] = 1; matches.push(p); added++; }
+          });
+          rest.forEach(function (p) { if (!have[p.name]) { have[p.name] = 1; matches.push(p); } });
+        } else {
+          matches = scored.map(function (s) { return s.p; });
+          if (facet) {
+            var seen = {};
+            matches.forEach(function (p) { seen[p.name] = 1; });
+            facet.list.forEach(function (p) {
+              if (!seen[p.name]) { seen[p.name] = 1; matches.push(p); added++; }
+            });
+          }
+        }
+        var named = scored.map(function (s) { return s.p; });
         if (matches.length) {
           // Some abbreviations genuinely belong to more than one polymer - PPO
           // is both poly(propylene oxide) and poly(phenylene oxide), PEA both
@@ -4575,13 +4840,19 @@
           // of them first, which silently looks like an answer, so say when the
           // query is ambiguous rather than letting the order imply a winner.
           var exact = scored.filter(function (s) { return s.r <= 1; });
-          if (statusEl) {
-            statusEl.textContent = exact.length > 1
-              ? exact.length + ' polymers are known as "' + nameInput.value.trim() + '" — all shown:'
-              : matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ':';
-          }
-          renderResults(matches);
-        } else {
+          var msg;
+          if (exact.length > 1) msg = exact.length + ' polymers are known as "' + nameInput.value.trim() + '" — all shown:';
+          // On a category query the category leads, so do not claim the named
+          // ones are on top: they are ranked among the rest.
+          else if (facet && facet.exact) msg = matches.length + ' ' + (matches.length === 1 ? 'polymer is' : 'polymers are') + ' in that category:';
+          else if (added && named.length) msg = named.length + ' named that, and ' + added + ' more in that category:';
+          else if (added) msg = matches.length + ' ' + (matches.length === 1 ? 'polymer is' : 'polymers are') + ' in that category:';
+          else msg = matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ':';
+          renderFacetResults(matches, statusEl, msg);
+        } else if (facet) {
+          renderFacetResults(facet.list, statusEl, facet.list.length + ' ' +
+            (facet.list.length === 1 ? 'polymer is' : 'polymers are') + ' ' + facetLabel(facet.terms.join(' + ')) + ':');
+          } else {
           rescueNameSearch(q, statusEl);
         }
         if (matches.length && q.length >= 3) {

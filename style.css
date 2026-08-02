@@ -2426,6 +2426,35 @@ input.input-invalid {
 }
 .mol-recent-clear:hover { color: var(--danger); }
 
+/* ---------- Category chips on the polymer search ----------
+   The library's tags and classes were curated with the structures but were
+   never searchable, so 653 entries had exactly two doors: know the name, or
+   draw it. These are the third door, and they carry their counts because a
+   category chip without a number is a promise you cannot check. */
+.mol-facets { margin-top: 12px; }
+.mol-facet-head {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.mol-facet-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.mol-facet-chip {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+.mol-facet-chip:hover { border-color: var(--primary); background: var(--primary-dim); }
+.mol-facet-chip.is-on {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+.mol-more-btn { display: block; margin: 14px auto 0; }
+
 /* ---------- Calculator tab-row utility buttons ---------- */
 .mw-unit-toggle, .share-recipe-btn {
   margin-left: auto;
