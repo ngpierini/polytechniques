@@ -18,7 +18,7 @@
     ["gpc-peak-interpretation.html", "📉 GPC Peaks"],
     ["thermal-analysis.html", "🔥 Thermal"],
     ["chain-dimensions.html", "📐 Chain Size"],
-    ["step-growth.html", "🔗 Step-Growth"],
+    ["calculator.html#sg", "🔗 Step-Growth"],
     ["crosslink-density.html", "🕸️ Crosslinks"],
     ["radical-kinetics.html", "⚡ FRP Kinetics"],
     ["glossary.html", "📖 Glossary"]
@@ -104,7 +104,7 @@
     ["conversion-monitoring.html", "Monitoring Conversion", "aliquot internal standard kinetics nmr"],
     ["gpc-peak-interpretation.html", "GPC Peak Interpretation", "chromatogram shoulder tailing column detector"],
     ["thermal-analysis.html", "Thermal Analysis (DSC, TGA, DMA)", "dsc tga dma thermal thermogravimetric differential scanning calorimetry dynamic mechanical analysis glass transition tg melting tm crystallinity char yield decomposition onset storage loss modulus tan delta crosslink density"],
-    ["step-growth.html", "Step-Growth & Gel Point", "carothers gel point flory stockmayer functionality stoichiometry conversion xn thermoset network cure polyester polyamide endcapper"],
+    ["calculator.html#sg", "Step-Growth & Gel Point", "carothers gel point flory stockmayer functionality stoichiometry conversion xn thermoset network cure polyester polyamide endcapper"],
     ["crosslink-density.html", "Crosslink Density", "flory rehner swelling mc molar mass between crosslinks network rubber elasticity plateau modulus chi swelling ratio"],
     ["radical-kinetics.html", "Free-Radical Kinetics", "rp rate of polymerization kinetic chain length dpn kp kt kd initiator efficiency chain transfer mayo trommsdorff half life"],
     ["glossary.html", "Glossary", "terms definitions dispersity dp cta"],
