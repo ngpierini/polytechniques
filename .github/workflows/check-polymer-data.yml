@@ -55,6 +55,11 @@ jobs:
       # hand-maintained and had silently dropped one of the main tools.
       - run: node scripts/check-sitemap.js
 
+      # Fails if the AdSense publisher number stops matching between ads.txt,
+      # nav.js and the page heads - a mismatch stops serving without any
+      # visible error on the site itself.
+      - run: node scripts/check-adsense.js
+
       # Backstop for the pre-commit hook, which lives only in a local clone.
       - run: node scripts/check-no-energetic.js
 

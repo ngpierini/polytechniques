@@ -112,30 +112,28 @@
 
   // ---- Ad slot (Google AdSense), injected site-wide ----
   //
-  // Both values come from the AdSense dashboard once the site is approved, and
-  // BOTH are required: the client identifies the account, the slot identifies
-  // the individual ad unit created under it. While either is empty nothing is
-  // injected and no request is made to Google, so the site behaves exactly as
-  // it does today.
-  var ADSENSE_CLIENT = "";   // e.g. ca-pub-0000000000000000
-  var ADSENSE_SLOT = "";     // e.g. 1234567890
+  // The LIBRARY is loaded by a literal <script> in the <head> of every page,
+  // not from here. That is deliberate: Google verifies ownership by reading the
+  // raw HTML, and a script injected by JavaScript is not reliably seen. This
+  // function only places the ad UNIT, which needs the slot id of a unit created
+  // in the dashboard - and that only exists once the site is approved.
   //
-  // THREE THINGS MUST BE DONE BEFORE THOSE ARE SET, not after:
+  // So while ADSENSE_SLOT is empty: the library loads (ownership verified, and
+  // the account is ready to serve the moment it is approved) but no ad unit is
+  // placed and no space is taken on any page.
+  var ADSENSE_CLIENT = "ca-pub-9553775926809206";
+  var ADSENSE_SLOT = "";     // e.g. 1234567890, from Ads > By ad unit
   //
-  //  1. ads.txt at the site root, one line:
-  //       google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
-  //     with the real publisher number. Without it AdSense eventually
-  //     restricts serving. Deliberately absent until the number is known - a
-  //     wrong ads.txt is worse than no ads.txt.
+  // STILL OUTSTANDING, and it is not optional: a Google-certified consent
+  // management platform, switched on in the AdSense dashboard under Privacy &
+  // messaging. Google requires one for traffic from the EEA and the UK, and
+  // this site blocks neither. A hand-written banner does NOT satisfy it.
+  // Google's own CMP is free. This matters from now rather than from approval,
+  // because the library in the page head can set cookies before a single ad
+  // has ever served.
   //
-  //  2. A Google-certified consent management platform, switched on in the
-  //     AdSense dashboard under Privacy & messaging. This is not optional and
-  //     a hand-written banner does NOT satisfy it: Google requires a certified
-  //     CMP for traffic from the EEA and the UK, and this site blocks neither.
-  //     Google's own Privacy & messaging CMP is free and is the simple choice.
-  //
-  //  3. privacy.html rewritten. It currently states the site sets no cookies
-  //     at all, which stops being true the moment AdSense loads.
+  // ads.txt at the site root carries the matching publisher number. Both must
+  // agree; if the AdSense account is ever changed, change both.
   //
   // Manual placement, not Auto ads. Auto ads let Google insert units wherever
   // it judges best, which on a page of calculators and drawn structures means
@@ -199,17 +197,10 @@
         }, 10000);
       }
 
-      var s = document.createElement("script");
-      s.async = true;
-      s.crossOrigin = "anonymous";
-      s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" +
-        encodeURIComponent(ADSENSE_CLIENT);
-      s.onerror = function () { slot.remove(); };
-      document.head.appendChild(s);
-
-      // Pushed before the library has loaded on purpose: adsbygoogle is an
-      // array Google drains once it arrives, so queueing here is the documented
-      // order and avoids a race with the async script.
+      // The library is already requested from the page <head>; this only asks
+      // it to fill the unit just inserted. adsbygoogle is an array Google
+      // drains when it arrives, so pushing before it has loaded is the
+      // documented order and avoids a race with the async script.
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (e) { /* an ad must never break a page */ }
   }
