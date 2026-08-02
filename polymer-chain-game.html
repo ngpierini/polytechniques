@@ -798,6 +798,7 @@
     $("game-level").textContent = currentLevel + " / " + LEVELS.length;
     var levelStat = $("game-level").parentElement.querySelector(".label");
     if (levelStat) levelStat.textContent = "Level · " + levelName;
+    labSignal("level");
   }
 
   function spawnEnemies() {
@@ -1180,6 +1181,8 @@
       lastBeadAt = Date.now();
       points += POINTS_PER_UNIT;
       updateScoreHud();
+      // Conversion, which is what the chemist in the background is working to.
+      labSignal("progress", beadEaten / beadTotal);
     }
 
     // Depropagation while the boost runs. It only shortens the chain being
@@ -1275,6 +1278,9 @@
       render(1);
       var prevBest = getBest(currentLevel);
       var isBest = recordBest(currentLevel, elapsed);
+      // Whatever happens next, this level's polymer is made: the chemist jars
+      // it in the level's own colour and it joins the shelf.
+      labSignal("levelDone", { tint: (LEVELS[currentLevel - 1].wall || {}).hi });
       if (currentLevel < LEVELS.length) {
         state = "levelComplete";
         pendingAdvance = true;
@@ -1318,7 +1324,11 @@
     lives = LIVES_START;
     points = 0;
     updateLivesHud();
-    loadLevel(state === "won" || state === "idle" ? 1 : currentLevel);
+    // A fresh game starts an empty shelf; picking up a level after a game over
+    // keeps the jars already made, because those levels really were cleared.
+    var fromScratch = state === "won" || state === "idle";
+    if (fromScratch) labSignal("reset");
+    loadLevel(fromScratch ? 1 : currentLevel);
     resetGame();
     state = "playing";
     startTime = Date.now();
@@ -1359,6 +1369,9 @@
       tick();
       elapsed = (Date.now() - startTime) / 1000;
       updateTimeHud();
+      // Polled rather than set on pickup: the boost expires on a clock, so
+      // there is no event to hang the "it stopped" edge on.
+      labSignal("heat", heatActive());
     }, effectiveTickMs());
     if (animFrame) cancelAnimationFrame(animFrame);
     animFrame = requestAnimationFrame(frameLoop);
@@ -1369,25 +1382,32 @@
   // smoothly at normal speed even when the player is heated.
   // --- Ambient layer: an 8-bit chemistry lab behind the board ---------------
   //
-  // The two strips either side of the maze are a synthetic chemistry lab drawn
-  // on a pixel grid, so it belongs to the same visual world as the board. It is
+  // The strips either side of the maze are a synthetic chemistry lab drawn on a
+  // pixel grid, so it belongs to the same visual world as the board. It is
   // modelled on a real bench: a fume hood with a sliding sash, a reflux setup
   // clamped to a lattice rod over a stirrer-hotplate, a reagent shelf, and a
-  // chemist who walks the aisle between stations, charges the flask and works
-  // the stirrers.
+  // chemist working in front of them.
   //
-  // Proportions are the thing that makes a scene like this read. The worktop
-  // sits at roughly hip height on the figure and the figure's head clears it,
-  // which is why the deck and floor lines are pinned to the sprite's height
-  // rather than to fractions of the canvas.
+  // What he is doing is not decoration on a timer. The maze is a polymerisation
+  // - every bead is a repeat unit added to the chain - so the chemist runs the
+  // same polymerisation on the bench, and the player's progress through the
+  // level is what moves him through it: weigh out, charge, purge, initiate,
+  // reflux, pull an aliquot, precipitate, filter. Finish the level and he jars
+  // the product and puts it on the shelf, so a full run leaves a shelf of every
+  // polymer the player has made. Clear all 25 and he pulls a fibre from the
+  // melt and holds the finished material up.
+  //
+  // Proportions are what makes a scene like this read. The worktop sits at hip
+  // height on the figure and his head clears it, which is why the deck and
+  // floor lines are pinned to the sprite's height rather than to fractions of
+  // the canvas.
   //
   // Everything static - walls, cabinets, shelf, bottles - is rendered once into
   // an offscreen canvas when the size changes. Only what actually moves is
-  // drawn per frame: the sash, the bubbles, the indicator LEDs, the vapour, the
-  // droplets and the chemist.
+  // drawn per frame.
   //
   // It runs on its own rAF loop, independent of the game tick, and pauses with
-  // the game. It never reads or writes game state.
+  // the game.
   var ambient = $("game-ambient");
   var actx = ambient ? ambient.getContext("2d") : null;
   var rooms = [], ambientFrame = null, lastAmbientT = 0;
@@ -1413,6 +1433,72 @@
     return bands.length ? bands : null;
   }
 
+  // --- The story ------------------------------------------------------------
+  //
+  // The one channel between the game and the lab, and it runs one way only:
+  // the game calls labSignal, the lab reads labStory. Nothing in here ever
+  // writes back, so the scene can never affect play.
+  //
+  // The acts are a real solution polymerisation in the order you would actually
+  // do it. Weighing before charging, purging before initiating and sampling
+  // before working up are not arbitrary: get the order wrong and any chemist
+  // watching would notice immediately.
+  var ACTS = [
+    // wait: acts where the apparatus is doing the work and you are just
+    // watching a clock. Those are the only ones he leaves, because those are
+    // the only ones you can leave.
+    { key: "weigh", at: "bench" },              // monomer onto the balance
+    { key: "charge", at: "hood" },              // into the flask through a funnel
+    { key: "purge", at: "hood", wait: true },   // nitrogen line on, oxygen out
+    { key: "initiate", at: "hood" },            // initiator in by syringe
+    { key: "reflux", at: "hood", wait: true },  // the polymerisation itself
+    { key: "sample", at: "bench" },             // aliquot pulled to follow conversion
+    { key: "precip", at: "hood" },              // cannula into methanol, polymer drops out
+    { key: "isolate", at: "bench" }             // filter, dry, jar it
+  ];
+
+  var labStory = {
+    act: 0, sub: 0,        // which act, and how far through it
+    shelf: [],             // one jar per level completed: {tint}
+    finale: false, finaleT: 0,
+    alarm: 0,              // seconds of red hood alarm left after a termination
+    spill: 0,              // seconds of spilled reaction left on the deck
+    heat: false,
+    playing: false
+  };
+
+  function labSignal(kind, data) {
+    if (kind === "progress") {
+      // Conversion drives the bench work, so the chemist is always exactly as
+      // far through the synthesis as the player is through the level.
+      var p = Math.max(0, Math.min(0.9999, data)) * ACTS.length;
+      labStory.act = Math.floor(p);
+      labStory.sub = p - labStory.act;
+      labStory.playing = true;
+    } else if (kind === "level") {
+      labStory.act = 0; labStory.sub = 0;
+      labStory.finale = false; labStory.finaleT = 0;
+      labStory.playing = true;
+    } else if (kind === "levelDone") {
+      // The product goes in a jar in that level's own colour, so the shelf ends
+      // up being a record of the run.
+      labStory.act = ACTS.length - 1; labStory.sub = 1;
+      labStory.shelf.push({ tint: (data && data.tint) || ambientPalette()[0] });
+    } else if (kind === "won") {
+      labStory.finale = true; labStory.finaleT = 0;
+    } else if (kind === "reset") {
+      labStory.shelf = []; labStory.act = 0; labStory.sub = 0;
+      labStory.finale = false; labStory.finaleT = 0;
+      labStory.alarm = 0; labStory.spill = 0;
+    } else if (kind === "terminated") {
+      labStory.alarm = 5; labStory.spill = 7;
+    } else if (kind === "heat") {
+      labStory.heat = !!data;
+    } else if (kind === "idle") {
+      labStory.playing = false;
+    }
+  }
+
   var LAB = {
     k: "#12161f",   // outline, deep frame
     d: "#1e2430",   // cabinet body
@@ -1435,8 +1521,8 @@
     o: "#8a5f34"    // amber reagent bottle
   };
 
-  // The chemist, side on: two walk frames and two working frames. The arm
-  // rising and falling is enough to read as pipetting or turning a dial.
+  // The chemist, side on. Two walk frames, two working frames, a reach for the
+  // fibre pull and a two-handed pose for holding the finished material up.
   var CHEM = {
     walkA: [
       "....hhhh...",
@@ -1513,6 +1599,58 @@
       "...tt.tt...",
       "...tt.tt...",
       "..kkk.kkk.."
+    ],
+    // Two rows taller than the rest, so the raised hand clears his head and
+    // reaches the flask neck. Sprites are anchored on their bottom row, which
+    // is what lets a frame be a different height without his feet moving.
+    reach: [
+      "..........m",
+      "..........c",
+      "....hhhh..c",
+      "...hhhhhh.c",
+      "...hssssg.c",
+      "...hssssg.c",
+      "....ssss..c",
+      "....ss....c",
+      "..Ccccccccc",
+      "..Ccccccc..",
+      "..Ccccccc..",
+      "..Ccccccc..",
+      "..Ccccccc..",
+      "..CCCCCCC..",
+      "...CCCCC...",
+      "...tttt....",
+      "...tt.tt...",
+      "...tt.tt...",
+      "..kkk.kkk.."
+    ],
+    // Five rows taller than the rest so the finished material is held clear
+    // above his head instead of merging into his hair. The sample gets a
+    // highlight pixel because some level palettes are nearly black, and the
+    // one thing this frame exists to show is the material.
+    present: [
+      "....TTT....",
+      "...TWTTT...",
+      "...TTTTT...",
+      "..mTTTTTm..",
+      "..c.....c..",
+      "..cchhhcc..",
+      "..chhhhhc..",
+      "..chsssgc..",
+      "..chsssgc..",
+      "...csssc...",
+      "....ss.....",
+      "..ccccccc..",
+      ".ccccccccc.",
+      ".ccccccccc.",
+      ".ccccccccc.",
+      ".ccccccccc.",
+      ".CCCCCCCCC.",
+      "..CCCCCCC..",
+      "...tttt....",
+      "...tt.tt...",
+      "...tt.tt...",
+      "..kkk.kkk.."
     ]
   };
   var CHEM_W = 11, CHEM_H = 17;
@@ -1568,15 +1706,16 @@
       x0: x0, w: w, h: h, kind: kind,
       ceilY: snap(h * 0.03),
       deckY: deckY, floorY: floorY,
-      bubbles: [], drops: [], puffs: [],
-      react: 0, lastBubble: 0, stations: [], beakers: [], chem: null
+      bubbles: [], drops: [], puffs: [], flakes: [],
+      react: 0, lastBubble: 0, lastFleck: 0,
+      stations: {}, beakers: [], chem: null
     };
 
     // The hood is the anchor; the bench takes what is left, and is dropped
-    // rather than squeezed if there is not room for it to read.
-    // Sized so the bench keeps enough width to hold a stirrer and still leave
-    // the chemist somewhere to stand: a hood that eats the band gives him no
-    // second station and he never walks.
+    // rather than squeezed if there is not room for it to read. Sized so the
+    // bench keeps enough width to hold a stirrer and still leave the chemist
+    // somewhere to stand: a hood that eats the band gives him no second station
+    // and he never walks.
     var hoodCells = Math.min(24, Math.max(16, cells - 24));
     room.hood = { x: x0 + PXL, w: hoodCells * PXL, top: snap(h * 0.11) };
     // The reflux setup sits at the right of the hood so the chemist, who works
@@ -1600,27 +1739,23 @@
       }
     }
 
-    // Stations the chemist works. workX is where he stands; facing 1 turns him
-    // to his left, which is how he ends up looking at what he is holding.
+    // Where he stands to work each end of the room. facing 1 turns him to his
+    // left, which is how he ends up looking at what he is holding.
     var span = CHEM_W * PXL;
     function place(x) { return Math.max(x0, Math.min(x0 + w - span, snap(x))); }
-    room.stations.push({
-      kind: "hood",
-      workX: place(room.hood.flaskX - PXL * 11), facing: 0,
-      dropY: deckY - PXL * 7
-    });
-    // A second station is what makes him a person working a lab rather than an
-    // ornament, so it is placed at the far end of the aisle whether or not
-    // there turned out to be room for a bench to work at.
+    room.stations.hood = { workX: place(room.hood.flaskX - PXL * 11), facing: 0 };
+    // The bench end is placed at the far end of the aisle whether or not there
+    // turned out to be room for a bench to work at, because two stations is
+    // what makes him a person working a lab rather than an ornament.
     var far = place(room.bench ? room.bench.x + room.bench.w - span - PXL : x0 + w - span);
-    if (Math.abs(far - room.stations[0].workX) > PXL * 8) {
-      room.stations.push({ kind: "bench", workX: far, facing: 1, dropY: deckY - PXL * 5 });
-    }
+    room.stations.bench = Math.abs(far - room.stations.hood.workX) > PXL * 8
+      ? { workX: far, facing: 1 }
+      : room.stations.hood;
 
     if (kind === "synth") {
       room.chem = {
-        x: room.stations[0].workX, target: 0, state: "work",
-        timer: 3, phase: 0, flip: false, lastPour: 0
+        x: room.stations.bench.workX, act: -1, state: "work",
+        phase: 0, flip: true, lastPour: 0, wander: 0, at: "bench"
       };
     }
     room.statics = paintStatics(room);
@@ -1726,8 +1861,12 @@
     var B = room.bench, x = B.x - room.x0, w = B.w;
     var deck = room.deckY, floor = room.floorY;
 
-    // Reagent shelf over the bench, stacked with amber bottles.
-    var shelf = deck - PXL * 18;
+    // Reagent shelf over the bench, stacked with amber bottles. The product
+    // shelf below it is left empty here: what stands on it is the run so far,
+    // so it has to be drawn live.
+    var shelf = deck - PXL * 22;
+    room.shelfY = shelf;
+    room.prodY = deck - PXL * 14;
     fill(g, x, shelf, w, PXL, LAB.p);
     fill(g, x, shelf + PXL, w, PXL, LAB.P);
     for (var bx = x + PXL; bx < x + w - PXL * 3; bx += PXL * 4) {
@@ -1736,6 +1875,8 @@
       fill(g, bx, shelf - bh + PXL, PXL * 3, PXL, LAB.W, 0.32);   // label
       fill(g, bx + PXL, shelf - bh - PXL, PXL, PXL, LAB.k);       // cap
     }
+    fill(g, x, room.prodY, w, PXL, LAB.p);
+    fill(g, x, room.prodY + PXL, w, PXL, LAB.P);
 
     fill(g, x, deck - PXL, w, PXL * 2, LAB.k);                    // worktop
     fill(g, x, deck, w, PXL, LAB.P);
@@ -1756,12 +1897,16 @@
 
   function drawScene(w, h, dt) {
     var tint = ambientPalette()[0], t = Date.now() / 1000;
+    if (labStory.finale) labStory.finaleT += dt;
+    labStory.alarm = Math.max(0, labStory.alarm - dt);
+    labStory.spill = Math.max(0, labStory.spill - dt);
     for (var i = 0; i < rooms.length; i++) drawRoom(rooms[i], t, dt, tint);
     actx.globalAlpha = 1;
   }
 
   function drawRoom(room, t, dt, tint) {
     var A = 0.66;                       // background, not foreground
+    var act = room.chem ? ACTS[labStory.act] : null;
     actx.globalAlpha = A;
     actx.drawImage(room.statics, room.x0, 0);
 
@@ -1774,33 +1919,66 @@
     fill(actx, H.x + PXL, sash, H.w - PXL * 2, PXL, LAB.w, A);
     fill(actx, H.x + PXL, sash + PXL, H.w - PXL * 2, PXL, LAB.W, A * 0.45);
 
-    // Airflow monitor, blinking to say the hood is running.
+    // Airflow monitor. Green normally; a terminated chain in the maze is a
+    // reaction lost on the bench, so it goes to a red alarm for a few seconds.
+    var alarmed = labStory.alarm > 0;
     fill(actx, H.x + PXL, H.top + PXL * 4, PXL * 3, PXL * 2, LAB.k, A);
     fill(actx, H.x + PXL * 2, H.top + PXL * 4, PXL, PXL,
-      (t * 1.4 % 1) < 0.7 ? LAB.n : LAB.k, A);
+      alarmed ? ((t * 5 % 1) < 0.5 ? LAB.r : LAB.k) : ((t * 1.4 % 1) < 0.7 ? LAB.n : LAB.k), A);
 
-    drawReflux(room, t, dt, tint, A);
+    drawReflux(room, t, dt, tint, A, act);
     if (room.beakers.length) drawBench(room, t, tint, A);
-    if (room.chem) drawChemist(room, t, dt, tint, A);
+    if (room.bench) drawProductShelf(room, A);
+    if (room.chem) {
+      drawChemist(room, t, dt, tint, A, act);
+      drawHandWork(room, t, dt, tint, A, act);
+    }
 
-    // Droplets the chemist has released, falling into what he is charging.
+    // Droplets in flight, and the reaction they set going when they land.
     for (var d = room.drops.length - 1; d >= 0; d--) {
       var dr = room.drops[d];
       dr.y += dr.vy * dt; dr.vy += 300 * dt;
-      fill(actx, dr.x, snap(dr.y), PXL, PXL, tint, A);
+      dr.x += (dr.vx || 0) * dt;
+      fill(actx, snap(dr.x), snap(dr.y), PXL, PXL, dr.col || tint, A);
       if (dr.y >= dr.ty) {
         room.drops.splice(d, 1);
-        room.react = Math.min(5, room.react + 2.4);   // the addition sets it going
+        room.react = Math.min(5, room.react + 2.4);
       }
+    }
+    // Precipitated solid, drifting down through the methanol.
+    for (var f = room.flakes.length - 1; f >= 0; f--) {
+      var fl = room.flakes[f];
+      fl.life += dt;
+      if (fl.life > fl.max) { room.flakes.splice(f, 1); continue; }
+      fill(actx, fl.x, snap(fl.y + fl.life * 26), PXL, PXL, LAB.W, A * 0.8 * (1 - fl.life / fl.max));
     }
     actx.globalAlpha = 1;
   }
 
-  function drawReflux(room, t, dt, tint, A) {
+  // How full the flask is, in cells, given where the synthesis has got to. It
+  // fills as he charges it and empties as he cannulates it out.
+  function flaskFill(act) {
+    // The finale needs a melt in the flask to draw the fibre out of, whatever
+    // act the run happened to end on.
+    if (labStory.finale) return labStory.finaleT < 9.4 ? 4 : 1;
+    if (!act) return 3;
+    switch (act.key) {
+      case "weigh": return 0;
+      case "charge": return Math.round(labStory.sub * 4);
+      case "precip": return Math.round(4 * (1 - labStory.sub));
+      case "isolate": return 0;
+      default: return 4;
+    }
+  }
+
+  function drawReflux(room, t, dt, tint, A, act) {
     var H = room.hood, deck = room.deckY;
     var fx = H.flaskX, base = deck - PXL * 2;
     room.react = Math.max(0, room.react - dt);
-    var hot = room.react > 0;
+    var running = act
+      ? (act.key === "initiate" || act.key === "reflux" || act.key === "sample")
+      : true;
+    var hot = running || labStory.heat || room.react > 0;
 
     // Heating mantle, with its element glowing while the reaction runs.
     fill(actx, fx - PXL, base - PXL * 2, PXL * 8, PXL * 2, LAB.w, A);
@@ -1808,28 +1986,52 @@
     fill(actx, fx + PXL * 5, base - PXL, PXL, PXL, hot ? LAB.r : LAB.n, A);
     if (hot) fill(actx, fx, base - PXL * 3, PXL * 6, PXL, LAB.r, A * 0.35);
 
-    // Round-bottom flask, charged to a level that rises as liquid is added.
-    var fy = base - PXL * 7;
-    fill(actx, fx + PXL, fy, PXL * 4, PXL * 5, LAB.g, A * 0.42);
-    fill(actx, fx, fy + PXL, PXL * 6, PXL * 4, LAB.g, A * 0.42);
-    fill(actx, fx, fy + PXL, PXL, PXL * 4, LAB.W, A * 0.30);            // rim highlight
-    var lvl = PXL * (hot ? 4 : 3);
-    fill(actx, fx, fy + PXL * 5 - lvl, PXL * 6, lvl, tint, A * 0.85);
+    // Round-bottom flask, charged to whatever the synthesis says it holds.
+    // The column is sized so the neck lands at the height of a raised hand:
+    // apparatus he cannot reach would give the whole scene away.
+    var fy = base - PXL * 6;
+    fill(actx, fx + PXL, fy, PXL * 4, PXL * 4, LAB.g, A * 0.42);
+    fill(actx, fx, fy + PXL, PXL * 6, PXL * 3, LAB.g, A * 0.42);
+    fill(actx, fx, fy + PXL, PXL, PXL * 3, LAB.W, A * 0.30);            // rim highlight
+    var lvl = PXL * flaskFill(act);
+    if (lvl > 0) fill(actx, fx, fy + PXL * 4 - lvl, PXL * 6, lvl, tint, A * 0.85);
     fill(actx, fx + PXL * 2, fy - PXL * 2, PXL * 2, PXL * 2, LAB.g, A * 0.45);  // neck
+    room.hood.neck = { x: fx + PXL * 2, y: fy - PXL * 2 };
+    room.hood.pot = fy + PXL * 3;
 
     // Condenser above it: water jacket, hose stubs, clamped back to the rod.
-    var cy = fy - PXL * 12;
-    fill(actx, fx + PXL * 2, cy, PXL * 2, PXL * 10, LAB.g, A * 0.5);
+    var cy = fy - PXL * 9;
+    fill(actx, fx + PXL * 2, cy, PXL * 2, PXL * 7, LAB.g, A * 0.5);
     fill(actx, fx + PXL * 2, cy, PXL * 2, PXL, LAB.p, A);
-    fill(actx, fx + PXL, cy + PXL * 8, PXL, PXL, LAB.p, A);            // water in
+    fill(actx, fx + PXL, cy + PXL * 5, PXL, PXL, LAB.p, A);            // water in
     fill(actx, fx + PXL * 4, cy + PXL, PXL, PXL, LAB.p, A);            // water out
-    fill(actx, fx + PXL * 4, cy + PXL * 4, H.rodX - fx - PXL * 4, PXL, LAB.p, A * 0.9);
-    fill(actx, fx + PXL * 4, base - PXL * 9, H.rodX - fx - PXL * 4, PXL, LAB.p, A * 0.9);
+    fill(actx, fx + PXL * 4, cy + PXL * 3, H.rodX - fx - PXL * 4, PXL, LAB.p, A * 0.9);
+    fill(actx, fx + PXL * 4, base - PXL * 8, H.rodX - fx - PXL * 4, PXL, LAB.p, A * 0.9);
+
+    // Condensate running back down the inside of the jacket: the visible sign
+    // that a reflux is actually refluxing rather than just being hot.
+    if (hot) {
+      for (var q = 0; q < 2; q++) {
+        var run = (t * 0.55 + q * 0.5) % 1;
+        fill(actx, fx + PXL * (2 + q), snap(cy + PXL + run * PXL * 5), PXL, PXL, LAB.W, A * 0.35);
+      }
+    }
+
+    // A nitrogen line dropped into the neck while he purges, and a bubbler on
+    // the crossbar ticking over to prove the flow.
+    if (act && (act.key === "purge" || act.key === "initiate" || act.key === "reflux")) {
+      fill(actx, fx + PXL * 5, cy + PXL * 2, PXL, PXL * 6, LAB.p, A * 0.7);
+      fill(actx, fx + PXL * 5, cy + PXL * 2, H.rodX - fx - PXL * 5, PXL, LAB.p, A * 0.7);
+      fill(actx, H.rodX - PXL, cy - PXL * 2, PXL * 3, PXL * 4, LAB.g, A * 0.4);
+      if ((t * 2.2 % 1) < 0.5) fill(actx, H.rodX, cy - PXL, PXL, PXL, LAB.W, A * 0.7);
+    }
 
     // Bubbles: the reaction actually running, faster while it is hot.
     if (Date.now() - room.lastBubble > (hot ? 130 : 430)) {
       room.lastBubble = Date.now();
-      room.bubbles.push({ x: snap(fx + PXL * (1 + Math.floor(Math.random() * 4))), y: fy + PXL * 4, life: 0 });
+      if (lvl > 0) {
+        room.bubbles.push({ x: snap(fx + PXL * (1 + Math.floor(Math.random() * 4))), y: fy + PXL * 3, life: 0 });
+      }
     }
     for (var b = room.bubbles.length - 1; b >= 0; b--) {
       var bu = room.bubbles[b];
@@ -1847,6 +2049,23 @@
       pf.life += dt;
       if (pf.life > 1.8) { room.puffs.splice(p, 1); continue; }
       fill(actx, pf.x, snap(pf.y - pf.life * 34), PXL, PXL, LAB.W, A * 0.3 * (1 - pf.life / 1.8));
+    }
+
+    // The finale: a filament drawn up out of the melt. Pulling a fibre straight
+    // from the flask is the oldest demonstration in polymer chemistry, and it
+    // is the only way to show a material rather than a liquid.
+    if (labStory.finale && room.chem) {
+      var ft = labStory.finaleT;
+      // Fades once he has it in his hands: a filament still anchored in the
+      // flask while he holds the solid up would be two endings at once.
+      var fade = ft < 9.4 ? 1 : Math.max(0, 1 - (ft - 9.4) / 1.6);
+      if (ft > 2.4 && fade > 0) {
+        var pull = Math.min(1, (ft - 2.4) / 5.5);
+        var topY = snap(fy - PXL * 2 - pull * (fy - room.hood.top - PXL * 6));
+        for (var yy = topY; yy < fy + PXL; yy += PXL) {
+          fill(actx, fx + PXL * 2 + (((yy / PXL) % 2) ? PXL : 0), yy, PXL, PXL, tint, A * 0.95 * fade);
+        }
+      }
     }
   }
 
@@ -1867,49 +2086,248 @@
     }
   }
 
+  // One jar per level cleared, in that level's own colour. Wider bands hold
+  // more; a full 25-level run overflows a narrow one, and the shelf then shows
+  // the most recent jars rather than silently dropping the newest.
+  function drawProductShelf(room, A) {
+    var n = labStory.shelf.length;
+    if (!n) return;
+    var cap = Math.floor((room.bench.w - PXL * 2) / (PXL * 2));
+    var from = Math.max(0, n - cap);
+    for (var i = from; i < n; i++) {
+      var x = room.bench.x + PXL + (i - from) * PXL * 2;
+      var y = room.prodY - PXL * 3;
+      fill(actx, x, y, PXL, PXL * 3, labStory.shelf[i].tint, A * 0.95);
+      fill(actx, x, y, PXL, PXL, LAB.W, A * 0.5);                      // cap
+    }
+  }
+
   // --- The chemist ----------------------------------------------------------
   //
-  // A two-state loop: walk the aisle to a station, then work it for a few
-  // seconds. While working he periodically releases a droplet into whatever is
-  // in front of him, which is what sets the reaction going.
-  function drawChemist(room, t, dt, tint, A) {
-    var c = room.chem, st = room.stations[c.target];
-    c.timer -= dt;
+  // He is always walking to, or working at, whichever end of the room the
+  // current act belongs to. The act comes from the player's conversion, so the
+  // walking is not a loop on a timer: he crosses the aisle when the chemistry
+  // says to.
+  function drawChemist(room, t, dt, tint, A, act) {
+    var c = room.chem;
     c.phase += dt;
 
-    if (c.state === "walk") {
-      var dx = st.workX - c.x, step = 32 * dt;
-      if (Math.abs(dx) <= step) {
-        c.x = st.workX; c.state = "work"; c.timer = 5 + Math.random() * 4;
+    // The finale overrides everything: he goes to the flask, draws the fibre up
+    // out of the melt, then holds the finished material up.
+    if (labStory.finale) {
+      var ft = labStory.finaleT, st = room.stations.hood;
+      var grid;
+      if (ft < 2.4) {
+        var dxf = st.workX - c.x, stepf = 40 * dt;
+        if (Math.abs(dxf) <= stepf) { c.x = st.workX; grid = CHEM.workA; }
+        else { c.x += (dxf < 0 ? -stepf : stepf); c.flip = dxf < 0; grid = walkFrame(c); }
+      } else if (ft < 9.4) {
+        c.flip = false;
+        grid = CHEM.reach;
       } else {
-        c.x += (dx < 0 ? -step : step);
-        c.flip = dx < 0;
+        c.flip = false;
+        grid = CHEM.present;
       }
-    } else {
-      c.flip = st.facing === 1;
-      if (c.timer <= 0) {
-        if (room.stations.length > 1) {
-          c.state = "walk";
-          c.target = (c.target + 1) % room.stations.length;
-        } else {
-          c.timer = 5 + Math.random() * 4;
-        }
-      }
-      // Charge the vessel: a droplet from the hand into what is in front of it.
-      // Flipping mirrors the sprite, so the hand column mirrors with it.
-      if (t - c.lastPour > 3.2) {
-        c.lastPour = t;
-        room.drops.push({
-          x: snap(c.x + (c.flip ? 0 : PXL * 10)),
-          y: room.deckY - PXL * 13, vy: 18, ty: st.dropY
-        });
-      }
+      drawFrame(room, grid, c, A, tint);
+      return;
     }
 
-    var grid = c.state === "walk"
-      ? (Math.floor(c.phase * 4.5) % 2 ? CHEM.walkB : CHEM.walkA)
+    var want = act ? act.at : "bench";
+    // During a purge or a reflux the apparatus is doing the work, so he goes
+    // and does something at the other end and comes back. He never leaves an
+    // act he has his hands in - and the apparatus follows him, so wandering off
+    // mid-weighing would carry the balance into the fume hood.
+    c.wander -= dt;
+    if (c.act !== labStory.act) {
+      c.act = labStory.act; c.at = want; c.state = "walk"; c.wander = 10 + Math.random() * 8;
+    } else if (c.wander <= 0) {
+      var away = act && act.wait && c.at === want;
+      c.at = away ? (want === "hood" ? "bench" : "hood") : want;
+      c.state = "walk";
+      c.wander = (away ? 5 : 10) + Math.random() * 6;
+    }
+
+    var station = room.stations[c.at] || room.stations.bench;
+    if (c.state === "walk") {
+      // About 1.1 m/s at this scale: he is crossing a lab, not strolling a
+      // promenade, and anything slower reads as slow motion.
+      var dx = station.workX - c.x, step = 55 * dt;
+      if (Math.abs(dx) <= step) { c.x = station.workX; c.state = "work"; }
+      else { c.x += (dx < 0 ? -step : step); c.flip = dx < 0; }
+    } else {
+      c.flip = station.facing === 1;
+    }
+
+    // Charging and initiating both go in through the neck, which is over head
+    // height, so those two are the acts he reaches up for.
+    c.reaching = !!(act && c.at === act.at && c.state === "work" &&
+      (act.key === "charge" || act.key === "initiate"));
+    var g = c.state === "walk" ? walkFrame(c)
+      : c.reaching ? CHEM.reach
       : (Math.floor(c.phase * 2.2) % 2 ? CHEM.workB : CHEM.workA);
-    sprite(actx, grid, snap(c.x), room.floorY - PXL * (CHEM_H - 1), Math.min(1, A + 0.22), c.flip, tint);
+    drawFrame(room, g, c, A, tint);
+  }
+
+  // Anchored on the bottom row, so a taller frame raises the arm instead of
+  // lifting him off the floor.
+  function drawFrame(room, grid, c, A, tint) {
+    sprite(actx, grid, snap(c.x), room.floorY - PXL * (grid.length - 1),
+      Math.min(1, A + 0.22), c.flip, tint);
+  }
+
+  function walkFrame(c) { return Math.floor(c.phase * 4.5) % 2 ? CHEM.walkB : CHEM.walkA; }
+
+  // Where his working hand is. The sprite mirrors when he turns, so the hand
+  // column mirrors with it; reaching puts the same hand two rows higher.
+  function handX(c) { return snap(c.x + (c.flip ? 0 : PXL * 10)); }
+  function handY(room, c) {
+    return c.reaching ? room.floorY - PXL * (CHEM.reach.length - 1) : room.deckY;
+  }
+
+  // --- What is in his hands -------------------------------------------------
+  //
+  // Drawn after the sprite, so whatever he is working sits on the near edge of
+  // the deck in front of him, which is where you would actually put it. Only
+  // the current act's apparatus is out and the rest is put away: it is the only
+  // way eight stations fit into a strip this narrow, and it is also true to how
+  // a bench actually looks.
+  //
+  // The figure is drawn at NES proportions - a big head on a short body - so
+  // his literal hand pixel lands at worktop height. Apparatus is therefore
+  // positioned relative to a nominal hand a few cells higher, which is where
+  // the eye reads his hands as being.
+  function drawHandWork(room, t, dt, tint, A, act) {
+    var c = room.chem;
+    if (labStory.finale) return;
+    // The apparatus follows him, so it only comes out when he is standing at
+    // the end of the room the act belongs to.
+    if (!act || c.state === "walk" || c.at !== act.at) {
+      // Crossing the aisle empty-handed would be odd: every one of these acts
+      // is separated from the next by carrying something to the other end.
+      if (act && c.state === "walk" && c.at === act.at) {
+        var wx = handX(c), wy = room.deckY - PXL * 7;
+        fill(actx, wx, wy, PXL * 2, PXL * 3, LAB.g, A * 0.55);
+        fill(actx, wx, wy + PXL, PXL * 2, PXL * 2, tint, A * 0.85);
+      }
+      if (labStory.spill > 0) drawSpill(room, A, tint);
+      return;
+    }
+    var hx = handX(c), hy = handY(room, c), deck = room.deckY;
+    var atRight = !c.flip;
+    var px = atRight ? hx - PXL : hx - PXL * 4;      // near-deck apparatus origin
+    var tap = (Math.floor(c.phase * 2.2) % 2) ? PXL : 0;   // the working hand's rise and fall
+
+    switch (act.key) {
+      case "weigh": {
+        // Analytical balance: draught shield, pan, and a readout that ticks as
+        // solid goes in. The heap on the pan grows with the act.
+        fill(actx, px - PXL, deck - PXL * 2, PXL * 6, PXL * 2, LAB.w, A);
+        fill(actx, px - PXL, deck - PXL, PXL * 6, PXL, LAB.P, A);
+        fill(actx, px - PXL, deck - PXL * 5, PXL, PXL * 3, LAB.W, A * 0.4);   // shield
+        fill(actx, px + PXL * 4, deck - PXL * 5, PXL, PXL * 3, LAB.W, A * 0.4);
+        fill(actx, px - PXL, deck - PXL * 5, PXL * 6, PXL, LAB.W, A * 0.4);
+        fill(actx, px, deck - PXL * 2, PXL * 3, PXL, LAB.k, A);               // readout
+        fill(actx, px + PXL * (Math.floor(t * 7) % 3), deck - PXL * 2, PXL, PXL, LAB.n, A);
+        fill(actx, px, deck - PXL * 3, PXL * 4, PXL, LAB.W, A * 0.75);        // pan
+        var heap = PXL * (1 + Math.round(labStory.sub * 2));
+        fill(actx, px + PXL, deck - PXL * 3 - heap, PXL * 2, heap, LAB.W, A * 0.9);
+        fill(actx, hx - PXL * 2, hy + tap, PXL * 3, PXL, LAB.p, A);           // spatula
+        break;
+      }
+      case "charge": {
+        // Funnel in the neck and the monomer run in out of a cylinder. He is on
+        // the reach frame for this, so the cylinder really is over the neck.
+        var nk = room.hood.neck;
+        if (nk) {
+          fill(actx, nk.x - PXL * 2, nk.y - PXL, PXL * 6, PXL, LAB.g, A * 0.6);
+          fill(actx, nk.x - PXL, nk.y, PXL * 4, PXL, LAB.g, A * 0.6);
+        }
+        fill(actx, hx, hy - PXL * 4, PXL * 2, PXL * 5, LAB.g, A * 0.55);      // cylinder
+        fill(actx, hx, hy - PXL * 2, PXL * 2, PXL * 3, tint, A * 0.85);
+        fill(actx, hx, hy - PXL * 4, PXL, PXL * 5, LAB.W, A * 0.3);
+        if (Math.random() < 0.45) {
+          room.drops.push({ x: hx, y: hy + PXL, vy: 24, ty: room.hood.pot, vx: (room.hood.neck.x - hx) * 0.5 });
+        }
+        break;
+      }
+      case "purge": {
+        // An oil bubbler on the deck. Counting bubbles is how you know the
+        // nitrogen is flowing, and it is what you stand and watch.
+        fill(actx, px, deck - PXL * 4, PXL * 2, PXL * 4, LAB.g, A * 0.5);
+        fill(actx, px, deck - PXL * 2, PXL * 2, PXL * 2, tint, A * 0.75);
+        fill(actx, px, deck - PXL * 5, PXL, PXL, LAB.p, A);                   // inlet
+        if ((t * 1.6 % 1) < 0.45) fill(actx, px, deck - PXL * 3, PXL, PXL, LAB.W, A * 0.8);
+        break;
+      }
+      case "initiate": {
+        // Initiator in by syringe, a drop at a time, through the neck.
+        fill(actx, hx, hy - PXL * 4, PXL, PXL * 5, LAB.W, A * 0.85);          // barrel
+        fill(actx, hx, hy - PXL * 5, PXL, PXL, LAB.p, A);                     // plunger
+        fill(actx, hx, hy - PXL * 2, PXL, PXL * 2, tint, A * 0.9);
+        if (Math.random() < 0.2) {
+          room.drops.push({ x: hx, y: hy + PXL, vy: 30, ty: room.hood.pot, vx: (room.hood.neck.x - hx) * 0.5 });
+        }
+        break;
+      }
+      case "reflux": {
+        // The reaction is running itself, so he is writing it up and watching
+        // the condensate line.
+        fill(actx, hx - PXL, hy - PXL * 2, PXL * 3, PXL * 4, LAB.W, A * 0.7);
+        fill(actx, hx - PXL, hy - PXL * 2, PXL * 3, PXL, LAB.p, A * 0.8);     // clip
+        fill(actx, hx, hy + tap, PXL, PXL, LAB.k, A);                         // pen
+        break;
+      }
+      case "sample": {
+        // Aliquots into a rack, one per check, which is how you follow a
+        // conversion without guessing.
+        fill(actx, px - PXL, deck - PXL, PXL * 7, PXL, LAB.p, A);
+        var vials = 1 + Math.floor(labStory.sub * 4);
+        for (var v = 0; v < vials; v++) {
+          fill(actx, px + v * PXL * 2, deck - PXL * 4, PXL, PXL * 3, LAB.g, A * 0.6);
+          fill(actx, px + v * PXL * 2, deck - PXL * 3, PXL, PXL * 2, tint, A * 0.9);
+        }
+        fill(actx, hx, hy - PXL * 2 + tap, PXL, PXL * 4, LAB.W, A * 0.85);    // syringe
+        break;
+      }
+      case "precip": {
+        // Cannula from the flask into a beaker of methanol. The polymer comes
+        // out of solution the moment it meets the non-solvent, and that is the
+        // moment the material stops being a liquid and starts being a thing.
+        var byp = deck - PXL * 5;
+        fill(actx, px, byp, PXL * 5, PXL * 5, LAB.g, A * 0.34);
+        fill(actx, px, byp, PXL, PXL * 5, LAB.W, A * 0.3);
+        fill(actx, px, byp + PXL, PXL * 5, PXL * 4, LAB.W, A * 0.14);         // methanol
+        var nk3 = room.hood.neck;
+        if (nk3) {
+          fill(actx, px + PXL * 2, byp - PXL * 2, nk3.x - px, PXL, LAB.p, A * 0.75);
+          fill(actx, px + PXL * 2, byp - PXL * 2, PXL, PXL * 2, LAB.p, A * 0.75);
+        }
+        if (Math.random() < 0.6) {
+          room.flakes.push({ x: snap(px + PXL * (1 + Math.floor(Math.random() * 3))), y: byp + PXL, life: 0, max: 1.0 });
+        }
+        break;
+      }
+      case "isolate": {
+        // Buchner funnel on a filter flask, with the cake building on the frit.
+        fill(actx, px, deck - PXL * 3, PXL * 4, PXL * 3, LAB.g, A * 0.36);    // filter flask
+        fill(actx, px + PXL * 4, deck - PXL * 2, PXL, PXL, LAB.p, A);         // vacuum stub
+        fill(actx, px + PXL, deck - PXL * 4, PXL * 2, PXL, LAB.W, A * 0.5);   // stem
+        fill(actx, px - PXL, deck - PXL * 6, PXL * 6, PXL * 2, LAB.W, A * 0.55);
+        var cake = PXL * (1 + Math.round(labStory.sub * 2));
+        fill(actx, px, deck - PXL * 6 - cake, PXL * 4, cake, LAB.W, A * 0.92);
+        fill(actx, hx, hy + tap, PXL, PXL * 2, LAB.p, A);                     // spatula
+        break;
+      }
+    }
+    if (labStory.spill > 0) drawSpill(room, A, tint);
+  }
+  // A lost chain is a lost reaction: something got spilled on the deck and it
+  // is still there for a while afterwards.
+  function drawSpill(room, A, tint) {
+    var f = Math.min(1, labStory.spill / 7);
+    var x = room.hood.flaskX - PXL * 6, y = room.deckY - PXL;
+    fill(actx, x, y, PXL * 5, PXL, tint, A * 0.55 * f);
+    fill(actx, x + PXL, y - PXL, PXL * 3, PXL, tint, A * 0.35 * f);
   }
 
   function sizeAmbient() {
@@ -2420,6 +2838,7 @@
     deathReason = hit.name;
     sfxDeath();
     stopMusic();
+    labSignal("terminated");   // the hood alarms and something gets spilled
     cutChain();   // the chain stops here; its length joins the distribution
     clearInterval(tickTimer);
     lives--;
@@ -2455,6 +2874,7 @@
     clearInterval(tickTimer);
     if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
     render(1);
+    labSignal(result === "won" ? "won" : "idle");
     var modeNote = currentDifficulty === "hard" ? " on hard mode" : "";
     if (result === "won") {
       $("game-status").textContent = "Complete";
