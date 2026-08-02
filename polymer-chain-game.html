@@ -170,6 +170,86 @@
   .game-fold[open] summary::after { transform: rotate(90deg); }
   .game-fold[open] summary { margin-bottom: 10px; }
   .game-fold summary:hover h3 { color: var(--primary); }
+
+  /* ---- 8-bit title screen ----
+     The overlay in front of the board is the game's title screen, so its
+     heading and its one button are drawn in the same idiom as everything else
+     on the canvas: a 5x7 pixel font, hard black outlines, no anti-aliasing and
+     no rounded corners anywhere. The heading is a canvas rather than styled
+     text because a real pixel font is the whole point, and there is no way to
+     get one from a web font without shipping a font file. */
+  #game-title-px, #game-btn-px { display: block; image-rendering: pixelated; }
+  #game-title-px { margin: 0 auto 2px; max-width: 100%; }
+  .game-overlay h4.px-hidden { display: none; }
+  /* The board is a fixed 390px tall and the heading is now a good deal bigger
+     than the line of text it replaced, so the overlay has to be able to give
+     way rather than push its own button off the bottom edge. */
+  /* The board was given z-index 1 so it would sit above the ambient lab canvas
+     behind it. That also put it above this overlay, which has no z-index of its
+     own — so the overlay and its button were painted behind an opaque board and
+     the button stopped being clickable. It still reported display:flex, and a
+     scripted click on it still worked, which is why every automated check
+     passed while the game was actually unplayable: finish a level and there was
+     no visible way on. It has to sit above the board. */
+  .game-overlay { z-index: 2; overflow-y: auto; gap: 12px; }
+  .game-overlay p { font-size: 0.84rem; line-height: 1.4; }
+  /* On a phone the board is barely 220px tall, so the title screen has to give
+     up its comfortable spacing or it scrolls - and a title screen you have to
+     scroll to reach the button on is a title screen that has failed. */
+  @media (max-width: 560px) {
+    .game-overlay { gap: 6px; padding: 10px; }
+    .game-overlay p { font-size: 0.7rem; line-height: 1.25; }
+    .game-overlay button#game-start-btn { padding: 9px 14px 11px; margin-bottom: 6px; }
+  }
+
+  /* Screen-reader text: the canvases carry no accessible name of their own, so
+     the real words sit beside them for anything that is not a pair of eyes.
+     Keeping the button's label in the DOM also means button.textContent still
+     reads back exactly what is on it. */
+  .px-sr {
+    position: absolute; width: 1px; height: 1px; margin: -1px;
+    padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  /* The button is a NES menu block: flat colour, a stepped bevel made of inset
+     shadows rather than a gradient, a hard black frame and a solid drop that
+     the button sinks into when pressed. */
+  .game-overlay button#game-start-btn {
+    position: relative;
+    border: 0;
+    border-radius: 0;
+    background: #d13b2e;
+    padding: 13px 22px 15px;
+    cursor: pointer;
+    image-rendering: pixelated;
+    box-shadow:
+      inset 4px 4px 0 0 #ff8f73,
+      inset -4px -4px 0 0 #7d1a10,
+      0 0 0 4px #0b0e17,
+      0 8px 0 0 #0b0e17;
+    transition: none;
+    margin-bottom: 8px;
+  }
+  .game-overlay button#game-start-btn:hover {
+    background: #e8492f;
+    filter: none;
+  }
+  .game-overlay button#game-start-btn:active {
+    transform: translateY(4px);
+    box-shadow:
+      inset 4px 4px 0 0 #ff8f73,
+      inset -4px -4px 0 0 #7d1a10,
+      0 0 0 4px #0b0e17,
+      0 4px 0 0 #0b0e17;
+  }
+  .game-overlay button#game-start-btn:focus-visible {
+    outline: 4px solid #ffe14d;
+    outline-offset: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .game-overlay button#game-start-btn:active { transform: none; }
+  }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
@@ -259,9 +339,10 @@
       <canvas id="game-ambient" aria-hidden="true"></canvas>
       <canvas id="game-canvas"></canvas>
       <div class="game-overlay" id="game-overlay">
+        <canvas id="game-title-px" aria-hidden="true"></canvas>
         <h4 id="game-overlay-title">Build a Polymer Chain</h4>
         <p id="game-overlay-text">Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. O&#8322; and the inhibitor terminate your chain and cost a life. The chain transfer agent does not kill you &mdash; it hands the radical on, ending the chain you were building and starting a new one where you stand, which widens your dispersity. They start penned up in a holding cage and release one at a time, so the first few seconds of each level are the safest. Grab an initiator ring to make them edible, or the flame for a 10 second speed boost.</p>
-        <button type="button" id="game-start-btn">Start polymerizing</button>
+        <button type="button" id="game-start-btn"><canvas id="game-btn-px" aria-hidden="true"></canvas><span class="px-sr" id="game-start-label">Start polymerizing</span></button>
       </div>
     </div>
 
@@ -1406,7 +1487,7 @@
   // part worth removing. Whatever goes wrong now, the player gets a button, and
   // the message comes with it so a screenshot is enough to diagnose the next
   // one instead of guessing from the state it left behind.
-  var GAME_BUILD = "2026-08-02c";
+  var GAME_BUILD = "2026-08-02d";
   function safeTick() {
     try {
       tick();
@@ -1454,6 +1535,219 @@
   // The player interpolates over its own (possibly halved) tick period while
   // the enemies interpolate over the unchanged world step, so they keep gliding
   // smoothly at normal speed even when the player is heated.
+  // --- 8-bit lettering ------------------------------------------------------
+  //
+  // A 5x7 uppercase pixel font drawn to a canvas. The overlay in front of the
+  // board is this game's title screen, and a title screen set in the page's UI
+  // font would give the whole thing away, so the heading and the button label
+  // are rendered from real glyph data at whole-number scales - the same rule
+  // the maze and the lab follow.
+  //
+  // Character grids again, for the same reason as the chemist: it is how the
+  // art was authored on the machines being imitated, and one row per line makes
+  // a wrong pixel obvious in the source rather than only on screen. Written the
+  // flat way first, fourteen of the forty-six came out the wrong length.  var PX_FONT = {
+    "A": ["  .###.", "  #...#", "  #...#", "  #####", "  #...#", "  #...#", "  #...#"],
+    "B": ["  ####.", "  #...#", "  #...#", "  ####.", "  #...#", "  #...#", "  ####."],
+    "C": ["  .###.", "  #...#", "  #....", "  #....", "  #....", "  #...#", "  .###."],
+    "D": ["  ####.", "  #...#", "  #...#", "  #...#", "  #...#", "  #...#", "  ####."],
+    "E": ["  #####", "  #....", "  #....", "  ####.", "  #....", "  #....", "  #####"],
+    "F": ["  #####", "  #....", "  #....", "  ####.", "  #....", "  #....", "  #...."],
+    "G": ["  .###.", "  #...#", "  #....", "  #.###", "  #...#", "  #...#", "  .###."],
+    "H": ["  #...#", "  #...#", "  #...#", "  #####", "  #...#", "  #...#", "  #...#"],
+    "I": ["  #####", "  ..#..", "  ..#..", "  ..#..", "  ..#..", "  ..#..", "  #####"],
+    "J": ["  ..###", "  ...#.", "  ...#.", "  ...#.", "  ...#.", "  #..#.", "  .##.."],
+    "K": ["  #...#", "  #..#.", "  #.#..", "  ##...", "  #.#..", "  #..#.", "  #...#"],
+    "L": ["  #....", "  #....", "  #....", "  #....", "  #....", "  #....", "  #####"],
+    "M": ["  #...#", "  ##.##", "  #.#.#", "  #.#.#", "  #...#", "  #...#", "  #...#"],
+    "N": ["  #...#", "  ##..#", "  #.#.#", "  #..##", "  #...#", "  #...#", "  #...#"],
+    "O": ["  .###.", "  #...#", "  #...#", "  #...#", "  #...#", "  #...#", "  .###."],
+    "P": ["  ####.", "  #...#", "  #...#", "  ####.", "  #....", "  #....", "  #...."],
+    "Q": ["  .###.", "  #...#", "  #...#", "  #...#", "  #.#.#", "  #..#.", "  .##.#"],
+    "R": ["  ####.", "  #...#", "  #...#", "  ####.", "  #.#..", "  #..#.", "  #...#"],
+    "S": ["  .####", "  #....", "  #....", "  .###.", "  ....#", "  ....#", "  ####."],
+    "T": ["  #####", "  ..#..", "  ..#..", "  ..#..", "  ..#..", "  ..#..", "  ..#.."],
+    "U": ["  #...#", "  #...#", "  #...#", "  #...#", "  #...#", "  #...#", "  .###."],
+    "V": ["  #...#", "  #...#", "  #...#", "  #...#", "  #...#", "  .#.#.", "  ..#.."],
+    "W": ["  #...#", "  #...#", "  #...#", "  #.#.#", "  #.#.#", "  ##.##", "  #...#"],
+    "X": ["  #...#", "  #...#", "  .#.#.", "  ..#..", "  .#.#.", "  #...#", "  #...#"],
+    "Y": ["  #...#", "  #...#", "  .#.#.", "  ..#..", "  ..#..", "  ..#..", "  ..#.."],
+    "Z": ["  #####", "  ....#", "  ...#.", "  ..#..", "  .#...", "  #....", "  #####"],
+    "0": ["  .###.", "  #...#", "  #..##", "  #.#.#", "  ##..#", "  #...#", "  .###."],
+    "1": ["  ..#..", "  .##..", "  ..#..", "  ..#..", "  ..#..", "  ..#..", "  .###."],
+    "2": ["  .###.", "  #...#", "  ....#", "  ...#.", "  ..#..", "  .#...", "  #####"],
+    "3": ["  ####.", "  ....#", "  ....#", "  .###.", "  ....#", "  ....#", "  ####."],
+    "4": ["  ...#.", "  ..##.", "  .#.#.", "  #..#.", "  #####", "  ...#.", "  ...#."],
+    "5": ["  #####", "  #....", "  ####.", "  ....#", "  ....#", "  #...#", "  .###."],
+    "6": ["  .###.", "  #...#", "  #....", "  ####.", "  #...#", "  #...#", "  .###."],
+    "7": ["  #####", "  ....#", "  ...#.", "  ..#..", "  .#...", "  .#...", "  .#..."],
+    "8": ["  .###.", "  #...#", "  #...#", "  .###.", "  #...#", "  #...#", "  .###."],
+    "9": ["  .###.", "  #...#", "  #...#", "  .####", "  ....#", "  #...#", "  .###."],
+    "!": ["  ..#..", "  ..#..", "  ..#..", "  ..#..", "  ..#..", "  .....", "  ..#.."],
+    "?": ["  .###.", "  #...#", "  ....#", "  ...#.", "  ..#..", "  .....", "  ..#.."],
+    ".": ["  .....", "  .....", "  .....", "  .....", "  .....", "  .....", "  ..#.."],
+    ",": ["  .....", "  .....", "  .....", "  .....", "  .....", "  ..#..", "  .#..."],
+    "-": ["  .....", "  .....", "  .....", "  #####", "  .....", "  .....", "  ....."],
+    "'": ["  ..#..", "  ..#..", "  .....", "  .....", "  .....", "  .....", "  ....."],
+    ":": ["  .....", "  ..#..", "  ..#..", "  .....", "  ..#..", "  ..#..", "  ....."],
+    "+": ["  .....", "  ..#..", "  ..#..", "  #####", "  ..#..", "  ..#..", "  ....."],
+    "/": ["  ....#", "  ....#", "  ...#.", "  ..#..", "  .#...", "  #....", "  #...."],
+    " ": ["  .....", "  .....", "  .....", "  .....", "  .....", "  .....", "  ....."]
+  };
+  var PXG_W = 5, PXG_H = 7;
+
+  // Anything unmapped comes back blank rather than throwing: a stray character
+  // in an overlay title must never be able to take the screen down.
+  function pxGlyph(ch) { return PX_FONT[ch] || null; }
+
+  // Bright, saturated and deliberately few: eight hues rolling along the
+  // letters is the look of a title screen from the era.
+  var PX_PALETTE = ["#ff5d5d", "#ffa53d", "#ffe14d", "#5fdc8a",
+                    "#4dd2ff", "#7f9dff", "#c77dff", "#ff7ad9"];
+  var PX_BTN_PALETTE = ["#ffe14d", "#fff6c2"];
+  var PX_INK = "#0b0e17";
+
+  function pxCells(g, grid, x, y, scale) {
+    for (var r = 0; r < PXG_H; r++) {
+      var row = grid[r];
+      for (var c = 0; c < PXG_W; c++) {
+        if (row.charAt(c + 2) !== "#") continue;      // rows carry a 2-space indent
+        g.fillRect(x + c * scale, y + r * scale, scale, scale);
+      }
+    }
+  }
+
+  // Greedy wrap at the widest whole-number scale that still fits. Choosing the
+  // scale before the line breaks would either overflow a long title or leave a
+  // short one tiny.
+  function pxLayout(text, maxPx, maxLines, maxScale) {
+    var words = String(text).toUpperCase().split(/\s+/).filter(Boolean);
+    if (!words.length) words = [" "];
+    for (var scale = maxScale; scale >= 1; scale--) {
+      var perChar = (PXG_W + 1) * scale;
+      var maxChars = Math.floor((maxPx + scale) / perChar);
+      if (maxChars < 3) continue;
+      var lines = [], cur = "", ok = true;
+      for (var i = 0; i < words.length; i++) {
+        var w = words[i];
+        if (w.length > maxChars) { ok = false; break; }
+        if (!cur) cur = w;
+        else if (cur.length + 1 + w.length <= maxChars) cur += " " + w;
+        else { lines.push(cur); cur = w; }
+      }
+      if (!ok) continue;
+      if (cur) lines.push(cur);
+      if (lines.length && lines.length <= maxLines) return { lines: lines, scale: scale };
+    }
+    return { lines: [String(text).toUpperCase().slice(0, 30)], scale: 1 };
+  }
+
+  // Three passes per glyph: a hard drop shadow, a black outline so the colours
+  // read against whatever the maze is doing behind, then the fill. Drawing the
+  // outline as the eight neighbours of every lit cell is cheap and gives the
+  // chunky border that flat pixel lettering needs.
+  function pxDraw(cv, lines, scale, phase, palette) {
+    var perChar = (PXG_W + 1) * scale;
+    var lineH = (PXG_H + 2) * scale;
+    var wide = 0;
+    for (var i = 0; i < lines.length; i++) wide = Math.max(wide, lines[i].length);
+    var w = wide * perChar - scale + scale * 4;
+    var h = lines.length * lineH - 2 * scale + scale * 4;
+    if (cv.width !== w) cv.width = w;
+    if (cv.height !== h) cv.height = h;
+    cv.style.width = w + "px";
+    cv.style.height = h + "px";
+    var g = cv.getContext("2d");
+    g.clearRect(0, 0, w, h);
+
+    var letter = 0;
+    for (var li = 0; li < lines.length; li++) {
+      var line = lines[li];
+      var lineW = line.length * perChar - scale;
+      var ox = Math.round((w - lineW) / 2);
+      var oy = li * lineH + scale * 2;
+      for (var ci = 0; ci < line.length; ci++) {
+        var ch = line.charAt(ci);
+        var grid = pxGlyph(ch);
+        var x0 = ox + ci * perChar;
+        if (ch !== " ") letter++;
+        if (!grid) continue;
+        g.fillStyle = PX_INK;
+        pxCells(g, grid, x0 + scale, oy + scale, scale);          // drop shadow
+        for (var dy = -1; dy <= 1; dy++) {                        // outline
+          for (var dx = -1; dx <= 1; dx++) {
+            if (!dx && !dy) continue;
+            pxCells(g, grid, x0 + dx * scale, oy + dy * scale, scale);
+          }
+        }
+        g.fillStyle = palette[(letter + phase) % palette.length];
+        pxCells(g, grid, x0, oy, scale);                          // fill
+      }
+    }
+  }
+
+  // --- Overlay lettering ----------------------------------------------------
+
+  var pxTitleText = "", pxBtnText = "", pxPhase = 0, pxTimer = null;
+
+  function pxAvailableWidth() {
+    var board = $("game-canvas");
+    var w = board ? board.getBoundingClientRect().width : 470;
+    return Math.max(140, Math.round(w) - 60);
+  }
+
+  function renderPxTitle() {
+    var cv = $("game-title-px"), h4 = $("game-overlay-title");
+    if (!cv || !h4) return;
+    if (!pxTitleText) { cv.style.display = "none"; h4.classList.remove("px-hidden"); return; }
+    cv.style.display = "block";
+    h4.classList.add("px-hidden");
+    // Two lines, never three: the board is only 390px tall and the heading
+    // shares it with the body text and the button.
+    var lay = pxLayout(pxTitleText, pxAvailableWidth(), 2, 5);
+    pxDraw(cv, lay.lines, lay.scale, pxPhase, PX_PALETTE);
+  }
+
+  function renderPxButton() {
+    var cv = $("game-btn-px");
+    if (!cv) return;
+    var lay = pxLayout(pxBtnText || "START", Math.min(320, pxAvailableWidth() - 40), 1, 3);
+    // The button carries its own colour, so its label is a steady two-tone
+    // rather than the rolling rainbow of the title above it.
+    pxDraw(cv, lay.lines, lay.scale, pxPhase, PX_BTN_PALETTE);
+  }
+
+  // The palette rolls along the letters a few times a second, which is what
+  // made those title screens feel alive on hardware that could not animate much
+  // else. Held still for anyone who has asked for less motion.
+  function pxStartCycle() {
+    if (pxTimer) return;
+    try {
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    } catch (e) {}
+    pxTimer = setInterval(function () {
+      var ov = $("game-overlay");
+      if (!ov || ov.style.display === "none") return;    // nothing on screen to animate
+      pxPhase = (pxPhase + 1) % PX_PALETTE.length;
+      renderPxTitle();
+      renderPxButton();
+    }, 220);
+  }
+
+  function setPxTitle(text) {
+    pxTitleText = text || "";
+    renderPxTitle();
+  }
+
+  function setStartLabel(text) {
+    pxBtnText = text;
+    var sr = $("game-start-label");
+    if (sr) sr.textContent = text;
+    renderPxButton();
+  }
+
+  window.addEventListener("resize", function () { renderPxTitle(); renderPxButton(); });
+
   // --- Ambient layer: an 8-bit chemistry lab behind the board ---------------
   //
   // The strips either side of the maze are a synthetic chemistry lab drawn on a
@@ -2972,9 +3266,10 @@
   }
 
   function showOverlay(title, text, btnLabel) {
-    $("game-overlay-title").textContent = title;
+    $("game-overlay-title").textContent = title;   // kept as the accessible name
+    setPxTitle(title);
     $("game-overlay-text").textContent = text;
-    $("game-start-btn").textContent = btnLabel;
+    setStartLabel(btnLabel);
     $("game-overlay").style.display = "";
   }
   function hideOverlay() { $("game-overlay").style.display = "none"; }
@@ -3576,9 +3871,12 @@
   render();
   showOverlay(
     "Build a Polymer Chain",
-    "Guide your radical chain end around the maze and collect every monomer bead to complete the polymer. O₂, the inhibitor and — from level 8 — a rival radical will terminate you, costing one of your 3 lives. The chain transfer agent will not: it hands the radical on, ending the chain you were building and starting a new one where you stand. That matters, because the real score is dispersity Đ. One unbroken chain gives Đ = 1.000; every chain cut short widens it toward the 2 that uncontrolled radical polymerisation actually gives you. Grab an initiator ring to make the terminators edible, or the flame for speed — though above its ceiling temperature a chain depropagates, so heat costs you molar mass while it runs.",
+    // A title screen, not a manual: the long version is in How to play below,
+    // and the pixel heading needs the room.
+    "Collect every monomer bead to build the polymer. O₂ and the inhibitor terminate your chain and cost a life. The chain transfer agent does not — it hands the radical on, which widens your dispersity Đ, and Đ is the real score.",
     "Start polymerizing"
   );
+  pxStartCycle();
 })();
 </script>
 
