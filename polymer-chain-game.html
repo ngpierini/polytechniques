@@ -1130,6 +1130,7 @@
       lastWorldTime = Date.now();
       if (powerTicksRemaining > 0) {
         powerTicksRemaining--;
+        sfxPowerTick();
         if (powerTicksRemaining === 0) refreshStatus();
       }
     }
@@ -1200,6 +1201,7 @@
         if (initiators[ii].r === player.r && initiators[ii].c === player.c) {
           initiators.splice(ii, 1);
           powerTicksRemaining = POWER_TICKS;
+          sfxPowerUp();
           eatChain = 0;
           refreshStatus();
           break;
@@ -1233,6 +1235,7 @@
           // Each terminator quenched within one initiator window is worth
           // double the last, so clearing several on one ring is the big score.
           var value = EAT_BASE * Math.pow(2, Math.min(eatChain, 3));
+          sfxQuench(eatChain);
           eatChain++;
           points += value;
           addPopup(e.r, e.c, "+" + value);
@@ -1401,7 +1404,7 @@
   function buildAmbient(w, h) {
     strands = [];
     var bands = marginBands(w);
-    if (!bands) { monomers = []; return; }   // no room beside the board
+    if (!bands) { monomers = []; bgLayers = null; return; }   // no room beside the board
     // Long strands read as chains; too many and it becomes soup behind the
     // board, so this stays deliberately sparse.
     var count = w > 900 ? 7 : w > 600 ? 5 : 4;
@@ -1431,6 +1434,7 @@
         tint: Math.floor(Math.random() * 2)
       });
     }
+    bgLayers = buildScene(w, h, bands);
     monomers = [];
     var bandW = bands.reduce(function (t, b2) { return t + (b2.x1 - b2.x0); }, 0);
     var mcount = Math.round(bandW * h / 9000);
@@ -1443,6 +1447,149 @@
         r: 1.0 + Math.random() * 1.6, a: 0.28 + Math.random() * 0.26
       });
     }
+  }
+
+  // --- Background: an 8-bit polymer scene ----------------------------------
+  //
+  // Drawn on an 8px pixel grid so it belongs to the same visual world as the
+  // maze, and composed of things that are actually in the chemistry rather than
+  // abstract shapes. Four parallax layers, back to front:
+  //
+  //   1  lamellar stacks - the folded-chain crystal, drawn as stacked ribbons.
+  //      Real semicrystalline polymer looks like this under a microscope.
+  //   2  a chain-folding ribbon that traverses and folds back on itself, the
+  //      way a chain re-enters a lamella.
+  //   3  drifting repeat units: a backbone of blocks with pendant groups, the
+  //      same skeletal shape the Polymer Search page draws.
+  //   4  free monomer, still unreacted, moving fastest because it is smallest.
+  //
+  // Parallax speeds are ordered by size, which is also how diffusion works: the
+  // small things move quickly and the crystal does not move at all.
+  var PX = 8;                       // the pixel grid everything snaps to
+  var bgLayers = null, bgT0 = Date.now();
+
+  function snap(v) { return Math.round(v / PX) * PX; }
+
+  function buildScene(w, h, bands) {
+    var pal = ambientPalette();
+    var lam = [], folds = [], units = [], mono = [];
+    bands.forEach(function (band, bi) {
+      var bw = band.x1 - band.x0;
+
+      // 1. lamellar stacks: runs of parallel ribbons, the folded-chain crystal
+      var stacks = 2 + Math.floor(bw / 130);
+      for (var s = 0; s < stacks; s++) {
+        var rows = 4 + Math.floor(Math.random() * 4);
+        lam.push({
+          x: snap(band.x0 + Math.random() * Math.max(1, bw - 60)),
+          y: snap(Math.random() * h),
+          wid: snap(34 + Math.random() * Math.min(70, bw * 0.55)),
+          rows: rows,
+          gap: PX * 2,
+          speed: 0.05 + Math.random() * 0.05,
+          band: band,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+
+      // 2. a folding chain: across, turn, back, turn - re-entrant folding
+      for (var f = 0; f < 1 + (bw > 150 ? 1 : 0); f++) {
+        folds.push({
+          x: snap(band.x0 + PX * 2), y: snap(Math.random() * h),
+          wid: snap(Math.max(PX * 4, bw - PX * 5)),
+          legs: 3 + Math.floor(Math.random() * 3),
+          gap: PX * 3,
+          speed: 0.12 + Math.random() * 0.08,
+          band: band, phase: Math.random() * Math.PI * 2
+        });
+      }
+
+      // 3. repeat units with pendant groups
+      var n = 3 + Math.floor(bw / 70);
+      for (var u = 0; u < n; u++) {
+        units.push({
+          x: snap(band.x0 + Math.random() * bw), y: snap(Math.random() * h),
+          len: 3 + Math.floor(Math.random() * 3),
+          speed: 0.22 + Math.random() * 0.16,
+          up: Math.random() < 0.5,
+          band: band, phase: Math.random() * Math.PI * 2
+        });
+      }
+
+      // 4. free monomer
+      var m = Math.round(bw * h / 5200);
+      for (var k = 0; k < m; k++) {
+        mono.push({
+          x: band.x0 + Math.random() * bw, y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+          band: band
+        });
+      }
+    });
+    return { lam: lam, folds: folds, units: units, mono: mono, pal: pal };
+  }
+
+  function px(x, y, wpx, hpx, color, alpha) {
+    actx.globalAlpha = alpha;
+    actx.fillStyle = color;
+    actx.fillRect(snap(x), snap(y), wpx, hpx);
+  }
+
+  function drawScene(w, h) {
+    var sc = bgLayers, pal = ambientPalette();
+    var t = (Date.now() - bgT0) / 1000;
+
+    // 1. lamellae - stacked ribbons, breathing very slightly
+    sc.lam.forEach(function (L) {
+      L.y += L.speed;
+      if (L.y > h + L.rows * L.gap + PX) L.y = -L.rows * L.gap - PX;
+      var breathe = 1 + Math.sin(t * 0.5 + L.phase) * 0.06;
+      for (var r = 0; r < L.rows; r++) {
+        px(L.x, L.y + r * L.gap, Math.round(L.wid * breathe), PX, pal[1], 0.16);
+      }
+      // tie molecules: the strands that bridge one lamella to the next and are
+      // most of why a semicrystalline polymer is tough at all
+      px(L.x + L.wid * 0.4, L.y, PX, L.rows * L.gap, pal[0], 0.10);
+    });
+
+    // 2. folding chains
+    sc.folds.forEach(function (F) {
+      F.y += F.speed;
+      if (F.y > h + F.legs * F.gap + PX) F.y = -F.legs * F.gap - PX;
+      var wob = Math.sin(t * 1.1 + F.phase) * PX;
+      for (var l = 0; l < F.legs; l++) {
+        var yy = F.y + l * F.gap;
+        px(F.x, yy, F.wid, PX, pal[0], 0.22);           // the run
+        // the fold at alternating ends
+        var fx = (l % 2 === 0) ? F.x + F.wid - PX : F.x;
+        px(fx + wob * 0.25, yy, PX, F.gap, pal[0], 0.22);
+      }
+    });
+
+    // 3. repeat units: backbone blocks with a pendant group hanging off
+    sc.units.forEach(function (U) {
+      U.y += U.up ? -U.speed : U.speed;
+      if (U.y < -PX * 6) U.y = h + PX * 4;
+      if (U.y > h + PX * 6) U.y = -PX * 4;
+      var sway = Math.sin(t * 1.6 + U.phase) * PX;
+      for (var b = 0; b < U.len; b++) {
+        var bx = U.x + b * PX * 2 + sway * 0.3;
+        px(bx, U.y, PX, PX, pal[0], 0.30);              // backbone atom
+        px(bx + PX, U.y, PX, PX, pal[1], 0.18);         // bond
+        if (b % 2 === 1) px(bx, U.y - PX * 1.5, PX, PX, pal[1], 0.24);  // pendant group
+      }
+    });
+
+    // 4. free monomer, single lit pixels
+    sc.mono.forEach(function (M) {
+      M.x += M.vx; M.y += M.vy;
+      var b = M.band;
+      if (M.x < b.x0) M.x = b.x1; else if (M.x > b.x1) M.x = b.x0;
+      if (M.y < 0) M.y = h; else if (M.y > h) M.y = 0;
+      px(M.x, M.y, PX, PX, pal[0], 0.22);
+    });
+
+    actx.globalAlpha = 1;
   }
 
   function sizeAmbient() {
@@ -1460,6 +1607,9 @@
     var w = ambient.width, h = ambient.height, now = Date.now();
     actx.clearRect(0, 0, w, h);
     var pal = ambientPalette();
+    // The pixel scene sits behind the smooth strands: blocky crystal and
+    // monomer first, then the wormlike chains drawn over it.
+    if (bgLayers) drawScene(w, h);
 
     for (var m = 0; m < monomers.length; m++) {
       var mo = monomers[m];
@@ -1612,53 +1762,96 @@
 
   function midi(n) { return 440 * Math.pow(2, (n - 69) / 12); }
 
-  // Sixteen steps. -1 is a rest. Original lines in A minor, transposed and
-  // layered by level so the score escalates with the game.
-  var BASS      = [45, -1, 45, -1, 43, -1, 43, -1, 41, -1, 41, -1, 40, -1, 40, 42];
-  var BASS_HARD = [45, 45, 45, 57, 43, 43, 43, 55, 41, 41, 41, 53, 40, 40, 42, 44];  // driving eighths
-  var LEAD      = [69, 72, 76, 72, 74, -1, 72, -1, 69, 67, 69, 72, 76, 74, 72, 69];
-  var LEAD_BUSY = [69, 72, 76, 79, 76, 74, 72, 74, 69, 72, 76, 81, 79, 76, 74, 72];
-  var ARP       = [81, 84, 88, 84, 79, 83, 86, 83, 77, 81, 84, 81, 76, 79, 83, 79];
-  var HATS      = [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1];
-  var HATS_FAST = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-  var KICK      = [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0];
-
-  // Five acts of five levels. Each adds a voice rather than just getting
-  // louder: sparse bass and hats at polyethylene, a full driving arrangement by
-  // carbyne. Tempo climbs across the whole run.
+  // Original music written in the NES idiom - the Mega Man 2 / Castlevania /
+  // Ninja Gaiden school - rather than transcribed from any of them. What that
+  // school actually consists of, and what is implemented below:
   //
-  //   bass  which bass line
-  //   lead  0 none, 1 the tune, 2 the busy variant
-  //   arp   a fast counter-line an octave up
-  //   kick  a low thud on the downbeats
-  //   fast  double-time hats
-  //   grit  a second detuned bass oscillator, which beats against the first
+  //   * Real pulse waves, not plain squares. The 2A03 had two pulse channels
+  //     with selectable duty; 12.5% is thin and reedy, 25% is the classic lead,
+  //     50% is a hollow square. Built here as PeriodicWaves.
+  //   * A chord progression rather than a static bass. Four chords over 32
+  //     sixteenths, so the loop is a phrase instead of a bar.
+  //   * A sixteenth-note bass ostinato that leaps the octave - the engine room
+  //     of every Mega Man stage theme.
+  //   * A broken-chord arpeggio on a third voice, which is how these soundtracks
+  //     implied harmony with only three tone channels.
+  //   * Vibrato on held lead notes, and a delay line behind the lead. Both are
+  //     signatures; the echo in particular is why those melodies sound wide.
+  //   * Harmonic and Phrygian colour in the later acts, which is the Castlevania
+  //     end of the idiom.
+  var PULSE_CACHE = {};
+  function pulseWave(duty) {
+    if (!audioCtx) return null;
+    var key = String(duty);
+    if (PULSE_CACHE[key]) return PULSE_CACHE[key];
+    var N = 24, real = new Float32Array(N), imag = new Float32Array(N);
+    for (var n = 1; n < N; n++) {
+      // Fourier series of a rectangular pulse of the given duty cycle.
+      imag[n] = (2 / (n * Math.PI)) * Math.sin(n * Math.PI * duty);
+    }
+    var w = audioCtx.createPeriodicWave(real, imag, { disableNormalization: false });
+    PULSE_CACHE[key] = w;
+    return w;
+  }
+
+  // Chords as {r: root MIDI, m: true if minor}. Eight sixteenths each.
+  var PROG = {
+    // i VI III VII - the bright driving minor of a Mega Man stage
+    drive:   [{ r: 45, m: 1 }, { r: 41, m: 0 }, { r: 48, m: 0 }, { r: 43, m: 0 }],
+    // i VII VI V - the descending tetrachord, endlessly used and always works
+    descend: [{ r: 45, m: 1 }, { r: 43, m: 0 }, { r: 41, m: 0 }, { r: 40, m: 0 }],
+    // i bII i V - Phrygian. The flat second is the gothic sound.
+    gothic:  [{ r: 45, m: 1 }, { r: 46, m: 0 }, { r: 45, m: 1 }, { r: 40, m: 0 }],
+    // i III IV VI - wider, more heroic; the Ninja Gaiden corner
+    heroic:  [{ r: 45, m: 1 }, { r: 48, m: 0 }, { r: 50, m: 0 }, { r: 41, m: 0 }],
+    // i V i bII - harmonic minor against the flat second, at the top of the climb
+    climax:  [{ r: 45, m: 1 }, { r: 40, m: 0 }, { r: 45, m: 1 }, { r: 46, m: 0 }],
+    // chromatic descent, used only while an initiator is running: it does not
+    // belong to any of the level keys, which is exactly why the power window
+    // sounds like a different piece of music
+    power:   [{ r: 45, m: 1 }, { r: 44, m: 1 }, { r: 43, m: 1 }, { r: 42, m: 1 }]
+  };
+
+  // Melodies over 32 steps, diatonic to A minor so they sit over every
+  // progression above. -1 rest, -2 hold the previous note.
+  var MEL = {
+    a: [76, -2, -1, 79, 81, -2, 79, 76, 74, -2, -1, 77, 79, -2, 77, 74,
+        72, -2, -1, 76, 79, -2, 81, 79, 76, 74, 72, 71, 69, -2, -2, -1],
+    b: [81, -1, 84, -1, 83, 81, 79, -1, 77, -1, 79, 81, 79, 77, 76, -1,
+        74, -1, 77, -1, 76, 74, 72, -1, 76, 79, 81, 83, 84, -2, -2, -1],
+    c: [69, 72, 76, 72, 77, 76, 74, 72, 71, 74, 79, 74, 76, 74, 72, 71,
+        69, 72, 76, 81, 79, 77, 76, 74, 72, 74, 76, 79, 81, -2, -2, -2]
+  };
+
+  var HAT16 = [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1];
+  var KICK16 = [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0];
+  var SNARE16 = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
+
+  // Five acts. Voices accumulate and the writing gets denser and darker.
   function musicPlan() {
     var act = Math.min(4, Math.floor((currentLevel - 1) / 5));
     var plans = [
-      { bass: BASS,      lead: 0, arp: false, kick: false, fast: false, grit: false },
-      { bass: BASS,      lead: 1, arp: false, kick: false, fast: false, grit: false },
-      { bass: BASS,      lead: 1, arp: true,  kick: false, fast: false, grit: false },
-      { bass: BASS_HARD, lead: 2, arp: true,  kick: true,  fast: false, grit: false },
-      { bass: BASS_HARD, lead: 2, arp: true,  kick: true,  fast: true,  grit: true  }
+      { prog: "drive",   mel: "a", duty: 0.5,   arp: 0, bassOct: 0, perc: 0, echo: 0 },
+      { prog: "descend", mel: "a", duty: 0.25,  arp: 1, bassOct: 0, perc: 1, echo: 1 },
+      { prog: "gothic",  mel: "b", duty: 0.25,  arp: 1, bassOct: 1, perc: 1, echo: 1 },
+      { prog: "heroic",  mel: "b", duty: 0.125, arp: 2, bassOct: 1, perc: 2, echo: 1 },
+      { prog: "climax",  mel: "c", duty: 0.125, arp: 2, bassOct: 1, perc: 2, echo: 1 }
     ];
     var p = plans[act];
-    // 128 BPM at polyethylene up to about 172 at carbyne.
-    p.bpm = 128 + (currentLevel - 1) * 1.8;
-    // Transpose by act, and drop the second degree a semitone in the last two
-    // acts: a Phrygian flat-2 is the cheapest way to make a minor key menacing.
-    p.key = act * 2;
-    p.dark = act >= 3;
+    p.bpm = 128 + (currentLevel - 1) * 1.8;   // 128 at polyethylene, ~171 at carbyne
+    p.act = act;
+    // While an initiator is running the whole track switches: chromatic bass,
+    // faster, thinner lead. The player should be able to hear the window
+    // closing without watching the HUD.
+    if (powerTicksRemaining > 0) {
+      p = {
+        prog: "power", mel: "c", duty: 0.125, arp: 2, bassOct: 1, perc: 2, echo: 1,
+        bpm: p.bpm * 1.25, act: act, power: 1
+      };
+    }
     return p;
   }
   function stepSeconds() { return 60 / musicPlan().bpm / 4; }
-
-  // Flatten the second scale degree for the late acts. In A minor that is B
-  // natural to B flat, which is the note that does all the work.
-  function shade(n, dark) {
-    if (!dark || n < 0) return n;
-    return (((n % 12) + 12) % 12) === 11 ? n - 1 : n;
-  }
 
   function ensureAudio() {
     if (audioCtx) return audioCtx;
@@ -1671,18 +1864,68 @@
     return audioCtx;
   }
 
-  // One pulse-wave voice with a short envelope. The envelope matters: a bare
-  // oscillator start/stop clicks, and a hundred clicks a minute is fatiguing.
-  function blip(freq, when, dur, type, peak) {
+  // Lead bus with a delay line behind it. The echo is the reason NES leads
+  // sound wide on three channels: one voice, heard twice.
+  var leadBus = null, echoDelay = null, echoFb = null;
+  function ensureLeadBus() {
+    if (leadBus || !audioCtx) return leadBus;
+    leadBus = audioCtx.createGain();
+    leadBus.gain.value = 1;
+    echoDelay = audioCtx.createDelay(1.0);
+    echoDelay.delayTime.value = 0.17;
+    echoFb = audioCtx.createGain();
+    echoFb.gain.value = 0.30;
+    var echoOut = audioCtx.createGain();
+    echoOut.gain.value = 0.42;
+    leadBus.connect(masterGain);
+    leadBus.connect(echoDelay);
+    echoDelay.connect(echoFb);
+    echoFb.connect(echoDelay);      // feedback
+    echoDelay.connect(echoOut);
+    echoOut.connect(masterGain);
+    return leadBus;
+  }
+
+  // A pulse voice, optionally with vibrato. Vibrato only earns its cost on
+  // notes long enough to hear it move, so short notes skip the extra nodes.
+  function pulse(freq, when, dur, duty, peak, dest, vib) {
     if (!audioCtx) return;
     var o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = type || "square";
+    var w = pulseWave(duty);
+    if (w) o.setPeriodicWave(w); else o.type = "square";
     o.frequency.setValueAtTime(freq, when);
+    var lfo = null, lfoGain = null;
+    if (vib && dur > 0.14) {
+      lfo = audioCtx.createOscillator();
+      lfoGain = audioCtx.createGain();
+      lfo.type = "sine";
+      lfo.frequency.value = 5.5;
+      // Delay the vibrato onset slightly; coming in on the attack sounds seasick.
+      lfoGain.gain.setValueAtTime(0.0001, when);
+      lfoGain.gain.linearRampToValueAtTime(freq * 0.011, when + Math.min(0.12, dur * 0.5));
+      lfo.connect(lfoGain); lfoGain.connect(o.frequency);
+      lfo.start(when); lfo.stop(when + dur + 0.02);
+    }
     g.gain.setValueAtTime(0.0001, when);
-    g.gain.exponentialRampToValueAtTime(peak || 0.5, when + 0.008);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), when + 0.008);
     g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
-    o.connect(g); g.connect(masterGain);
+    o.connect(g); g.connect(dest || masterGain);
     o.start(when); o.stop(when + dur + 0.02);
+  }
+
+  // Snare: noise through a bandpass, with a short tonal thwack under it.
+  function snare(when) {
+    if (!audioCtx) return;
+    var len = Math.floor(audioCtx.sampleRate * 0.13);
+    var buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) { var k = 1 - i / len; d[i] = (Math.random() * 2 - 1) * k * k; }
+    var src = audioCtx.createBufferSource(); src.buffer = buf;
+    var bp = audioCtx.createBiquadFilter(); bp.type = "bandpass";
+    bp.frequency.value = 1900; bp.Q.value = 0.7;
+    var g = audioCtx.createGain(); g.gain.value = 0.16;
+    src.connect(bp); bp.connect(g); g.connect(masterGain);
+    src.start(when);
   }
 
   // Hi-hat: a very short burst of noise, which is how the 8-bit machines did
@@ -1714,24 +1957,155 @@
     o.start(when); o.stop(when + 0.16);
   }
 
-  function scheduleStep(step, when) {
-    var p = musicPlan(), i = step % 16, sec = 60 / p.bpm / 4;
-    var b = p.bass[i], l = p.lead === 2 ? LEAD_BUSY[i] : p.lead === 1 ? LEAD[i] : -1;
+  // --- Sound effects -------------------------------------------------------
+  //
+  // Routed through their own gain, NOT the music bus. stopMusic() fades the
+  // music bus to silence over 80 ms, and the death sound fires at exactly that
+  // moment - on the shared bus it would have been faded out before it was
+  // audible. Same volume slider, independent path.
+  var sfxGain = null;
 
-    if (b > 0) {
-      var bn = midi(shade(b, p.dark) + p.key);
-      blip(bn, when, sec * 1.7, "square", 0.42);
-      // Detuned twin: the two beat against each other into a growl. Only in the
-      // last act, where it should sound like the reaction is getting away.
-      if (p.grit) blip(bn * 1.006, when, sec * 1.7, "sawtooth", 0.16);
+  function ensureSfx() {
+    if (!ensureAudio()) return null;
+    if (!sfxGain) {
+      sfxGain = audioCtx.createGain();
+      sfxGain.gain.value = 1;
+      sfxGain.connect(audioCtx.destination);
     }
-    if (l > 0) blip(midi(shade(l, p.dark) + p.key), when, sec * 0.85, "square", 0.20);
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return sfxGain;
+  }
+  // Effects sit above the music so they cut through it, but still scale with
+  // the slider and go silent with the sound toggle.
+  function sfxLevel() { return musicOn ? Math.max(0.05, musicVolume) * 0.5 : 0; }
+
+  function tone(freq, when, dur, type, peak, endFreq) {
+    if (!audioCtx || !sfxGain) return;
+    var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type || "square";
+    o.frequency.setValueAtTime(freq, when);
+    if (endFreq) o.frequency.exponentialRampToValueAtTime(Math.max(20, endFreq), when + dur);
+    g.gain.setValueAtTime(0.0001, when);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), when + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+    o.connect(g); g.connect(sfxGain);
+    o.start(when); o.stop(when + dur + 0.02);
+  }
+
+  // Quenching a terminator: a quick rising three-note figure. The whole figure
+  // is transposed up for each one caught inside the same initiator window, so
+  // the pitch climbs exactly as the score does - four in a row and you can hear
+  // that you are on a streak without looking at the points.
+  function sfxQuench(streak) {
+    if (!ensureSfx() || !musicOn) return;
+    var t = audioCtx.currentTime, lvl = sfxLevel();
+    var base = 62 + Math.min(streak, 3) * 5;      // MIDI, up a fourth per catch
+    [0, 4, 7].forEach(function (semi, i) {
+      tone(midi(base + semi), t + i * 0.045, 0.075, "square", lvl * 0.55);
+    });
+    tone(midi(base + 12), t + 0.135, 0.14, "triangle", lvl * 0.4);
+  }
+
+  // Initiator picked up: a rising fanfare. Deliberately the inverse shape of
+  // the death sound - that one collapses, this one climbs - so the two are
+  // never confused in a busy moment.
+  function sfxPowerUp() {
+    if (!ensureSfx() || !musicOn) return;
+    var t = audioCtx.currentTime, lvl = sfxLevel();
+    [69, 74, 78, 81, 86].forEach(function (n, i) {
+      tone(midi(n), t + i * 0.05, 0.10, "square", lvl * 0.5);
+    });
+    tone(midi(93), t + 0.26, 0.22, "triangle", lvl * 0.34);
+  }
+
+  // A heartbeat while the initiator window is open, one pulse per quarter note,
+  // rising in pitch as the window closes. The player should be able to feel the
+  // time running out without reading the HUD.
+  var powerPulseAt = 0;
+  function sfxPowerTick() {
+    if (!ensureSfx() || !musicOn) return;
+    if (powerTicksRemaining <= 0) return;
+    var now = Date.now();
+    if (now - powerPulseAt < 220) return;
+    powerPulseAt = now;
+    var frac = 1 - powerTicksRemaining / POWER_TICKS;      // 0 at the start, 1 at the end
+    var t = audioCtx.currentTime, lvl = sfxLevel();
+    tone(midi(57 + Math.round(frac * 12)), t, 0.07, "square", lvl * 0.22);
+  }
+
+  // Termination: the chain end coming apart. A pitch collapsing an octave and a
+  // half under a burst of noise - the noise is what makes it read as a break
+  // rather than a boop.
+  function sfxDeath() {
+    if (!ensureSfx() || !musicOn) return;
+    var t = audioCtx.currentTime, lvl = sfxLevel();
+    tone(440, t, 0.55, "sawtooth", lvl * 0.5, 60);
+    tone(220, t + 0.02, 0.5, "square", lvl * 0.3, 40);
+    var len = Math.floor(audioCtx.sampleRate * 0.45);
+    var buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) {
+      var k = 1 - i / len;
+      d[i] = (Math.random() * 2 - 1) * k * k;     // decays away rather than stopping
+    }
+    var src = audioCtx.createBufferSource(); src.buffer = buf;
+    var g = audioCtx.createGain(); g.gain.value = lvl * 0.28;
+    var lp = audioCtx.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.setValueAtTime(3200, t);
+    lp.frequency.exponentialRampToValueAtTime(300, t + 0.45);
+    src.connect(lp); lp.connect(g); g.connect(sfxGain);
+    src.start(t);
+  }
+
+  // Bass ostinato: root, root, octave, root, root, fifth, octave, fifth. Eight
+  // sixteenths per chord. This shape - leaping the octave and back - is the
+  // engine room of the idiom; a static root would sit still and die.
+  var BASS_FIG = [0, 0, 12, 0, 0, 7, 12, 7];
+
+  function scheduleStep(step, when) {
+    var p = musicPlan();
+    var sec = 60 / p.bpm / 4;
+    var i = step % 32;                 // 32-step phrase: four chords of eight
+    var chord = PROG[p.prog][Math.floor(i / 8) % 4];
+    var third = chord.m ? 3 : 4;
+    var beat = step % 16;
+
+    // --- bass -------------------------------------------------------------
+    var bf = BASS_FIG[i % 8];
+    var broot = chord.r - (p.bassOct ? 12 : 0);
+    pulse(midi(broot + bf), when, sec * 0.9, 0.5, 0.34, masterGain, false);
+
+    // --- melody -----------------------------------------------------------
+    // -2 holds: extend the previous note instead of re-striking it, which is
+    // what gives a line phrasing rather than a stutter of equal blips.
+    var mel = MEL[p.mel], mv = mel[i];
+    if (mv > 0) {
+      var hold = 1;
+      while (hold < 8 && mel[(i + hold) % 32] === -2) hold++;
+      ensureLeadBus();
+      pulse(midi(mv), when, sec * hold * 0.92, p.duty, 0.22, leadBus, hold > 1);
+    }
+
+    // --- arpeggio ---------------------------------------------------------
+    // Broken triad on the current chord. How three tone channels implied
+    // harmony: play the chord one note at a time, fast enough to hear as one.
     if (p.arp) {
-      var a = ARP[i];
-      if (a > 0) blip(midi(shade(a, p.dark) + p.key), when, sec * 0.5, "triangle", 0.13);
+      var deg = [0, third, 7, third][i % 4];
+      var arpEvery = p.arp >= 2 ? 1 : 2;
+      if (i % arpEvery === 0) {
+        pulse(midi(chord.r + 12 + deg), when, sec * 0.42, 0.25, 0.10, masterGain, false);
+      }
     }
-    if (p.kick && KICK[i]) kick(when);
-    if ((p.fast ? HATS_FAST : HATS)[i]) hat(when);
+
+    // --- percussion -------------------------------------------------------
+    if (p.perc >= 1) {
+      if (KICK16[beat]) kick(when);
+      if (SNARE16[beat]) snare(when);
+    }
+    // From act 4 the hats run straight sixteenths; before that they swing
+    // on the HAT16 pattern.
+    if (p.perc >= 2 ? true : HAT16[beat]) hat(when);
   }
 
   function musicLoop() {
@@ -1786,6 +2160,7 @@
   function startDeath(hit) {
     state = "dying";
     deathReason = hit.name;
+    sfxDeath();
     stopMusic();
     cutChain();   // the chain stops here; its length joins the distribution
     clearInterval(tickTimer);
