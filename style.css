@@ -542,6 +542,22 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
   height: 100%;
   display: block;
 }
+/* The hero is the same 8-bit lab that runs behind the game. It is a banner
+   rather than a picture, so it is pinned to the bottom of the block: the bench
+   and the chemist sit along the base and the headline reads over the empty
+   upper wall, instead of the two fighting for the same band of pixels. */
+.hero { min-height: 320px; display: flex; align-items: center; }
+.hero-lab {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  opacity: 0.85;
+}
 .hero-scrim {
   position: absolute;
   inset: 0;

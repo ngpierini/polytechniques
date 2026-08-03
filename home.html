@@ -40,7 +40,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=67">
+<link rel="stylesheet" href="style.css?v=68">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 <style>
   /* ---- Arcade band ----
@@ -125,7 +125,7 @@
 <button class="theme-toggle-btn theme-toggle-fixed" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
 
 <section class="hero">
-  <svg id="polymer-art" class="polymer-art" viewBox="0 0 1200 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+  <canvas id="hero-lab" class="hero-lab" aria-hidden="true"></canvas>
   <div class="hero-scrim" aria-hidden="true"></div>
   <div class="hero-content">
     <div class="hero-brand">
@@ -357,64 +357,6 @@
 
 <p class="home-footnote">Reagent data and lab guidance are references for convenience. Always verify against your reagent's COA and your institution's safety protocols.<br>Tools not responding on a restricted (work, lab, or government) network? Run the <a href="diagnostics.html">site diagnostics</a> to see what's blocked.</p>
 
-<script>
-(function () {
-  var svg = document.getElementById('polymer-art');
-  var W = 1200, H = 460;
-  var palette = ['#5b8def', '#37c98f', '#f2b84b', '#ef6a6a', '#a78bfa', '#4fd1c5', '#f472b6'];
-  var NS = 'http://www.w3.org/2000/svg';
-
-  function el(tag, attrs) {
-    var e = document.createElementNS(NS, tag);
-    for (var k in attrs) e.setAttribute(k, attrs[k]);
-    return e;
-  }
-
-  function waveY(x, baseline, amplitude, freq, phase) {
-    return baseline
-      + Math.sin(x * freq + phase) * amplitude
-      + Math.sin(x * freq * 2.3 + phase * 1.7) * amplitude * 0.25;
-  }
-
-  var numChains = 7;
-  for (var c = 0; c < numChains; c++) {
-    var color = palette[c % palette.length];
-    var baseline = 30 + (H - 60) * (c / (numChains - 1)) + (Math.random() - 0.5) * 26;
-    var amplitude = 22 + Math.random() * 32;
-    var freq = 0.005 + Math.random() * 0.006;
-    var phase = Math.random() * Math.PI * 2;
-    var opacity = 0.5 + Math.random() * 0.35;
-
-    var step = 12;
-    var pts = [];
-    for (var x = -20; x <= W + 20; x += step) {
-      pts.push([x, waveY(x, baseline, amplitude, freq, phase)]);
-    }
-    var d = 'M ' + pts[0][0] + ' ' + pts[0][1];
-    for (var i = 1; i < pts.length; i++) {
-      var x0 = pts[i - 1][0], y0 = pts[i - 1][1];
-      var x1 = pts[i][0], y1 = pts[i][1];
-      var mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
-      d += ' Q ' + x0 + ' ' + y0 + ' ' + mx + ' ' + my;
-    }
-
-    svg.appendChild(el('path', {
-      d: d, fill: 'none', stroke: color, 'stroke-width': 2.5,
-      'stroke-linecap': 'round', opacity: (opacity * 0.7).toFixed(2)
-    }));
-
-    var beadSpacing = 46 + Math.random() * 20;
-    for (var bx = 10 + Math.random() * beadSpacing; bx < W - 10; bx += beadSpacing) {
-      var by = waveY(bx, baseline, amplitude, freq, phase);
-      var r = 5 + Math.random() * 4;
-      svg.appendChild(el('circle', {
-        cx: bx.toFixed(1), cy: by.toFixed(1), r: r.toFixed(1),
-        fill: color, opacity: opacity.toFixed(2)
-      }));
-    }
-  }
-})();
-</script>
 
 <script>
 (function () {
@@ -988,6 +930,43 @@ if ("serviceWorker" in navigator) {
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) stop(); else if (window.IntersectionObserver) { /* observer restarts it */ } else start();
   });
+})();
+</script>
+<script src="lab-scene.js?v=2"></script>
+<script>
+// The hero is the same 8-bit lab that runs behind the game, mounted as one
+// wide room instead of the two strips either side of a maze. With no player to
+// drive it, the synthesis walks itself: weigh, charge, purge, initiate,
+// reflux, sample, precipitate, isolate, and round again.
+//
+// It is a background, so it stops when it is not on screen or the tab is
+// hidden, and reduced-motion gets a single frame.
+(function () {
+  var cv = document.getElementById('hero-lab');
+  if (!cv || !window.PolyLab) return;
+  var lab = window.PolyLab.create(cv, {
+    // The hero's own blues, not a level palette: this one is not tied to a game.
+    tint: function () { return ['#5b8def', '#2a53c4']; },
+    bands: function (w) { return [{ x0: 0, x1: w }]; },
+    autoStory: true
+  });
+  if (!lab) return;
+
+  var still = false;
+  try { still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  var onScreen = true, visible = true;
+  function sync() { if (onScreen && visible && !still) lab.start(); else lab.stop(); }
+
+  if (window.IntersectionObserver) {
+    new IntersectionObserver(function (es) {
+      if (es[0]) { onScreen = es[0].isIntersecting; sync(); }
+    }, { threshold: 0.02 }).observe(cv);
+  }
+  document.addEventListener('visibilitychange', function () { visible = !document.hidden; sync(); });
+
+  if (still) { lab.start(); setTimeout(function () { lab.stop(); }, 400); }   // one frame, then hold
+  else sync();
 })();
 </script>
 </body>
