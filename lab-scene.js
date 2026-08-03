@@ -334,22 +334,36 @@
     return out;
   }
 
+  // A banner wide enough for five bays showed up the limit of two kinds of
+  // room: one synthesis bay and four identical copies of the other, which
+  // reads as wallpaper. With variety on, each bay past the first is a
+  // different corner of the same lab. It is opt-in because the game only ever
+  // has two bays and its pair is already tuned; this is for the banner.
+  var VARIETY_KINDS = ["instrument", "prep", "rotovap", "storage"];
+  function hasHood(kind) { return kind === "synth" || kind === "analysis"; }
+
   function buildAmbient(w, h) {
     rooms = [];
     var bands = marginBands(w);
     if (!bands || !bands.length) return;
     bands = splitBands(bands);
-    // The widest bay gets the chemist; the rest are the analytical end of the
-    // same room. Doubling up an identical scene would read as wallpaper rather
-    // than as one lab.
-    var order = bands.slice().sort(function (a, b) { return (b.x1 - b.x0) - (a.x1 - a.x0); });
-    for (var i = 0; i < order.length; i++) {
-      var room = makeRoom(order[i], h, i === 0 ? "synth" : "analysis");
+    // The widest bay gets the chemist. Kinds are assigned by position rather
+    // than by that width sort, so equal-width bays cannot swap identities
+    // between rebuilds and make the banner flicker on a resize.
+    var widest = 0;
+    for (var k = 1; k < bands.length; k++) {
+      if (bands[k].x1 - bands[k].x0 > bands[widest].x1 - bands[widest].x0) widest = k;
+    }
+    for (var i = 0; i < bands.length; i++) {
+      var kind = i === widest ? "synth"
+        : opts.variety ? VARIETY_KINDS[i % VARIETY_KINDS.length]
+        : "analysis";
+      var room = makeRoom(bands[i], h, kind, i);
       if (room) rooms.push(room);
     }
   }
 
-  function makeRoom(band, h, kind) {
+  function makeRoom(band, h, kind, bayIndex) {
     var x0 = snap(band.x0), x1 = snap(band.x1), w = x1 - x0;
     var cells = Math.floor(w / PXL);
     if (cells < 20 || h < 220) return null;      // too narrow to read as a room
@@ -359,7 +373,7 @@
     var floorY = snap(h - PXL * 12);
     var deckY = snap(floorY - PXL * 9);
     var room = {
-      x0: x0, w: w, h: h, kind: kind,
+      x0: x0, w: w, h: h, kind: kind, bay: bayIndex || 0,
       ceilY: snap(h * 0.03),
       deckY: deckY, floorY: floorY,
       bubbles: [], drops: [], puffs: [], flakes: [],
@@ -372,18 +386,25 @@
     // bench keeps enough width to hold a stirrer and still leave the chemist
     // somewhere to stand: a hood that eats the band gives him no second station
     // and he never walks.
-    var hoodCells = Math.min(24, Math.max(16, cells - 24));
-    room.hood = { x: x0 + PXL, w: hoodCells * PXL, top: snap(h * 0.11) };
-    // The reflux setup sits at the right of the hood so the chemist, who works
-    // from the left, never stands in front of the thing he is watching.
-    room.hood.flaskX = room.hood.x + room.hood.w - PXL * 11;
-    room.hood.rodX = room.hood.x + room.hood.w - PXL * 4;
+    // Every bay has a tall block at its left, whatever stands there: a fume
+    // hood, an instrument stack, a drying oven, a solvent cabinet. Keeping the
+    // footprint identical is what lets the bench, the aisle and the chemist's
+    // two stations be worked out once for all of them.
+    var blockCells = Math.min(24, Math.max(16, cells - 24));
+    room.block = { x: x0 + PXL, w: blockCells * PXL, top: snap(h * 0.11) };
+    if (hasHood(kind)) {
+      room.hood = room.block;
+      // The reflux setup sits at the right of the hood so the chemist, who works
+      // from the left, never stands in front of the thing he is watching.
+      room.hood.flaskX = room.hood.x + room.hood.w - PXL * 11;
+      room.hood.rodX = room.hood.x + room.hood.w - PXL * 4;
+    }
 
     // The analytical end keeps a clear column at the far edge for the safety
     // shower, which otherwise ends up planted through the reagent shelf.
-    var rest = x0 + w - (room.hood.x + room.hood.w) - PXL * (kind === "analysis" ? 8 : 2);
+    var rest = x0 + w - (room.block.x + room.block.w) - PXL * (kind === "analysis" ? 8 : 2);
     room.bench = rest >= PXL * 14
-      ? { x: room.hood.x + room.hood.w + PXL * 2, w: snap(rest) }
+      ? { x: room.block.x + room.block.w + PXL * 2, w: snap(rest) }
       : null;
     if (room.bench) {
       // Leave the right-hand end of the bench clear: that is where the chemist
@@ -399,7 +420,10 @@
     // left, which is how he ends up looking at what he is holding.
     var span = CHEM_W * PXL;
     function place(x) { return Math.max(x0, Math.min(x0 + w - span, snap(x))); }
-    room.stations.hood = { workX: place(room.hood.flaskX - PXL * 11), facing: 0 };
+    room.stations.hood = {
+      workX: place((room.hood ? room.hood.flaskX : room.block.x + room.block.w) - PXL * 11),
+      facing: 0
+    };
     // The bench end is placed at the far end of the aisle whether or not there
     // turned out to be room for a bench to work at, because two stations is
     // what makes him a person working a lab rather than an ornament.
@@ -440,7 +464,7 @@
     fill(g, PXL * 2, room.ceilY + PXL * 5, W - PXL * 4, PXL, LAB.W, 0.8);
     fill(g, PXL * 2, room.ceilY + PXL * 6, W - PXL * 4, PXL, LAB.p, 0.45);
 
-    paintHood(g, room);
+    if (room.hood) paintHood(g, room); else paintFixture(g, room);
     if (room.bench) paintBench(g, room);
 
     if (room.kind === "analysis") {
@@ -452,13 +476,222 @@
       fill(g, sx - PXL * 2, room.ceilY + PXL * 9, PXL * 5, PXL, LAB.y, 0.55);
       fill(g, sx - PXL * 4, room.ceilY + PXL * 10, PXL * 2, PXL * 5, LAB.y, 0.9);   // pull handle
     } else {
-      // A wall clock over the door end. Nobody notices it; the room feels wrong
-      // without something at eye level on the bare wall.
-      var cx = W - PXL * 5;
-      fill(g, cx, room.ceilY + PXL * 9, PXL * 4, PXL * 4, LAB.W, 0.55);
-      fill(g, cx + PXL, room.ceilY + PXL * 10, PXL * 2, PXL * 2, LAB.k, 0.9);
+      paintWallDressing(g, room);
     }
     return cv;
+  }
+
+  // The bare wall above the bench is where a lab stops looking like a diagram.
+  // Each bay gets a different thing hung on it, chosen by position so it is the
+  // same every rebuild, and the ceiling and floor pick up their own variations.
+  function paintWallDressing(g, room) {
+    var W = room.w, top = room.ceilY, x = W - PXL * 6;
+    switch (room.bay % 4) {
+      case 0: {   // wall clock
+        fill(g, x + PXL, top + PXL * 9, PXL * 4, PXL * 4, LAB.W, 0.55);
+        fill(g, x + PXL * 2, top + PXL * 10, PXL * 2, PXL * 2, LAB.k, 0.9);
+        break;
+      }
+      case 1: {   // whiteboard, scrawled on the way every lab whiteboard is
+        fill(g, x - PXL * 6, top + PXL * 8, PXL * 12, PXL * 7, LAB.W, 0.5);
+        fill(g, x - PXL * 6, top + PXL * 14, PXL * 12, PXL, LAB.P, 0.7);   // pen tray
+        for (var r = 0; r < 3; r++) {
+          fill(g, x - PXL * 5, top + PXL * (10 + r * 2), PXL * (4 + r * 3), PXL, LAB.k, 0.45);
+        }
+        break;
+      }
+      case 2: {   // fire extinguisher on its bracket
+        fill(g, x + PXL, top + PXL * 9, PXL * 3, PXL * 7, LAB.r, 0.85);
+        fill(g, x + PXL * 2, top + PXL * 8, PXL, PXL, LAB.P);
+        fill(g, x, top + PXL * 11, PXL * 5, PXL, LAB.k, 0.6);
+        break;
+      }
+      default: {  // hazard placard
+        fill(g, x, top + PXL * 9, PXL * 5, PXL * 5, LAB.y, 0.75);
+        fill(g, x + PXL, top + PXL * 10, PXL * 3, PXL * 3, LAB.k, 0.55);
+        break;
+      }
+    }
+    // A sprinkler head on alternate bays, and a floor drain on one in three.
+    if (room.bay % 2 === 1) {
+      fill(g, PXL * 6, room.ceilY + PXL * 3, PXL, PXL * 2, LAB.p);
+      fill(g, PXL * 5, room.ceilY + PXL * 5, PXL * 3, PXL, LAB.w, 0.8);
+    }
+    if (room.bay % 3 === 2) {
+      var dy = room.floorY + PXL * 6;
+      fill(g, PXL * 8, dy, PXL * 5, PXL * 2, "#0b0f18");
+      fill(g, PXL * 9, dy, PXL, PXL * 2, LAB.P, 0.7);
+      fill(g, PXL * 11, dy, PXL, PXL * 2, LAB.P, 0.7);
+    }
+  }
+
+  // --- The other corners of the lab ----------------------------------------
+  //
+  // Each of these fills the same block a fume hood would, so the bench, the
+  // aisle and the chemist's stations do not have to know which one it is. They
+  // are drawn from the same 5px grid and the same palette; what makes them read
+  // as different rooms is silhouette, not colour.
+  function paintFixture(g, room) {
+    var B = room.block, x = B.x - room.x0, w = B.w, top = B.top;
+    var deck = room.deckY, floor = room.floorY;
+
+    // Base cabinet and worktop, common to all of them - the thing standing on
+    // the bench changes, the bench does not.
+    fill(g, x, deck - PXL, w, PXL * 2, LAB.k);
+    fill(g, x, deck, w, PXL, LAB.P);
+    fill(g, x, deck + PXL, w, floor - deck - PXL, LAB.d);
+    fill(g, x, deck + PXL, PXL, floor - deck - PXL, LAB.D);
+
+    if (room.kind === "instrument") paintInstrument(g, room, x, w, top, deck);
+    else if (room.kind === "prep") paintPrep(g, room, x, w, top, deck);
+    else if (room.kind === "rotovap") paintRotovap(g, room, x, w, top, deck);
+    else paintStorage(g, room, x, w, top, deck, floor);
+  }
+
+  // A stacked chromatograph: pump, column oven, detector, and a screen. The
+  // giveaway is the autosampler carousel on top, which nothing else in a lab
+  // looks like.
+  function paintInstrument(g, room, x, w, top, deck) {
+    var y = deck - PXL * 16;
+    room.fx = { screenX: x + PXL * 2, screenY: y + PXL * 2, vialY: y - PXL * 3 };
+    fill(g, x + PXL, y, w - PXL * 3, PXL * 16, LAB.w);                 // stack body
+    fill(g, x + PXL, y, PXL, PXL * 16, LAB.W, 0.5);                    // near edge
+    for (var m = 0; m < 4; m++) {                                       // module seams
+      fill(g, x + PXL, y + PXL * (4 + m * 4), w - PXL * 3, PXL, LAB.P);
+    }
+    fill(g, x + PXL * 2, y + PXL * 2, PXL * 8, PXL * 2, LAB.k);        // screen recess
+    for (var i = 0; i < 3; i++) {                                       // module handles
+      fill(g, x + w - PXL * 5, y + PXL * (6 + i * 4), PXL * 2, PXL, LAB.P);
+    }
+    // Autosampler: a carousel of vials on the top plate.
+    fill(g, x + PXL * 2, y - PXL * 2, w - PXL * 5, PXL * 2, LAB.p);
+    for (var v = 0; v < 5; v++) {
+      fill(g, x + PXL * (3 + v * 2), y - PXL * 3, PXL, PXL, LAB.g, 0.6);
+    }
+  }
+
+  // A drying oven with a glass door and a rack of upturned glassware above it:
+  // the corner of the lab where everything is either too hot to touch or
+  // waiting to be put away.
+  function paintPrep(g, room, x, w, top, deck) {
+    var oy = deck - PXL * 11;
+    room.fx = { ovenX: x + PXL * 3, ovenY: oy + PXL * 2 };
+    fill(g, x + PXL, oy, w - PXL * 3, PXL * 11, LAB.w);                // oven body
+    fill(g, x + PXL * 2, oy + PXL * 2, w - PXL * 7, PXL * 7, LAB.b);   // door glass
+    fill(g, x + PXL * 2, oy + PXL * 2, w - PXL * 7, PXL, LAB.g, 0.25);
+    fill(g, x + w - PXL * 4, oy + PXL * 3, PXL, PXL * 5, LAB.P);       // hinge side
+    fill(g, x + PXL * 2, oy, PXL * 4, PXL * 2, LAB.k);                 // control panel
+    // Trays of glassware behind the door.
+    for (var s = 0; s < 2; s++) {
+      fill(g, x + PXL * 3, oy + PXL * (5 + s * 3), w - PXL * 9, PXL, LAB.p, 0.8);
+      for (var q = 0; q < 3; q++) {
+        fill(g, x + PXL * (3 + q * 3), oy + PXL * (3 + s * 3), PXL * 2, PXL * 2, LAB.g, 0.35);
+      }
+    }
+    // Draining rack above: flasks hung upside down on pegs.
+    var ry = top + PXL * 4;
+    fill(g, x + PXL, ry + PXL * 5, w - PXL * 3, PXL, LAB.p);
+    for (var f = 0; f * PXL * 5 < w - PXL * 5; f++) {
+      var fx = x + PXL * (2 + f * 5);
+      fill(g, fx, ry + PXL * 2, PXL * 3, PXL * 3, LAB.g, 0.3);
+      fill(g, fx, ry + PXL * 2, PXL, PXL * 3, LAB.W, 0.25);
+      fill(g, fx + PXL, ry, PXL, PXL * 2, LAB.g, 0.35);
+    }
+  }
+
+  // A rotary evaporator. The flask half-sunk in its bath is the one silhouette
+  // every chemist recognises from across a room.
+  function paintRotovap(g, room, x, w, top, deck) {
+    var cx = x + PXL * 4;
+    room.fx = { flaskX: cx, flaskY: deck - PXL * 6, bathX: cx - PXL, bathY: deck - PXL * 4,
+                condX: x + PXL * 11, condY: deck - PXL * 17 };
+    // Stand and motor head.
+    fill(g, x + w - PXL * 5, deck - PXL * 20, PXL, PXL * 20, LAB.p);
+    fill(g, x + PXL * 9, deck - PXL * 20, w - PXL * 13, PXL * 3, LAB.w);
+    // Condenser: a slanted coil column running down to the receiving flask.
+    for (var i = 0; i < 8; i++) {
+      fill(g, x + PXL * (11 + i), deck - PXL * (17 - i), PXL * 2, PXL, LAB.g, 0.45);
+    }
+    fill(g, x + PXL * 10, deck - PXL * 18, PXL * 3, PXL * 2, LAB.p);
+    // Water bath, with its own little control panel.
+    fill(g, cx - PXL * 2, deck - PXL * 4, PXL * 8, PXL * 4, LAB.w);
+    fill(g, cx - PXL * 2, deck - PXL, PXL * 8, PXL, LAB.P);
+    fill(g, cx + PXL * 4, deck - PXL * 3, PXL * 2, PXL, LAB.k);
+  }
+
+  // Flammables cabinet and the gas cylinders, strapped upright because a loose
+  // cylinder is the one thing everybody is taught to be frightened of.
+  function paintStorage(g, room, x, w, top, deck, floor) {
+    var cy = deck - PXL * 15;
+    room.fx = { gaugeX: x + w - PXL * 6, gaugeY: cy + PXL * 2 };
+    fill(g, x + PXL, cy, w - PXL * 9, PXL * 15, LAB.y, 0.55);          // cabinet
+    fill(g, x + PXL, cy, w - PXL * 9, PXL, LAB.y, 0.85);
+    fill(g, x + (w - PXL * 8) / 2, cy, PXL, PXL * 15, LAB.k, 0.5);     // door split
+    fill(g, x + (w - PXL * 8) / 2 - PXL * 2, cy + PXL * 7, PXL, PXL * 2, LAB.k, 0.7);
+    fill(g, x + (w - PXL * 8) / 2 + PXL * 2, cy + PXL * 7, PXL, PXL * 2, LAB.k, 0.7);
+    fill(g, x + PXL * 3, cy + PXL * 2, PXL * 4, PXL * 4, LAB.k, 0.45); // hazard diamond
+    // Two cylinders beside it, with a restraining strap across both.
+    for (var c = 0; c < 2; c++) {
+      var gx = x + w - PXL * (7 - c * 3);
+      fill(g, gx, deck - PXL * 18, PXL * 2, PXL * 18, c ? "#4a5a6a" : "#6a5a4a");
+      fill(g, gx, deck - PXL * 18, PXL, PXL * 18, LAB.W, 0.18);
+      fill(g, gx, deck - PXL * 20, PXL * 2, PXL * 2, LAB.p);           // valve
+    }
+    fill(g, x + w - PXL * 8, deck - PXL * 12, PXL * 8, PXL, LAB.r, 0.7);  // strap
+  }
+
+  // --- What moves on each of them ------------------------------------------
+
+  function drawFixture(room, t, dt, tint, A) {
+    var B = room.block, deck = room.deckY;
+    var fx = room.fx || {};
+    if (room.kind === "instrument") {
+      // A chromatogram crawling across the screen, and the run light beside it.
+      var sx = fx.screenX, sy = fx.screenY;
+      for (var i = 0; i < 8; i++) {
+        var ph = t * 0.7 + i * 0.8;
+        var pk = Math.max(0, Math.sin(ph)) * Math.max(0, Math.sin(ph * 3.1));
+        fill(actx, room.x0 + sx + PXL * i, sy + PXL - snap(pk * PXL), PXL, PXL, LAB.n, A * 0.9);
+      }
+      fill(actx, room.x0 + sx + PXL * 9, sy, PXL, PXL,
+        (t * 1.1 % 1) < 0.55 ? LAB.n : LAB.k, A);
+    } else if (room.kind === "prep") {
+      // The oven's set-point display, and heat shimmering off the top of it.
+      fill(actx, room.x0 + fx.ovenX, fx.ovenY - PXL * 2, PXL, PXL,
+        (t * 0.8 % 1) < 0.5 ? LAB.r : LAB.k, A);
+      if (Math.random() < 0.10) {
+        room.puffs.push({ x: snap(room.x0 + fx.ovenX + PXL * (Math.random() * 5 | 0)),
+                          y: fx.ovenY - PXL * 4, life: 0 });
+      }
+    } else if (room.kind === "rotovap") {
+      // The flask turns. Drawing the liquid line at a rolling angle is enough:
+      // a rotovap is recognised by the motion, not by the glass.
+      var a = t * 1.6;
+      var fxp = room.x0 + fx.flaskX, fyp = fx.flaskY;
+      fill(actx, fxp, fyp, PXL * 4, PXL * 4, LAB.g, A * 0.4);
+      fill(actx, fxp, fyp, PXL, PXL * 4, LAB.W, A * 0.25);
+      var lift = snap(Math.sin(a) * PXL);
+      fill(actx, fxp, fyp + PXL * 2 + lift, PXL * 4, PXL * 2 - lift, tint, A * 0.8);
+      fill(actx, room.x0 + fx.bathX, fx.bathY + PXL, PXL * 6, PXL * 2, tint, A * 0.35);
+      if (Math.random() < 0.14) {
+        room.puffs.push({ x: snap(room.x0 + fx.bathX + PXL * (Math.random() * 6 | 0)),
+                          y: fx.bathY - PXL, life: 0 });
+      }
+    } else {
+      // A regulator needle that twitches, which is the only thing that ever
+      // moves in the corner where the cylinders live.
+      fill(actx, room.x0 + fx.gaugeX, fx.gaugeY, PXL * 3, PXL * 3, LAB.w, A);
+      fill(actx, room.x0 + fx.gaugeX + PXL + snap(Math.sin(t * 0.9) * PXL) * 0,
+        fx.gaugeY + PXL, PXL, PXL, (t * 0.5 % 1) < 0.5 ? LAB.r : LAB.k, A);
+    }
+
+    // Vapour and steam rise the same way whatever produced them.
+    for (var p = room.puffs.length - 1; p >= 0; p--) {
+      var pf = room.puffs[p];
+      pf.life += dt;
+      if (pf.life > 1.8) { room.puffs.splice(p, 1); continue; }
+      fill(actx, pf.x, snap(pf.y - pf.life * 30), PXL, PXL, LAB.W, A * 0.26 * (1 - pf.life / 1.8));
+    }
   }
 
   function paintHood(g, room) {
@@ -567,22 +800,25 @@
     actx.drawImage(room.statics, room.x0, 0);
 
     var H = room.hood;
+    if (H) {
+      // The sash rides up and down. It is the one control every fume hood has and
+      // the one detail anyone who has used one will recognise instantly.
+      var sash = snap(H.top + PXL * 4 + (Math.sin(t * 0.26) * 0.5 + 0.5) * PXL * 6);
+      fill(actx, H.x + PXL, H.top + PXL, H.w - PXL * 2, sash - H.top - PXL, LAB.g, A * 0.14);
+      fill(actx, H.x + PXL, sash, H.w - PXL * 2, PXL, LAB.w, A);
+      fill(actx, H.x + PXL, sash + PXL, H.w - PXL * 2, PXL, LAB.W, A * 0.45);
 
-    // The sash rides up and down. It is the one control every fume hood has and
-    // the one detail anyone who has used one will recognise instantly.
-    var sash = snap(H.top + PXL * 4 + (Math.sin(t * 0.26) * 0.5 + 0.5) * PXL * 6);
-    fill(actx, H.x + PXL, H.top + PXL, H.w - PXL * 2, sash - H.top - PXL, LAB.g, A * 0.14);
-    fill(actx, H.x + PXL, sash, H.w - PXL * 2, PXL, LAB.w, A);
-    fill(actx, H.x + PXL, sash + PXL, H.w - PXL * 2, PXL, LAB.W, A * 0.45);
+      // Airflow monitor. Green normally; a terminated chain in the maze is a
+      // reaction lost on the bench, so it goes to a red alarm for a few seconds.
+      var alarmed = labStory.alarm > 0;
+      fill(actx, H.x + PXL, H.top + PXL * 4, PXL * 3, PXL * 2, LAB.k, A);
+      fill(actx, H.x + PXL * 2, H.top + PXL * 4, PXL, PXL,
+        alarmed ? ((t * 5 % 1) < 0.5 ? LAB.r : LAB.k) : ((t * 1.4 % 1) < 0.7 ? LAB.n : LAB.k), A);
 
-    // Airflow monitor. Green normally; a terminated chain in the maze is a
-    // reaction lost on the bench, so it goes to a red alarm for a few seconds.
-    var alarmed = labStory.alarm > 0;
-    fill(actx, H.x + PXL, H.top + PXL * 4, PXL * 3, PXL * 2, LAB.k, A);
-    fill(actx, H.x + PXL * 2, H.top + PXL * 4, PXL, PXL,
-      alarmed ? ((t * 5 % 1) < 0.5 ? LAB.r : LAB.k) : ((t * 1.4 % 1) < 0.7 ? LAB.n : LAB.k), A);
-
-    drawReflux(room, t, dt, tint, A, act);
+      drawReflux(room, t, dt, tint, A, act);
+    } else {
+      drawFixture(room, t, dt, tint, A);
+    }
     if (room.beakers.length) drawBench(room, t, tint, A);
     if (room.bench) drawProductShelf(room, A);
     if (room.chem) {

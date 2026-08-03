@@ -932,7 +932,7 @@ if ("serviceWorker" in navigator) {
   });
 })();
 </script>
-<script src="lab-scene.js?v=2"></script>
+<script src="lab-scene.js?v=3"></script>
 <script>
 // The hero is the same 8-bit lab that runs behind the game, mounted as one
 // wide room instead of the two strips either side of a maze. With no player to
@@ -948,7 +948,10 @@ if ("serviceWorker" in navigator) {
     // The hero's own blues, not a level palette: this one is not tied to a game.
     tint: function () { return ['#5b8def', '#2a53c4']; },
     bands: function (w) { return [{ x0: 0, x1: w }]; },
-    autoStory: true
+    autoStory: true,
+    // Five bays of the same room would read as wallpaper, so each one past the
+    // synthesis bay is a different corner of the lab.
+    variety: true
   });
   if (!lab) return;
 
