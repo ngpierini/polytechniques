@@ -5,7 +5,7 @@
 // Either way the calculators still work with no connection. Bump CACHE_NAME
 // whenever the pre-cache list below changes so old clients pick up the new
 // set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v188";
+const CACHE_NAME = "polytechniques-v189";
 
 const PRECACHE_URLS = [
   "home.html",
@@ -134,11 +134,23 @@ self.addEventListener("fetch", function (event) {
     return;
   }
 
-  // Everything else is versioned in its URL, so a cache hit is by definition
-  // the right file and the network round trip is pure latency.
+  // Everything else is versioned in its URL, so a cache hit is served
+  // immediately - but it is NOT "by definition the right file", which is what
+  // this used to assume. A deploy is not atomic from the browser's side: for a
+  // few seconds the edge serves the new HTML, which asks for polymer-data.js
+  // ?v=34, while that URL still returns the previous file. _headers marks it
+  // `immutable, max-age=31536000`, so a visitor who lands in that window pins
+  // the wrong bytes under the right URL for a year, and the version can never
+  // be bumped again to dislodge it. Observed exactly that on this site: the
+  // cache held polymer-data.js?v=34 at 718315 bytes while the network had
+  // 719883.
+  //
+  // So: still cache-first for speed, but always revalidate from the network
+  // with `cache: "reload"` (bypassing the browser's own pinned copy) and
+  // overwrite. A bad pin then costs one stale load instead of a year.
   event.respondWith(
     caches.match(req).then(function (cached) {
-      var network = fetch(req)
+      var network = fetch(new Request(req.url, { cache: "reload", credentials: "same-origin" }))
         .then(function (res) { return cachePut(req, res); })
         .catch(function () { return cached; });
       return cached || network;
