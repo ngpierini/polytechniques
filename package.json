@@ -9,7 +9,8 @@
     "check-thermal": "node scripts/check-thermal-library.js",
     "build-index": "node scripts/build-search-index.js",
     "check-index": "node scripts/build-search-index.js --check",
-    "check-chain": "node scripts/check-chain-data.js"
+    "check-chain": "node scripts/check-chain-data.js",
+    "backfill": "node scripts/backfill-structures.js"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"

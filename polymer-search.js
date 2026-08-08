@@ -4241,13 +4241,22 @@
     // matters: the four polypropylenes are genuinely one drawing, so they
     // arrive as one exact match with four entries in it. Listing them with no
     // explanation reads like the matcher failed; saying why is the answer.
+    var VARIANT_FIELDS = [
+      { key: 'tacticity', what: 'tacticity', why: 'which describes how successive units are arranged, and so cannot be shown in a single unit' },
+      { key: 'form', what: 'form', why: 'branching, molar mass and how the solid was made - none of which one repeat unit can show' }
+    ];
     function tacticityNote(hits) {
       if (!hits || hits.length < 2) return '';
-      var t = [];
-      hits.forEach(function (p) { if (p.tacticity && t.indexOf(p.tacticity) === -1) t.push(p.tacticity); });
-      if (!t.length) return '';
-      return ' These ' + hits.length + ' entries share one repeat unit and differ by tacticity (' +
-        t.join(', ') + '), which describes how successive units are arranged and so cannot be shown in a single unit.';
+      for (var f = 0; f < VARIANT_FIELDS.length; f++) {
+        var field = VARIANT_FIELDS[f], vals = [];
+        hits.forEach(function (p) {
+          if (p[field.key] && vals.indexOf(p[field.key]) === -1) vals.push(p[field.key]);
+        });
+        if (!vals.length) continue;
+        return ' These ' + hits.length + ' entries share one repeat unit and differ by ' + field.what +
+          ' (' + vals.join('; ') + ') — ' + field.why + '.';
+      }
+      return '';
     }
 
     // "cis" / "trans" if the entry declares double-bond geometry, else null.

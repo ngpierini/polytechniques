@@ -29,6 +29,16 @@ const { wlHash, closedHash, inSameRing } = require("../polymer-graph.js");
 // not a new kind of polymer.
 const TACTICITIES = ["isotactic", "syndiotactic", "atactic"];
 
+// Properties a single repeat unit is structurally incapable of showing, so two
+// entries may legitimately share one graph when they declare different values.
+// Tacticity is a relationship between successive units; "form" is branching,
+// molar mass or how the solid was made - the whole difference between HDPE,
+// LDPE and UHMWPE, which are one molecule and three materials.
+const VARIANT_FIELDS = ["tacticity", "form"];
+function variantKey(entry) {
+  return VARIANT_FIELDS.map(function (f) { return entry[f] || "-"; }).join("|");
+}
+
 // Generous max valence per element (bond-order sum), with slack for formal
 // charge. Purpose is to catch obvious mistakes (typo'd bonds, duplicate
 // entries), not to referee real edge-case chemistry, so this errs high.
@@ -118,14 +128,17 @@ function checkEntry(entry, idx, errors) {
   // explain a graph collision rather than pretend one is not there. A
   // misspelled value would silently become a fourth distinct "tacticity" and
   // the collision check would wave it through.
-  if (entry.tacticity !== undefined) {
-    if (TACTICITIES.indexOf(entry.tacticity) === -1) {
-      errors.push(where + ": \"tacticity\" must be one of " + TACTICITIES.join(", ") + " (got " + JSON.stringify(entry.tacticity) + ")");
-    }
-    if (!Array.isArray(entry.atoms) || !entry.atoms.length) {
-      errors.push(where + ": declares a tacticity but has no structure; the field exists to disambiguate entries that share one");
-    }
+  if (entry.tacticity !== undefined && TACTICITIES.indexOf(entry.tacticity) === -1) {
+    errors.push(where + ": \"tacticity\" must be one of " + TACTICITIES.join(", ") + " (got " + JSON.stringify(entry.tacticity) + ")");
   }
+  if (entry.form !== undefined && (typeof entry.form !== "string" || !entry.form.trim() || entry.form.length > 40)) {
+    errors.push(where + ": \"form\" must be a short non-empty label (got " + JSON.stringify(entry.form) + ")");
+  }
+  VARIANT_FIELDS.forEach(function (f) {
+    if (entry[f] !== undefined && (!Array.isArray(entry.atoms) || !entry.atoms.length)) {
+      errors.push(where + ": declares \"" + f + "\" but has no structure; these fields exist only to disambiguate entries that share one");
+    }
+  });
   // The same alias twice in one entry is always a slip - it cannot make the
   // entry more findable, and it did hide in "PHEMA"/"pHEMA" for a long time
   // because the two differ only in case. Compared case-insensitively for that
@@ -359,10 +372,10 @@ function main() {
       // successive units, so the four polypropylenes are one drawing. That is
       // allowed exactly once per declared value - two entries with the same
       // graph AND the same (or no) tacticity are still a duplicate.
-      const tact = entry.tacticity || "-";
+      const tact = variantKey(entry);
       const h = wlHash(entry.atoms, entry.bonds) + "|" + tact;
       if (hashSeen.has(h)) {
-        errors.push("entry #" + idx + " (" + entry.name + "): structure is identical (WL-hash match) to entry #" + hashSeen.get(h) + " - same repeat unit listed twice" + (entry.tacticity ? " with the same tacticity" : ""));
+        errors.push("entry #" + idx + " (" + entry.name + "): structure is identical (WL-hash match) to entry #" + hashSeen.get(h) + " - same repeat unit listed twice" + (tact === "-|-" ? "" : " with the same declared variant (" + tact + ")"));
       } else {
         hashSeen.set(h, idx);
       }

@@ -449,7 +449,23 @@ async function main() {
   }
 }
 
-main().catch(function (err) {
-  console.error(err);
-  process.exit(1);
-});
+// The transform rules are the chemistry, and a second copy of them is how a
+// tool ends up quietly disagreeing with itself. scripts/backfill-structures.js
+// derives repeat units for entries that ALREADY exist, which is the same
+// chemistry pointed at a different set of inputs, so it imports these rather
+// than reimplementing them. Requiring this file must therefore not run the
+// discovery pipeline.
+module.exports = {
+  deriveRepeatUnit: deriveRepeatUnit,
+  lookupMonomer: lookupMonomer,
+  molToGraph: molToGraph,
+  serializeAtoms: serializeAtoms,
+  serializeBonds: serializeBonds
+};
+
+if (require.main === module) {
+  main().catch(function (err) {
+    console.error(err);
+    process.exit(1);
+  });
+}

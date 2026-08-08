@@ -4024,19 +4024,21 @@ window.POLYMER_DB = [
     name: "High-density polyethylene", aka: ["HDPE", "PE-HD", "high density polyethylene"],
     monomer: "ethylene (coordination catalysis)", cls: "Addition (vinyl)", cas: null,
     tags: ["commodity", "packaging", "specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Polyethylene made with almost no branching, so the chains pack into a crystal that fills about seventy percent of the solid - hence the density, the stiffness and the opacity. The absence of branches is the whole difference from LDPE and it comes entirely from the catalyst, not the monomer. Milk bottles, pipe and chopping boards. Not drawn: its repeat is polyethylene's; the branching is what differs."
+    verified: true,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }],
+    form: "high-density (unbranched)",
+    note: "Polyethylene made with almost no branching, so the chains pack into a crystal that fills about seventy percent of the solid - hence the density, the stiffness and the opacity. The absence of branches is the whole difference from LDPE and it comes entirely from the catalyst, not the monomer. Milk bottles, pipe and chopping boards. Its repeat unit IS polyethylene's, so a structure search finds this alongside the other grades; the branching is what differs and no repeat unit can show it."
   },
   {
     name: "Low-density polyethylene", aka: ["LDPE", "PE-LD", "low density polyethylene"],
     monomer: "ethylene (free-radical, high pressure)", cls: "Addition (vinyl)", cas: null,
     tags: ["commodity", "packaging", "specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "The original polyethylene, made at a few thousand atmospheres by free radicals that periodically bite back onto their own chain - backbiting, which leaves short branches every fifty or so carbons and long ones less often. Those branches block crystallisation, so the material is soft, clear and tough at low temperature: cling film and squeeze bottles. Not drawn: branching is the difference and a repeat unit cannot show it."
+    verified: true,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }],
+    form: "low-density (branched)",
+    note: "The original polyethylene, made at a few thousand atmospheres by free radicals that periodically bite back onto their own chain - backbiting, which leaves short branches every fifty or so carbons and long ones less often. Those branches block crystallisation, so the material is soft, clear and tough at low temperature: cling film and squeeze bottles. Drawn as polyethylene, because that is what it is: a structure search returns it beside HDPE and UHMWPE, and branching is the difference no repeat unit can show."
   },
   {
     name: "Linear low-density polyethylene", aka: ["LLDPE", "PE-LLD", "linear low density polyethylene"],
@@ -4051,10 +4053,11 @@ window.POLYMER_DB = [
     name: "Ultra-high-molecular-weight polyethylene", aka: ["UHMWPE", "PE-UHMW", "Dyneema", "Spectra"],
     monomer: "ethylene (coordination catalysis to very high molar mass)", cls: "Addition (vinyl)", cas: null,
     tags: ["commodity", "biomedical", "specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "The same molecule as HDPE taken to several million grams per mole, at which point the chains are so entangled that the melt will not flow at all and parts are sintered rather than moulded. Those entanglements give abrasion resistance beyond any other thermoplastic and, when gel-spun into aligned fibre, a specific strength greater than steel. It is the bearing surface of most hip and knee replacements. Not drawn: chain length, not structure, is what defines it."
+    verified: true,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }],
+    form: "ultra-high molar mass",
+    note: "The same molecule as HDPE taken to several million grams per mole, at which point the chains are so entangled that the melt will not flow at all and parts are sintered rather than moulded. Those entanglements give abrasion resistance beyond any other thermoplastic and, when gel-spun into aligned fibre, a specific strength greater than steel. It is the bearing surface of most hip and knee replacements. Drawn as polyethylene, since chain length rather than structure is what defines it; a structure search finds it with the other grades."
   },
   {
     name: "Crosslinked polyethylene", aka: ["PEX", "XLPE", "cross-linked polyethylene"],
@@ -4108,10 +4111,11 @@ window.POLYMER_DB = [
     name: "Expanded polystyrene", aka: ["EPS", "expanded polystyrene foam", "Styrofoam (generic)"],
     monomer: "styrene, with pentane blowing agent", cls: "Addition (vinyl)", cas: null,
     tags: ["styrenic", "commodity", "packaging", "specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Polystyrene beads impregnated with pentane, then steamed so the gas expands them and fuses them into a closed-cell foam that is about 98 percent air. Its properties are geometric rather than chemical: thermal conductivity close to still air, compressive strength from the cell walls, and a recycling problem that comes entirely from transporting a material that is mostly nothing. Not drawn: a foam, not a distinct polymer."
+    verified: true,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }],
+    form: "foamed",
+    note: "Polystyrene beads impregnated with pentane, then steamed so the gas expands them and fuses them into a closed-cell foam that is about 98 percent air. Its properties are geometric rather than chemical: thermal conductivity close to still air, compressive strength from the cell walls, and a recycling problem that comes entirely from transporting a material that is mostly nothing. Chemically it is polystyrene, so a structure search finds both; what differs is the foam, not the molecule."
   },
   {
     name: "Polypropylene random copolymer", aka: ["PP-R", "random polypropylene copolymer", "PPR"],
@@ -4567,10 +4571,11 @@ window.POLYMER_DB = [
     name: "Poly(vinyl alcohol) high-tenacity fibre", aka: ["PVA fibre", "vinylon", "Kuralon"],
     monomer: "poly(vinyl alcohol), gel-spun and acetalised", cls: "Addition (vinyl)", cas: null,
     tags: ["specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Poly(vinyl alcohol) drawn into a fibre and then surface-acetalised with formaldehyde so it does not dissolve in hot water. It was developed in Japan as a cotton substitute when petrochemical feedstocks were unavailable, and survives as the fibre used to reinforce cement, where its alkali resistance beats the alternatives. Not drawn: processing and surface treatment define it, not a different repeat unit."
+    verified: true,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }],
+    form: "gel-spun fibre",
+    note: "Poly(vinyl alcohol) drawn into a fibre and then surface-acetalised with formaldehyde so it does not dissolve in hot water. It was developed in Japan as a cotton substitute when petrochemical feedstocks were unavailable, and survives as the fibre used to reinforce cement, where its alkali resistance beats the alternatives. Drawn as poly(vinyl alcohol), since processing and surface treatment define it rather than a different repeat unit."
   },
   {
     name: "Poly(ethylene carbonate)", aka: ["PEC", "poly(ethylene carbonate)"],
