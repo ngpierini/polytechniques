@@ -15,7 +15,10 @@
 // then repeatedly refined from its neighbors' labels. After a few rounds the
 // sorted label multiset is a fingerprint identical for isomorphic graphs, so
 // two repeat units hash the same only if they share connectivity, elements,
-// and charges. Bond stereo (wedge/hash) is cosmetic and never affects it.
+// and charges - and, where it is stated, the geometry of a backbone double
+// bond. Drawing-level stereo (wedge/hash on a single bond) remains cosmetic;
+// what counts is an explicit stereo:"cis"/"trans" on a double bond, which is how
+// cis- and trans-1,4-polyisoprene are told apart. See bondKey below.
 (function (root, factory) {
   if (typeof module !== "undefined" && module.exports) {
     module.exports = factory();          // Node / CommonJS (CI + build scripts)
@@ -39,21 +42,44 @@
     return a.el + chargeSuffix;
   }
 
-  function wlHash(atoms, bonds, iterations) {
+  // Backbone double-bond geometry. A bond may carry stereo:"cis" (the chain
+  // continues on the SAME side of the double bond) or "trans" (opposite sides).
+  //
+  // Deliberately NOT CIP E/Z, and labelled in the words the field uses so it
+  // cannot be mistaken for it. Polymer names always describe where the BACKBONE
+  // goes - cis-1,4-polyisoprene, trans-1,4-polychloroprene - and for chloroprene
+  // the two disagree, because chlorine outranks carbon and CIP calls the
+  // backbone-cis polymer E. Storing the priority answer under the chain's name
+  // would print "trans" on the cis structure.
+  //
+  // Until this existed the model had no stereochemistry at all, so cis- and
+  // trans-1,4-polyisoprene were one graph: natural rubber and gutta-percha,
+  // an elastomer and a hard resin, indistinguishable to an exact match. The
+  // library worked around it by leaving the trans forms undrawn, which made
+  // them unfindable instead of wrong.
+  //
+  // A bond WITHOUT stereo contributes exactly what it did before, so every
+  // hash in the library that does not involve geometry is unchanged.
+  function bondKey(b, blind) {
+    return (blind || !b.stereo) ? String(b.order) : b.order + "/" + b.stereo;
+  }
+
+  function wlHash(atoms, bonds, iterations, blind) {
     iterations = iterations || 4;
     var adj = {};
     atoms.forEach(function (a) { adj[a.id] = []; });
     bonds.forEach(function (b) {
       if (!adj[b.a] || !adj[b.b]) return;
-      adj[b.a].push({ nb: b.b, order: b.order });
-      adj[b.b].push({ nb: b.a, order: b.order });
+      var k = bondKey(b, blind);
+      adj[b.a].push({ nb: b.b, key: k });
+      adj[b.b].push({ nb: b.a, key: k });
     });
     var labels = {};
     atoms.forEach(function (a) { labels[a.id] = atomLabel(a); });
     for (var it = 0; it < iterations; it++) {
       var newLabels = {};
       atoms.forEach(function (a) {
-        var parts = adj[a.id].map(function (e) { return e.order + ":" + labels[e.nb]; }).sort();
+        var parts = adj[a.id].map(function (e) { return e.key + ":" + labels[e.nb]; }).sort();
         newLabels[a.id] = fnv1a(labels[a.id] + "|" + parts.join(","));
       });
       labels = newLabels;
@@ -87,9 +113,9 @@
     for (var i = 0; i < bonds.length; i++) {
       var b = bonds[i], aS = !!starIds[b.a], bS = !!starIds[b.b];
       if (aS && bS) return null;                     // star-star bond: malformed
-      if (aS) attach.push({ nb: b.b, order: b.order });
-      else if (bS) attach.push({ nb: b.a, order: b.order });
-      else kept.push({ a: b.a, b: b.b, order: b.order });
+      if (aS) attach.push({ nb: b.b, order: b.order, stereo: b.stereo });
+      else if (bS) attach.push({ nb: b.a, order: b.order, stereo: b.stereo });
+      else kept.push({ a: b.a, b: b.b, order: b.order, stereo: b.stereo });
     }
     if (attach.length !== 2) return null;            // floating or over-bonded star
     var outAtoms = [];
@@ -99,7 +125,11 @@
     kept.push({
       a: attach[0].nb,
       b: attach[1].nb,                               // may equal attach[0].nb: self-loop, fine
-      order: Math.max(attach[0].order, attach[1].order)
+      order: Math.max(attach[0].order, attach[1].order),
+      // A cut straight through a double bond leaves its geometry on the stubs;
+      // the closure is that same bond put back, so it has to carry it or the
+      // framing would decide whether the polymer looked cis or trans.
+      stereo: attach[0].stereo || attach[1].stereo
     });
     return { atoms: outAtoms, bonds: kept };
   }
@@ -126,8 +156,8 @@
     for (i = 0; i < bonds.length; i++) {
       var b = bonds[i];
       if (!adj[b.a] || !adj[b.b]) continue;
-      adj[b.a].push({ nb: b.b, order: b.order });
-      adj[b.b].push({ nb: b.a, order: b.order });
+      adj[b.a].push({ nb: b.b, order: b.order, stereo: b.stereo || null });
+      adj[b.b].push({ nb: b.a, order: b.order, stereo: b.stereo || null });
     }
     return adj;
   }
@@ -167,7 +197,11 @@
     return {
       path: path, adj: adj, byId: byId,
       headStar: stars[0], tailStar: stars[1],
-      headOrder: headBond[0].order, tailOrder: tailBond[0].order
+      headOrder: headBond[0].order, tailOrder: tailBond[0].order,
+      // Geometry on a chain-end bond has to survive re-capping, or a reframed
+      // or folded copy of a cis polymer hashes as the unspecified one and stops
+      // matching the entry it came from.
+      headStereo: headBond[0].stereo || null, tailStereo: tailBond[0].stereo || null
     };
   }
 
@@ -220,18 +254,18 @@
     var outBonds = [];
     for (i = 0; i < allBonds.length; i++) {
       var b = allBonds[i];
-      if (inUnit[b.a] && inUnit[b.b]) outBonds.push({ a: b.a, b: b.b, order: b.order });
+      if (inUnit[b.a] && inUnit[b.b]) outBonds.push({ a: b.a, b: b.b, order: b.order, stereo: b.stereo });
     }
 
     // 3. cap: head keeps the original head-star bond; tail takes the order of
     //    the bond that linked this fragment to the next one along the backbone.
-    var linkOrder = null, nb2 = adj[path[d - 1]], j;
-    for (j = 0; j < nb2.length; j++) if (nb2[j].nb === path[d]) { linkOrder = nb2[j].order; break; }
+    var linkOrder = null, linkStereo = null, nb2 = adj[path[d - 1]], j;
+    for (j = 0; j < nb2.length; j++) if (nb2[j].nb === path[d]) { linkOrder = nb2[j].order; linkStereo = nb2[j].stereo || null; break; }
     if (linkOrder == null) return null;
     outAtoms.push({ id: "__h", el: "*" });
     outAtoms.push({ id: "__t", el: "*" });
-    outBonds.push({ a: "__h", b: path[0], order: info.headOrder });
-    outBonds.push({ a: path[d - 1], b: "__t", order: linkOrder });
+    outBonds.push({ a: "__h", b: path[0], order: info.headOrder, stereo: info.headStereo });
+    outBonds.push({ a: path[d - 1], b: "__t", order: linkOrder, stereo: linkStereo });
     return { atoms: outAtoms, bonds: outBonds, linkOrder: linkOrder };
   }
 
@@ -291,10 +325,53 @@
   // The framing-invariant exact-match key: fold to the shortest period, then
   // hash the closed graph. Null when the unit can't be closed (callers fall
   // back to wlHash of the open graph, preserving behavior for malformed input).
-  function closedHash(atoms, bonds) {
+  function closedHash(atoms, bonds, blind) {
     var reduced = foldRepeatUnit(atoms, bonds);
     var closed = closeRepeatUnit(reduced.atoms, reduced.bonds);
-    return closed ? wlHash(closed.atoms, closed.bonds) : null;
+    return closed ? wlHash(closed.atoms, closed.bonds, 4, blind) : null;
+  }
+
+  // The same identity with geometry ignored. A drawing that leaves a backbone
+  // double bond unspecified is not wrong, it is unspecific: the honest answer
+  // is every polymer whose skeleton matches, with a note that geometry would
+  // separate them. Matching that needs an identity both forms share.
+  function blindHash(atoms, bonds) { return closedHash(atoms, bonds, true); }
+
+  // Does this unit have a backbone double bond whose geometry was never stated?
+  // That is the trigger for answering stereo-blind and saying so.
+  function hasUnsetStereo(atoms, bonds) {
+    var byId = {};
+    atoms.forEach(function (a) { byId[a.id] = a; });
+    for (var i = 0; i < bonds.length; i++) {
+      var b = bonds[i];
+      if (b.order !== 2 || b.stereo) continue;
+      var x = byId[b.a], y = byId[b.b];
+      if (!x || !y || x.el !== "C" || y.el !== "C") continue;
+      // A double bond inside a ring cannot be cis/trans in the sense meant
+      // here, and an aromatic ring is full of them.
+      if (inSameRing(atoms, bonds, b)) continue;
+      return true;
+    }
+    return false;
+  }
+
+  function inSameRing(atoms, bonds, bond) {
+    // Reachable from a to b without using this bond => the bond closes a ring.
+    var adj = {};
+    atoms.forEach(function (a) { adj[a.id] = []; });
+    bonds.forEach(function (b) {
+      if (b === bond) return;
+      if (!adj[b.a] || !adj[b.b]) return;
+      adj[b.a].push(b.b); adj[b.b].push(b.a);
+    });
+    var seen = {}, stack = [bond.a];
+    seen[bond.a] = 1;
+    while (stack.length) {
+      var cur = stack.pop();
+      if (cur === bond.b) return true;
+      (adj[cur] || []).forEach(function (n) { if (!seen[n]) { seen[n] = 1; stack.push(n); } });
+    }
+    return false;
   }
 
   // ---- canonical PSMILES support ------------------------------------------
@@ -344,7 +421,7 @@
     // distinct edges between the same pair. Cutting has to target one specific
     // edge, so the cycle is indexed by POSITION in the bond list rather than by
     // endpoints; matching on endpoints removes both and disconnects the unit.
-    var cyclic = coreBonds.map(function (b) { return { a: b.a, b: b.b, order: b.order }; });
+    var cyclic = coreBonds.map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo || null }; });
 
     // Is edge `skip` a bridge of the core graph? If its two ends stay connected
     // without it, it lies in a ring and must NOT be cut. Restricting to the
@@ -391,7 +468,7 @@
       if (cyclic[found].order === 1 && !stillConnected(found)) ringIdx.push(found);
     }
     var closeOrder = Math.max(info.headOrder, info.tailOrder);
-    cyclic.push({ a: path[L - 1], b: path[0], order: closeOrder });
+    cyclic.push({ a: path[L - 1], b: path[0], order: closeOrder, stereo: info.headStereo || info.tailStereo });
     // The closure is where the unit was actually drawn, so it is always legal -
     // but prefer single-bond framings when any exist.
     if (closeOrder === 1 || !ringIdx.length) ringIdx.push(cyclic.length - 1);
@@ -404,11 +481,11 @@
       var fBonds = [];
       for (j = 0; j < cyclic.length; j++) {
         if (j === cutAt) continue;
-        fBonds.push({ a: cyclic[j].a, b: cyclic[j].b, order: cyclic[j].order });
+        fBonds.push({ a: cyclic[j].a, b: cyclic[j].b, order: cyclic[j].order, stereo: cyclic[j].stereo });
       }
       fAtoms.push({ id: "__s0", el: "*" }, { id: "__s1", el: "*" });
-      fBonds.push({ a: "__s0", b: cut.b, order: cut.order });
-      fBonds.push({ a: cut.a, b: "__s1", order: cut.order });
+      fBonds.push({ a: "__s0", b: cut.b, order: cut.order, stereo: cut.stereo });
+      fBonds.push({ a: cut.a, b: "__s1", order: cut.order, stereo: cut.stereo });
       out.push({ atoms: fAtoms, bonds: fBonds });
     }
     return out;
@@ -429,5 +506,5 @@
     return d;
   }
 
-  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, foldRepeatUnit: foldRepeatUnit, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance };
+  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance };
 });

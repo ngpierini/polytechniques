@@ -57,6 +57,11 @@ function build(db) {
       fingerprints[entry.name] = {
         hash: PolymerGraph.wlHash(entry.atoms, entry.bonds),
         chash: PolymerGraph.closedHash(entry.atoms, entry.bonds),
+        // Same key with double-bond geometry ignored. A drawing that leaves a
+        // backbone C=C unspecified is a real question ("which polybutadiene?"),
+        // not a miss, so the search falls back to this and says what would
+        // separate the hits.
+        bhash: PolymerGraph.blindHash(entry.atoms, entry.bonds),
         profile: PolymerGraph.elementProfile(entry.atoms),
         bondCount: entry.bonds.length
       };

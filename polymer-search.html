@@ -72,6 +72,9 @@
       <p class="guide-note">
         This is a small, hand curated reference set, not an exhaustive registry like SciFinder or PubChem: it currently covers common addition, step growth, and ring opening homopolymers. Branched and crosslinked repeat units, and copolymers, aren't matched yet. Tg and Tm values shown are typical literature figures for reference only.
       </p>
+      <p class="guide-note">
+        <strong>Stereochemistry.</strong> The geometry of a backbone double bond is part of the match, because it is part of the polymer: cis-1,4-polyisoprene is natural rubber and the trans isomer is gutta-percha, a hard resin, from the same atoms joined the same way. Use the cis/trans tool on a double bond to state it &mdash; "cis" meaning the chain continues on the same side, which is what a polymer name means by it, not the CIP priority rule. Leave it unset and the search matches every isomer of that skeleton and says which ones they are. <strong>Tacticity is different</strong>: it describes how one repeat unit follows the next, so no single repeat unit can carry it. The four polypropylenes are one drawing, and a structure search returns all four together and says why.
+      </p>
     </details>
   </div>
 
@@ -110,6 +113,9 @@
         </button>
         <button type="button" class="mol-mode-btn" data-mode="draw-hash" title="Hashed bond (away from viewer): same chain-building, drawn as a hashed wedge" aria-label="Hashed bond tool">
           <svg viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"><line x1="4" y1="16" x2="5.5" y2="16"/><line x1="6" y1="13" x2="9" y2="13"/><line x1="9.5" y1="10" x2="13" y2="10"/><line x1="13.5" y1="7" x2="17" y2="7"/></svg>
+        </button>
+        <button type="button" class="mol-mode-btn" data-mode="geom" title="Cis/trans: click a backbone double bond to cycle unspecified &rarr; cis &rarr; trans. &ldquo;Cis&rdquo; means the chain continues on the same side. Geometry is part of a polymer&rsquo;s identity &ndash; cis-1,4-polyisoprene is natural rubber, trans is gutta-percha." aria-label="Cis/trans geometry tool">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="10" x2="14" y2="10"/><line x1="6.8" y1="12.6" x2="13.2" y2="12.6"/><line x1="6" y1="10" x2="3" y2="5"/><line x1="14" y1="10" x2="17" y2="5"/></svg>
         </button>
         <button type="button" class="mol-mode-btn" data-mode="chain" title="Chain: click and drag to lay down a whole zigzag chain in one stroke" aria-label="Chain tool">
           <svg viewBox="0 0 20 20"><polyline points="2,15 6,6 10,15 14,6 18,11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -317,12 +323,12 @@
   <p>Reagent data and lab guidance are references for convenience. Always verify against your reagent's COA and your institution's safety protocols.</p>
 </footer>
 
-<script src="polymer-data.js?v=29"></script>
+<script src="polymer-data.js?v=31"></script>
 <script src="polymer-xref.js?v=1"></script>
-<script src="polymer-graph.js?v=3"></script>
+<script src="polymer-graph.js?v=5"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=138"></script>
+<script src="polymer-search.js?v=144"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

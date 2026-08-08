@@ -177,14 +177,22 @@ window.POLYMER_DB = [
     cas: "9003-31-0", tg: "-70 °C", tm: "28 °C", tags: ["elastomer"],
     note: "Nearly amorphous at room temperature (crystalline Tm near 28 °C, Odian's Table 8-1). The trans-1,4 isomer, gutta-percha, is a harder, more crystalline, thermoplastic-like material (Tg near -58 °C, Tm near 74 °C).",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
-    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: "S1", order: 1 }]
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 2, stereo: "cis" }, { a: 4, b: 5, order: 1 }, { a: 5, b: "S1", order: 1 }]
   },
   {
     name: "Polybutadiene (cis-1,4)", aka: ["BR", "butadiene rubber"], monomer: "1,3-Butadiene", cls: "Addition (diene)",
     cas: "9003-17-2", tg: "-100 °C", tm: "6 °C", tags: ["elastomer"],
     note: "The trans-1,4 isomer is markedly more crystalline (Tg near -83 °C, Tm near 145 °C, Odian's Table 8-1).",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
-    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2, stereo: "cis" }, { a: 3, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
+  },
+  {
+    name: "Polybutadiene (trans-1,4)", aka: ["TPB", "trans-polybutadiene", "trans-1,4-BR"],
+    monomer: "1,3-Butadiene", cls: "Addition (diene)", cas: null,
+    tg: "-83 °C", tm: "145 °C", tags: ["elastomer", "specialty"],
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2, stereo: "trans" }, { a: 3, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }],
+    note: "The same four carbons as butadiene rubber with the double bond the other way round, and a 139 C higher melting point for it: the trans chain is symmetric enough to crystallise, so this is a hard thermoplastic rather than an elastomer. Tg and Tm from Odian's Table 8-1. Commercial \"polybutadiene rubber\" is the cis isomer; the trans form turns up in golf-ball cores and as a crystallising component in tyre compounds."
   },
   {
     name: "Poly(ethylene oxide)", aka: ["PEO", "PEG", "polyethylene glycol"], monomer: "Ethylene oxide",
@@ -2788,10 +2796,11 @@ window.POLYMER_DB = [
     name: "Polyisoprene (trans-1,4)", aka: ["gutta-percha", "balata", "trans-polyisoprene"],
     monomer: "isoprene (trans-1,4 addition)", cls: "Addition (diene)", cas: null,
     tags: ["biopolymer", "specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Natural rubber's geometric isomer, and nothing like it. The trans double bond lets the chains pack into a crystal, so gutta-percha is a hard, non-elastic solid at room temperature where cis-polyisoprene is a rubber - the same atoms, the same connectivity, one double bond facing the other way. It was the insulation on the first transatlantic cables and is still used to fill root canals. Not drawn: the difference from natural rubber is purely geometric, so a flat structure would show them as identical."
+    verified: true,
+    tg: "-58 °C", tm: "74 °C",
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 2, stereo: "trans" }, { a: 4, b: 5, order: 1 }, { a: 5, b: "S1", order: 1 }],
+    note: "Natural rubber's geometric isomer, and nothing like it. The trans double bond lets the chains pack into a crystal, so gutta-percha is a hard, non-elastic solid at room temperature where cis-polyisoprene is a rubber - the same atoms, the same connectivity, one double bond facing the other way. It was the insulation on the first transatlantic cables and is still used to fill root canals. Tg and Tm from Odian Table 8-1."
   },
   {
     name: "Poly(ethylene-co-vinyl alcohol)", aka: ["EVOH", "ethylene vinyl alcohol copolymer"],
@@ -4060,28 +4069,31 @@ window.POLYMER_DB = [
     name: "Isotactic polypropylene", aka: ["iPP", "isotactic PP"],
     monomer: "propylene (stereospecific catalysis)", cls: "Addition (vinyl)", cas: null,
     tags: ["commodity", "packaging", "specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Every methyl group on the same side of the chain, which lets the polymer wind into a helix and crystallise - the form that made polypropylene a commodity rather than a curiosity, and the discovery that earned Natta a Nobel Prize. Melting near 165 C with high stiffness. Not drawn: the difference from atactic polypropylene is stereochemical and invisible in a flat structure."
+    verified: true,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }],
+    tacticity: "isotactic",
+    note: "Every methyl group on the same side of the chain, which lets the polymer wind into a helix and crystallise - the form that made polypropylene a commodity rather than a curiosity, and the discovery that earned Natta a Nobel Prize. Melting near 165 C with high stiffness. The repeat unit is identical to any other polypropylene; what differs is the arrangement of successive units, which no single repeat unit can show. Searching this structure returns all four polypropylene entries together."
   },
   {
     name: "Syndiotactic polypropylene", aka: ["sPP", "syndiotactic PP"],
     monomer: "propylene (metallocene catalysis)", cls: "Addition (vinyl)", cas: null,
     tags: ["commodity", "specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Methyl groups alternating regularly from side to side, which also crystallises but into a different lattice - and the result is clearer, tougher and more elastic than the isotactic form, if lower melting. It could not be made with useful control until metallocene catalysts arrived, which is why it is decades younger than its isotactic sibling despite being just as regular. Not drawn: stereochemistry, not connectivity."
+    verified: true,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }],
+    tacticity: "syndiotactic",
+    note: "Methyl groups alternating regularly from side to side, which also crystallises but into a different lattice - and the result is clearer, tougher and more elastic than the isotactic form, if lower melting. It could not be made with useful control until metallocene catalysts arrived, which is why it is decades younger than its isotactic sibling despite being just as regular. Same repeat unit, same connectivity; the regularity is in how one unit follows the next."
   },
   {
     name: "Atactic polypropylene", aka: ["aPP", "atactic PP"],
     monomer: "propylene (non-stereospecific)", cls: "Addition (vinyl)", cas: null,
     tags: ["commodity", "specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Methyl groups placed at random, so nothing crystallises and the material is a soft tacky amorphous solid with no melting point at all - originally the unwanted fraction from early catalysts, now made deliberately for adhesives, roofing bitumen and sealants. The clearest demonstration in commodity plastics that tacticity alone separates a structural material from a glue. Not drawn: stereochemistry."
+    verified: true,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }],
+    tacticity: "atactic",
+    note: "Methyl groups placed at random, so nothing crystallises and the material is a soft tacky amorphous solid with no melting point at all - originally the unwanted fraction from early catalysts, now made deliberately for adhesives, roofing bitumen and sealants. The clearest demonstration in commodity plastics that tacticity alone separates a structural material from a glue. Same repeat unit as every other polypropylene - the difference is a property of the sequence, not of the unit."
   },
   {
     name: "High-impact polystyrene", aka: ["HIPS", "impact polystyrene", "toughened polystyrene"],

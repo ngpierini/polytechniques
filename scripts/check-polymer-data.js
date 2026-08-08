@@ -23,7 +23,11 @@ function loadDb() {
 // WL-hash now comes from the shared, DOM-free polymer-graph.js module (the
 // same code the browser and the search-index build use) instead of a copy
 // kept in sync here by hand.
-const { wlHash, closedHash } = require("../polymer-graph.js");
+const { wlHash, closedHash, inSameRing } = require("../polymer-graph.js");
+
+// The declared stereo-sequence values. Anything outside this list is a typo,
+// not a new kind of polymer.
+const TACTICITIES = ["isotactic", "syndiotactic", "atactic"];
 
 // Generous max valence per element (bond-order sum), with slack for formal
 // charge. Purpose is to catch obvious mistakes (typo'd bonds, duplicate
@@ -108,6 +112,19 @@ function checkEntry(entry, idx, errors) {
   }
   if (entry.tags !== undefined && !Array.isArray(entry.tags)) {
     errors.push(where + ": \"tags\" must be an array if present");
+  }
+  // Tacticity is the one property the repeat unit is structurally incapable of
+  // carrying, so it is declared instead - and the search relies on it to
+  // explain a graph collision rather than pretend one is not there. A
+  // misspelled value would silently become a fourth distinct "tacticity" and
+  // the collision check would wave it through.
+  if (entry.tacticity !== undefined) {
+    if (TACTICITIES.indexOf(entry.tacticity) === -1) {
+      errors.push(where + ": \"tacticity\" must be one of " + TACTICITIES.join(", ") + " (got " + JSON.stringify(entry.tacticity) + ")");
+    }
+    if (!Array.isArray(entry.atoms) || !entry.atoms.length) {
+      errors.push(where + ": declares a tacticity but has no structure; the field exists to disambiguate entries that share one");
+    }
   }
   // The same alias twice in one entry is always a slip - it cannot make the
   // entry more findable, and it did hide in "PHEMA"/"pHEMA" for a long time
@@ -253,6 +270,18 @@ function checkEntry(entry, idx, errors) {
     }
     if (b.a === b.b) errors.push(bwhere + ": self-bond on atom \"" + b.a + "\"");
     if (![1, 2, 3].includes(b.order)) errors.push(bwhere + ": bond order must be 1, 2, or 3 (got " + b.order + ")");
+    // Double-bond geometry participates in the identity hash, so a typo here
+    // silently forks a polymer into a second one that matches nothing. It is
+    // also meaningless anywhere but on a non-ring double bond.
+    if (b.stereo !== undefined) {
+      if (b.stereo !== "cis" && b.stereo !== "trans") {
+        errors.push(bwhere + ": stereo must be \"cis\" or \"trans\" (got " + JSON.stringify(b.stereo) + ")");
+      } else if (b.order !== 2) {
+        errors.push(bwhere + ": stereo is set on an order-" + b.order + " bond; only double bonds have geometry");
+      } else if (inSameRing(entry.atoms, entry.bonds, b)) {
+        errors.push(bwhere + ": stereo is set on a ring double bond, whose geometry is fixed by the ring");
+      }
+    }
     valence[b.a] = (valence[b.a] || 0) + (b.order || 0);
     valence[b.b] = (valence[b.b] || 0) + (b.order || 0);
     if (b.a === "S0" || b.a === "S1") endpointBondCount[b.a]++;
@@ -324,17 +353,25 @@ function main() {
     }
 
     if (entry && !entry.needsStructure && Array.isArray(entry.atoms) && entry.atoms.length && Array.isArray(entry.bonds)) {
-      const h = wlHash(entry.atoms, entry.bonds);
+      // Two entries may legitimately share a graph when they say, in the data,
+      // what the graph cannot show. Tacticity is the case that exists: a
+      // repeat unit is one unit, and tacticity is a relationship between
+      // successive units, so the four polypropylenes are one drawing. That is
+      // allowed exactly once per declared value - two entries with the same
+      // graph AND the same (or no) tacticity are still a duplicate.
+      const tact = entry.tacticity || "-";
+      const h = wlHash(entry.atoms, entry.bonds) + "|" + tact;
       if (hashSeen.has(h)) {
-        errors.push("entry #" + idx + " (" + entry.name + "): structure is identical (WL-hash match) to entry #" + hashSeen.get(h) + " - same repeat unit listed twice");
+        errors.push("entry #" + idx + " (" + entry.name + "): structure is identical (WL-hash match) to entry #" + hashSeen.get(h) + " - same repeat unit listed twice" + (entry.tacticity ? " with the same tacticity" : ""));
       } else {
         hashSeen.set(h, idx);
       }
       // The framing-invariant key must also be unique: a collision here means
       // two entries are the same polymer cut at different points, which the
       // open hash above cannot see.
-      const ch = closedHash(entry.atoms, entry.bonds);
-      if (ch == null) {
+      const chRaw = closedHash(entry.atoms, entry.bonds);
+      const ch = chRaw == null ? null : chRaw + "|" + tact;
+      if (chRaw == null) {
         errors.push("entry #" + idx + " (" + entry.name + "): repeat unit could not be closed (closedHash returned null) - malformed chain ends");
       } else if (chashSeen.has(ch)) {
         errors.push("entry #" + idx + " (" + entry.name + "): same polymer as entry #" + chashSeen.get(ch) + " cut at a different point (closed-graph hash match)");

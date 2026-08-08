@@ -14,6 +14,9 @@
   var wlHash = PG.wlHash,
       closeRepeatUnit = PG.closeRepeatUnit,
       closedHash = PG.closedHash,
+      blindHash = PG.blindHash,
+      hasUnsetStereo = PG.hasUnsetStereo,
+      inSameRing = PG.inSameRing,
       foldRepeatUnit = PG.foldRepeatUnit,
       elementProfile = PG.elementProfile,
       profileDistance = PG.profileDistance;
@@ -1092,6 +1095,22 @@
         line(x1 + px * off2, y1 + py * off2, x2 + px * off2, y2 + py * off2);
         line(x1 - px * off2, y1 - py * off2, x2 - px * off2, y2 - py * off2);
       }
+
+      // Geometry is stated as a label rather than inferred from where the user
+      // happened to drop the atoms. Atoms here are placed and dragged freely,
+      // so the drawn angles are not a reliable claim about cis or trans - but
+      // the search now treats geometry as part of the polymer's identity, so
+      // what it will match on has to be visible on the canvas.
+      if (bond.geom === 'cis' || bond.geom === 'trans') {
+        var lx = (x1 + x2) / 2 - px * 13, ly = (y1 + y2) / 2 - py * 13;
+        ctx.save();
+        ctx.font = '600 11px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = color;
+        ctx.fillText(bond.geom, lx, ly);
+        ctx.restore();
+      }
     }
     function line(x1, y1, x2, y2) {
       ctx.beginPath();
@@ -1529,6 +1548,13 @@
       dragStart = null; moved = false;
     }
 
+    function setStatus(msg) {
+      var el = document.getElementById('mol-status');
+      if (el) el.textContent = msg;
+    }
+
+    function bondInRing(bond) { return inSameRing(atoms, bonds, bond); }
+
     function handleClick(pos) {
       var a = findAtomAt(pos.x, pos.y);
       var b = !a ? findBondAt(pos.x, pos.y) : null;
@@ -1538,8 +1564,30 @@
         if (mode === 'draw-wedge' || mode === 'draw-hash') {
           snapshot(); b.order = 1; b.stereo = (mode === 'draw-wedge') ? 'wedge' : 'hash'; draw(); return;
         }
+        if (mode === 'geom') {
+          // Only a double bond has geometry to set, and only one outside a
+          // ring - a ring double bond's geometry is decided by the ring, so
+          // offering a choice there would be offering a lie.
+          if (b.order !== 2) { setStatus('Cis/trans applies to a double bond. Click the bond again with the bond tool to make it double first.'); return; }
+          if (bondInRing(b)) { setStatus('That double bond is in a ring, where the ring itself fixes its geometry. Cis/trans is for double bonds in the chain.'); return; }
+          var cur = geomFromPositions(b);
+          if (!cur) { setStatus('That double bond has no cis or trans: one end carries nothing to be on a side of, or two of the same thing.'); return; }
+          var want = b.geom === 'cis' ? 'trans' : (b.geom === 'trans' ? null : 'cis');
+          snapshot();
+          // The label is not allowed to disagree with the picture. Setting the
+          // geometry MOVES the far half of the molecule to match, so the
+          // drawing, the hash and any SMILES copied out all say the same thing.
+          if (want && cur !== want) flipAcrossBond(b);
+          b.geom = want;
+          setStatus(want === 'cis' ? 'Double bond set to cis: the chain continues on the same side.'
+                  : want === 'trans' ? 'Double bond set to trans: the chain continues on opposite sides.'
+                  : 'Geometry cleared: a search will now match both isomers, whichever way the bond is drawn.');
+          draw(); return;
+        }
         if (mode === 'draw' || mode === 'chain') {
-          snapshot(); b.stereo = null; b.order = b.order >= 3 ? 1 : b.order + 1; draw(); return;
+          snapshot(); b.stereo = null; b.order = b.order >= 3 ? 1 : b.order + 1;
+          if (b.order !== 2) b.geom = null;
+          draw(); return;
         }
         if (mode === 'ring') {
           if (!pendingRing) return;
@@ -1572,7 +1620,10 @@
         else stampRingAt(pos, pendingRing.n, pendingRing.aromatic);
         return;
       }
-      if (mode === 'rotate' || mode === 'bracket') return;
+      // geom acts on a bond and nothing else; without this it would fall
+      // through to the chain-building fallback below and drop a stray carbon
+      // on the canvas every time someone missed the double bond.
+      if (mode === 'rotate' || mode === 'bracket' || mode === 'geom') return;
 
       // draw, draw-wedge, draw-hash, chain (plain click fallback): a single
       // click on any atom immediately adds a bond off it at a sensible
@@ -1657,7 +1708,7 @@
     function expandSuperatoms(atomList, bondList) {
       var SA = window.PolymerSuperatoms;
       var atoms2 = atomList.map(function (a) { return { id: a.id, el: a.el, x: a.x || 0, y: a.y || 0, charge: a.charge }; });
-      var bonds2 = bondList.map(function (b) { return { a: b.a, b: b.b, order: b.order }; });
+      var bonds2 = bondList.map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo }; });
       var extra = 0;
       // Iterate a SNAPSHOT of the original length: the array grows in-place as
       // fragment atoms are appended, and expanding those appended atoms again
@@ -1944,13 +1995,13 @@
       bonds.forEach(function (b) {
         var aIn = isIn(b.a), bIn = isIn(b.b);
         if (aIn && bIn) {
-          subBonds.push({ a: b.a, b: b.b, order: b.order });
+          subBonds.push({ a: b.a, b: b.b, order: b.order, stereo: b.geom || undefined });
         } else if (aIn || bIn) {
           boundaryCount++;
           var interiorEnd = aIn ? b.a : b.b;
           var starId = 'S' + (starCount++);
           subAtoms.push({ id: starId, el: '*' });
-          subBonds.push({ a: interiorEnd, b: starId, order: b.order });
+          subBonds.push({ a: interiorEnd, b: starId, order: b.order, stereo: b.geom || undefined });
         }
       });
       return { atoms: subAtoms, bonds: subBonds, boundaryCount: boundaryCount, atomCount: interior.length };
@@ -1962,7 +2013,7 @@
     // matching the shape a bracket produces, so no hand-drawn box is needed.
     function extractFromStars() {
       var subAtoms = atoms.map(function (a) { return { id: a.id, el: a.el, charge: a.charge }; });
-      var subBonds = bonds.map(function (b) { return { a: b.a, b: b.b, order: b.order }; });
+      var subBonds = bonds.map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.geom || undefined }; });
       var starCount = atoms.filter(function (a) { return a.el === '*'; }).length;
       return { atoms: subAtoms, bonds: subBonds, boundaryCount: starCount, atomCount: atoms.length - starCount };
     }
@@ -1976,13 +2027,13 @@
       atoms.forEach(function (a) { if (idSet[a.id]) { subAtoms.push({ id: a.id, el: a.el, charge: a.charge }); count++; } });
       bonds.forEach(function (b) {
         var ain = !!idSet[b.a], bin = !!idSet[b.b];
-        if (ain && bin) { subBonds.push({ a: b.a, b: b.b, order: b.order }); }
+        if (ain && bin) { subBonds.push({ a: b.a, b: b.b, order: b.order, stereo: b.geom || undefined }); }
         else if (ain || bin) {
           boundaryCount++;
           var interiorEnd = ain ? b.a : b.b;
           var starId = 'S' + (starCount++);
           subAtoms.push({ id: starId, el: '*' });
-          subBonds.push({ a: interiorEnd, b: starId, order: b.order });
+          subBonds.push({ a: interiorEnd, b: starId, order: b.order, stereo: b.geom || undefined });
         }
       });
       return { atoms: subAtoms, bonds: subBonds, boundaryCount: boundaryCount, atomCount: count };
@@ -3087,6 +3138,142 @@
       });
     }
 
+    // Read double-bond geometry off the laid-out drawing. "cis" here means the
+    // two ranking substituents sit on the SAME side of the double bond, which
+    // for a polymer repeat unit is the chain on both ends - cis-1,4-polyisoprene
+    // in the sense a polymer chemist means it, and CIP Z as well, because the
+    // chain outranks the hydrogen or methyl it competes with.
+    //
+    // Only ever called on a SMILES that actually wrote "/" or "\": RDKit lays
+    // an unspecified C=C out in a zigzag like any other, so deriving geometry
+    // from coordinates unasked would invent a trans that the input never
+    // claimed - and silently turn "which polybutadiene?" into a wrong answer.
+    function geomOf(atomList, bondList, bond) {
+      if (bond.order !== 2 || inSameRing(atomList, bondList, bond)) return null;
+      var by = {};
+      atomList.forEach(function (a) { by[a.id] = a; });
+      var a1 = by[bond.a], a2 = by[bond.b];
+      if (!a1 || !a2) return null;
+      // Which branch off this alkene carbon is the CHAIN. Not CIP: "cis-1,4-
+      // polyisoprene" and "trans-1,4-polychloroprene" both name where the
+      // BACKBONE goes, and for chloroprene those two answers disagree, because
+      // chlorine outranks carbon and CIP would call the backbone-cis polymer E.
+      // Naming it after the priority rule instead of the chain would have
+      // printed "trans" on the cis structure. So: the branch that reaches a
+      // chain end wins, and failing that the branch that carries more of the
+      // molecule.
+      function branch(centre, other) {
+        var cands = [];
+        bondList.forEach(function (nb) {
+          if (nb === bond) return;
+          var o = nb.a === centre.id ? by[nb.b] : (nb.b === centre.id ? by[nb.a] : null);
+          if (o && o.id !== other.id) cands.push(o);
+        });
+        if (cands.length === 1) return cands[0];
+        if (!cands.length) return null;
+        var scored = cands.map(function (o) { return { at: o, s: reach(o, centre.id) }; });
+        scored.sort(function (x, y) {
+          return (y.s.star - x.s.star) || (y.s.n - x.s.n);
+        });
+        // Equally sized, equally star-free branches are equivalent substituents,
+        // and then the double bond has no cis or trans to state.
+        if (scored[0].s.star === scored[1].s.star && scored[0].s.n === scored[1].s.n) return null;
+        return scored[0].at;
+      }
+      // Size of the branch hanging off `from`, and whether it reaches a chain
+      // end, walking away from `blocked` (the alkene carbon).
+      function reach(from, blocked) {
+        var seen = {}, stack = [from.id], n = 0, star = 0;
+        seen[blocked] = 1; seen[from.id] = 1;
+        while (stack.length) {
+          var cur = stack.pop();
+          n++;
+          if (by[cur] && by[cur].el === '*') star = 1;
+          bondList.forEach(function (nb) {
+            var o = nb.a === cur ? nb.b : (nb.b === cur ? nb.a : null);
+            if (o != null && !seen[o]) { seen[o] = 1; stack.push(o); }
+          });
+        }
+        return { n: n, star: star };
+      }
+      var r1 = branch(a1, a2), r2 = branch(a2, a1);
+      if (!r1 || !r2) return null;
+      var ux = a2.x - a1.x, uy = a2.y - a1.y;
+      var s1 = ux * (r1.y - a1.y) - uy * (r1.x - a1.x);
+      var s2 = ux * (r2.y - a2.y) - uy * (r2.x - a2.x);
+      if (!s1 || !s2) return null;
+      return (s1 > 0) === (s2 > 0) ? 'cis' : 'trans';
+    }
+
+    function geomFromPositions(bond) { return geomOf(atoms, bonds, bond); }
+
+    // Geometry as the SMILES stated it, read off RDKit's own coordinates and
+    // keyed by position in parsed.bonds. It has to be taken HERE, before
+    // layoutBest runs: that lays the backbone out as a horizontal zigzag, which
+    // is trans by construction and would silently turn every cis polymer the
+    // user pasted into its own geometric isomer.
+    function geomFromParsed(parsed) {
+      var shimAtoms = parsed.atoms.map(function (a, i) { return { id: i + 1, el: a.el || 'C', x: a.x, y: a.y }; });
+      var out = {};
+      parsed.bonds.forEach(function (b, i) {
+        var g = geomOf(shimAtoms, parsed.bonds, b);
+        if (g) out[i] = g;
+      });
+      return out;
+    }
+
+    // Mirror everything on one side of a double bond across the bond axis. That
+    // is the whole of a cis/trans flip: bond lengths and angles are preserved,
+    // only which side the far substituents sit on changes. Safe only because
+    // the caller has already excluded ring double bonds - in a ring the two
+    // ends are connected the other way round too, and there is no "far side".
+    function flipAcrossBond(bond) {
+      var a1 = atomById(bond.a), a2 = atomById(bond.b);
+      if (!a1 || !a2) return;
+      var side = {}, stack = [a2.id];
+      side[a2.id] = 1;
+      while (stack.length) {
+        var cur = stack.pop();
+        bonds.forEach(function (nb) {
+          if (nb === bond) return;
+          var o = nb.a === cur ? nb.b : (nb.b === cur ? nb.a : null);
+          if (o != null && !side[o]) { side[o] = 1; stack.push(o); }
+        });
+      }
+      if (side[a1.id]) return;   // cyclic the long way round; nothing to mirror
+      var ux = a2.x - a1.x, uy = a2.y - a1.y;
+      var len = Math.hypot(ux, uy) || 1;
+      ux /= len; uy /= len;
+      atoms.forEach(function (at) {
+        if (!side[at.id] || at.id === a2.id) return;
+        var dx = at.x - a1.x, dy = at.y - a1.y;
+        var along = dx * ux + dy * uy;
+        // reflection across the line: keep the component along it, negate the
+        // perpendicular one.
+        at.x = a1.x + ux * along * 2 - dx;
+        at.y = a1.y + uy * along * 2 - dy;
+      });
+    }
+
+    // Put the geometry the SMILES stated onto the laid-out drawing, moving the
+    // atoms where the layout disagrees. The label and the picture have to say
+    // the same thing: the search now reads geometry as part of the polymer's
+    // identity, so a drawing that shows trans while the entry means cis would
+    // be the wrong answer displayed confidently.
+    function applyStatedGeom(made, parsedBonds, stated) {
+      Object.keys(stated).forEach(function (k) {
+        var rb = parsedBonds[k];
+        var ma = made[rb.a - 1], mb2 = made[rb.b - 1];
+        if (!ma || !mb2) return;
+        bonds.forEach(function (x) {
+          if (!((x.a === ma.id && x.b === mb2.id) || (x.a === mb2.id && x.b === ma.id))) return;
+          if (x.order !== 2 || bondInRing(x)) return;
+          if (geomFromPositions(x) !== stated[k]) flipAcrossBond(x);
+          x.geom = stated[k];
+        });
+      });
+    }
+
     function importSmiles() {
       var input = document.getElementById('mol-smiles-input');
       var text = input && input.value.trim();
@@ -3107,12 +3294,18 @@
           smilesNote('The aromatic form could not be kekulized; try writing the SMILES in Kekulé form (C1=CC=CC=C1).');
           return;
         }
+        // Read geometry off RDKit's coordinates BEFORE layoutBest touches them,
+        // and only when the SMILES actually wrote "/" or "\": an unspecified
+        // C=C gets laid out in a zigzag like any other, so deriving geometry
+        // unasked would invent a trans the input never claimed.
+        var stated = (text.indexOf('/') !== -1 || text.indexOf('\\') !== -1) ? geomFromParsed(parsed) : null;
         layoutBest(parsed);
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
         var made = parsed.atoms.map(function (ra, i) { return addAtom(ra.el || 'C', pos[i].x, pos[i].y); });
         parsed.bonds.forEach(function (rb) { addBond(made[rb.a - 1].id, made[rb.b - 1].id, rb.order); });
+        if (stated) applyStatedGeom(made, parsed.bonds, stated);
         Object.keys(parsed.charges).forEach(function (idx) {
           var at = made[parseInt(idx, 10) - 1];
           if (at) at.charge = parsed.charges[idx];
@@ -3174,6 +3367,24 @@
         atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
         var made = parsed.atoms.map(function (ra, i) { return addAtom(ra.el || 'C', pos[i].x, pos[i].y); });
         parsed.bonds.forEach(function (rb) { addBond(made[rb.a - 1].id, made[rb.b - 1].id, rb.order); });
+        // The entry states its double-bond geometry outright, and the molblock
+        // round trip does not carry it. Re-apply it from the entry rather than
+        // reading it back off coordinates RDKit invented - and move the drawing
+        // to match, so loading cis-polyisoprene shows a cis double bond.
+        (function () {
+          var byLibId2 = {};
+          p.atoms.forEach(function (la, i) { if (made[i]) byLibId2[la.id] = made[i].id; });
+          p.bonds.forEach(function (lb) {
+            if (lb.stereo !== 'cis' && lb.stereo !== 'trans') return;
+            var ea = byLibId2[lb.a], eb = byLibId2[lb.b];
+            bonds.forEach(function (x) {
+              if (!((x.a === ea && x.b === eb) || (x.a === eb && x.b === ea))) return;
+              if (x.order !== 2 || bondInRing(x)) return;
+              if (geomFromPositions(x) !== lb.stereo) flipAcrossBond(x);
+              x.geom = lb.stereo;
+            });
+          });
+        })();
         Object.keys(parsed.charges).forEach(function (idx) {
           var at = made[parseInt(idx, 10) - 1];
           if (at) at.charge = parsed.charges[idx];
@@ -3980,6 +4191,29 @@
     // Match one extracted repeat unit (exactly two open ends) against the
     // library, then fall back to similarity + external identification. Shared by
     // the single-unit search and the homopolymer case of the copolymer search.
+    // A repeat unit is one unit, and some polymer identities live in the
+    // relationship BETWEEN successive units. Tacticity is the case that
+    // matters: the four polypropylenes are genuinely one drawing, so they
+    // arrive as one exact match with four entries in it. Listing them with no
+    // explanation reads like the matcher failed; saying why is the answer.
+    function tacticityNote(hits) {
+      if (!hits || hits.length < 2) return '';
+      var t = [];
+      hits.forEach(function (p) { if (p.tacticity && t.indexOf(p.tacticity) === -1) t.push(p.tacticity); });
+      if (!t.length) return '';
+      return ' These ' + hits.length + ' entries share one repeat unit and differ by tacticity (' +
+        t.join(', ') + '), which describes how successive units are arranged and so cannot be shown in a single unit.';
+    }
+
+    // "cis" / "trans" if the entry declares double-bond geometry, else null.
+    function isomerOf(p) {
+      if (!p || !Array.isArray(p.bonds)) return null;
+      for (var i = 0; i < p.bonds.length; i++) {
+        if (p.bonds[i].stereo === 'cis' || p.bonds[i].stereo === 'trans') return p.bonds[i].stereo;
+      }
+      return null;
+    }
+
     function searchSub(sub) {
       var statusEl = document.getElementById('mol-status');
       if (!statusEl) return;
@@ -4009,10 +4243,50 @@
         return qClosed != null ? f._chash === qClosed : f._hash === qOpen;
       });
       if (exact.length) {
-        statusEl.textContent = 'Exact match found:';
+        statusEl.textContent = 'Exact match found:' + tacticityNote(exact);
         renderResults(exact);
         renderPublications(exact[0]);
         return;
+      }
+
+      // Nothing matched with geometry taken literally. A backbone C=C the user
+      // left unspecified is a question, not a miss: *CC=CC* IS 1,4-polybutadiene,
+      // the drawing just hasn't said which one. Match again ignoring double-bond
+      // geometry and name what would separate the hits, rather than dropping to
+      // a similarity ranking that would list the right answer as 96% similar to
+      // itself.
+      var qBlind = blindHash(sub.atoms, sub.bonds);
+      if (qBlind != null) {
+        var blind = db.filter(function (p) { return fingerprintOf(p)._bhash === qBlind; });
+        if (blind.length) {
+          var drawn = isomerOf(sub);
+          var named = blind.map(function (p) {
+            return isomerOf(p) ? p.name + ' (' + isomerOf(p) + ')' : p.name + ' (geometry not stated)';
+          });
+          if (!drawn && hasUnsetStereo(sub.atoms, sub.bonds)) {
+            // The drawing didn't say, so the honest answer is every isomer of
+            // this skeleton plus an explanation of what would narrow it.
+            statusEl.textContent = blind.length === 1
+              ? 'Matched on skeleton. Your drawing leaves the backbone double bond’s geometry open; the library entry is ' + named[0] +
+                '. Use the cis/trans tool to state it.'
+              : 'Matched ' + blind.length + ' entries with this skeleton, differing only in the geometry of the backbone double bond: ' +
+                named.join(', ') + '. Use the cis/trans tool on the double bond to pick one.' + tacticityNote(blind);
+          } else if (drawn) {
+            // The drawing DID say, and nothing in the library matches it. Say
+            // that plainly rather than showing the other isomer as if it were
+            // the answer.
+            var allStated = blind.every(function (p) { return isomerOf(p); });
+            statusEl.textContent = 'No ' + drawn + ' entry for this skeleton. The library has ' + named.join(', ') + ' — ' +
+              (allStated
+                ? 'the same connectivity with the double bond the other way round, which is a different material.'
+                : 'the same connectivity, with no geometry stated either way.');
+          } else {
+            statusEl.textContent = 'Matched on skeleton: ' + named.join(', ') + '.';
+          }
+          renderResults(blind);
+          renderPublications(blind[0]);
+          return;
+        }
       }
 
       // Not a known single repeat unit: maybe it's an alternating/periodic
@@ -5368,7 +5642,7 @@
         // side chain nested inside it - so what disqualifies an entry is having
         // no structure, not being a copolymer.
         if (!p.atoms || !p.atoms.length) {
-          p._hash = null; p._chash = null; p._profile = {};
+          p._hash = null; p._chash = null; p._bhash = null; p._profile = {};
           return p;
         }
         var fp = SEARCH_INDEX && SEARCH_INDEX.fingerprints[p.name];
@@ -5378,6 +5652,8 @@
         // An index built before this field existed simply lacks it, so compute
         // on demand rather than trusting fp.chash to be present.
         p._chash = (fp && fp.chash != null) ? fp.chash : closedHash(p.atoms, p.bonds);
+        // Stereo-blind key, same reasoning: an older index simply lacks it.
+        p._bhash = (fp && fp.bhash != null) ? fp.bhash : blindHash(p.atoms, p.bonds);
       }
       return p;
     }
