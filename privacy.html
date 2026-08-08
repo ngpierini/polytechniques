@@ -34,7 +34,7 @@
       PolyTechniques is a free polymer chemistry toolkit built and maintained by Nicholas Pierini. There is no account to create and nothing to buy. This page sets out exactly what happens to data when you use the site. Last updated August 2026.
     </p>
     <p class="guide-note">
-      <strong>The short version.</strong> Your calculations, drawn structures and preferences are held in your own browser and are never sent anywhere. What leaves your device is an anonymous page-visit count, requests to a few outside services described below, and &mdash; only if you choose to have a drawn structure recognised &mdash; that one image. The site itself sets no cookies; <strong>Google, which serves the advertising, does</strong>. Each is set out below.
+      <strong>The short version.</strong> Your calculations, drawn structures and preferences are held in your own browser and are never sent anywhere. There is no analytics script: visitor numbers come from the web host's own request logs. What does leave your device is requests to a few outside services described below, and &mdash; only if you choose to have a drawn structure recognised &mdash; that one image. The site itself sets no cookies; <strong>Google, which serves the advertising, does</strong>. Each is set out below.
     </p>
   </div>
 
@@ -76,13 +76,13 @@
   <div class="card">
     <h3>Visit counting</h3>
     <p class="guide-note">
-      The site uses <a href="https://www.goatcounter.com/" target="_blank" rel="noopener noreferrer">GoatCounter</a> to count page visits. It is used because it is the least invasive option that still answers the only question worth asking: which tools people actually use.
+      <strong>There is no analytics script on this site.</strong> Nothing is loaded into your browser to count you, so there is nothing here for a tracker blocker to find and nothing that runs on your machine for my benefit.
     </p>
     <p class="guide-note">
-      GoatCounter <strong>sets no cookies and stores no per-visitor identifier</strong>. It records the page visited, the referring page if there is one, and coarse technical details derived from your browser: rough browser and operating system, screen size, and country. To tell repeat visits apart within a day it computes a one-way hash that includes your IP address and browser string; the address itself is not stored, and the hash is discarded daily. There is no profile, no cross-site tracking, and no way for me to identify you from it.
+      Visitor numbers come instead from <strong>Cloudflare</strong>, which already serves every page and therefore already sees every request. Reading a count off the logs a web host keeps anyway is strictly less than adding a second company and a second script to do the same job. It tells me roughly how many requests each page gets and which countries they come from &mdash; enough to know which tools are worth the work.
     </p>
     <p class="guide-note">
-      GoatCounter is an independent service with its own <a href="https://www.goatcounter.com/help/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>. If your browser sends a Do Not Track signal, or you block the script, the site works exactly as before &mdash; nothing depends on it.
+      Because it is counted at the server rather than in your browser, <strong>there is no cookie and no identifier of any kind</strong>, and it cannot tell one visitor from another across pages. The trade is that it also cannot tell a person from a search-engine crawler, which suits me: I would rather have a blurrier number than a sharper one that costs you something.
     </p>
   </div>
 
@@ -124,7 +124,7 @@
   <div class="card">
     <h3>Server logs and access control</h3>
     <p class="guide-note">
-      The site is hosted on Cloudflare Pages, which keeps standard operational request logs on my behalf, as any web host does. Cloudflare also attaches an approximate country to each request. The site reads that country to decline service to a small number of jurisdictions and does not store it.
+      The site is hosted on Cloudflare Pages, which keeps standard operational request logs on my behalf, as any web host does. These are the same logs the visitor numbers above are read from; there is no separate analytics collection. Cloudflare also attaches an approximate country to each request. The site reads that country to decline service to a small number of jurisdictions and does not store it.
     </p>
   </div>
 
@@ -189,6 +189,5 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
 }
 </script>
-<script data-goatcounter="https://ngpierini.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
