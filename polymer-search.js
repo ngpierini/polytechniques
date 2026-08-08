@@ -2303,12 +2303,57 @@
       }
       var strong = ranked.filter(function (r) { return r.sim >= SIM_STRONG; });
       var weak = ranked.filter(function (r) { return r.sim < SIM_STRONG; });
-      resultsEl.innerHTML = strong.map(card).join('') +
+      resultsEl.innerHTML = tgAnaloguePanel(ranked) + strong.map(card).join('') +
         (weak.length
           ? '<details class="mol-sim-weak"><summary>' +
             (strong.length ? 'Weaker similarities' : 'No close library structures &mdash; weak similarities') +
             ' (below ' + Math.round(SIM_STRONG * 100) + '%)</summary>' + weak.map(card).join('') + '</details>'
           : '');
+    }
+
+    // ---------- Measured Tg of the nearest relatives ----------
+    //
+    // Deliberately NOT a predicted Tg. A group-contribution model was fitted to
+    // this library's own 60 measured values and leave-one-out tested: RMSE 58 K
+    // against a 84 K "always guess the mean" baseline, with individual misses
+    // over 200 K (polyisobutylene, -70 C, came out at +141 C). Similarity-
+    // weighted neighbours do better - RMSE 36 K - but only where a >=95%-similar
+    // relative exists, which is barely half the library, and the errors are
+    // worst exactly where the structures look most alike: poly(methacrylic acid)
+    // is 185 C and PMMA is 105 C at 97% similarity. A single number carrying
+    // that error would be read as an answer.
+    //
+    // So the measured values are shown as themselves, with the spread visible,
+    // and the reader does the extrapolating. The panel exists because only 60 of
+    // the library's 402 structures carry a Tg at all, so the nearest relative
+    // that HAS one is usually not among the similarity cards above.
+    var TG_ANALOGUES = 4;
+    function tgOf(p) {
+      var m = /(-?\d+(?:\.\d+)?)\s*°?\s*C/.exec(p && p.tg);
+      return m ? parseFloat(m[1]) : null;
+    }
+    function tgAnaloguePanel(ranked) {
+      var hits = [];
+      for (var i = 0; i < ranked.length && hits.length < TG_ANALOGUES; i++) {
+        var t = tgOf(ranked[i].p);
+        if (t !== null) hits.push({ p: ranked[i].p, sim: ranked[i].sim, tg: t });
+      }
+      if (hits.length < 2) return '';
+      var lo = hits[0].tg, hi = hits[0].tg;
+      hits.forEach(function (h) { lo = Math.min(lo, h.tg); hi = Math.max(hi, h.tg); });
+      var spread = hi - lo;
+      return '<div class="mol-tg-analogues">' +
+        '<h4>Measured T<sub>g</sub> of the nearest relatives</h4>' +
+        '<ul>' + hits.map(function (h) {
+          return '<li><span class="mol-tg-val">' + h.tg + ' &deg;C</span> ' +
+            escapeHtml(h.p.name) + ' <span class="mol-tg-sim">' + Math.round(h.sim * 100) + '% similar</span></li>';
+        }).join('') + '</ul>' +
+        '<p>These are <strong>measured values for other polymers</strong>, not an estimate for your structure. ' +
+        (spread >= 40
+          ? 'They span ' + Math.round(spread) + ' &deg;C, so this neighbourhood does not pin a value down: a methyl or a hydrogen bond in the wrong place moves T<sub>g</sub> further than the whole spread. '
+          : 'They agree to within ' + Math.round(spread) + ' &deg;C here, which is about as tight as structural analogy gets. ') +
+        'This site does not compute a group-contribution T<sub>g</sub>, because tested against its own measured values the method was wrong by more than it was right.</p>' +
+        '</div>';
     }
 
     // Once a structure is matched to a named polymer, pull actual publications

@@ -2745,3 +2745,44 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
   background: var(--card-bg);
   border-radius: var(--radius);
 }
+
+/* Measured Tg of the nearest relatives. Sits above the similarity cards on a
+   no-exact-match search. Styled as a note rather than a result, because it is
+   other polymers' data - not an answer about the drawn structure. */
+.mol-tg-analogues {
+  margin: 4px 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+}
+.mol-tg-analogues h4 {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.mol-tg-analogues ul { margin: 0 0 10px; padding: 0; list-style: none; }
+.mol-tg-analogues li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 0.92rem;
+  flex-wrap: wrap;
+}
+.mol-tg-val {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  min-width: 5.5em;
+  color: var(--primary);
+}
+.mol-tg-sim { font-size: 0.8rem; color: var(--text-dim); }
+.mol-tg-analogues p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}

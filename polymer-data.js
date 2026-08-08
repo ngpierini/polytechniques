@@ -182,7 +182,7 @@ window.POLYMER_DB = [
   {
     name: "Polybutadiene (cis-1,4)", aka: ["BR", "butadiene rubber"], monomer: "1,3-Butadiene", cls: "Addition (diene)",
     cas: "9003-17-2", tg: "-100 °C", tm: "6 °C", tags: ["elastomer"],
-    note: "The trans-1,4 isomer is markedly more crystalline (Tg near -83 °C, Tm near 145 °C, Odian's Table 8-1).",
+    note: "The trans-1,4 isomer is markedly more crystalline (Tg near -83 °C, Tm near 145 °C, Odian's Table 8-1). Sources spread on the cis Tg: Odian's Table 8-1 gives -95 °C where -100 °C is also widely quoted, and the real value moves with cis content, so treat anything in that range as the same material rather than a disagreement.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2, stereo: "cis" }, { a: 3, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
   },
