@@ -1,11 +1,14 @@
 // Minimal offline cache for the static PolyTechniques site.
 // Pages are network-first with a cache fallback (their URLs carry no ?v=, so
 // a cache hit would pin the whole deploy); every other same-origin asset is
-// cache-first, since its URL is versioned and a hit is always the right file.
+// cache-first with a forced-network revalidation behind it. It is served from
+// cache for speed, but the cached copy is NOT assumed correct just because the
+// URL is versioned - see the fetch handler for the deploy window that makes
+// that assumption fail, permanently.
 // Either way the calculators still work with no connection. Bump CACHE_NAME
 // whenever the pre-cache list below changes so old clients pick up the new
 // set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v189";
+const CACHE_NAME = "polytechniques-v190";
 
 const PRECACHE_URLS = [
   "home.html",
