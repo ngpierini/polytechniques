@@ -5,7 +5,7 @@
 // Either way the calculators still work with no connection. Bump CACHE_NAME
 // whenever the pre-cache list below changes so old clients pick up the new
 // set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v186";
+const CACHE_NAME = "polytechniques-v187";
 
 const PRECACHE_URLS = [
   "home.html",
@@ -68,7 +68,15 @@ self.addEventListener("install", function (event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
       return Promise.all(PRECACHE_URLS.map(function (u) {
-        return fetch(u).then(function (res) {
+        // `cache: "reload"` is load-bearing, not a precaution. PRECACHE_URLS
+        // lists these files WITHOUT their ?v=, and _headers gives them
+        // `immutable, max-age=31536000` by path - so a plain fetch() here is
+        // answered from the browser's own year-long HTTP cache and a brand new
+        // CACHE_NAME gets filled with old bytes. Bumping the version then does
+        // nothing at all, which is exactly what it did: verified live with
+        // cache "polytechniques-v187" already installed and still serving a
+        // polymer-data.js that predated the deploy. This forces the network.
+        return fetch(new Request(u, { cache: "reload" })).then(function (res) {
           if (!res.ok) return; // skip rather than fail the whole install
           return stripRedirect(res).then(function (clean) { return cache.put(u, clean); });
         }).catch(function () {});
