@@ -124,11 +124,10 @@
   // function only places the ad UNIT, which needs the slot id of a unit created
   // in the dashboard - and that only exists once the site is approved.
   //
-  // So while ADSENSE_SLOT is empty: the library loads (ownership verified, and
-  // the account is ready to serve the moment it is approved) but no ad unit is
-  // placed and no space is taken on any page.
+  // Emptying ADSENSE_SLOT is the off switch: the library still loads, but no
+  // unit is placed and no space is taken on any page.
   var ADSENSE_CLIENT = "ca-pub-9553775926809206";
-  var ADSENSE_SLOT = "";     // e.g. 1234567890, from Ads > By ad unit
+  var ADSENSE_SLOT = "5973263397";   // "PolyTechniques below content", a responsive display unit
   //
   // STILL OUTSTANDING, and it is not optional: a Google-certified consent
   // management platform, switched on in the AdSense dashboard under Privacy &

@@ -54,6 +54,20 @@ if (!client) {
   });
 }
 
+// The slot id is what actually makes a unit appear. It is one string in one
+// file, so a stray edit turns every ad off site-wide and nothing else changes -
+// no error, no blank space, just no revenue and no way to notice. If an account
+// is configured, the slot has to look like a slot.
+const navSrc = fs.readFileSync(path.join(ROOT, "nav.js"), "utf8");
+const slotMatch = navSrc.match(/ADSENSE_SLOT\s*=\s*"([^"]*)"/);
+if (client) {
+  if (!slotMatch) errors.push("nav.js: ADSENSE_SLOT is missing entirely");
+  else if (!/^\d{8,12}$/.test(slotMatch[1])) {
+    errors.push("nav.js: ADSENSE_SLOT is " + JSON.stringify(slotMatch[1]) +
+      ", which is not an ad unit id - ads are switched off site-wide");
+  }
+}
+
 if (errors.length) {
   console.error("AdSense configuration failed its check (" + errors.length + "):\n");
   errors.forEach(e => console.error("  - " + e));
