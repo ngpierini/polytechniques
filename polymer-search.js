@@ -191,16 +191,43 @@
       return { x: anchor.x + BOND_LEN * Math.cos(snapped), y: anchor.y + BOND_LEN * Math.sin(snapped) };
     }
 
+    // Undo/redo. `history` is the past, `future` is what undo took away.
+    // Any new edit invalidates the future, which is the standard contract and
+    // the one users already expect from every other editor.
+    var future = [];
+    function editorState() {
+      return JSON.stringify({ atoms: atoms, bonds: bonds, brackets: brackets, nextAtomId: nextAtomId, nextBondId: nextBondId });
+    }
+    function restoreState(json) {
+      var s = JSON.parse(json);
+      atoms = s.atoms; bonds = s.bonds; brackets = s.brackets || (s.bracket ? [s.bracket] : []);
+      nextAtomId = s.nextAtomId; nextBondId = s.nextBondId;
+      selectedAtom = null; selectedGroup = [];
+      draw();
+      syncHistoryButtons();
+    }
     function snapshot() {
-      history.push(JSON.stringify({ atoms: atoms, bonds: bonds, brackets: brackets, nextAtomId: nextAtomId, nextBondId: nextBondId }));
+      history.push(editorState());
       if (history.length > 40) history.shift();
+      future.length = 0;
+      syncHistoryButtons();
     }
     function undo() {
       if (!history.length) return;
-      var s = JSON.parse(history.pop());
-      atoms = s.atoms; bonds = s.bonds; brackets = s.brackets || (s.bracket ? [s.bracket] : []); nextAtomId = s.nextAtomId; nextBondId = s.nextBondId;
-      selectedAtom = null; selectedGroup = [];
-      draw();
+      future.push(editorState());
+      restoreState(history.pop());
+    }
+    function redo() {
+      if (!future.length) return;
+      history.push(editorState());
+      restoreState(future.pop());
+    }
+    // A disabled button is how the user finds out there is nothing to undo,
+    // instead of pressing it and wondering whether the editor is broken.
+    function syncHistoryButtons() {
+      var u = document.getElementById('mol-undo'), r = document.getElementById('mol-redo');
+      if (u) u.disabled = !history.length;
+      if (r) r.disabled = !future.length;
     }
 
     function atomById(id) {
@@ -523,7 +550,30 @@
       draw();
     }
 
-    function getPos(evt) {
+    // ---------- View transform (zoom + pan) ----------
+    //
+    // Atom coordinates are WORLD coordinates and never change when the view
+    // moves; only draw() and getPos() know about the transform. Keeping it out
+    // of the data is what lets the exports, the bounding box and the whole
+    // structure-search path stay exactly as they were - they all work in world
+    // space and never had a view to begin with.
+    var viewScale = 1, viewX = 0, viewY = 0;
+    var VIEW_MIN = 0.25, VIEW_MAX = 6;
+    function resetView() { viewScale = 1; viewX = 0; viewY = 0; }
+    // canvas pixel -> world
+    function toWorld(px, py) { return { x: (px - viewX) / viewScale, y: (py - viewY) / viewScale }; }
+    function zoomAbout(px, py, factor) {
+      var next = Math.max(VIEW_MIN, Math.min(VIEW_MAX, viewScale * factor));
+      if (next === viewScale) return;
+      // keep the world point under the cursor pinned to the cursor
+      var w = toWorld(px, py);
+      viewScale = next;
+      viewX = px - w.x * viewScale;
+      viewY = py - w.y * viewScale;
+      draw();
+    }
+
+    function canvasPixel(evt) {
       var rect = canvas.getBoundingClientRect();
       var scaleX = canvas.width / rect.width;
       var scaleY = canvas.height / rect.height;
@@ -531,6 +581,10 @@
       var clientX = t ? t.clientX : evt.clientX;
       var clientY = t ? t.clientY : evt.clientY;
       return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    }
+    function getPos(evt) {
+      var p = canvasPixel(evt);
+      return toWorld(p.x, p.y);
     }
 
     function elColor(el) {
@@ -619,13 +673,41 @@
 
     function draw() {
       var w = canvas.width, h = canvas.height;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, w, h);
+      // Everything below is drawn in world coordinates; the view transform is
+      // applied once here and torn down at the end of the function. drawStructure
+      // itself must stay transform-free, because the PNG and SVG exports call it
+      // with their own ctx and their own transform already set.
+      ctx.setTransform(viewScale, 0, 0, viewScale, viewX, viewY);
       var styles = getComputedStyle(document.body);
       var textColor = (styles.getPropertyValue('--text') || '#111').trim() || '#111';
       var bgColor = (styles.getPropertyValue('--card-bg') || '#fff').trim() || '#fff';
       var primary = (styles.getPropertyValue('--primary') || '#2563eb').trim() || '#2563eb';
 
       drawStructure(textColor, bgColor);
+
+      // Over-valent atoms are marked as you draw them. Before this, a
+      // five-bond carbon was accepted silently and only surfaced at search
+      // time as "check valences", which named no atom and sent you hunting.
+      // Uses the same table the CI data check enforces, so what looks wrong
+      // here is exactly what would be rejected there.
+      var overValent = PG.overValentAtoms(atoms, bonds);
+      if (overValent.length) {
+        var badSet = {};
+        overValent.forEach(function (id) { badSet[id] = 1; });
+        ctx.save();
+        atoms.forEach(function (a) {
+          if (!badSet[a.id]) return;
+          ctx.beginPath();
+          ctx.arc(a.x, a.y, ATOM_R + 5, 0, Math.PI * 2);
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+
       atoms.forEach(function (a) {
         if (a === hoverAtom) {
           ctx.save();
@@ -674,6 +756,9 @@
         ctx.restore();
       }
       if (mode === 'ring' && pendingRing && ringHoverPos) drawRingGhost(primary);
+      // Leave the context as we found it, so anything that draws to this canvas
+      // without going through draw() is not silently zoomed.
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       updateMassReadout();
     }
 
@@ -956,8 +1041,24 @@
       var extraHtml = extra.length
         ? ' <span style="color:var(--text-dim);font-size:0.85em;">&middot; ' + extra.join(' &middot; ') + '</span>'
         : '';
+      // Name the problem next to the mass rather than only ringing the atom
+      // in red, so it is clear WHAT is wrong and not just where. The formula
+      // above is still shown: it is what was drawn, and hiding it would make
+      // the mistake harder to reason about.
+      var bad = PG.overValentAtoms(atoms, bonds);
+      var valenceHtml = '';
+      if (bad.length) {
+        var els = [];
+        bad.forEach(function (id) {
+          var a = atomById(id);
+          if (a && els.indexOf(a.el) === -1) els.push(a.el);
+        });
+        valenceHtml = ' <span style="color:#dc2626;font-size:0.85em;">&middot; ' + bad.length +
+          (bad.length === 1 ? ' atom has' : ' atoms have') + ' too many bonds (' + els.join(', ') +
+          ') &mdash; ringed in red</span>';
+      }
       massReadout.innerHTML = label + ': ' + formatFormula(res.counts) +
-        ' &middot; <strong>' + res.mass.toFixed(2) + ' g/mol</strong>' + extraHtml + hint;
+        ' &middot; <strong>' + res.mass.toFixed(2) + ' g/mol</strong>' + extraHtml + hint + valenceHtml;
     }
     // Dashed preview of where the pending ring will land - atom-fused,
     // edge-fused onto a bond, or freestanding - so the scroll-wheel rotation
@@ -1666,12 +1767,49 @@
     canvas.addEventListener('mouseup', function (evt) { shiftHeld = evt.shiftKey; handleUp(getPos(evt)); });
     canvas.addEventListener('mouseleave', function () { if (hoverAtom) { hoverAtom = null; draw(); } });
     canvas.addEventListener('wheel', function (evt) {
+      // Ctrl/Cmd+wheel zooms. The PLAIN wheel is already the ring tool's
+      // rotation and stays that way; taking it for zoom would break a control
+      // that has a live preview attached to it.
+      if (evt.ctrlKey || evt.metaKey) {
+        evt.preventDefault();
+        var p = canvasPixel(evt);
+        zoomAbout(p.x, p.y, evt.deltaY > 0 ? 1 / 1.12 : 1.12);
+        return;
+      }
       if (mode === 'ring' && pendingRing) {
         evt.preventDefault();
         ringRotationSteps += evt.deltaY > 0 ? 1 : -1;
         draw();
       }
     }, { passive: false });
+
+    // Panning is on the middle button and on space-drag, so it works in every
+    // tool without stealing the left button from drawing.
+    var panning = false, panFrom = null, spaceHeld = false;
+    canvas.addEventListener('mousedown', function (evt) {
+      if (evt.button === 1 || (evt.button === 0 && spaceHeld)) {
+        evt.preventDefault();
+        panning = true;
+        panFrom = canvasPixel(evt);
+      }
+    });
+    window.addEventListener('mousemove', function (evt) {
+      if (!panning) return;
+      var p = canvasPixel(evt);
+      viewX += p.x - panFrom.x;
+      viewY += p.y - panFrom.y;
+      panFrom = p;
+      draw();
+    });
+    window.addEventListener('mouseup', function () { panning = false; });
+    window.addEventListener('keydown', function (evt) {
+      if (evt.code === 'Space') {
+        var t = document.activeElement;
+        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+        spaceHeld = true;
+      }
+    });
+    window.addEventListener('keyup', function (evt) { if (evt.code === 'Space') spaceHeld = false; });
     canvas.addEventListener('touchstart', function (evt) { evt.preventDefault(); handleDown(getPos(evt)); }, { passive: false });
     canvas.addEventListener('touchmove', function (evt) { evt.preventDefault(); handleMove(getPos(evt)); }, { passive: false });
     canvas.addEventListener('touchend', function (evt) { evt.preventDefault(); handleUp(getPos(evt)); }, { passive: false });
@@ -1754,9 +1892,42 @@
         if (selectedGroup.length) { selectedGroup = []; draw(); }
         return;
       }
-      if ((!hoverAtom && !selectedGroup.length) || evt.ctrlKey || evt.metaKey || evt.altKey) return;
-      var target = document.activeElement;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+      var focused = document.activeElement;
+      var typing = !!(focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA'));
+
+      // Ctrl/Cmd shortcuts have to be handled BEFORE the modifier early-return
+      // below. That return exists so element hotkeys don't fire on browser
+      // shortcuts, but it was also swallowing Ctrl+Z whole - the first key
+      // anybody presses after a mistake did nothing at all, on a canvas where
+      // the Undo button was the only way back.
+      if ((evt.ctrlKey || evt.metaKey) && !evt.altKey) {
+        if (typing) return;   // a focused text field keeps its own undo stack
+        var ck = evt.key.toLowerCase();
+        if (ck === 'z' && !evt.shiftKey) { evt.preventDefault(); undo(); return; }
+        if ((ck === 'z' && evt.shiftKey) || ck === 'y') { evt.preventDefault(); redo(); return; }
+        if (ck === 'd') { evt.preventDefault(); duplicateSelection(); return; }
+        return;
+      }
+      if (typing) return;
+
+      // Delete/Backspace clears the selection. Without it, removing a group
+      // means switching to the erase tool and clicking every atom in turn.
+      // Handled here because the element-hotkey path below only accepts
+      // single letters and would drop "Delete" on the floor.
+      if (evt.key === 'Delete' || evt.key === 'Backspace') {
+        var doomed = selectedGroup.length ? selectedGroup.slice() : (hoverAtom ? [hoverAtom] : []);
+        if (!doomed.length) return;
+        evt.preventDefault();
+        snapshot();
+        doomed.forEach(function (a) { removeAtom(a.id); });
+        selectedGroup = [];
+        selectedAtom = null;
+        hoverAtom = null;
+        draw();
+        return;
+      }
+
+      if ((!hoverAtom && !selectedGroup.length) || evt.altKey) return;
       var k = evt.key.toLowerCase();
       if (!/^[a-z]$/.test(k)) return;
 
@@ -1791,6 +1962,40 @@
         }, 500);
       }
     });
+
+    // Copy the selected atoms and every bond BETWEEN them, offset by half a
+    // bond length so the copy is visibly separate, and leave the copy selected
+    // so it can be dragged straight into place. Bonds to atoms outside the
+    // selection are deliberately not copied: they would have to attach the
+    // copy back to the original, which is a guess about what was meant.
+    //
+    // Worth having because polymer repeat units are so often near-symmetric -
+    // a diacid, a bisphenol, a diol - and both halves were being drawn by hand.
+    function duplicateSelection() {
+      if (!selectedGroup.length) {
+        setStatus('Select something first: switch to the Select tool and drag a box, then Ctrl+D.');
+        return;
+      }
+      snapshot();
+      var idMap = {};
+      var copies = selectedGroup.map(function (a) {
+        var made = addAtom(a.el, a.x + BOND_LEN * 0.6, a.y + BOND_LEN * 0.6);
+        made.charge = a.charge;
+        idMap[a.id] = made.id;
+        return made;
+      });
+      bonds.slice().forEach(function (b) {
+        if (idMap[b.a] === undefined || idMap[b.b] === undefined) return;
+        addBond(idMap[b.a], idMap[b.b], b.order);
+        var nb = bonds[bonds.length - 1];
+        if (nb && b.geom) nb.geom = b.geom;
+        if (nb && b.stereo) nb.stereo = b.stereo;
+      });
+      selectedGroup = copies;
+      selectedAtom = null;
+      setStatus('Copied ' + copies.length + (copies.length === 1 ? ' atom' : ' atoms') + ' — drag to position, or Ctrl+D again.');
+      draw();
+    }
 
     function selectElement(el, fromFixedBtn) {
       currentEl = el;
@@ -1916,12 +2121,24 @@
     });
     var undoBtn = document.getElementById('mol-undo');
     if (undoBtn) undoBtn.addEventListener('click', undo);
+    var redoBtn = document.getElementById('mol-redo');
+    if (redoBtn) redoBtn.addEventListener('click', redo);
+    syncHistoryButtons();
     var clearBtn = document.getElementById('mol-clear');
     if (clearBtn) clearBtn.addEventListener('click', function () {
       snapshot();
       atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
+      resetView();
       draw();
     });
+    // Zoom buttons act on the middle of the canvas, which is where the
+    // structure is laid out, so the drawing stays put rather than sliding off.
+    var zoomInBtn = document.getElementById('mol-zoom-in');
+    if (zoomInBtn) zoomInBtn.addEventListener('click', function () { zoomAbout(canvas.width / 2, canvas.height / 2, 1.25); });
+    var zoomOutBtn = document.getElementById('mol-zoom-out');
+    if (zoomOutBtn) zoomOutBtn.addEventListener('click', function () { zoomAbout(canvas.width / 2, canvas.height / 2, 1 / 1.25); });
+    var zoomResetBtn = document.getElementById('mol-zoom-reset');
+    if (zoomResetBtn) zoomResetBtn.addEventListener('click', function () { resetView(); draw(); });
 
     // ---------- Repeat-unit extraction + search ----------
     // otherRects (optional): the other blocks' brackets in a copolymer. A pendant
@@ -2687,7 +2904,8 @@
     // Canvas placement for parsed molblock coordinates: scale so the median
     // bond matches the editor's bond length (clamped so the whole structure
     // fits), center it, and flip y (molblock y points up, canvas y down).
-    function fitParsedCoords(parsed) {
+    function fitParsedCoords(parsed, target) {
+      target = target || canvas;
       var lens = parsed.bonds.map(function (b) {
         var p = parsed.atoms[b.a - 1], q = parsed.atoms[b.b - 1];
         return Math.sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
@@ -2698,14 +2916,14 @@
       var ys = parsed.atoms.map(function (a) { return a.y; });
       var w = Math.max.apply(null, xs) - Math.min.apply(null, xs);
       var h = Math.max.apply(null, ys) - Math.min.apply(null, ys);
-      if (w > 0) scale = Math.min(scale, (canvas.width - 70) / w);
-      if (h > 0) scale = Math.min(scale, (canvas.height - 70) / h);
+      if (w > 0) scale = Math.min(scale, (target.width - 70) / w);
+      if (h > 0) scale = Math.min(scale, (target.height - 70) / h);
       var cx0 = (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2;
       var cy0 = (Math.min.apply(null, ys) + Math.max.apply(null, ys)) / 2;
       return parsed.atoms.map(function (a) {
         return {
-          x: canvas.width / 2 + (a.x - cx0) * scale,
-          y: canvas.height / 2 - (a.y - cy0) * scale
+          x: target.width / 2 + (a.x - cx0) * scale,
+          y: target.height / 2 - (a.y - cy0) * scale
         };
       });
     }
@@ -3352,6 +3570,10 @@
         // unasked would invent a trans the input never claimed.
         var stated = (text.indexOf('/') !== -1 || text.indexOf('\\') !== -1) ? geomFromParsed(parsed) : null;
         layoutBest(parsed);
+        // A freshly laid-out structure is positioned in canvas coordinates, so
+        // any zoom or pan left over from the previous drawing would put it
+        // off-screen or the wrong size.
+        resetView();
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
@@ -3414,6 +3636,10 @@
           return;
         }
         layoutBest(parsed);
+        // A freshly laid-out structure is positioned in canvas coordinates, so
+        // any zoom or pan left over from the previous drawing would put it
+        // off-screen or the wrong size.
+        resetView();
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
@@ -3736,6 +3962,10 @@
         // charges, and stereo marks all survive. Expanded group atoms sit at
         // the end of the list, so the first atoms.length entries are the
         // editor's own atoms; the appended ones are layout-only and dropped.
+        // A freshly laid-out structure is positioned in canvas coordinates, so
+        // any zoom or pan left over from the previous drawing would put it
+        // off-screen or the wrong size.
+        resetView();
         var pos = fitParsedCoords(parsed);
         snapshot();
         atoms.forEach(function (a, i) { a.x = pos[i].x; a.y = pos[i].y; });
@@ -4227,17 +4457,117 @@
       var hasNestedRepeat = brackets.some(function (r) { return r.role === 'sidechain'; });
       if (brackets.length >= 2 && !hasNestedRepeat) { runCopolymerSearch(); return; }
 
-      var sub;
-      if (atoms.filter(function (a) { return a.el === '*'; }).length === 2) {
-        sub = extractFromStars();
-      } else if (brackets.length === 1) {
-        sub = extractRepeatUnit(brackets[0]);
-      } else {
+      var sub = currentRepeatUnit();
+      if (!sub) {
         statusEl.textContent = 'Draw a repeat unit, then use the Bracket tool to mark it before searching.';
         renderResults([]);
         return;
       }
       searchSub(sub);
+    }
+
+    // ---------- Chain preview: what your bracket actually means ----------
+    //
+    // The most common way a drawn repeat unit is wrong is silent: a bracket
+    // cutting the wrong bond, or enclosing two units where one was meant. The
+    // drawing looks fine either way, and the first sign of trouble is a search
+    // that returns the wrong polymer or nothing at all. So draw the answer:
+    // three units joined end to end, which is what the bracket claims.
+    //
+    // Rendering reuses drawStructure by swapping `ctx` and the atom/bond
+    // arrays, the same trick the PNG and SVG exports already use, so the
+    // preview cannot drift from how the editor draws.
+    var CHAIN_PREVIEW_UNITS = 3;
+    function showChainPreview() {
+      var wrap = document.getElementById('mol-chain-preview');
+      var note = document.getElementById('mol-chain-note');
+      var pcanvas = document.getElementById('mol-chain-canvas');
+      if (!wrap || !pcanvas) return;
+      var sub = currentRepeatUnit();
+      if (!sub) {
+        wrap.hidden = false;
+        if (note) note.textContent = 'Bracket a repeat unit first (or load one with two * chain ends) — the preview shows what that unit repeats into.';
+        pcanvas.getContext('2d').clearRect(0, 0, pcanvas.width, pcanvas.height);
+        return;
+      }
+      if (sub.boundaryCount !== 2) {
+        wrap.hidden = false;
+        if (note) note.textContent = 'A repeat unit needs exactly two open chain ends; this one has ' + sub.boundaryCount + '. Nothing to chain up yet.';
+        pcanvas.getContext('2d').clearRect(0, 0, pcanvas.width, pcanvas.height);
+        return;
+      }
+      // chainCopies names the chain ends __h/__t; the extractors name them S0/S1.
+      var starIds = sub.atoms.filter(function (a) { return a.el === '*'; }).map(function (a) { return a.id; });
+      var rename = {};
+      rename[starIds[0]] = '__h';
+      rename[starIds[1]] = '__t';
+      var unit = {
+        atoms: sub.atoms.map(function (a) { return { id: rename[a.id] || a.id, el: a.el, charge: a.charge }; }),
+        bonds: sub.bonds.map(function (b) {
+          var na = rename[b.a] || b.a, nb = rename[b.b] || b.b;
+          // the head bond must read __h -> atom and the tail atom -> __t
+          if (nb === '__h' || na === '__t') { var t = na; na = nb; nb = t; }
+          return { a: na, b: nb, order: b.order, stereo: b.stereo };
+        })
+      };
+      var chained = PG.chainCopies(unit, CHAIN_PREVIEW_UNITS);
+      if (!chained) {
+        wrap.hidden = false;
+        if (note) note.textContent = 'That unit could not be chained up — its two open ends need to sit on the backbone.';
+        return;
+      }
+      wrap.hidden = false;
+      if (note) note.textContent = 'Loading the chemistry engine…';
+      ensureRDKit().then(function (RDKit) {
+        var ex = expandSuperatoms(chained.atoms, chained.bonds);
+        var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
+        var mb = null;
+        if (mol) {
+          try { mb = mol.get_new_coords(); } catch (e) {}
+          if (!mb) { try { mb = mol.get_molblock(); } catch (e2) {} }
+          mol.delete();
+        }
+        var parsed = mb && parseMolblockToEditor(mb);
+        if (!parsed || !parsed.atoms.length) {
+          if (note) note.textContent = 'Could not lay out the chained units.';
+          return;
+        }
+        var pos = fitParsedCoords(parsed, pcanvas);
+        // Swap the editor's own state for the chained copy, draw, put it back.
+        var savedAtoms = atoms, savedBonds = bonds, savedBrackets = brackets, savedCtx = ctx;
+        var savedHover = hoverAtom, savedSel = selectedAtom, savedGroup = selectedGroup;
+        atoms = parsed.atoms.map(function (ra, i) { return { id: i + 1, el: ra.el || 'C', x: pos[i].x, y: pos[i].y }; });
+        bonds = parsed.bonds.map(function (rb) { return { id: rb.a * 1000 + rb.b, a: rb.a, b: rb.b, order: rb.order }; });
+        brackets = []; hoverAtom = null; selectedAtom = null; selectedGroup = [];
+        var pctx = pcanvas.getContext('2d');
+        pctx.clearRect(0, 0, pcanvas.width, pcanvas.height);
+        ctx = pctx;
+        var styles = getComputedStyle(document.body);
+        try {
+          drawStructure((styles.getPropertyValue('--text') || '#111').trim() || '#111',
+                        (styles.getPropertyValue('--card-bg') || '#fff').trim() || '#fff');
+        } finally {
+          ctx = savedCtx;
+          atoms = savedAtoms; bonds = savedBonds; brackets = savedBrackets;
+          hoverAtom = savedHover; selectedAtom = savedSel; selectedGroup = savedGroup;
+        }
+        if (note) {
+          note.textContent = CHAIN_PREVIEW_UNITS + ' of your repeat unit joined end to end. If this is not the polymer you meant, ' +
+            'the bracket is cutting the wrong bond or holding more than one unit.';
+        }
+      }).catch(function () {
+        if (note) note.textContent = 'The chemistry engine could not load. Check your connection and try again.';
+      });
+    }
+
+    // The one place that decides what the drawing's repeat unit IS. The chain
+    // preview has to answer this the same way the search does, or it would
+    // illustrate a different polymer from the one being matched - which is
+    // worse than not illustrating it at all.
+    function currentRepeatUnit() {
+      if (atoms.filter(function (a) { return a.el === '*'; }).length === 2) return extractFromStars();
+      if (brackets.length === 1) return extractRepeatUnit(brackets[0]);
+      return null;
     }
 
     // Match one extracted repeat unit (exactly two open ends) against the
@@ -4915,6 +5245,9 @@
       runSubstructureSearch();
       scrollResultsIntoView();
     });
+
+    var chainBtn = document.getElementById('mol-chain-btn');
+    if (chainBtn) chainBtn.addEventListener('click', showChainPreview);
 
     var smartsBtn = document.getElementById('mol-smarts-search');
     if (smartsBtn) smartsBtn.addEventListener('click', function () {

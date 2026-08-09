@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=70">
+<link rel="stylesheet" href="style.css?v=72">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -149,8 +149,20 @@
       </div>
       <span class="mol-tool-divider"></span>
       <div class="mol-tool-cluster">
-        <button type="button" id="mol-undo" class="mol-icon-btn" title="Undo" aria-label="Undo">
+        <button type="button" id="mol-undo" class="mol-icon-btn" title="Undo (Ctrl+Z)" aria-label="Undo">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L3 8l4 4"/><path d="M3 8h9a5 5 0 0 1 0 10h-2"/></svg>
+        </button>
+        <button type="button" id="mol-redo" class="mol-icon-btn" title="Redo (Ctrl+Shift+Z or Ctrl+Y)" aria-label="Redo">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4l4 4-4 4"/><path d="M17 8H8a5 5 0 0 0 0 10h2"/></svg>
+        </button>
+        <button type="button" id="mol-zoom-out" class="mol-icon-btn" title="Zoom out (Ctrl + scroll wheel)" aria-label="Zoom out">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><line x1="13" y1="13" x2="17.5" y2="17.5"/><line x1="6.5" y1="9" x2="11.5" y2="9"/></svg>
+        </button>
+        <button type="button" id="mol-zoom-in" class="mol-icon-btn" title="Zoom in (Ctrl + scroll wheel). Pan with the middle mouse button, or hold Space and drag." aria-label="Zoom in">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><line x1="13" y1="13" x2="17.5" y2="17.5"/><line x1="6.5" y1="9" x2="11.5" y2="9"/><line x1="9" y1="6.5" x2="9" y2="11.5"/></svg>
+        </button>
+        <button type="button" id="mol-zoom-reset" class="mol-icon-btn" title="Reset zoom and position" aria-label="Reset the view">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="13" height="13" rx="1.5"/><line x1="3.5" y1="8" x2="16.5" y2="8"/></svg>
         </button>
         <button type="button" id="mol-clear" class="mol-icon-btn" title="Clear the canvas" aria-label="Clear the canvas">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M8 6V4h4v2M6 6l1 11h6l1-11"/></svg>
@@ -218,6 +230,12 @@
         <div class="mol-tip-group">
           <h5>Shortcuts</h5>
           <dl>
+            <div class="mol-tip"><dt>Ctrl+Z / Ctrl+Shift+Z</dt><dd>Undo and redo. Ctrl+Y redoes as well. Both buttons grey out when there is nothing left in that direction.</dd></div>
+            <div class="mol-tip"><dt>Delete / Backspace</dt><dd>Removes the selection, or the atom under the cursor. Faster than switching to Erase and clicking each one.</dd></div>
+            <div class="mol-tip"><dt>Ctrl+D</dt><dd>Duplicates the selection just clear of the original, ready to drag into place &ndash; useful when a repeat unit is nearly symmetric. Bonds to atoms outside the selection are not copied.</dd></div>
+            <div class="mol-tip"><dt>Zoom &amp; pan</dt><dd>Ctrl and the scroll wheel zooms about the cursor, or use the magnifier buttons. Pan with the middle mouse button, or hold Space and drag. The framed button resets both. Zooming changes nothing about the structure &ndash; the search and every export see the same drawing either way.</dd></div>
+            <div class="mol-tip"><dt>Show 3 units</dt><dd>Draws three of your repeat unit joined end to end. The quickest way to catch a bracket that cuts the wrong bond, or that holds two units where you meant one.</dd></div>
+            <div class="mol-tip"><dt>Red rings</dt><dd>An atom circled in red has more bonds than the element allows. The bar under the canvas says how many and which elements. It is the same limit the reference library itself is checked against.</dd></div>
             <div class="mol-tip"><dt>Escape</dt><dd>Release the current chain without adding another atom.</dd></div>
             <div class="mol-tip"><dt>Select + letter key</dt><dd>Select an atom (or several) with the Select tool, then press a letter to relabel it. N, O, F apply right away; C, S, B briefly wait in case a second letter completes Cl, Si, or Br. Hovering an atom works too when nothing is selected.</dd></div>
             <div class="mol-tip"><dt>Shift+N</dt><dd>Turn the selected or hovered atom into a condensed nitro group, shown as one NO<sub>2</sub> label with the structure and charges implicit.</dd></div>
@@ -262,6 +280,13 @@
       <button type="button" id="mol-search-substruct" class="copy-btn" title="Find every library polymer whose repeat unit contains the drawn fragment - draw just an ester linkage, a ring, or a backbone motif, no brackets or chain ends needed">
         &#8834; Contains fragment
       </button>
+      <button type="button" id="mol-chain-btn" class="copy-btn" title="Draw three of your repeat unit joined end to end. The quickest way to catch a bracket that cuts the wrong bond or holds more than one unit.">
+        &#9741; Show 3 units
+      </button>
+    </div>
+    <div id="mol-chain-preview" class="mol-chain-preview" hidden>
+      <canvas id="mol-chain-canvas" width="960" height="220"></canvas>
+      <p id="mol-chain-note" class="guide-note"></p>
     </div>
     <div id="mol-photo-status" class="guide-note" style="margin:6px 0 0;font-size:0.82rem;" hidden></div>
     <div class="mol-toolbar-row" style="margin-top:8px;">
@@ -345,10 +370,10 @@
 
 <script src="polymer-data.js?v=34"></script>
 <script src="polymer-xref.js?v=1"></script>
-<script src="polymer-graph.js?v=5"></script>
+<script src="polymer-graph.js?v=7"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=149"></script>
+<script src="polymer-search.js?v=153"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

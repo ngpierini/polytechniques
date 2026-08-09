@@ -42,10 +42,10 @@ function variantKey(entry) {
 // Generous max valence per element (bond-order sum), with slack for formal
 // charge. Purpose is to catch obvious mistakes (typo'd bonds, duplicate
 // entries), not to referee real edge-case chemistry, so this errs high.
-const MAX_VALENCE = {
-  H: 1, C: 4, N: 3, O: 2, F: 1, Cl: 1, Br: 1, I: 1,
-  S: 6, P: 5, Si: 4, B: 3, Sn: 4
-};
+// Moved into polymer-graph.js so the EDITOR enforces the same limits while you
+// draw. A structure that would fail this check should look wrong on the canvas
+// immediately, not pass silently and fail in CI later.
+const MAX_VALENCE = require("../polymer-graph.js").MAX_VALENCE;
 
 const VALID_CLASSES = new Set([
   "Addition (vinyl)", "Addition (acrylate)", "Addition (methacrylate)",

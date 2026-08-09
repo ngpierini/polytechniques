@@ -2816,3 +2816,38 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
   border-color: var(--primary);
   color: var(--primary);
 }
+
+/* A disabled Undo/Redo is how you learn there is nothing left to undo, rather
+   than pressing it and wondering whether the editor is broken. Hover effects
+   have to be suppressed too, or a dead button still lights up under the
+   cursor and reads as clickable. */
+.mol-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.mol-icon-btn:disabled:hover {
+  border-color: var(--border);
+  color: inherit;
+  transform: none;
+}
+
+/* Chain preview: three repeat units joined end to end, so a bracket that cuts
+   the wrong bond is visible rather than inferred from a bad search result. */
+.mol-chain-preview {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+}
+.mol-chain-preview canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+.mol-chain-preview p {
+  margin: 6px 0 0;
+  font-size: 0.83rem;
+  color: var(--text-dim);
+}

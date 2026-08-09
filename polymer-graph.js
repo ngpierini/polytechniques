@@ -277,9 +277,10 @@
     var starIds = {};
     unit.atoms.forEach(function (a) { if (a.el === "*") starIds[a.id] = 1; });
     var headAttach = null, tailAttach = null, headOrd = null, tailOrd = null;
+    var headSt = null, tailSt = null;
     unit.bonds.forEach(function (b) {
-      if (b.a === "__h") { headAttach = b.b; headOrd = b.order; }
-      else if (b.b === "__t") { tailAttach = b.a; tailOrd = b.order; }
+      if (b.a === "__h") { headAttach = b.b; headOrd = b.order; headSt = b.stereo || null; }
+      else if (b.b === "__t") { tailAttach = b.a; tailOrd = b.order; tailSt = b.stereo || null; }
     });
     if (headAttach == null || tailAttach == null) return null;
     var prevTail = null;
@@ -289,14 +290,20 @@
       for (i = 0; i < unit.bonds.length; i++) {
         var b = unit.bonds[i];
         if (starIds[b.a] || starIds[b.b]) continue;
-        bonds.push({ a: pfx + b.a, b: pfx + b.b, order: b.order });
+        // Geometry has to survive the rebuild. foldRepeatUnit accepts a period
+        // only if chaining the extracted unit reproduces the ORIGINAL hash, and
+        // that hash now includes double-bond geometry - so dropping stereo here
+        // made every stereo-bearing unit fail its own fold check. Drawing two
+        // repeat units of cis-polybutadiene folded by 1 instead of 2 and then
+        // matched nothing in the library.
+        bonds.push({ a: pfx + b.a, b: pfx + b.b, order: b.order, stereo: b.stereo });
       }
-      if (prevTail !== null) bonds.push({ a: prevTail, b: pfx + headAttach, order: tailOrd });
+      if (prevTail !== null) bonds.push({ a: prevTail, b: pfx + headAttach, order: tailOrd, stereo: tailSt || headSt });
       prevTail = pfx + tailAttach;
     }
     atoms.push({ id: "H", el: "*" }, { id: "T", el: "*" });
-    bonds.push({ a: "H", b: "c0_" + headAttach, order: headOrd });
-    bonds.push({ a: prevTail, b: "T", order: tailOrd });
+    bonds.push({ a: "H", b: "c0_" + headAttach, order: headOrd, stereo: headSt });
+    bonds.push({ a: prevTail, b: "T", order: tailOrd, stereo: tailSt });
     return { atoms: atoms, bonds: bonds };
   }
 
@@ -491,6 +498,42 @@
     return out;
   }
 
+  // ---- valence ------------------------------------------------------------
+  //
+  // Generous max valence per element (bond-order sum), with slack for formal
+  // charge. The purpose is to catch obvious mistakes - a typo'd bond, a
+  // fourth substituent on an oxygen - not to referee real edge-case
+  // chemistry, so this errs high. Lives here rather than in the CI checker
+  // because the editor needs the same answer while you draw: a structure that
+  // would fail the data check should look wrong on the canvas immediately,
+  // not at search time with a message that names no atom.
+  var MAX_VALENCE = {
+    H: 1, C: 4, N: 3, O: 2, F: 1, Cl: 1, Br: 1, I: 1,
+    S: 6, P: 5, Si: 4, B: 3, Sn: 4
+  };
+
+  // Ids of atoms carrying more bonding than the element allows. Unrecognized
+  // labels return no opinion at all: "*" chain ends, and the editor's
+  // condensed superatom vertices (NO2, Ph, tBu), are not elements and their
+  // valence is not this function's to judge.
+  function overValentAtoms(atoms, bonds) {
+    var sum = {}, byId = {};
+    atoms.forEach(function (a) { sum[a.id] = 0; byId[a.id] = a; });
+    bonds.forEach(function (b) {
+      if (sum[b.a] === undefined || sum[b.b] === undefined) return;
+      sum[b.a] += b.order || 0;
+      sum[b.b] += b.order || 0;
+    });
+    var bad = [];
+    atoms.forEach(function (a) {
+      if (a.el === "*") return;
+      var max = MAX_VALENCE[a.el];
+      if (max === undefined) return;
+      if ((sum[a.id] || 0) > max + Math.abs(a.charge || 0)) bad.push(a.id);
+    });
+    return bad;
+  }
+
   function elementProfile(atoms) {
     var p = {};
     atoms.forEach(function (a) { if (a.el !== "*") p[a.el] = (p[a.el] || 0) + 1; });
@@ -506,5 +549,5 @@
     return d;
   }
 
-  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance };
+  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance };
 });
