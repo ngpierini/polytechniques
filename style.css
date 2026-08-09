@@ -2786,3 +2786,33 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
   line-height: 1.5;
   color: var(--text-dim);
 }
+
+/* SMARTS example chips. SMARTS is the one input on the search page nobody
+   types from memory, so the examples sit right under the box and run on
+   click - the pattern is learned next to its answer. */
+.mol-smarts-examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+}
+.mol-smarts-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-right: 2px;
+}
+.mol-smarts-chip {
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.mol-smarts-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}

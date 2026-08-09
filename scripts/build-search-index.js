@@ -103,7 +103,16 @@ function main() {
   // can enforce that search-index.json was regenerated after a data change.
   if (process.argv.indexOf("--check") !== -1) {
     const current = fs.existsSync(OUT_FILE) ? fs.readFileSync(OUT_FILE, "utf8") : "";
-    if (current !== json) {
+    // Compare the CONTENT, not the build stamp. builtAt is today's date, so a
+    // raw string compare fails the moment a check runs on a later day than the
+    // last build - the index is byte-identical apart from one date, and CI
+    // reports "out of date" for a data change nobody made. Seen exactly that
+    // at a midnight rollover mid-session.
+    const strip = function (s) {
+      try { const o = JSON.parse(s); delete o.builtAt; return JSON.stringify(o); }
+      catch (e) { return s; }
+    };
+    if (strip(current) !== strip(json)) {
       console.error("search-index.json is out of date. Run: npm run build-index");
       process.exit(1);
     }

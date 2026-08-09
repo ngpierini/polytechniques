@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=69">
+<link rel="stylesheet" href="style.css?v=70">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -71,6 +71,9 @@
       </p>
       <p class="guide-note">
         This is a small, hand curated reference set, not an exhaustive registry like SciFinder or PubChem: it currently covers common addition, step growth, and ring opening homopolymers. Branched and crosslinked repeat units, and copolymers, aren't matched yet. Tg and Tm values shown are typical literature figures for reference only.
+      </p>
+      <p class="guide-note">
+        <strong>Asking a generic question.</strong> "Contains fragment" matches exactly what you drew &mdash; those elements, those bond orders. Some questions can't be drawn at all: <em>any</em> halogen, <em>any</em> aromatic ring, an ester however it happens to be substituted. Type a <strong>SMARTS</strong> pattern for those, or press one of the examples under the box to see the notation next to its answer. <code>[F,Cl,Br,I]</code> finds every halogenated polymer in the library; <code>[CX3](=O)[OX2H0]</code> finds every ester, including formates, because SMARTS counts implicit hydrogens.
       </p>
       <p class="guide-note">
         <strong>Stereochemistry.</strong> The geometry of a backbone double bond is part of the match, because it is part of the polymer: cis-1,4-polyisoprene is natural rubber and the trans isomer is gutta-percha, a hard resin, from the same atoms joined the same way. Use the cis/trans tool on a double bond to state it &mdash; "cis" meaning the chain continues on the same side, which is what a polymer name means by it, not the CIP priority rule. Leave it unset and the search matches every isomer of that skeleton and says which ones they are. <strong>Tacticity is different</strong>: it describes how one repeat unit follows the next, so no single repeat unit can carry it. The four polypropylenes are one drawing, and a structure search returns all four together and says why.
@@ -266,6 +269,23 @@
         <input type="text" id="mol-smiles-input" placeholder="Paste a SMILES, e.g. CC(c1ccccc1)&hellip;" style="flex:1;min-width:160px;" aria-label="SMILES input">
         <button type="button" id="mol-smiles-load" class="copy-btn">Load SMILES</button>
       </div>
+      <div class="mol-tool-cluster" style="flex:1 1 260px;">
+        <input type="text" id="mol-smarts-input" placeholder="Or a SMARTS pattern, e.g. [F,Cl,Br,I]&hellip;" style="flex:1;min-width:160px;" aria-label="SMARTS pattern">
+        <button type="button" id="mol-smarts-search" class="copy-btn" title="Find every library polymer whose repeat unit matches a SMARTS pattern. Unlike a drawn fragment, SMARTS can ask generic questions - any halogen, any aromatic ring, an ester however it is substituted.">&#8834; Match SMARTS</button>
+      </div>
+    </div>
+    <div class="mol-smarts-examples">
+      <span class="mol-smarts-label">Try:</span>
+      <button type="button" class="mol-smarts-chip" data-smarts="[F,Cl,Br,I]">any halogen</button>
+      <button type="button" class="mol-smarts-chip" data-smarts="c1ccccc1">a benzene ring</button>
+      <button type="button" class="mol-smarts-chip" data-smarts="[CX3](=O)[OX2H0]">an ester linkage</button>
+      <button type="button" class="mol-smarts-chip" data-smarts="[CX3](=O)[NX3]">an amide linkage</button>
+      <button type="button" class="mol-smarts-chip" data-smarts="[#7]">any nitrogen</button>
+      <button type="button" class="mol-smarts-chip" data-smarts="[Si]">any silicon</button>
+      <button type="button" class="mol-smarts-chip" data-smarts="[CX4][F]">fluorine on sp3 carbon</button>
+      <button type="button" class="mol-smarts-chip" data-smarts="[R2]">an atom in two rings</button>
+    </div>
+    <div class="mol-toolbar-row" style="margin-top:8px;">
       <div class="mol-tool-cluster">
         <button type="button" id="mol-copy-smiles" class="copy-btn" title="Copy the drawn structure as canonical SMILES">Copy SMILES</button>
         <button type="button" id="mol-copy-inchi" class="copy-btn" title="Copy the drawn structure as an InChI string">Copy InChI</button>
@@ -328,7 +348,7 @@
 <script src="polymer-graph.js?v=5"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=147"></script>
+<script src="polymer-search.js?v=149"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

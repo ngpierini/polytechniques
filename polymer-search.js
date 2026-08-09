@@ -2265,7 +2265,14 @@
       if (rdkitLib) return rdkitLib;
       rdkitLib = [];
       (window.POLYMER_DB || []).forEach(function (p) {
-        if (p.type === 'copolymer' || !p.atoms) return;  // no single repeat unit to fingerprint
+        // What disqualifies an entry is having no structure, NOT being typed a
+        // copolymer - the same correction fingerprintOf already carries. A
+        // bottlebrush is typed 'copolymer' and does have one drawable unit,
+        // with the side chain nested inside it, so this guard was hiding ten
+        // entries from every RDKit-backed answer: similarity ranking, "contains
+        // fragment", and SMARTS. They were findable by exact hash and invisible
+        // to everything else.
+        if (!p.atoms || !p.atoms.length) return;
         var mol = molFrom(RDKit, molblockFrom(p.atoms, p.bonds));
         if (!mol) return;
         var smiles = null;
@@ -4795,27 +4802,93 @@
         }
         var disconnected = smarts.indexOf('.') !== -1;
         var lib = prepRdkitLibrary(RDKit);
-        var qHeavy = frag.atoms.length;
-        var hits = [];
-        lib.forEach(function (e) {
-          if (!e.mol) return;
-          var parsed = null;
-          try { parsed = JSON.parse(e.mol.get_substruct_matches(qmol)); } catch (e3) {}
-          // RDKit returns '{}' (not '[]') on no match - only an array is a hit
-          var arr = Array.isArray(parsed) ? parsed : [];
-          if (!arr.length) return;
-          var tHeavy = e.p.atoms.filter(function (a) { return a.el !== '*'; }).length;
-          hits.push({ p: e.p, count: arr.length, cov: tHeavy ? Math.min(1, qHeavy / tHeavy) : 0, sim: (qfp && e.fp) ? tanimoto(qfp, e.fp) : 0 });
-        });
+        var hits = matchQmol(lib, qmol, frag.atoms.length, qfp);
         qmol.delete();
-        // Coverage first (the fragment is most OF these polymers), similarity
-        // breaks ties. All hits render - a fragment search legitimately
-        // returns dozens, and truncating would misreport the set.
-        hits.sort(function (x, y) { return (y.cov - x.cov) || (y.sim - x.sim); });
         statusEl.textContent = hits.length
           ? (hits.length + ' of ' + lib.length + ' library polymers contain this fragment' +
             (disconnected ? ' (the drawing has disconnected pieces; each matched independently)' : '') + ':')
           : ('No library polymer contains this fragment.' + (disconnected ? ' Note: the drawing has disconnected pieces.' : ''));
+        renderSubstructHits(hits);
+      }).catch(function () {
+        statusEl.textContent = 'The structure-matching engine could not load. Check your connection and try again.';
+        renderResults([]);
+      });
+    }
+
+    // Run a prepared query molecule against every library repeat unit. Shared
+    // by the drawn-fragment search and the typed-SMARTS search, which differ
+    // only in where the query comes from - a second copy of this loop is how
+    // the two would drift into answering the same question differently.
+    // qHeavy is the query's heavy-atom count, used only for the coverage
+    // figure; a SMARTS pattern's "size" is approximate, so coverage is a
+    // ranking hint rather than a measurement.
+    function matchQmol(lib, qmol, qHeavy, qfp) {
+      var hits = [];
+      lib.forEach(function (e) {
+        if (!e.mol) return;
+        var parsed = null;
+        try { parsed = JSON.parse(e.mol.get_substruct_matches(qmol)); } catch (e3) {}
+        // RDKit returns '{}' (not '[]') on no match - only an array is a hit
+        var arr = Array.isArray(parsed) ? parsed : [];
+        if (!arr.length) return;
+        var tHeavy = e.p.atoms.filter(function (a) { return a.el !== '*'; }).length;
+        hits.push({ p: e.p, count: arr.length, cov: tHeavy ? Math.min(1, qHeavy / tHeavy) : 0, sim: (qfp && e.fp) ? tanimoto(qfp, e.fp) : 0 });
+      });
+      // Coverage first (the fragment is most OF these polymers), similarity
+      // breaks ties. All hits render - a fragment search legitimately returns
+      // dozens, and truncating would misreport the set.
+      hits.sort(function (x, y) { return (y.cov - x.cov) || (y.sim - x.sim); });
+      return hits;
+    }
+
+    // ---------- Typed SMARTS search ----------
+    // The drawn-fragment search above builds its pattern with get_smarts(),
+    // which describes exactly what was drawn: those elements, those bond
+    // orders. That cannot ask a GENERIC question - "any halogen on the
+    // backbone", "any aromatic ring", "an ester however it is substituted" -
+    // because there is no way to draw "any halogen". SMARTS is the notation
+    // for that, RDKit already understands it, and the matching machinery is
+    // the same from get_qmol onward.
+    //
+    // An empty or unparseable pattern is refused rather than silently matching
+    // nothing: RDKit's get_qmol returns a usable object for some nonsense
+    // input, and a query that matches everything looks identical to a query
+    // that matches nothing if you only read the count.
+    function estimateSmartsSize(s) {
+      // Rough heavy-atom count: bracketed atom expressions plus bare organic
+      // subset symbols. Only feeds the coverage ranking, never a claim.
+      var brackets = (s.match(/\[[^\]]*\]/g) || []).length;
+      var bare = (s.replace(/\[[^\]]*\]/g, '').match(/Cl|Br|[BCNOPSFIbcnops]/g) || []).length;
+      return Math.max(1, brackets + bare);
+    }
+
+    function runSmartsSearch() {
+      var statusEl = document.getElementById('mol-status');
+      var input = document.getElementById('mol-smarts-input');
+      if (!statusEl || !input) return;
+      var pattern = input.value.trim();
+      if (!pattern) {
+        statusEl.textContent = 'Type a SMARTS pattern first, or press one of the examples below it.';
+        renderResults([]);
+        return;
+      }
+      statusEl.textContent = rdkitPromise ? 'Matching SMARTS…'
+        : 'Loading the structure-matching engine (about 7 MB, one time; it stays cached)…';
+      ensureRDKit().then(function (RDKit) {
+        var qmol = null;
+        try { qmol = RDKit.get_qmol(pattern); } catch (e) { qmol = null; }
+        if (!qmol) {
+          statusEl.textContent = 'That is not a SMARTS pattern RDKit can read. Check the brackets and ring closures.';
+          renderResults([]);
+          return;
+        }
+        var lib = prepRdkitLibrary(RDKit);
+        var hits = matchQmol(lib, qmol, estimateSmartsSize(pattern), null);
+        qmol.delete();
+        statusEl.textContent = hits.length
+          ? hits.length + ' of ' + lib.length + ' library polymers match ' + pattern +
+            (hits.length === lib.length ? ' — which is all of them, so the pattern is not narrowing anything.' : ':')
+          : 'No library polymer matches ' + pattern + '. A pattern that matches nothing and a typo look the same here, so check it against a structure you know first.';
         renderSubstructHits(hits);
       }).catch(function () {
         statusEl.textContent = 'The structure-matching engine could not load. Check your connection and try again.';
@@ -4841,6 +4914,27 @@
     if (subBtn) subBtn.addEventListener('click', function () {
       runSubstructureSearch();
       scrollResultsIntoView();
+    });
+
+    var smartsBtn = document.getElementById('mol-smarts-search');
+    if (smartsBtn) smartsBtn.addEventListener('click', function () {
+      runSmartsSearch();
+      scrollResultsIntoView();
+    });
+    var smartsInput = document.getElementById('mol-smarts-input');
+    if (smartsInput) smartsInput.addEventListener('keydown', function (evt) {
+      if (evt.key === 'Enter') { evt.preventDefault(); runSmartsSearch(); scrollResultsIntoView(); }
+    });
+    // The example chips exist because SMARTS is the one input on this page
+    // nobody types from memory. Each fills the box AND runs, so the notation
+    // is learned by seeing a pattern next to its answer.
+    document.querySelectorAll('.mol-smarts-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        if (!smartsInput) return;
+        smartsInput.value = chip.getAttribute('data-smarts');
+        runSmartsSearch();
+        scrollResultsIntoView();
+      });
     });
 
     // Recent name searches, shown as one-click chips under the search box.
