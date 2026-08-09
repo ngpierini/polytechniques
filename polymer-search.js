@@ -154,6 +154,10 @@
     // scheme is a drawing about a reaction, not a molecule. They do render into
     // the PNG/SVG exports, which is the point of having them.
     var arrows = [];
+    // Free text on the canvas. A "+" between reactants is just a label whose
+    // text is "+", so one object covers both and there is no separate plus
+    // primitive to keep in step. Annotation, like arrows: never searched.
+    var labels = [];
     var draggingAtom = null;
     var draggingBracketHandle = null;
     var draggingBracketPreview = null;
@@ -201,15 +205,15 @@
     // the one users already expect from every other editor.
     var future = [];
     function editorState() {
-      return JSON.stringify({ atoms: atoms, bonds: bonds, brackets: brackets, arrows: arrows, nextAtomId: nextAtomId, nextBondId: nextBondId });
+      return JSON.stringify({ atoms: atoms, bonds: bonds, brackets: brackets, arrows: arrows, labels: labels, nextAtomId: nextAtomId, nextBondId: nextBondId });
     }
     function restoreState(json) {
       var s = JSON.parse(json);
       atoms = s.atoms; bonds = s.bonds; brackets = s.brackets || (s.bracket ? [s.bracket] : []);
-      arrows = s.arrows || [];
+      arrows = s.arrows || []; labels = s.labels || [];
       nextAtomId = s.nextAtomId; nextBondId = s.nextBondId;
-      selectedAtom = null; selectedGroup = []; selectedArrow = null;
-      syncArrowLabels();
+      selectedAtom = null; selectedGroup = []; selectedArrow = null; selectedLabel = null;
+      syncAnnotationPanel();
       draw();
       syncHistoryButtons();
     }
@@ -558,17 +562,42 @@
     }
 
     var arrowPreview = null, draggingArrow = null, arrowDragFrom = null, selectedArrow = null;
-    // Two text fields beside the canvas, rather than typing onto it: the letter
-    // keys are already element hotkeys, and a scheme's arrow wants two separate
-    // strings anyway - reagents above, conditions below.
-    function syncArrowLabels() {
+    var draggingEnd = null;           // 1 or 2 while an arrow endpoint is being dragged
+    var selectedLabel = null, draggingLabel = null, labelDragFrom = null;
+    var ENDPOINT_GRAB = 10;
+    // What the NEXT drawn arrow / placed label will be. The "+" button sets
+    // pendingLabelText so a plus costs one click and no typing.
+    var pendingArrowKind = 'arrow';
+    var pendingLabelText = null;
+
+    // One panel beside the canvas for whichever annotation is selected, rather
+    // than typing onto the canvas: the letter keys are already element hotkeys.
+    // An arrow wants two strings and a shape; a text label wants one string.
+    function syncAnnotationPanel() {
       var wrap = document.getElementById('mol-arrow-labels');
       var ab = document.getElementById('mol-arrow-above');
       var bl = document.getElementById('mol-arrow-below');
-      if (!wrap || !ab || !bl) return;
-      wrap.hidden = !selectedArrow;
-      if (selectedArrow) { ab.value = selectedArrow.above || ''; bl.value = selectedArrow.below || ''; }
+      var kindWrap = document.getElementById('mol-arrow-kind');
+      var txtWrap = document.getElementById('mol-label-edit');
+      var txt = document.getElementById('mol-label-text');
+      if (!wrap) return;
+      wrap.hidden = !selectedArrow && !selectedLabel;
+      var arrowBits = wrap.querySelectorAll('[data-for="arrow"]');
+      for (var i = 0; i < arrowBits.length; i++) arrowBits[i].hidden = !selectedArrow;
+      if (txtWrap) txtWrap.hidden = !selectedLabel;
+      if (selectedArrow) {
+        if (ab) ab.value = selectedArrow.above || '';
+        if (bl) bl.value = selectedArrow.below || '';
+        if (kindWrap) {
+          var btns = kindWrap.querySelectorAll('button');
+          for (var k = 0; k < btns.length; k++) {
+            btns[k].classList.toggle('active', btns[k].getAttribute('data-kind') === (selectedArrow.kind || 'arrow'));
+          }
+        }
+      }
+      if (selectedLabel && txt) txt.value = selectedLabel.text || '';
     }
+    var syncArrowLabels = syncAnnotationPanel;   // older call sites
 
     // ---------- View transform (zoom + pan) ----------
     //
@@ -622,6 +651,7 @@
       var styles = getComputedStyle(document.body);
       var primary = (styles.getPropertyValue('--primary') || '#2563eb').trim() || '#2563eb';
       arrows.forEach(function (ar) { drawArrow(ar, textColor); });
+      labels.forEach(function (lb) { drawLabel(lb, textColor); });
       bonds.forEach(function (b) {
         var a1 = atomById(b.a), a2 = atomById(b.b);
         if (!a1 || !a2) return;
@@ -790,6 +820,26 @@
         var pad = 12;
         ctx.strokeRect(Math.min(selectedArrow.x1, selectedArrow.x2) - pad, Math.min(selectedArrow.y1, selectedArrow.y2) - pad,
                        Math.abs(selectedArrow.x2 - selectedArrow.x1) + pad * 2, Math.abs(selectedArrow.y2 - selectedArrow.y1) + pad * 2);
+        ctx.restore();
+      }
+      if (mode === 'arrow' && selectedArrow) {
+        // Endpoint handles, so it is visible that the ends can be grabbed.
+        ctx.save();
+        ctx.fillStyle = primary;
+        [[selectedArrow.x1, selectedArrow.y1], [selectedArrow.x2, selectedArrow.y2]].forEach(function (p) {
+          ctx.beginPath();
+          ctx.arc(p[0], p[1], 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.restore();
+      }
+      if (mode === 'text' && selectedLabel) {
+        ctx.save();
+        ctx.setLineDash([3, 3]);
+        ctx.strokeStyle = primary;
+        ctx.lineWidth = 1;
+        var hw = Math.max(14, labelWidth(selectedLabel)) / 2 + 5;
+        ctx.strokeRect(selectedLabel.x - hw, selectedLabel.y - 13, hw * 2, 26);
         ctx.restore();
       }
       if (mode === 'ring' && pendingRing && ringHoverPos) drawRingGhost(primary);
@@ -1265,35 +1315,90 @@
     // user types: this tool makes no claim about the chemistry, unlike the
     // derived scheme on a search result, which is checked.
     var ARROW_HEAD = 9;
+    // Three shapes, because a polymerisation scheme needs more than one kind of
+    // arrow. RAFT, ATRP and ROMP - the mechanisms this site actually teaches -
+    // are equilibria, and free-radical steps are drawn with single-barbed
+    // fishhooks because one electron moves, not two.
+    function arrowBarb(x, y, ux, uy, px, py, bothSides) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - ux * ARROW_HEAD + px * 4.6, y - uy * ARROW_HEAD + py * 4.6);
+      if (bothSides) {
+        ctx.lineTo(x - ux * ARROW_HEAD - px * 4.6, y - uy * ARROW_HEAD - py * 4.6);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        // a fishhook is a stroked half-head, not a filled triangle
+        ctx.stroke();
+      }
+    }
     function drawArrow(ar, color) {
       var dx = ar.x2 - ar.x1, dy = ar.y2 - ar.y1;
       var len = Math.hypot(dx, dy);
       if (len < 1) return;
       var ux = dx / len, uy = dy / len;
+      var px = -uy, py = ux;
+      var kind = ar.kind || 'arrow';
       ctx.save();
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
       ctx.lineWidth = 1.6;
-      line(ar.x1, ar.y1, ar.x2 - ux * (ARROW_HEAD - 1), ar.y2 - uy * (ARROW_HEAD - 1));
-      var px = -uy, py = ux;
-      ctx.beginPath();
-      ctx.moveTo(ar.x2, ar.y2);
-      ctx.lineTo(ar.x2 - ux * ARROW_HEAD + px * 4.6, ar.y2 - uy * ARROW_HEAD + py * 4.6);
-      ctx.lineTo(ar.x2 - ux * ARROW_HEAD - px * 4.6, ar.y2 - uy * ARROW_HEAD - py * 4.6);
-      ctx.closePath();
-      ctx.fill();
+      if (kind === 'equilibrium') {
+        // Two offset half-arrows pointing opposite ways, the way a reversible
+        // step is drawn.
+        var off = 3;
+        line(ar.x1 + px * off, ar.y1 + py * off, ar.x2 + px * off - ux * 2, ar.y2 + py * off - uy * 2);
+        arrowBarb(ar.x2 + px * off, ar.y2 + py * off, ux, uy, px, py, false);
+        line(ar.x2 - px * off, ar.y2 - py * off, ar.x1 - px * off + ux * 2, ar.y1 - py * off + uy * 2);
+        arrowBarb(ar.x1 - px * off, ar.y1 - py * off, -ux, -uy, -px, -py, false);
+      } else {
+        line(ar.x1, ar.y1, ar.x2 - ux * (ARROW_HEAD - 1), ar.y2 - uy * (ARROW_HEAD - 1));
+        arrowBarb(ar.x2, ar.y2, ux, uy, px, py, kind !== 'fishhook');
+      }
       var mx = (ar.x1 + ar.x2) / 2, my = (ar.y1 + ar.y2) / 2;
       ctx.textAlign = 'center';
       ctx.font = '12px system-ui, sans-serif';
+      // The perpendicular (px,py) points to +y for a left-to-right arrow, and
+      // +y is DOWN on a canvas - so "above" has to subtract it. Getting that
+      // sign backwards put the reagents under the shaft, the conditions over
+      // it, and both on top of each other.
+      var TEXT_GAP = 9;
       if (ar.above) {
         ctx.textBaseline = 'bottom';
-        ctx.fillText(ar.above, mx + px * 8, my + py * 8 - 6);
+        ctx.fillText(ar.above, mx - px * TEXT_GAP, my - py * TEXT_GAP);
       }
       if (ar.below) {
         ctx.textBaseline = 'top';
-        ctx.fillText(ar.below, mx - px * 8, my - py * 8 + 6);
+        ctx.fillText(ar.below, mx + px * TEXT_GAP, my + py * TEXT_GAP);
       }
       ctx.restore();
+    }
+
+    var LABEL_FONT = '600 15px system-ui, sans-serif';
+    function drawLabel(lb, color) {
+      if (!lb.text) return;
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.font = LABEL_FONT;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(lb.text, lb.x, lb.y);
+      ctx.restore();
+    }
+    function labelWidth(lb) {
+      ctx.save();
+      ctx.font = LABEL_FONT;
+      var w = ctx.measureText(lb.text || '').width;
+      ctx.restore();
+      return w;
+    }
+    function findLabelAt(x, y) {
+      for (var i = labels.length - 1; i >= 0; i--) {
+        var lb = labels[i];
+        var w = Math.max(14, labelWidth(lb)) / 2 + 4;
+        if (Math.abs(x - lb.x) <= w && Math.abs(y - lb.y) <= 12) return lb;
+      }
+      return null;
     }
     function findArrowAt(x, y) {
       for (var i = arrows.length - 1; i >= 0; i--) {
@@ -1390,7 +1495,7 @@
     // any) so exports crop to the molecule instead of the whole (mostly
     // empty) drawing canvas.
     function structureBBox() {
-      if (!atoms.length && !arrows.length) return null;
+      if (!atoms.length && !arrows.length && !labels.length) return null;
       var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
       atoms.forEach(function (a) {
         minX = Math.min(minX, a.x); maxX = Math.max(maxX, a.x);
@@ -1402,6 +1507,11 @@
       // so an export framed on atoms alone crops them off, and a canvas holding
       // only an arrow would export nothing at all. Extra vertical room because
       // the reagent and condition text rides above and below the shaft.
+      labels.forEach(function (lb) {
+        var hw = labelWidth(lb) / 2 + 8;
+        minX = Math.min(minX, lb.x - hw); maxX = Math.max(maxX, lb.x + hw);
+        minY = Math.min(minY, lb.y - 14); maxY = Math.max(maxY, lb.y + 14);
+      });
       arrows.forEach(function (ar) {
         minX = Math.min(minX, ar.x1, ar.x2) - 10;
         maxX = Math.max(maxX, ar.x1, ar.x2) + 10;
@@ -1598,9 +1708,45 @@
         rotating = true;
         return;
       }
+      if (mode === 'text') {
+        var hitLb = findLabelAt(pos.x, pos.y);
+        if (hitLb) {
+          selectedLabel = hitLb; selectedArrow = null;
+          draggingLabel = hitLb; labelDragFrom = pos;
+          syncAnnotationPanel(); draw();
+          return;
+        }
+        snapshot();
+        selectedLabel = { x: pos.x, y: pos.y, text: pendingLabelText || 'text' };
+        pendingLabelText = null;
+        selectedArrow = null;
+        labels.push(selectedLabel);
+        syncAnnotationPanel();
+        setStatus('Text placed. Edit it in the box under the canvas, or drag it. Text and arrows are annotation only and never affect a search.');
+        draw();
+        var tin = document.getElementById('mol-label-text');
+        if (tin) { tin.focus(); tin.select(); }
+        return;
+      }
       if (mode === 'arrow') {
+        // An endpoint grab resizes; anywhere else on the shaft moves the whole
+        // arrow. Without this an arrow's length and angle were fixed the moment
+        // it was drawn, which nothing else in the editor is.
+        if (selectedArrow) {
+          if (Math.hypot(pos.x - selectedArrow.x1, pos.y - selectedArrow.y1) <= ENDPOINT_GRAB) {
+            snapshot(); draggingEnd = 1; return;
+          }
+          if (Math.hypot(pos.x - selectedArrow.x2, pos.y - selectedArrow.y2) <= ENDPOINT_GRAB) {
+            snapshot(); draggingEnd = 2; return;
+          }
+        }
         var hitAr = findArrowAt(pos.x, pos.y);
-        if (hitAr) { selectedArrow = hitAr; draggingArrow = hitAr; arrowDragFrom = pos; syncArrowLabels(); draw(); return; }
+        if (hitAr) {
+          selectedArrow = hitAr; selectedLabel = null;
+          draggingArrow = hitAr; arrowDragFrom = pos;
+          syncAnnotationPanel(); draw();
+          return;
+        }
         arrowPreview = { x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y };
         return;
       }
@@ -1619,7 +1765,23 @@
     function handleMove(pos) {
       if (dragStart && Math.hypot(pos.x - dragStart.x, pos.y - dragStart.y) > 4) moved = true;
 
+      if (mode === 'text' && draggingLabel && labelDragFrom) {
+        draggingLabel.x += pos.x - labelDragFrom.x;
+        draggingLabel.y += pos.y - labelDragFrom.y;
+        labelDragFrom = pos;
+        draw();
+        return;
+      }
       if (mode === 'arrow') {
+        if (draggingEnd && selectedArrow) {
+          // near-horizontal still snaps flat, same as when drawing
+          var other = draggingEnd === 1 ? { x: selectedArrow.x2, y: selectedArrow.y2 } : { x: selectedArrow.x1, y: selectedArrow.y1 };
+          var ny = Math.abs(pos.y - other.y) < 12 ? other.y : pos.y;
+          if (draggingEnd === 1) { selectedArrow.x1 = pos.x; selectedArrow.y1 = ny; }
+          else { selectedArrow.x2 = pos.x; selectedArrow.y2 = ny; }
+          draw();
+          return;
+        }
         if (draggingArrow && arrowDragFrom) {
           var ddx = pos.x - arrowDragFrom.x, ddy = pos.y - arrowDragFrom.y;
           draggingArrow.x1 += ddx; draggingArrow.x2 += ddx;
@@ -1695,7 +1857,12 @@
       }
     }
     function handleUp(pos) {
+      if (mode === 'text') {
+        draggingLabel = null; labelDragFrom = null; dragStart = null; moved = false;
+        return;
+      }
       if (mode === 'arrow') {
+        if (draggingEnd) { draggingEnd = null; dragStart = null; moved = false; return; }
         if (draggingArrow) { draggingArrow = null; arrowDragFrom = null; dragStart = null; moved = false; return; }
         if (arrowPreview) {
           var len = Math.hypot(pos.x - arrowPreview.x1, pos.y - arrowPreview.y1);
@@ -1705,17 +1872,18 @@
             // Too short to be a deliberate drag: lay down a default horizontal
             // arrow at the click, which is what a scheme wants nine times in ten.
             snapshot();
-            selectedArrow = { x1: pending.x1 - 45, y1: pending.y1, x2: pending.x1 + 45, y2: pending.y1, above: '', below: '' };
+            selectedArrow = { x1: pending.x1 - 45, y1: pending.y1, x2: pending.x1 + 45, y2: pending.y1, above: '', below: '', kind: pendingArrowKind };
             arrows.push(selectedArrow);
           } else {
             snapshot();
             // Nearly-horizontal drags snap flat; schemes read left to right and
             // a two-degree tilt looks like a mistake.
             var y2 = Math.abs(pos.y - pending.y1) < 12 ? pending.y1 : pos.y;
-            selectedArrow = { x1: pending.x1, y1: pending.y1, x2: pos.x, y2: y2, above: '', below: '' };
+            selectedArrow = { x1: pending.x1, y1: pending.y1, x2: pos.x, y2: y2, above: '', below: '', kind: pendingArrowKind };
             arrows.push(selectedArrow);
           }
-          syncArrowLabels();
+          selectedLabel = null;
+          syncAnnotationPanel();
           setStatus('Arrow added. Type above/below it in the two boxes under the canvas — reagents above, conditions below. Arrows are annotation only and never affect a search.');
           draw();
           dragStart = null; moved = false;
@@ -1840,12 +2008,21 @@
       // by clearing the whole canvas. Atoms and bonds win the hit test, since
       // an arrow drawn across a structure would otherwise shield it.
       if (mode === 'erase' && !a && !b) {
+        var deadLabel = findLabelAt(pos.x, pos.y);
+        if (deadLabel) {
+          snapshot();
+          labels = labels.filter(function (x) { return x !== deadLabel; });
+          if (selectedLabel === deadLabel) selectedLabel = null;
+          syncAnnotationPanel();
+          draw();
+          return;
+        }
         var deadArrow = findArrowAt(pos.x, pos.y);
         if (deadArrow) {
           snapshot();
           arrows = arrows.filter(function (x) { return x !== deadArrow; });
           if (selectedArrow === deadArrow) selectedArrow = null;
-          syncArrowLabels();
+          syncAnnotationPanel();
           draw();
           return;
         }
@@ -1915,7 +2092,7 @@
       // geom acts on a bond and nothing else; without this it would fall
       // through to the chain-building fallback below and drop a stray carbon
       // on the canvas every time someone missed the double bond.
-      if (mode === 'rotate' || mode === 'bracket' || mode === 'geom' || mode === 'arrow') return;
+      if (mode === 'rotate' || mode === 'bracket' || mode === 'geom' || mode === 'arrow' || mode === 'text') return;
 
       // draw, draw-wedge, draw-hash, chain (plain click fallback): a single
       // click on any atom immediately adds a bond off it at a sensible
@@ -2081,6 +2258,14 @@
         if (overlayEl && !overlayEl.hidden) { closePeriodicTable(); return; }
         if (selectedAtom) { selectedAtom = null; draw(); }
         if (selectedGroup.length) { selectedGroup = []; draw(); }
+        // Annotations were not cleared here, so an arrow stayed selected after
+        // Escape - and the shape buttons act on the selection, which meant
+        // picking a shape for the NEXT arrow silently rewrote the last one.
+        if (selectedArrow || selectedLabel) {
+          selectedArrow = null; selectedLabel = null;
+          syncAnnotationPanel();
+          draw();
+        }
         return;
       }
       var focused = document.activeElement;
@@ -2106,6 +2291,19 @@
       // Handled here because the element-hotkey path below only accepts
       // single letters and would drop "Delete" on the floor.
       if (evt.key === 'Delete' || evt.key === 'Backspace') {
+        // A selected arrow or text label is deletable too. It draws a selection
+        // box and the Erase tool could already remove it, so the Delete key
+        // ignoring it was just an inconsistency.
+        if (selectedArrow || selectedLabel) {
+          evt.preventDefault();
+          snapshot();
+          if (selectedArrow) arrows = arrows.filter(function (x) { return x !== selectedArrow; });
+          if (selectedLabel) labels = labels.filter(function (x) { return x !== selectedLabel; });
+          selectedArrow = null; selectedLabel = null;
+          syncAnnotationPanel();
+          draw();
+          return;
+        }
         var doomed = selectedGroup.length ? selectedGroup.slice() : (hoverAtom ? [hoverAtom] : []);
         if (!doomed.length) return;
         evt.preventDefault();
@@ -2163,8 +2361,28 @@
     // Worth having because polymer repeat units are so often near-symmetric -
     // a diacid, a bisphenol, a diol - and both halves were being drawn by hand.
     function duplicateSelection() {
+      // Annotations duplicate too - a scheme with three identical "+" signs
+      // should not mean drawing three of them by hand.
+      if (selectedArrow || selectedLabel) {
+        snapshot();
+        if (selectedArrow) {
+          var ac = JSON.parse(JSON.stringify(selectedArrow));
+          ac.x1 += 18; ac.x2 += 18; ac.y1 += 18; ac.y2 += 18;
+          arrows.push(ac);
+          selectedArrow = ac;
+        } else {
+          var lc = JSON.parse(JSON.stringify(selectedLabel));
+          lc.x += 18; lc.y += 18;
+          labels.push(lc);
+          selectedLabel = lc;
+        }
+        syncAnnotationPanel();
+        setStatus('Copied — drag it into place, or Ctrl+D again.');
+        draw();
+        return;
+      }
       if (!selectedGroup.length) {
-        setStatus('Select something first: switch to the Select tool and drag a box, then Ctrl+D.');
+        setStatus('Select something first: the Select tool for atoms, or click an arrow or label with its own tool.');
         return;
       }
       snapshot();
@@ -2318,8 +2536,9 @@
     var clearBtn = document.getElementById('mol-clear');
     if (clearBtn) clearBtn.addEventListener('click', function () {
       snapshot();
-      atoms = []; bonds = []; brackets = []; arrows = []; selectedAtom = null; selectedGroup = []; selectedArrow = null; nextAtomId = 1; nextBondId = 1;
-      syncArrowLabels();
+      atoms = []; bonds = []; brackets = []; arrows = []; labels = [];
+      selectedAtom = null; selectedGroup = []; selectedArrow = null; selectedLabel = null; nextAtomId = 1; nextBondId = 1;
+      syncAnnotationPanel();
       resetView();
       draw();
     });
@@ -5592,6 +5811,32 @@
         selectedArrow[id === 'mol-arrow-above' ? 'above' : 'below'] = el.value;
         draw();
       });
+    });
+    var labelTextEl = document.getElementById('mol-label-text');
+    if (labelTextEl) labelTextEl.addEventListener('input', function () {
+      if (!selectedLabel) return;
+      selectedLabel.text = labelTextEl.value;
+      draw();
+    });
+    // Changing the shape applies to the selected arrow AND becomes the default
+    // for the next one, so drawing three equilibria is three drags, not six
+    // clicks.
+    document.querySelectorAll('.mol-kind-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        pendingArrowKind = btn.getAttribute('data-kind');
+        if (selectedArrow) { snapshot(); selectedArrow.kind = pendingArrowKind; }
+        syncAnnotationPanel();
+        draw();
+      });
+    });
+    // The plus is the one glyph a step-growth scheme cannot do without, so it
+    // gets its own button rather than making people type it.
+    var plusBtn = document.getElementById('mol-plus-btn');
+    if (plusBtn) plusBtn.addEventListener('click', function () {
+      pendingLabelText = '+';
+      var textBtn = document.querySelector('.mol-mode-btn[data-mode="text"]');
+      if (textBtn) textBtn.click();
+      setStatus('Click where the + belongs, between the two reactants.');
     });
 
     var chainBtn = document.getElementById('mol-chain-btn');

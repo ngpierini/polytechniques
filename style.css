@@ -2892,3 +2892,22 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
   min-width: 120px;
   margin: 0;
 }
+
+/* Arrow-shape picker inside the annotation panel. Small, because it only
+   appears when an arrow is selected. */
+.mol-arrow-kind-wrap { display: inline-flex; gap: 4px; }
+.mol-kind-btn {
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.mol-kind-btn:hover { border-color: var(--primary); color: var(--primary); }
+.mol-kind-btn.active { border-color: var(--primary); color: var(--primary); font-weight: 700; }
+#mol-label-edit { display: inline-flex; align-items: center; gap: 6px; flex: 1 1 200px; }
+#mol-label-edit input { flex: 1 1 auto; min-width: 110px; margin: 0; }

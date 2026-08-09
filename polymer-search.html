@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=74">
+<link rel="stylesheet" href="style.css?v=75">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -144,6 +144,12 @@
         <button type="button" class="mol-mode-btn" data-mode="arrow" title="Reaction arrow: drag to draw one, or click for a default horizontal arrow. Type reagents above it and conditions below. Annotation only - arrows never affect a structure search." aria-label="Reaction arrow tool">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="10" x2="15" y2="10"/><polyline points="12,6.5 16.5,10 12,13.5" fill="currentColor" stroke="none"/></svg>
         </button>
+        <button type="button" class="mol-mode-btn" data-mode="text" title="Text: click to place a label &mdash; a species name, an &ldquo;n&rdquo;, anything. Annotation only." aria-label="Text tool">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="4" y1="5" x2="16" y2="5"/><line x1="10" y1="5" x2="10" y2="16"/></svg>
+        </button>
+        <button type="button" id="mol-plus-btn" class="mol-mode-btn" title="Place a &ldquo;+&rdquo; between reactants &mdash; what a step-growth scheme needs, since a polyester comes from a diol AND a diacid" aria-label="Plus sign">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="10" y1="4.5" x2="10" y2="15.5"/><line x1="4.5" y1="10" x2="15.5" y2="10"/></svg>
+        </button>
         <button type="button" class="mol-mode-btn" data-mode="bracket" title="Bracket: drag a box around the repeat unit" aria-label="Bracket tool">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 3H5v14h3M12 3h3v14h-3"/></svg>
         </button>
@@ -241,6 +247,8 @@
             <div class="mol-tip"><dt>Ctrl+D</dt><dd>Duplicates the selection just clear of the original, ready to drag into place &ndash; useful when a repeat unit is nearly symmetric. Bonds to atoms outside the selection are not copied.</dd></div>
             <div class="mol-tip"><dt>Zoom &amp; pan</dt><dd>Ctrl and the scroll wheel zooms about the cursor, or use the magnifier buttons. Pan with the middle mouse button, or hold Space and drag. The framed button resets both. Zooming changes nothing about the structure &ndash; the search and every export see the same drawing either way.</dd></div>
             <div class="mol-tip"><dt>Show 3 units</dt><dd>Draws three of your repeat unit joined end to end. The quickest way to catch a bracket that cuts the wrong bond, or that holds two units where you meant one.</dd></div>
+            <div class="mol-tip"><dt>Reaction arrow</dt><dd>Drag to draw one, or click for a default horizontal arrow; near-horizontal drags snap flat. Drag either end dot to re-aim or resize it, or the shaft to move it. The three shape buttons give a plain arrow, an equilibrium (RAFT, ATRP and ROMP are all equilibria) or a fishhook for one-electron radical steps &ndash; and set the shape for the next arrow you draw.</dd></div>
+            <div class="mol-tip"><dt>Text and +</dt><dd>The text tool drops a label anywhere &ndash; a species name, an "n", a note. The <strong>+</strong> button places a plus in one click, which is what a step-growth scheme needs, since a polyester comes from a diol <em>and</em> a diacid. Both are annotation: they render into every export and are never part of a search.</dd></div>
             <div class="mol-tip"><dt>Red rings</dt><dd>An atom circled in red has more bonds than the element allows. The bar under the canvas says how many and which elements. It is the same limit the reference library itself is checked against.</dd></div>
             <div class="mol-tip"><dt>Escape</dt><dd>Release the current chain without adding another atom.</dd></div>
             <div class="mol-tip"><dt>Select + letter key</dt><dd>Select an atom (or several) with the Select tool, then press a letter to relabel it. N, O, F apply right away; C, S, B briefly wait in case a second letter completes Cl, Si, or Br. Hovering an atom works too when nothing is selected.</dd></div>
@@ -291,10 +299,19 @@
       </button>
     </div>
     <div id="mol-arrow-labels" class="mol-arrow-labels" hidden>
-      <span class="mol-arrow-lab">Over the arrow</span>
-      <input type="text" id="mol-arrow-above" placeholder="reagents &mdash; e.g. AIBN" aria-label="Text above the arrow">
-      <span class="mol-arrow-lab">Under it</span>
-      <input type="text" id="mol-arrow-below" placeholder="conditions &mdash; e.g. 60 &deg;C, toluene" aria-label="Text below the arrow">
+      <span class="mol-arrow-lab" data-for="arrow">Over the arrow</span>
+      <input type="text" id="mol-arrow-above" data-for="arrow" placeholder="reagents &mdash; e.g. AIBN" aria-label="Text above the arrow">
+      <span class="mol-arrow-lab" data-for="arrow">Under it</span>
+      <input type="text" id="mol-arrow-below" data-for="arrow" placeholder="conditions &mdash; e.g. 60 &deg;C, toluene" aria-label="Text below the arrow">
+      <span class="mol-arrow-kind-wrap" id="mol-arrow-kind" data-for="arrow">
+        <button type="button" class="mol-kind-btn active" data-kind="arrow" title="Reaction arrow">&rarr;</button>
+        <button type="button" class="mol-kind-btn" data-kind="equilibrium" title="Equilibrium &mdash; RAFT, ATRP and ROMP are all equilibria">&#8652;</button>
+        <button type="button" class="mol-kind-btn" data-kind="fishhook" title="Fishhook: a single-barbed arrow for one-electron (radical) steps">&#8641;</button>
+      </span>
+      <span id="mol-label-edit" hidden>
+        <span class="mol-arrow-lab">Text</span>
+        <input type="text" id="mol-label-text" placeholder="a species name, n, cat.&hellip;" aria-label="Label text">
+      </span>
     </div>
     <div id="mol-chain-preview" class="mol-chain-preview" hidden>
       <canvas id="mol-chain-canvas" width="960" height="220"></canvas>
@@ -385,7 +402,7 @@
 <script src="polymer-graph.js?v=9"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=158"></script>
+<script src="polymer-search.js?v=161"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
