@@ -18,14 +18,48 @@
 const MAX_BASE64_CHARS = 7_000_000; // ≈ 5 MB decoded
 const ALLOWED_MEDIA = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 
+// The schema used to know two shapes: a repeat unit, or a molecule. A great
+// many real polymer drawings are neither - an end-capped oligomer carries
+// brackets AND real end groups (amine-terminated polyethers, macromonomers,
+// telechelic prepolymers). Asked for "the repeat unit with [*] at the two
+// attachment points", the model had nowhere to put the end groups and returned
+// a hybrid: fragments that were part repeat unit and part end group. So the
+// shape is now something the model states outright, and a telechelic gets to
+// report its backbone and its ends separately instead of merging them.
 const RESULT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["smiles", "confidence", "reason"],
+  required: ["kind", "smiles", "repeat_unit", "end_groups", "repeat_count", "confidence", "reason"],
   properties: {
+    kind: {
+      type: "string",
+      enum: ["repeat_unit", "telechelic", "molecule", "none"],
+      description:
+        "repeat_unit: brackets whose ends are open bonds with nothing beyond them. " +
+        "telechelic: brackets with a subscript AND real end groups drawn outside them. " +
+        "molecule: no brackets. none: nothing could be read.",
+    },
     smiles: {
       anyOf: [{ type: "string" }, { type: "null" }],
-      description: "SMILES for the drawn structure, or null if none could be read",
+      description:
+        "SMILES for the structure as drawn. For repeat_unit, the unit with two [*]. " +
+        "For telechelic, the whole end-capped molecule with NO [*]. Null if nothing was read.",
+    },
+    repeat_unit: {
+      anyOf: [{ type: "string" }, { type: "null" }],
+      description:
+        "Telechelic only: the bracketed unit alone, with exactly two [*] where the " +
+        "bracket crosses the chain. Null for every other kind.",
+    },
+    end_groups: {
+      anyOf: [{ type: "string" }, { type: "null" }],
+      description:
+        "Telechelic only: the groups outside the brackets in words, e.g. " +
+        "\"2-aminopropyl at both ends\". Null for every other kind.",
+    },
+    repeat_count: {
+      anyOf: [{ type: "string" }, { type: "null" }],
+      description: "The bracket subscript exactly as printed, e.g. \"x = 2.5\" or \"n\". Null if none.",
     },
     confidence: { type: "string", enum: ["high", "medium", "low"] },
     reason: {
@@ -39,12 +73,28 @@ const PROMPT = [
   "This image should contain a chemical structure: a skeletal formula from a",
   "paper, textbook, label, or a hand drawing. Read it and return its SMILES.",
   "",
+  "First decide which shape the drawing is, and set `kind` to say so:",
+  "- repeat_unit: brackets whose ends are open bonds with nothing drawn beyond",
+  "  them. Return the unit in `smiles` with [*] at the two attachment points.",
+  "- telechelic: brackets carrying a subscript AND real end groups drawn outside",
+  "  them - an end-capped oligomer, macromonomer or prepolymer, such as an",
+  "  amine- or hydroxyl-terminated polyether. The end groups are chemistry, not",
+  "  chain ends, so do NOT replace them with [*]. Put the whole end-capped",
+  "  molecule in `smiles` with no [*] anywhere, written out at the drawn repeat",
+  "  count (round a fractional subscript to the nearest whole number of units).",
+  "  Put the bracketed unit alone in `repeat_unit` with exactly two [*]. Copy the",
+  "  subscript into `repeat_count` exactly as printed.",
+  "- molecule: no brackets at all. Return it in `smiles`.",
+  "",
   "Rules:",
-  "- If the drawing shows a polymer repeat unit in brackets, return the repeat",
-  "  unit with [*] atoms at the two attachment points.",
+  "- `smiles` must be ONE connected structure. Never join fragments with \".\"",
+  "  unless the image genuinely shows two separate species.",
+  "- Trace the whole chain atom by atom before writing the SMILES, and count the",
+  "  backbone atoms in each repeat. Dropping or adding a CH2 is the most common",
+  "  way these readings go wrong.",
   "- If several structures are shown, return the largest or most central one.",
   "- If you cannot confidently read a structure (blurry, ambiguous, or the",
-  "  image is not chemistry), return smiles: null and say why in reason.",
+  "  image is not chemistry), set kind \"none\", smiles null, and say why in reason.",
   "- Never guess bonds you cannot see; a wrong structure is worse than none.",
 ].join("\n");
 
@@ -133,7 +183,10 @@ export async function onRequestPost(context) {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      model: "claude-opus-4-8",
+      // Reading a skeletal formula off a photograph is the accuracy bottleneck
+      // of this whole feature, so it runs on the newest vision model rather
+      // than whichever one was current when the endpoint was written.
+      model: "claude-opus-5",
       max_tokens: 1024,
       messages: [{
         role: "user",
@@ -179,9 +232,14 @@ export async function onRequestPost(context) {
     return json(502, { ok: false, error: "The model returned an unreadable result. Try again." });
   }
 
+  const str = function (v) { return typeof v === "string" && v.trim() ? v.trim() : null; };
   return json(200, {
     ok: true,
-    smiles: typeof parsed.smiles === "string" ? parsed.smiles : null,
+    kind: str(parsed.kind) || "molecule",
+    smiles: str(parsed.smiles),
+    repeat_unit: str(parsed.repeat_unit),
+    end_groups: str(parsed.end_groups),
+    repeat_count: str(parsed.repeat_count),
     confidence: parsed.confidence || "low",
     reason: parsed.reason || "",
   });

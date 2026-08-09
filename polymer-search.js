@@ -3882,10 +3882,45 @@
     // the whole unit. Returns null if the drawing isn't a clean two-ended unit,
     // so the caller leaves the bracket off. Runs after orientRepeatUnit, which
     // lays the backbone horizontal so pendants fall above/below, not across a bar.
+    // Every atom reachable from one atom, as an id map. A repeat unit has to be
+    // ONE connected fragment: two separate pieces carrying one open end each are
+    // not a repeat unit, however much the pair looks like one on screen.
+    function fragmentOf(startId) {
+      var seen = {}, stack = [startId];
+      seen[startId] = true;
+      while (stack.length) {
+        var id = stack.pop();
+        for (var i = 0; i < bonds.length; i++) {
+          var b = bonds[i], other = null;
+          if (b.a === id) other = b.b;
+          else if (b.b === id) other = b.a;
+          else continue;
+          if (!seen[other]) { seen[other] = true; stack.push(other); }
+        }
+      }
+      return seen;
+    }
+
+    function fragmentCount() {
+      var seen = {}, n = 0;
+      atoms.forEach(function (a) {
+        if (seen[a.id]) return;
+        n++;
+        var f = fragmentOf(a.id);
+        Object.keys(f).forEach(function (k) { seen[k] = true; });
+      });
+      return n;
+    }
+
     function repeatUnitBracket() {
       var stars = atoms.filter(function (a) { return a.el === '*'; });
       var core = atoms.filter(function (a) { return a.el !== '*'; });
       if (stars.length !== 2 || !core.length) return null;
+      // Both open ends must sit on the same fragment. Without this, the image
+      // recogniser returning two disconnected pieces with one "*" each was
+      // bracketed and announced as "a repeat unit with two attachment points",
+      // and then searched as though it were one.
+      if (!fragmentOf(stars[0].id)[stars[1].id]) return null;
       function neighborOf(star) {
         for (var i = 0; i < bonds.length; i++) {
           if (bonds[i].a === star.id) return atomById(bonds[i].b);
@@ -4234,6 +4269,14 @@
           brackets = [rb];
           draw();
           smilesNote('Loaded a repeat unit with two attachment points — press Search this structure. Check the drawing first.');
+          return;
+        }
+        // Naming the actual problem matters most here, because this is where a
+        // misread image lands. "Add neighbor stubs" is useless advice for a
+        // drawing that came back in pieces.
+        var frags = fragmentCount();
+        if (frags > 1) {
+          smilesNote('Loaded, but this came in as ' + frags + ' disconnected pieces, so it is not a repeat unit — those have to be one connected fragment with two open ends. If this came from an image, the reading is probably wrong: check it against your original before searching.');
           return;
         }
         smilesNote('Loaded. Add neighbor stubs and drag the Bracket tool over the repeat unit to search.');
@@ -7242,15 +7285,32 @@
             note((res && res.error) || "Recognition failed. Try again.");
             return;
           }
-          if (!res.smiles) {
+          if (!res.smiles && !res.repeat_unit) {
             note("No structure could be read. " + (res.reason || "Try a sharper, closer photo."));
             return;
           }
+          // An end-capped oligomer - brackets plus real end groups, like an
+          // amine-terminated polyether - is not a repeat unit and is not a
+          // plain molecule. The canvas can only search a repeat unit, so load
+          // the backbone and say plainly that the ends were set aside, rather
+          // than loading a structure that silently drops them.
+          var telechelic = res.kind === "telechelic" && res.repeat_unit;
+          var toLoad = telechelic ? res.repeat_unit : res.smiles;
           var smilesInput = document.getElementById("mol-smiles-input");
           var loadBtn = document.getElementById("mol-smiles-load");
-          if (smilesInput && loadBtn) {
-            smilesInput.value = res.smiles;
+          if (smilesInput && loadBtn && toLoad) {
+            smilesInput.value = toLoad;
             loadBtn.click();
+          }
+          if (telechelic) {
+            note("Read with " + (res.confidence || "unknown") + " confidence as an end-capped oligomer" +
+              (res.repeat_count ? " (" + res.repeat_count + ")" : "") + ", not a plain repeat unit. " +
+              "The canvas holds the repeating backbone, which is what a structure search can match; " +
+              "the end groups" + (res.end_groups ? " (" + res.end_groups + ")" : "") +
+              " are real chemistry and are NOT part of the search." +
+              (res.smiles ? " Whole molecule as read: " + res.smiles : "") +
+              " Check the drawing against your original first.");
+            return;
           }
           note("Read with " + (res.confidence || "unknown") + " confidence: " +
             (res.reason || "") + " Check the drawing carefully before searching.");
