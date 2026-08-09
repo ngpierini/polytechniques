@@ -6204,6 +6204,85 @@ window.POLYMER_DB = [
       source: "Adiprene L 100 product data sheet, Table I typical polymer specifications"
     },
     note: "The other half of every polyurethane in this library: a polyether already capped with toluene diisocyanate, sold by its free isocyanate content rather than by molar mass, and cured to a rubbery solid with a diamine - classically MBCA - to 88-92 Shore A. Available NCO is the whole specification, because it is what the curative is weighed against and it drifts as the drum ages. A range of 3.95-4.30% is a spread of about 8% in equivalent weight, which is why the ratio is recalculated per lot rather than carried over from the last pour. Not drawn: a prepolymer is a polyether block with urethane links and isocyanate ends, not a chain built from one repeating unit, so there is nothing to bracket."
+  },
+  {
+    name: "4-arm PEG-OH, 10 kDa", aka: ["4arm-PEG-OH 10K","4-arm PEG hydroxyl 10k","4arm PEG-OH","tetra-PEG-OH","pentaerythritol ethoxylate 10k"],
+    monomer: "ethylene oxide grown on pentaerythritol", cls: "Ring-opening", cas: null,
+    arch: "star", tags: ["telechelic","star","prepolymer","polyether","hydrogel","biomedical"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "hydroxyl", functionality: 4,
+      equivalentWeight: 2500, mn: 10000,
+      core: "pentaerythritol",
+      spec: "Mn 10,000 total across 4 arms; PDI 1.02-1.05 by MALDI-MS or GPC",
+      source: "Creative PEGWorks, 4-Arm PEG-OH, MW 10k product specification (accessed 2026)"
+    },
+    note: "The parent of every other 4-arm PEG: pentaerythritol ethoxylated on all four hydroxyls, then usually derivatised at the arm ends into something reactive. The number in the name is the whole molecule, so a 10 kDa star has 2,500 g/mol arms - and it is the arm length, not the total, that sets the distance between crosslinks and therefore the mesh size of any gel made from it."
+  },
+  {
+    name: "4-arm PEG-thiol, 10 kDa", aka: ["4arm-PEG-SH 10K","4-arm PEG thiol 10k","4arm PEG-SH","tetra-PEG-SH"],
+    monomer: "ethylene oxide grown on pentaerythritol", cls: "Ring-opening", cas: null,
+    arch: "star", tags: ["telechelic","star","prepolymer","polyether","hydrogel","biomedical"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "thiol", functionality: 4,
+      equivalentWeight: 2500, mn: 10000,
+      core: "pentaerythritol",
+      spec: "Mn 10,000 total across 4 arms; > 90% substitution",
+      source: "JenKem Technology, 4arm PEG Thiol product specification (accessed 2026)"
+    },
+    noScheme: "the arms are ethylene oxide on a pentaerythritol core, but this end group is made by derivatising the hydroxyl star afterwards - deriving a monomer from the repeat unit would show ethylene oxide and claim the end group came straight out of the oxirane",
+    note: "The nucleophilic half of a thiol-Michael or thiol-ene gel, and the usual partner for a 4-arm maleimide or a dithiol-reactive peptide. The substitution figure is not cosmetic: at >90% the average arm count that can actually react is nearer 3.6 than 4, and gelation depends on that effective functionality rather than the nominal one. Thiols also oxidise to disulfide on standing, which consumes ends before the reaction it was weighed for."
+  },
+  {
+    name: "4-arm PEG-maleimide, 20 kDa", aka: ["4arm-PEG-MAL 20K","4-arm PEG maleimide 20k","4arm PEG-MAL","tetra-PEG-maleimide"],
+    monomer: "ethylene oxide grown on pentaerythritol", cls: "Ring-opening", cas: null,
+    arch: "star", tags: ["telechelic","star","prepolymer","polyether","hydrogel","biomedical"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "maleimide", functionality: 4,
+      equivalentWeight: 5000, mn: 20000,
+      core: "pentaerythritol",
+      spec: "Mn 20,000 total across 4 arms; > 90% substitution",
+      source: "JenKem Technology, 4arm PEG Maleimide product specification (accessed 2026)"
+    },
+    noScheme: "the arms are ethylene oxide on a pentaerythritol core, but this end group is made by derivatising the hydroxyl star afterwards - deriving a monomer from the repeat unit would show ethylene oxide and claim the end group came straight out of the oxirane",
+    note: "The electrophilic half of the standard synthetic-ECM hydrogel: maleimide plus a dithiol crosslinker or a cysteine-bearing peptide gels in seconds near neutral pH, which is fast enough to encapsulate cells and fast enough to be difficult to mix. Doubling the star from 10 to 20 kDa doubles the arm to 5,000 g/mol and opens the mesh accordingly. Maleimide hydrolyses to the unreactive maleamic acid above about pH 7.5, so the buffer is part of the recipe."
+  },
+  {
+    name: "4-arm PEG-acrylate, 20 kDa", aka: ["4arm-PEG-ACRL 20K","4-arm PEG acrylate 20k","4arm PEG-acrylate","tetra-PEG-acrylate"],
+    monomer: "ethylene oxide grown on pentaerythritol", cls: "Ring-opening", cas: null,
+    arch: "star", tags: ["telechelic","star","prepolymer","polyether","hydrogel","biomedical"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "acrylate", functionality: 4,
+      equivalentWeight: 5000, mn: 20000,
+      core: "pentaerythritol",
+      spec: "Mn 20,000 total across 4 arms; PDI 1.02-1.05; MeHQ inhibitor ~200 ppm",
+      source: "Creative PEGWorks, 4-Arm PEG-Acrylate, MW 20k product specification (accessed 2026)"
+    },
+    noScheme: "the arms are ethylene oxide on a pentaerythritol core, but this end group is made by derivatising the hydroxyl star afterwards - deriving a monomer from the repeat unit would show ethylene oxide and claim the end group came straight out of the oxirane",
+    note: "Photocrosslinked rather than step-grown: a radical initiator or UV light chains the acrylates together, so the junctions are short polyacrylate runs rather than single bonds and the network is less ideal than a Michael-addition gel of the same arms. It ships with about 200 ppm of MeHQ to stop it curing in the bottle, which has to be accounted for when the same inhibitor quenches the initiator you meant to use."
+  },
+  {
+    name: "4-arm PEG-amine, 2 kDa", aka: ["4arm-PEG-NH2 2K","4-arm PEG amine 2k","4arm PEG-amine","tetra-PEG-amine"],
+    monomer: "ethylene oxide grown on pentaerythritol", cls: "Ring-opening", cas: null,
+    arch: "star", tags: ["telechelic","star","prepolymer","polyether","hydrogel","biomedical"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "amine", functionality: 4,
+      equivalentWeight: 500, mn: 2000,
+      core: "pentaerythritol",
+      spec: "Mn 2,000 total across 4 arms; >= 95% substitution",
+      source: "JenKem Technology, 4arm PEG Amine, Free Amine product specification (accessed 2026)"
+    },
+    noScheme: "the arms are ethylene oxide on a pentaerythritol core, but this end group is made by derivatising the hydroxyl star afterwards - deriving a monomer from the repeat unit would show ethylene oxide and claim the end group came straight out of the oxirane",
+    note: "Short arms - 500 g/mol, roughly eleven oxyethylenes each - so this is a crosslinker rather than a network-forming star: it pairs with a 4-arm NHS ester or an activated acid to give a tight, high-modulus gel. The free amine is the base, not the salt, so it takes up CO2 and water on standing; that is what the substitution specification degrades against."
   }
 ];
 

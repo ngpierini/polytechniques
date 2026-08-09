@@ -2955,14 +2955,17 @@
     function telechelicHtml(p) {
       var t = p && p.telechelic;
       if (!t) return '';
-      var bits = [
-        escapeHtml(t.endGroup) + '-terminated',
-        'f ≈ ' + t.functionality,
-        '<strong>' + t.equivalentWeight + ' g/eq</strong> per end group'
-      ];
-      if (t.mn) bits.push('M<sub>n</sub> ≈ ' + t.mn);
+      // On a star the same number means something more concrete: Mn/f is the
+      // ARM molecular weight, which is what sets the mesh size of a gel made
+      // from it. Saying "per end group" there buries the useful reading.
+      var isStar = p.arch === 'star';
+      var bits = [escapeHtml(t.endGroup) + '-terminated'];
+      bits.push(isStar ? t.functionality + ' arms' + (t.core ? ' on ' + escapeHtml(t.core) : '') : 'f ≈ ' + t.functionality);
+      bits.push('<strong>' + t.equivalentWeight + ' g/eq</strong> ' + (isStar ? 'per arm' : 'per end group'));
+      if (t.mn) bits.push('M<sub>n</sub> ≈ ' + t.mn + (isStar ? ' total' : ''));
       return '<div class="mol-result-note mol-telechelic">' +
-        '<strong>End groups.</strong> ' + bits.join(' &nbsp;&middot;&nbsp; ') +
+        '<strong>' + (isStar ? 'Arms and end groups.' : 'End groups.') + '</strong> ' +
+        bits.join(' &nbsp;&middot;&nbsp; ') +
         '. Supplier figure: ' + escapeHtml(t.spec) + '. ' +
         '<em>' + escapeHtml(t.source) + '</em></div>';
     }

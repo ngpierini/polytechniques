@@ -45,6 +45,7 @@ const VARIANT_FIELDS = ["tacticity", "form"];
 const END_GROUPS = [
   "hydroxyl", "amine", "carboxyl", "epoxy", "isocyanate",
   "vinyl", "methacrylate", "acrylate", "thiol", "silanol", "anhydride",
+  "maleimide", "succinimidyl", "azide", "alkyne", "norbornene",
 ];
 // Recompute the equivalent weight from the figure quoted in `spec`, using the
 // relation that applies to that kind of figure. equivalentWeight and spec are
@@ -227,6 +228,19 @@ function checkEntry(entry, idx, errors) {
       }
       if (typeof t.spec !== "string" || !/\d/.test(t.spec)) {
         errors.push(w + ".spec must quote the figure the supplier actually publishes, with its number");
+      }
+      // A star has to name what it was grown on. Four arms off pentaerythritol
+      // and four off two linked glycerols are different molecules with the same
+      // arm count, and the core is what a reader needs to tell them apart - it
+      // also sets the arm count in the first place.
+      if (entry.arch === "star" && (typeof t.core !== "string" || !t.core.trim())) {
+        errors.push(w + ".core must name the initiator the arms were grown on (pentaerythritol, hexaglycerol, ...) for a star");
+      }
+      if (t.core !== undefined && (typeof t.core !== "string" || !t.core.trim())) {
+        errors.push(w + ".core must be a non-empty string when present");
+      }
+      if (entry.arch === "star" && typeof t.functionality === "number" && t.functionality < 3) {
+        errors.push(w + ": a star needs 3 or more arms; " + t.functionality + " is a linear telechelic");
       }
       // Grade numbers are nominal - Huntsman calls D-400 "about 400" - so this
       // tolerance is deliberately loose. It is here to catch a typo or a decimal
@@ -560,7 +574,8 @@ function main() {
   const TAG_RULES = [
     { tag: "methacrylate", homopolymerOnly: true, when: function (e) { return /methacrylate/i.test(e.name || ""); } },
     { tag: "block", when: function (e) { return e.arch === "block"; } },
-    { tag: "bottlebrush", when: function (e) { return e.arch === "bottlebrush"; } }
+    { tag: "bottlebrush", when: function (e) { return e.arch === "bottlebrush"; } },
+    { tag: "star", when: function (e) { return e.arch === "star"; } }
   ];
   db.forEach(function (entry, idx) {
     if (!entry || !entry.name) return;
