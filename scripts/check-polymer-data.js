@@ -53,6 +53,8 @@ const END_GROUPS = [
 //   hydroxyl value / OH number (mg KOH/g) -> 56100 / value
 //   AHEW (amine)                          -> 2 x value, two N-H per primary amine
 //   weight per epoxide / EEW (g/eq)       -> the value itself
+//   % NCO (isocyanate)                    -> 4201.7 / value, NCO weighing 42.017
+//   eq/kg (a titrated end-group content)  -> 1000 / value
 // Returns null when the spec quotes something else (a functionality range, say),
 // which is not an error - it just cannot be cross-checked this way.
 function specImpliedEW(spec) {
@@ -64,6 +66,10 @@ function specImpliedEW(spec) {
   };
   const ahew = range(/AHEW\D{0,12}([\d.]+)(?:\s*-\s*([\d.]+))?/i);
   if (ahew) return 2 * ahew;
+  const eqkg = range(/([\d.]+)(?:\s*-\s*([\d.]+))?\s*eq\s*\/\s*kg/i);
+  if (eqkg) return 1000 / eqkg;
+  const nco = range(/([\d.]+)(?:\s*-\s*([\d.]+))?\s*%?\s*NCO/i);
+  if (nco) return 4201.7 / nco;
   const oh = range(/([\d.]+)(?:\s*-\s*([\d.]+))?\s*mg\s*KOH/i);
   if (oh) return 56100 / oh;
   const eew = range(/(?:epoxide|EEW)\D{0,12}([\d.]+)(?:\s*-\s*([\d.]+))?/i);

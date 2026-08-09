@@ -6175,6 +6175,35 @@ window.POLYMER_DB = [
       source: "Westlake Epoxy, EPON Resin 828 technical data sheet, issue date 21 June 2021"
     },
     note: "The undiluted difunctional liquid epoxy resin that most epoxy work starts from, and the other half of the stoichiometry the polyetheramines are sold against: at 188 g/eq against JEFFAMINE D-230's AHEW of 60, 32 parts of amine cure 100 parts of resin. Weight per epoxide is a specification, 185-192 g/eq, not a typical value - the batch-to-batch spread is why the ratio is calculated per lot rather than assumed. Not drawn: at n of about 0.14 the liquid resin is mostly the discrete difunctional molecule rather than a chain with a repeat unit, so there is nothing to bracket."
+  },
+  {
+    name: "Silanol-terminated poly(dimethylsiloxane), 1000 cSt", aka: ["DMS-S31","silanol-terminated PDMS","hydroxy-terminated PDMS","silanol terminated polydimethylsiloxane","OH-terminated silicone"],
+    monomer: "octamethylcyclotetrasiloxane (ring-opening), water-terminated", cls: "Ring-opening (silicone)", cas: "70131-67-8",
+    tags: ["telechelic","prepolymer","silicone","sealant","elastomer"],
+    atoms: [{"id":1,"el":"Si"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":1,"b":3,"order":1},{"a":1,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "silanol", functionality: 2,
+      equivalentWeight: 17391,
+      spec: "OH 0.055-0.060 eq/kg (nominal MW 26,000; wt% OH 0.1)",
+      source: "Gelest, DMS-S31 product specifications (accessed 2026)"
+    },
+    note: "The base polymer of a condensation-cure RTV silicone: a Si-OH at each end, which crosslinks with an alkoxysilane and a tin or titanium catalyst, releasing alcohol. Two published numbers here disagree and it is worth knowing which to use - the titrated 0.055-0.060 eq/kg implies about 17,400 g per silanol, while the nominal 26,000 molecular weight would imply 13,000. The titration is what the cure is stoichiometric against, so that is the equivalent weight quoted, and no molar mass is asserted. Terminal silanols condense under mild acid and base alike, which is why these grades have a shelf life that dry storage does not fully solve."
+  },
+  {
+    name: "TDI-terminated polyether prepolymer (Adiprene L 100)", aka: ["Adiprene L 100","ADIPRENE L100","TDI-terminated urethane prepolymer","isocyanate prepolymer","castable urethane prepolymer"],
+    monomer: "polyether polyol capped with toluene diisocyanate", cls: "Step-growth (polyester)", cas: null,
+    tags: ["telechelic","prepolymer","polyurethane","elastomer","engineering"],
+    needsStructure: true,
+    atoms: [],
+    bonds: [],
+    telechelic: {
+      endGroup: "isocyanate", functionality: 2,
+      equivalentWeight: 1019,
+      spec: "available isocyanate content 3.95-4.30 % NCO",
+      source: "Adiprene L 100 product data sheet, Table I typical polymer specifications"
+    },
+    note: "The other half of every polyurethane in this library: a polyether already capped with toluene diisocyanate, sold by its free isocyanate content rather than by molar mass, and cured to a rubbery solid with a diamine - classically MBCA - to 88-92 Shore A. Available NCO is the whole specification, because it is what the curative is weighed against and it drifts as the drum ages. A range of 3.95-4.30% is a spread of about 8% in equivalent weight, which is why the ratio is recalculated per lot rather than carried over from the last pour. Not drawn: a prepolymer is a polyether block with urethane links and isocyanate ends, not a chain built from one repeating unit, so there is nothing to bracket."
   }
 ];
 
