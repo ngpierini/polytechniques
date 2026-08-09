@@ -2559,21 +2559,30 @@
       if (pubEl && resultsEl && resultsEl.nextSibling !== pubEl) resultsEl.parentNode.insertBefore(pubEl, resultsEl.nextSibling);
       renderPublications(null);   // structure-search paths refill this after
     }
-    function renderResults(list) {
+    function renderResults(list, schemeFor) {
       var resultsEl = document.getElementById('mol-results');
       if (!resultsEl) return;
       clearIdentification();
       pendingScheme = null;
       if (!list.length) { resultsEl.innerHTML = '<p class="guide-note">No matches.</p>'; return; }
-      // The scheme goes with a single confident answer. On a multi-hit result
-      // (the four polypropylenes, both polybutadienes) they share one repeat
-      // unit and therefore one monomer, so it still belongs to the set - but
-      // only draw it when the whole set agrees on a mechanism class.
-      var scheme = '';
-      var sameCls = list.every(function (p) { return p.cls === list[0].cls; });
-      if (sameCls) scheme = reactionSchemeHtml(list[0]);
+      // Which polymer the scheme belongs to is the CALLER's call, because only
+      // the caller knows how confident the answer is. An exact structure match
+      // is one polymer. A name search that resolves to one entry is one
+      // polymer. Browsing a category is a list, and drawing a scheme for
+      // whichever entry sorted first would dress an arbitrary pick up as the
+      // answer. Guessing from the list alone got this wrong in both
+      // directions - a name search for "polystyrene" returns 23 entries across
+      // 7 mechanism classes and showed nothing at all.
+      var scheme = schemeFor ? reactionSchemeHtml(schemeFor) : '';
       resultsEl.innerHTML = scheme + list.map(polymerCard).join('');
       drawPendingScheme();
+    }
+
+    // For a structure match: the hits share a repeat unit, so they share a
+    // monomer - but only claim that when they also agree on the mechanism.
+    function schemeCandidate(list) {
+      if (!list || !list.length) return null;
+      return list.every(function (p) { return p.cls === list[0].cls; }) ? list[0] : null;
     }
 
     // ---------- RDKit-powered graph matching ----------
@@ -4964,7 +4973,7 @@
       });
       if (exact.length) {
         statusEl.textContent = 'Exact match found:' + tacticityNote(exact);
-        renderResults(exact);
+        renderResults(exact, schemeCandidate(exact));
         renderPublications(exact[0]);
         return;
       }
@@ -5003,7 +5012,7 @@
           } else {
             statusEl.textContent = 'Matched on skeleton: ' + named.join(', ') + '.';
           }
-          renderResults(blind);
+          renderResults(blind, schemeCandidate(blind));
           renderPublications(blind[0]);
           return;
         }
@@ -5785,8 +5794,8 @@
     // A category answer is a list, not a ranking, so it pages instead of being
     // silently cut to the first twenty the way a name search can afford to be.
     var FACET_PAGE = 24;
-    function renderFacetResults(list, statusEl, message) {
-      renderResults(list.slice(0, FACET_PAGE));
+    function renderFacetResults(list, statusEl, message, schemeFor) {
+      renderResults(list.slice(0, FACET_PAGE), schemeFor);
       if (statusEl) statusEl.textContent = message;
       if (list.length > FACET_PAGE) renderMore(list.slice(FACET_PAGE), 'polymers');
     }
@@ -5972,7 +5981,10 @@
           else if (added && named.length) msg = named.length + ' named that, and ' + added + ' more in that category:';
           else if (added) msg = matches.length + ' ' + (matches.length === 1 ? 'polymer is' : 'polymers are') + ' in that category:';
           else msg = matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ':';
-          renderFacetResults(matches, statusEl, msg);
+          // One entry answering to the typed name is a confident answer; two
+          // polymers sharing an abbreviation (PPO, PEA) is not, and a category
+          // query is a list rather than an answer at all.
+          renderFacetResults(matches, statusEl, msg, (exact.length === 1 && !(facet && facet.exact)) ? exact[0].p : null);
         } else if (facet) {
           renderFacetResults(facet.list, statusEl, facet.list.length + ' ' +
             (facet.list.length === 1 ? 'polymer is' : 'polymers are') + ' ' + facetLabel(facet.terms.join(' + ')) + ':');
