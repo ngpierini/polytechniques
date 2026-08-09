@@ -2842,9 +2842,8 @@ window.POLYMER_DB = [
     monomer: "bisphenol A dianhydride + m-phenylenediamine", cls: "Step-growth (polyamide)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "The polyimide that melts. Ether links and a bisphenol A unit between the imide rings give enough chain flexibility to injection-mould and extrude, which a fully aromatic polyimide cannot do, while keeping a glass transition near 217 C and inherent flame resistance. It is amber, transparent, and the usual choice for sterilisable medical parts and aircraft interiors. Not drawn: the repeat is large and reported with several diamine isomers."
+    atoms: [{"id":"S0","el":"*"},{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"O"},{"id":11,"el":"N"},{"id":12,"el":"O"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"O"},{"id":21,"el":"C"},{"id":22,"el":"O"},{"id":23,"el":"N"},{"id":24,"el":"O"},{"id":25,"el":"C"},{"id":26,"el":"C"},{"id":27,"el":"C"},{"id":28,"el":"C"},{"id":29,"el":"C"},{"id":30,"el":"C"},{"id":31,"el":"C"},{"id":32,"el":"C"},{"id":33,"el":"C"},{"id":34,"el":"C"},{"id":35,"el":"C"},{"id":36,"el":"C"},{"id":37,"el":"C"},{"id":38,"el":"C"},{"id":39,"el":"C"},{"id":40,"el":"C"},{"id":41,"el":"C"},{"id":42,"el":"C"},{"id":43,"el":"C"},{"id":44,"el":"C"},{"id":45,"el":"C"},{"id":"S1","el":"*"}], bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":2},{"a":6,"b":1,"order":1},{"a":1,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":11,"order":1},{"a":11,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":9,"b":2,"order":1},{"a":4,"b":12,"order":1},{"a":13,"b":14,"order":2},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":2},{"a":18,"b":13,"order":1},{"a":13,"b":19,"order":1},{"a":19,"b":20,"order":2},{"a":19,"b":23,"order":1},{"a":23,"b":21,"order":1},{"a":21,"b":22,"order":2},{"a":21,"b":14,"order":1},{"a":16,"b":24,"order":1},{"a":25,"b":26,"order":2},{"a":26,"b":27,"order":1},{"a":27,"b":28,"order":2},{"a":28,"b":29,"order":1},{"a":29,"b":30,"order":2},{"a":30,"b":25,"order":1},{"a":31,"b":32,"order":2},{"a":32,"b":33,"order":1},{"a":33,"b":34,"order":2},{"a":34,"b":35,"order":1},{"a":35,"b":36,"order":2},{"a":36,"b":31,"order":1},{"a":12,"b":25,"order":1},{"a":28,"b":37,"order":1},{"a":37,"b":38,"order":1},{"a":37,"b":39,"order":1},{"a":37,"b":31,"order":1},{"a":34,"b":24,"order":1},{"a":40,"b":41,"order":2},{"a":41,"b":42,"order":1},{"a":42,"b":43,"order":2},{"a":43,"b":44,"order":1},{"a":44,"b":45,"order":2},{"a":45,"b":40,"order":1},{"a":23,"b":40,"order":1},{"a":"S0","b":11,"order":1},{"a":42,"b":"S1","order":1}],
+    note: "One repeat is a whole bisphenol A dianhydride residue joined to one m-phenylenediamine residue, which is why it is so large: two phthalimide rings, the two ether oxygens that give the \"ether\" in the name, the bisphenol A bridge, and a meta-linked benzene. The ether links and the meta substitution are what make it processable at all - a fully para, ether-free polyimide of this kind does not melt below its decomposition point, and Ultem trades a little heat resistance for the ability to be injection moulded."
   },
   {
     name: "Polyphenylsulfone", aka: ["PPSU", "Radel", "poly(phenyl sulfone)"],
@@ -4188,12 +4187,12 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(ethylene glycol) dimethyl ether", aka: ["PEGDME", "glyme", "poly(ethylene glycol) dimethyl ether"],
+    form: "methyl-capped at both ends",
     monomer: "ethylene oxide, methyl-capped at both ends", cls: "Ring-opening", cas: null,
     tags: ["water-soluble", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "PEG with both hydroxyls capped as methyl ethers, which removes the hydrogen bonding and with it most of the viscosity, the reactivity and the tendency to crystallise. It is used where the ether oxygens are wanted for solvating lithium ions but the hydroxyls would react with the electrode - a common requirement in battery electrolytes. Not drawn: it is PEG's repeat with defined end groups, and the end groups are the point."
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}], bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    note: "The repeat unit is oxyethylene, identical to poly(ethylene oxide), because that is exactly what this is - the difference is entirely at the two chain ends, where methyl ethers replace the hydroxyls. That single change removes every hydrogen-bond donor and all the reactivity, which is why the material is used as an inert, high-boiling solvent and as an electrolyte carrier rather than as a building block. No repeat unit can show an end group."
   },
   {
     name: "Poly(2-hydroxyethyl methacrylate-co-methyl methacrylate)", aka: ["HEMA-MMA copolymer", "poly(HEMA-co-MMA)"],
@@ -4392,9 +4391,8 @@ window.POLYMER_DB = [
     monomer: "dicyclopentadiene", cls: "Ring-opening", cas: null,
     tags: ["engineering", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "A metathesis thermoset: dicyclopentadiene has one strained norbornene ring that opens and a second cyclopentene that crosslinks, so a low-viscosity liquid becomes a rigid crosslinked solid in minutes at modest temperature. That lets very large parts - truck panels, wind turbine components - be moulded at low pressure in cheap tooling. It is also the matrix in which microencapsulated self-healing was first demonstrated. Not drawn: a network with no repeat unit."
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"}], bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":3,"order":1},{"a":5,"b":"S1","order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":2},{"a":9,"b":10,"order":1},{"a":10,"b":6,"order":1}],
+    note: "ROMP opens the strained norbornene double bond of dicyclopentadiene and leaves the cyclopentene ring untouched - both are drawn here, the opened one as the backbone alkene and the survivor as the pendant ring. That surviving double bond is the whole point: it crosslinks during or after moulding, which turns what would be a linear ROMP polymer into a tough thermoset, and is why the monomer is injected as a liquid and cures in the mould."
   },
   {
     name: "Polyoctenamer", aka: ["TOR", "Vestenamer", "poly(cyclooctene)", "trans-polyoctenamer"],
@@ -5835,9 +5833,8 @@ window.POLYMER_DB = [
     monomer: "glycerol or ribitol phosphate", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "polyelectrolyte", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "A polyphosphate ester threaded through the wall of Gram-positive bacteria, and the source of the negative charge that makes those organisms take up the Gram stain. It manages the wall's cation supply and is a principal target of the immune system. Undrawn: the sugar and alanine substituents vary between species and with growth conditions."
+    atoms: [{"id":"S0","el":"*"},{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"P"},{"id":8,"el":"O"},{"id":9,"el":"O"},{"id":"S1","el":"*"}], bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":3,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":7,"b":"S1","order":1}],
+    note: "The wall polymer of Gram-positive bacteria, and structurally a polyester of phosphoric acid rather than a carbon-backbone polymer: glycerol linked 1,3 through phosphodiester bridges. Every repeat carries a phosphate, so the chain is strongly polyanionic at physiological pH, which is what binds the divalent cations the cell wall depends on and what makes these polymers the dominant surface antigen. The free 2-hydroxyl shown here is where D-alanine and sugar substituents hang in the real material."
   },
   {
     name: "Lipopolysaccharide", aka: ["LPS", "endotoxin", "lipopolysaccharide"],
