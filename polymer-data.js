@@ -37,6 +37,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "solution in ethylbenzene, 90–180 °C",
+      process: "continuous solution",
+      detail: "Continuous solution polymerisation is the main commercial route, with 2–30% ethylbenzene as solvent for viscosity and molar-mass control. Reactors run at successively increasing temperatures, reaching 180 °C in the last. The first reactor is at 90 °C when an initiator is used, or 120 °C for thermal self-initiated polymerisation. Final conversion is 60–90%. Suspension is also used; emulsion matters for ABS but not for polystyrene itself.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14b"
+    },
     name: "Polystyrene", aka: ["PS"], monomer: "Styrene", cls: "Addition (vinyl)", cas: "9003-53-6",
     tg: "100 °C", tags: ["commodity", "packaging"],
     note: "Ordinary atactic PS is amorphous, so only Tg applies; the 250 °C melting point in Odian's Table 1-3 is for the crystalline (stereoregular) form.",
@@ -47,6 +53,12 @@ window.POLYMER_DB = [
       { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "suspension, monomer-soluble initiator, ~50 °C",
+      process: "suspension, batch",
+      detail: "Most PVC is made by suspension polymerisation in a batch reactor. A typical charge is 180 parts water to 100 parts vinyl chloride, with under one part dispersant, a monomer-soluble initiator, and trichloroethylene as chain-transfer agent. The closed system is heated to about 50 °C and held there, the pressure rising to roughly 0.5 MPa; excess monomer is vented at about 0.05 MPa, corresponding to about 90% conversion.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14c-1"
+    },
     name: "Poly(vinyl chloride)", aka: ["PVC"], monomer: "Vinyl chloride", cls: "Addition (vinyl)",
     cas: "9002-86-2", tg: "80 °C", tags: ["commodity", "vinyl-halide", "packaging"],
     note: "Commercial PVC is nearly amorphous (only slight crystallinity), so it is used for its Tg; the 273 °C melting point in Odian's Table 1-3 is for the crystalline form.",
@@ -92,6 +104,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "solution or suspension",
+      process: "solution / suspension",
+      detail: "The important commercial processes are solution and suspension polymerisation. Almost everything made containing acrylonitrile is a copolymer rather than the homopolymer. Odian gives no temperature or initiator for PAN specifically, so none is stated here.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14d-2"
+    },
     name: "Polyacrylonitrile", aka: ["PAN"], monomer: "Acrylonitrile", cls: "Addition (vinyl)",
     cas: "25014-41-9", tg: "95 °C", tags: ["fiber", "engineering"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "N" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -104,6 +122,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "solution, suspension or emulsion",
+      process: "solution / suspension / emulsion",
+      detail: "Polymerised by solution, suspension and emulsion processes. Odian names the processes without giving a temperature or an initiator for PMMA specifically, so none is stated here.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14d-1"
+    },
     name: "Poly(methyl methacrylate)", aka: ["PMMA", "acrylic glass", "Plexiglass"], monomer: "Methyl methacrylate",
     cls: "Addition (methacrylate)", cas: "9011-14-7", tg: "105 °C", tags: ["acrylic", "methacrylate", "engineering"],
     note: "Commercial PMMA is atactic and amorphous (Tg only); the 220 °C melting point in Odian's Table 1-3 refers to the crystalline stereoregular form.",
@@ -227,6 +251,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "nylon salt, 210 → 275 °C, 1.7 MPa steam",
+      process: "melt, step-growth",
+      detail: "Hexamethylenediamine and adipic acid are first combined as a 1:1 ammonium salt — the \"nylon salt\" — in 50% aqueous solution, which is how the stoichiometric balance a step polymerisation demands is obtained; pH adjustment fine-tunes it. The solution is concentrated above 100 °C to a 60%-or-higher slurry, then polymerised at about 210 °C under roughly 1.7 MPa (250 psi) of steam, which also excludes oxygen. Temperature is raised to 275 °C, then pressure is dropped to atmospheric to drive the equilibrium over. No external acid catalyst is used, unlike polyester synthesis.",
+      source: "Odian, Principles of Polymerization (4th ed.), §2-8"
+    },
     name: "Nylon 6,6", aka: ["Polyhexamethylene adipamide", "PA66"], monomer: "Hexamethylenediamine + adipic acid",
     cls: "Step-growth (polyamide)", cas: "32131-17-2", tg: "57 °C", tm: "265 °C", tags: ["polyamide", "engineering", "fiber"],
     atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
@@ -238,6 +268,12 @@ window.POLYMER_DB = [
       { a: 15, b: 16, order: 2 }, { a: 15, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "two stages, 150–210 °C then 270–280 °C in vacuo",
+      process: "melt, step-growth",
+      detail: "A two-stage process from either dimethyl terephthalate or terephthalic acid with ethylene glycol. The first stage runs at 150–210 °C, distilling off methanol (or water), and is a solution polymerisation; the second raises the temperature to 270–280 °C under 0.5–1 torr and is a melt polymerisation, since that is above the polymer's melting point. The vacuum is what matters: without complete removal of ethylene glycol the equilibrium settles near p < 0.7 and the product is very low molar mass. A dual catalyst is used — a manganese, zinc, calcium, cobalt or magnesium acetate first, then antimony(III) oxide, which is ineffective alone in the first stage.",
+      source: "Odian, Principles of Polymerization (4th ed.), §2-8d"
+    },
     name: "Poly(ethylene terephthalate)", aka: ["PET", "PETE"], monomer: "Ethylene glycol + terephthalic acid",
     cls: "Step-growth (polyester)", cas: "25038-59-9", tg: "75 °C", tm: "260 °C", tags: ["polyester", "commodity", "packaging", "fiber"],
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "O" },
@@ -4024,6 +4060,12 @@ window.POLYMER_DB = [
     note: "A polyacetal that alternates an acetal oxygen pair with an ethylene unit, so it sits between polyoxymethylene and poly(ethylene oxide) and shares the weakness of both acetals: the chain unzips back to monomer under acid or heat. That reversibility has become the point rather than the flaw - it polymerises in place inside a lithium cell to form a solid electrolyte, and can be depolymerised and repolymerised, which is a rare example of a genuinely chemically recyclable backbone."
   },
   {
+    conditions: {
+      summary: "Ziegler–Natta or Phillips catalyst, low pressure",
+      process: "coordination",
+      detail: "Made with traditional Ziegler–Natta or Phillips-type initiators rather than radically, which is why it is also called low-pressure polyethylene. The branching that results is far lower than the radical route gives — 0.5–3 versus 15–30 methyl groups per 500 monomer units — and that alone accounts for the higher crystallinity, density and melting point.",
+      source: "Odian, Principles of Polymerization (4th ed.), §8-11b"
+    },
     name: "High-density polyethylene", aka: ["HDPE", "PE-HD", "high density polyethylene"],
     monomer: "ethylene (coordination catalysis)", cls: "Addition (vinyl)", cas: null,
     tags: ["commodity", "packaging", "specialty"],
@@ -4034,6 +4076,12 @@ window.POLYMER_DB = [
     note: "Polyethylene made with almost no branching, so the chains pack into a crystal that fills about seventy percent of the solid - hence the density, the stiffness and the opacity. The absence of branches is the whole difference from LDPE and it comes entirely from the catalyst, not the monomer. Milk bottles, pipe and chopping boards. Its repeat unit IS polyethylene's, so a structure search finds this alongside the other grades; the branching is what differs and no repeat unit can show it."
   },
   {
+    conditions: {
+      summary: "trace O₂ + peroxide, 140–180 °C, 120–300 MPa",
+      process: "bulk, continuous",
+      detail: "Radical polymerisation at 120–300 MPa in a tubular or autoclave reactor, above the melting point of the polymer. Trace oxygen (about 300 ppm) is the usual initiator, often with an alkyl or acyl peroxide or hydroperoxide. The initial temperature is 140–180 °C, peaking at 300–325 °C along the reactor. Conversion is held to 15–30% per pass; the long- and short-chain branching this route produces is what makes the polymer low-density.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14a"
+    },
     name: "Low-density polyethylene", aka: ["LDPE", "PE-LD", "low density polyethylene"],
     monomer: "ethylene (free-radical, high pressure)", cls: "Addition (vinyl)", cas: null,
     tags: ["commodity", "packaging", "specialty"],

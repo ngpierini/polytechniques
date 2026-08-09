@@ -5199,7 +5199,8 @@
         arrows.push({
           x1: placed.third + 24, y1: midY,
           x2: canvas.width - placed.third - 24, y2: midY,
-          above: '', below: SCHEME_LABEL[job.monomer.kind] || 'polymerisation',
+          above: (job.polymer.conditions && job.polymer.conditions.summary) || '',
+          below: SCHEME_LABEL[job.monomer.kind] || 'polymerisation',
           kind: 'arrow'
         });
         labels.push({ x: (canvas.width) / 2, y: midY + 24, text: 'n' });
@@ -5315,24 +5316,41 @@
         pctx.lineTo(bx - 9, ay + 4.5);
         pctx.closePath();
         pctx.fill();
-        pctx.font = '600 12px system-ui, sans-serif';
+        // Sourced conditions ride above the arrow where a scheme puts them;
+        // the mechanism drops below it. Where no conditions are recorded the
+        // mechanism stays on top and the arrow says no more than it did.
+        var cond = job.polymer.conditions;
         pctx.textAlign = 'center';
-        pctx.textBaseline = 'bottom';
-        pctx.fillText(SCHEME_LABEL[job.monomer.kind] || 'polymerisation', (ax + bx) / 2, ay - 7);
-        pctx.font = '11px system-ui, sans-serif';
-        pctx.textBaseline = 'top';
-        pctx.fillText('n', (ax + bx) / 2, ay + 6);
+        if (cond) {
+          pctx.font = '600 12px system-ui, sans-serif';
+          pctx.textBaseline = 'bottom';
+          pctx.fillText(cond.summary, (ax + bx) / 2, ay - 8);
+          pctx.font = '11px system-ui, sans-serif';
+          pctx.textBaseline = 'top';
+          pctx.fillText(SCHEME_LABEL[job.monomer.kind] || 'polymerisation', (ax + bx) / 2, ay + 7);
+        } else {
+          pctx.font = '600 12px system-ui, sans-serif';
+          pctx.textBaseline = 'bottom';
+          pctx.fillText(SCHEME_LABEL[job.monomer.kind] || 'polymerisation', (ax + bx) / 2, ay - 7);
+          pctx.font = '11px system-ui, sans-serif';
+          pctx.textBaseline = 'top';
+          pctx.fillText('n', (ax + bx) / 2, ay + 6);
+        }
         pctx.restore();
 
         if (note) {
           var extra = job.monomer.kind === 'diene'
             ? ' The monomer carries no geometry of its own: the same butadiene gives the cis or the trans polymer depending on the catalyst, which is why both are separate entries here.'
             : '';
+          var condHtml = cond
+            ? ' <span class="mol-cond"><strong>How it is run (' + escapeHtml(cond.process) + ').</strong> ' +
+              escapeHtml(cond.detail) + ' <em>' + escapeHtml(cond.source) + '</em></span>'
+            : '';
           note.innerHTML = escapeHtml(job.polymer.monomer || 'The monomer') +
             ' polymerises to this repeat unit. The structure on the left is derived from the one on the right and checked by rebuilding the polymer from it.' +
             extra +
-            ' <strong>Conditions are not in this library</strong> &mdash; no initiator, catalyst or temperature is recorded for any entry, so the arrow names the mechanism only. ' +
-            '<a href="mechanisms.html">Mechanisms</a> covers how these polymerisations are actually run.';
+            (cond ? '' : ' <strong>No conditions are recorded for this polymer.</strong> Only a handful of entries carry a sourced procedure; the arrow names the mechanism and nothing more for the rest. ') +
+            '<a href="mechanisms.html">Mechanisms</a> covers how these polymerisations are actually run.' + condHtml;
         }
       }).catch(function () { if (note) note.textContent = ''; });
     }

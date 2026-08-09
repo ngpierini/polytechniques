@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=76">
+<link rel="stylesheet" href="style.css?v=77">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -76,7 +76,7 @@
         <strong>Asking a generic question.</strong> "Contains fragment" matches exactly what you drew &mdash; those elements, those bond orders. Some questions can't be drawn at all: <em>any</em> halogen, <em>any</em> aromatic ring, an ester however it happens to be substituted. Type a <strong>SMARTS</strong> pattern for those, or press one of the examples under the box to see the notation next to its answer. <code>[F,Cl,Br,I]</code> finds every halogenated polymer in the library; <code>[CX3](=O)[OX2H0]</code> finds every ester, including formates, because SMARTS counts implicit hydrogens.
       </p>
       <p class="guide-note">
-        <strong>How it is made.</strong> Where a match's monomer can be recovered from its repeat unit, the result shows the polymerisation as a scheme: monomer, arrow, repeat unit. Addition and ring-opening are isomerisations &ndash; the repeat unit is the monomer with one bond moved &ndash; so the move can be reversed, and every derived monomer is checked by rebuilding the polymer from it before it is drawn. Around 230 entries qualify. Step-growth never does: a polyester repeat unit came from a diol <em>and</em> a diacid, and one unit cannot say which pair, so no scheme is drawn rather than a guessed one. <strong>Reaction conditions are not in this library</strong> &ndash; no initiator, catalyst, solvent or temperature is recorded for any entry, so the arrow names the mechanism and nothing more. <a href="mechanisms.html">Mechanisms</a> is where the actual chemistry of running these polymerisations lives.
+        <strong>How it is made.</strong> Where a match's monomer can be recovered from its repeat unit, the result shows the polymerisation as a scheme: monomer, arrow, repeat unit. Addition and ring-opening are isomerisations &ndash; the repeat unit is the monomer with one bond moved &ndash; so the move can be reversed, and every derived monomer is checked by rebuilding the polymer from it before it is drawn. Around 230 entries qualify. Step-growth never does: a polyester repeat unit came from a diol <em>and</em> a diacid, and one unit cannot say which pair, so no scheme is drawn rather than a guessed one. <strong>Conditions are recorded for eight polymers only</strong>, each with the section of Odian it was read from printed beside it &ndash; low- and high-density polyethylene, polystyrene, PVC, PMMA, polyacrylonitrile, nylon 6,6 and PET. Where a source gives only the process and no numbers, that is all the entry says. For every other polymer the arrow names the mechanism and nothing more, because nothing more is known to this library. Conditions without a citation are rejected by the data check, so the set can only grow by someone reading a reference. <a href="mechanisms.html">Mechanisms</a> is where the actual chemistry of running these polymerisations lives.
       </p>
       <p class="guide-note">
         <strong>Draw a monomer instead.</strong> The search runs both ways. Draw a repeat unit and it names the polymer; draw a <em>monomer</em> &ndash; styrene, caprolactam, methyl methacrylate &ndash; and it names what that monomer polymerises to, because the same verified derivation that draws the scheme is indexed in reverse. Butadiene returns both 1,4-polybutadienes, since one monomer gives either geometry and the catalyst decides. The bonds that actually change are shaded in the scheme, on both sides of the arrow: the alkene that opens, or the ring bond that breaks.
@@ -416,12 +416,12 @@
   <p>Reagent data and lab guidance are references for convenience. Always verify against your reagent's COA and your institution's safety protocols.</p>
 </footer>
 
-<script src="polymer-data.js?v=36"></script>
+<script src="polymer-data.js?v=37"></script>
 <script src="polymer-xref.js?v=1"></script>
 <script src="polymer-graph.js?v=10"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=166"></script>
+<script src="polymer-search.js?v=167"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

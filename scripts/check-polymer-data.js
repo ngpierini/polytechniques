@@ -131,6 +131,31 @@ function checkEntry(entry, idx, errors) {
   if (entry.tacticity !== undefined && TACTICITIES.indexOf(entry.tacticity) === -1) {
     errors.push(where + ": \"tacticity\" must be one of " + TACTICITIES.join(", ") + " (got " + JSON.stringify(entry.tacticity) + ")");
   }
+  // Reaction conditions are the one field on this site that states how a real
+  // procedure is run, and the only safeguard against it drifting into
+  // plausible-sounding invention is that every entry names where it came from.
+  // A condition without a citation is not allowed to exist.
+  if (entry.conditions !== undefined) {
+    const c = entry.conditions;
+    if (!c || typeof c !== "object") {
+      errors.push(where + ": \"conditions\" must be an object");
+    } else {
+      ["summary", "process", "detail", "source"].forEach(function (k) {
+        if (typeof c[k] !== "string" || !c[k].trim()) {
+          errors.push(where + ": conditions." + k + " must be a non-empty string");
+        }
+      });
+      if (typeof c.source === "string" && !/§|\bp\.\s*\d|\bch\b|\bdoi\b|\d{4}/i.test(c.source)) {
+        errors.push(where + ": conditions.source must point somewhere specific - a section, page, year or DOI - not just a book title");
+      }
+      if (typeof c.detail === "string" && c.detail.trim().length < 60) {
+        errors.push(where + ": conditions.detail is too short to be a real procedure note");
+      }
+      if (typeof c.summary === "string" && c.summary.length > 60) {
+        errors.push(where + ": conditions.summary is what sits over the arrow; keep it under 60 characters");
+      }
+    }
+  }
   if (entry.noScheme !== undefined && (typeof entry.noScheme !== "string" || entry.noScheme.trim().length < 20)) {
     errors.push(where + ": \"noScheme\" must be a sentence explaining why the monomer cannot be derived, not a bare flag");
   }
