@@ -227,6 +227,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "cationic; the temperature sets the molar mass",
+      process: "cationic",
+      detail: "Molar mass is controlled primarily by the choice of polymerisation temperature, so one monomer covers products from oil additives to rubbery solids. Polymerisation at −40 to 10 °C with AlCl₃ — BF₃ or TiCl₄ in some processes — gives the lower-molar-mass grades, viscous liquids through tacky semisolids up to Mv of 5–10 × 10⁴, used for sealants and caulking. The high-molar-mass material, Mv above 10⁵, is a rubbery solid used for uncured rubber products and as an impact modifier, and is made at considerably lower temperatures, −100 to −90 °C, by a process similar to the butyl rubber one. The polybutenes are a separate product below Mn 3000: copolymers of about 80% isobutylene with 20% other butenes, mostly 1-butene, going into adhesives, caulks, lubricants, plasticisers and viscosity additives for motor oils and transmission fluids.",
+      source: "Odian, Principles of Polymerization (4th ed.), §5-2i-1"
+    },
     name: "Polyisobutylene", aka: ["PIB", "butyl rubber base"], monomer: "Isobutylene", cls: "Addition (vinyl)",
     cas: "9003-27-4", tg: "-70 °C", tags: ["elastomer"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -727,6 +733,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "oxidative coupling: O₂ and a Cu–amine catalyst, 25–50 °C",
+      process: "oxidative coupling",
+      detail: "Made by bubbling oxygen through a solution of the 2,6-disubstituted phenol in an organic solvent, typically toluene, containing a catalytic complex of a cuprous salt and an amine; amine complexes of cobalt and manganese salts also work. The amine — diethylamine, morpholine, pyridine or tetramethylethylenediamine — solubilises the metal salt and raises the pH so as to lower the oxidation potential of the phenol, and an amine that forms an insoluble metal complex stops the polymerisation entirely. Water is the by-product and hydrolyses some copper–amine catalysts, so a desiccant such as anhydrous magnesium sulfate or 4 Å molecular sieve is kept in the mixture. It runs rapidly under mild conditions, 25–50 °C. The competing reaction is dimerisation rather than polymerisation: a higher amine-to-cuprous ratio and a lower temperature favour carbon–oxygen coupling and so the polymer, while higher temperatures and lower ratios favour carbon–carbon coupling and the dimer. Phenols carrying a bulky ortho substituent such as isopropyl or t-butyl dimerise instead of polymerising. The reaction is terminated by sweeping with nitrogen, and the catalyst removed with an aqueous chelating agent.",
+      source: "Odian, Principles of Polymerization (4th ed.), §2-14b"
+    },
     name: "Poly(2,6-dimethyl-1,4-phenylene oxide)", aka: ["PPO", "PPE", "poly(phenylene oxide)"], monomer: "2,6-Dimethylphenol",
     cas: "25134-01-4", tg: "210 °C", tags: ["engineering", "polyether"],
     note: "Oxidative-coupling polymer; usually blended with polystyrene (Noryl).",
@@ -746,6 +758,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 3 }]
   },
   {
+    conditions: {
+      summary: "difluorides in diphenyl sulfone at 200–350 °C",
+      process: "nucleophilic aromatic substitution, step-growth",
+      detail: "The polyketones are made by the same nucleophilic aromatic substitution as the polysulfones, the carbonyl rather than the sulfone activating the aryl halide, but typically from aromatic difluorides in diphenyl sulfone at 200–350 °C. The much higher temperature is not about reaction rate: it is there to keep the polymer from precipitating prematurely, which would cap the molar mass. Phase-transfer catalysts such as crown ethers or quaternary ammonium salts are one route to milder conditions, complexing the phenolate counterion so as to raise both its nucleophilicity and its solubility in a less polar medium.",
+      source: "Odian, Principles of Polymerization (4th ed.), §2-14c"
+    },
     name: "Poly(ether ether ketone)", aka: ["PEEK"], monomer: "4,4'-Difluorobenzophenone + hydroquinone",
     cas: "31694-16-3", tg: "143 °C", tm: "343 °C", tags: ["engineering"],
     note: "High-performance semicrystalline thermoplastic; three aryl rings per repeat.",
@@ -805,6 +823,12 @@ window.POLYMER_DB = [
       { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 11, order: 1 }, { a: 13, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "nucleophilic substitution in a polar aprotic solvent",
+      process: "nucleophilic aromatic substitution, step-growth",
+      detail: "Made by the same route as the other polyethersulfones: nucleophilic aromatic substitution between an aromatic dihalide and a bisphenolate salt, with the sulfone group activating a halide that would otherwise be unreactive. Aromatic dichlorides in a polar aprotic solvent — 1-methyl-2-pyrrolidinone or dimethyl sulfoxide — at 130–160 °C, a temperature set mainly by the poor solubility of the diphenolate salt rather than by the reaction rate. The system must be dry and oxygen-free: water hydrolyses the phenolate and unbalances the stoichiometry, and oxygen oxidises the bisphenolate. An excess of a monohydric phenol or a monochloroalkane controls the molar mass.",
+      source: "Odian, Principles of Polymerization (4th ed.), §2-14c"
+    },
     name: "Poly(ether sulfone)", aka: ["PES", "PESU"], monomer: "4,4'-Dichlorodiphenyl sulfone + hydroquinone",
     cas: "25608-63-3", tg: "225 °C", tags: ["engineering"],
     note: "Amorphous, transparent high-temperature thermoplastic; the sulfone group stiffens the chain.",
@@ -1814,6 +1838,12 @@ window.POLYMER_DB = [
     note: "The simplest possible polypeptide - a nylon 2 with no side group at all. Having no substituent, the backbone can adopt conformations forbidden to every other residue, which is exactly why glycine appears at the tight turns of real proteins and at every third position in the collagen helix. As a homopolymer it packs into sheets and is insoluble in almost everything, so it is studied rather than used."
   },
   {
+    conditions: {
+      summary: "nucleophilic substitution in NMP or DMSO, 130–160 °C",
+      process: "nucleophilic aromatic substitution, step-growth",
+      detail: "Nucleophilic aromatic substitution between an aromatic dihalide and a bisphenolate salt. Aryl halides are not normally reactive towards nucleophilic substitution at all; the electron-withdrawing sulfone group is what makes it facile. The bisphenolate is formed in situ by adding the bisphenol together with sodium or another alkali metal carbonate or hydroxide. Polysulfones are made from aromatic dichlorides in a polar aprotic solvent such as 1-methyl-2-pyrrolidinone or dimethyl sulfoxide, which raises the nucleophilicity of the phenoxide by solvating the cation preferentially and not the anion. Reaction temperatures of 130–160 °C are used mainly because the diphenolate salt is poorly soluble. The system has to be dry: water hydrolyses the phenolate salt to sodium hydroxide, which then reacts with the aromatic dichloride and alters the stoichiometric ratio that a step polymerisation depends on. It is run in the absence of oxygen to keep the bisphenolate from oxidising. Molar mass is capped with an excess of a monohydric phenol or a monochloroalkane.",
+      source: "Odian, Principles of Polymerization (4th ed.), §2-14c"
+    },
     name: "Polysulfone", aka: ["PSU", "polysulfone (bisphenol A)", "Udel"],
     monomer: "bisphenol A + 4,4'-dichlorodiphenyl sulfone", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
@@ -1841,6 +1871,12 @@ window.POLYMER_DB = [
     note: "The polymer used where nothing else survives: firefighters' and astronauts' suits, and high-temperature fuel cell membranes. Fused imidazole rings give one of the highest glass transitions of any thermoplastic, around 425 C, with no melting point and essentially no flammability. The N-H on the imidazole takes up phosphoric acid, which lets a PBI membrane conduct protons at 160 C without any water present - the property that made high-temperature PEM fuel cells possible."
   },
   {
+    conditions: {
+      summary: "difluorides in diphenyl sulfone, as for PEEK",
+      process: "nucleophilic aromatic substitution, step-growth",
+      detail: "One of the polyetherketones, made by nucleophilic aromatic substitution between an aromatic dihalide and a bisphenolate salt — the same chemistry as the polysulfones, with the carbonyl group doing the activating. The polyketones are typically made from aromatic difluorides in diphenyl sulfone at 200–350 °C, the high temperature being needed to stop the polymer precipitating before it has reached useful molar mass rather than to drive the reaction.",
+      source: "Odian, Principles of Polymerization (4th ed.), §2-14c"
+    },
     name: "Poly(phenylene ether ketone)", aka: ["PEK", "poly(ether ketone)", "polyetherketone"],
     monomer: "4,4'-difluorobenzophenone + hydroquinone", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
@@ -3577,6 +3613,12 @@ window.POLYMER_DB = [
   }
 ,
   {
+    conditions: {
+      summary: "AlCl₃ in methyl chloride at −100 to −90 °C, continuous",
+      process: "cationic slurry, continuous",
+      detail: "The most important commercial application of cationic polymerisation, and a genuinely extreme process. Isobutylene and a small amount of isoprene are purified and mixed in methyl chloride solution. The initiation system is made separately by passing methyl chloride through beds of aluminium chloride at 30–45 °C, then diluting with more methyl chloride and adding a protogen or cationogen. Both streams are chilled independently to −100 to −90 °C using boiling ethylene and propene or propane as the heat exchangers, then injected rapidly and continuously into the reactor, where polymerisation is almost instantaneous and the polymer precipitates as a fine slurry in the methyl chloride. The slurry overflows into a flash tank of steam and hot water — zinc or aluminium stearate goes in there to control the latex particle size, with an antioxidant — then is vacuum-stripped of residual methyl chloride and monomer, dewatered through a series of drying extruders and baled. The isoprene is present to put double bonds into the chain so the rubber can be vulcanised afterwards.",
+      source: "Odian, Principles of Polymerization (4th ed.), §5-2i-1"
+    },
     name: "Butyl rubber", aka: ["IIR", "isobutylene-isoprene rubber", "poly(isobutylene-co-isoprene)"],
     monomer: "isobutylene + a little isoprene", cls: "Addition (diene)", cas: null,
     tags: ["copolymer", "elastomer", "specialty"],
@@ -4213,6 +4255,12 @@ window.POLYMER_DB = [
     note: "The original polyethylene, made at a few thousand atmospheres by free radicals that periodically bite back onto their own chain - backbiting, which leaves short branches every fifty or so carbons and long ones less often. Those branches block crystallisation, so the material is soft, clear and tough at low temperature: cling film and squeeze bottles. Drawn as polyethylene, because that is what it is: a structure search returns it beside HDPE and UHMWPE, and branching is the difference no repeat unit can show."
   },
   {
+    conditions: {
+      summary: "ethylene + a little 1-butene, 1-hexene or 1-octene",
+      process: "coordination copolymerisation, gas phase",
+      detail: "Not a homopolymer at all. Coordination copolymerisation of ethylene with small amounts of an α-olefin — 1-butene, 1-hexene or 1-octene — puts controlled numbers of ethyl, n-butyl or n-hexyl branches on an otherwise linear chain, and the result is the equivalent of the branched low-density polyethylene that radical polymerisation produces by accident. Copolymerisation with propene, 4-methyl-1-pentene and cycloalkenes is also practised. There was little effort to commercialise LLDPE until 1978, when gas-phase technology made the economics competitive with the high-pressure radical process. The same low-pressure gas-phase plant makes HDPE, LLDPE and polypropene, which is why new capacity nominally for LDPE has generally meant a gas-phase plant instead. US production in 2001 was about 8 billion pounds, the same as LDPE; HDPE and LLDPE together, both by coordination polymerisation, are two-thirds of all polyethylene.",
+      source: "Odian, Principles of Polymerization (4th ed.), §8-11c"
+    },
     name: "Linear low-density polyethylene", aka: ["LLDPE", "PE-LLD", "linear low density polyethylene"],
     monomer: "ethylene + an alpha-olefin comonomer", cls: "Addition (vinyl)", cas: null,
     tags: ["copolymer", "commodity", "packaging", "specialty"],

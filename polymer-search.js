@@ -5126,19 +5126,26 @@
       ring: 'ring-opening'
     };
     function reactionSchemeHtml(p) {
-      if (!p || !Array.isArray(p.atoms) || !p.atoms.length) return '';
+      if (!p) return '';
+      // No stored repeat unit used to return '' here, before anything looked at
+      // the conditions - so Butyl rubber and LLDPE, both copolymers with no
+      // single unit to draw, showed nothing at all despite having a sourced
+      // procedure. The conditions do not depend on there being a structure.
+      if (!Array.isArray(p.atoms) || !p.atoms.length) {
+        return conditionsOnlyHtml(p, 'no single repeat unit is stored for this entry, so there is nothing to derive a monomer from');
+      }
       // Some entries pass every structural test and are still wrong, because
       // the polymerisation is not the isomerisation the class implies and only
       // the curated monomer NAME reveals it. Those carry an explicit opt-out
       // with the reason, rather than being caught by a rule that does not exist.
-      if (p.noScheme) return conditionsOnlyHtml(p);
+      if (p.noScheme) return conditionsOnlyHtml(p, p.noScheme);
       var m = PG.deriveMonomer(p.atoms, p.bonds, p.cls);
       // No derivable monomer does not mean nothing is known. Nylon 6,6 and PET
       // are step-growth, so no scheme can ever be drawn for them - and those are
       // exactly the entries where a sourced procedure is the ONLY way the tool
       // can say how the polymer is made. Gating the conditions behind the
       // drawing hid them on the polymers that needed them most.
-      if (!m) return conditionsOnlyHtml(p);
+      if (!m) return conditionsOnlyHtml(p, 'this is a step-growth polymerisation, and one repeat unit cannot say which pair of monomers it came from');
       pendingScheme = { polymer: p, monomer: m };
       return '<div class="mol-scheme" id="mol-scheme">' +
         '<h4>How it is made</h4>' +
@@ -5152,7 +5159,12 @@
     }
     // The conditions on their own, for a polymer whose reaction cannot be
     // drawn. Same panel, no canvas.
-    function conditionsOnlyHtml(p) {
+    // `why` is the actual reason no scheme could be drawn, and it differs per
+    // entry - step-growth, no stored repeat unit, or a curated noScheme opt-out
+    // whose text explains a monomer that does not exist. It used to be hardcoded
+    // to the step-growth sentence, which would have told a reader that
+    // poly(vinyl alcohol) is a step polymerisation.
+    function conditionsOnlyHtml(p, why) {
       var c = p && p.conditions;
       if (!c) return '';
       return '<div class="mol-scheme" id="mol-scheme">' +
@@ -5160,7 +5172,7 @@
         '<p id="mol-scheme-note"><span class="mol-cond" style="border-top:0;margin-top:0;padding-top:0;">' +
         '<strong>How it is run (' + escapeHtml(c.process) + ').</strong> ' + escapeHtml(c.detail) +
         ' <em>' + escapeHtml(c.source) + '</em></span>' +
-        '<br><span style="font-size:0.92em;">No scheme is drawn: this is a step-growth polymerisation, and one repeat unit cannot say which pair of monomers it came from. ' +
+        '<br><span style="font-size:0.92em;">No scheme is drawn: ' + escapeHtml(why || 'no monomer can be derived from this repeat unit') + '. ' +
         '<a href="mechanisms.html">Mechanisms</a> covers how these polymerisations are actually run.</span></p>' +
         '</div>';
     }
