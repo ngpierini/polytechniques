@@ -5131,9 +5131,14 @@
       // the polymerisation is not the isomerisation the class implies and only
       // the curated monomer NAME reveals it. Those carry an explicit opt-out
       // with the reason, rather than being caught by a rule that does not exist.
-      if (p.noScheme) return '';
+      if (p.noScheme) return conditionsOnlyHtml(p);
       var m = PG.deriveMonomer(p.atoms, p.bonds, p.cls);
-      if (!m) return '';
+      // No derivable monomer does not mean nothing is known. Nylon 6,6 and PET
+      // are step-growth, so no scheme can ever be drawn for them - and those are
+      // exactly the entries where a sourced procedure is the ONLY way the tool
+      // can say how the polymer is made. Gating the conditions behind the
+      // drawing hid them on the polymers that needed them most.
+      if (!m) return conditionsOnlyHtml(p);
       pendingScheme = { polymer: p, monomer: m };
       return '<div class="mol-scheme" id="mol-scheme">' +
         '<h4>How it is made</h4>' +
@@ -5143,6 +5148,20 @@
         '<button type="button" id="mol-scheme-copy" class="copy-btn" title="Copy this scheme to the clipboard as an image, ready to paste into a slide or a document">&#128203; Copy image</button>' +
         '</div>' +
         '<p id="mol-scheme-note"></p>' +
+        '</div>';
+    }
+    // The conditions on their own, for a polymer whose reaction cannot be
+    // drawn. Same panel, no canvas.
+    function conditionsOnlyHtml(p) {
+      var c = p && p.conditions;
+      if (!c) return '';
+      return '<div class="mol-scheme" id="mol-scheme">' +
+        '<h4>How it is made</h4>' +
+        '<p id="mol-scheme-note"><span class="mol-cond" style="border-top:0;margin-top:0;padding-top:0;">' +
+        '<strong>How it is run (' + escapeHtml(c.process) + ').</strong> ' + escapeHtml(c.detail) +
+        ' <em>' + escapeHtml(c.source) + '</em></span>' +
+        '<br><span style="font-size:0.92em;">No scheme is drawn: this is a step-growth polymerisation, and one repeat unit cannot say which pair of monomers it came from. ' +
+        '<a href="mechanisms.html">Mechanisms</a> covers how these polymerisations are actually run.</span></p>' +
         '</div>';
     }
     var pendingScheme = null;
