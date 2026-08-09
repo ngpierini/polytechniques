@@ -4314,13 +4314,21 @@
     // panel fills in. Reuses the SMILES-import path's draw/bracket logic; only
     // the source of the molblock differs (library graph, not a pasted SMILES).
     function loadPolymerStructure(p) {
-      if (!p || !p.atoms || !p.bonds) return;
+      if (!p) return;
+      // A star has no two-ended backbone, so the graph the library SEARCHES on
+      // (one arm's repeat unit) is not what the molecule looks like. Loading
+      // that put a linear two-ended PEG on the canvas and presented it as a
+      // 4-arm star. Where an entry carries a depiction - the whole molecule,
+      // core and all, with a bracket per arm - draw that instead.
+      var hasDepiction = p.depiction && Array.isArray(p.depiction.atoms) && p.depiction.atoms.length;
+      var src = hasDepiction ? p.depiction : p;
+      if (!src.atoms || !src.bonds) return;
       // An entry can be in the library without a drawable repeat unit - a natural
       // bottlebrush, a macrocycle whose point is that it has no ends, a synthetic
       // route rather than one compound. Say so before loading the chemistry
       // engine, and clear the search line: leaving the previous polymer's result
       // sitting there reads as the answer for this one.
-      if (!p.atoms.length) {
+      if (!src.atoms.length) {
         smilesNote('No repeat unit on file for ' + p.name + ' — use the publication links on its card.');
         var noStructEl = document.getElementById('mol-status');
         if (noStructEl) noStructEl.textContent = '';
@@ -4329,7 +4337,7 @@
       }
       smilesNote(rdkitPromise ? 'Drawing ' + p.name + '…' : 'Loading the chemistry engine (about 7 MB, one time; it stays cached)…');
       ensureRDKit().then(function (RDKit) {
-        var mol = molFrom(RDKit, molblockFrom(p.atoms, p.bonds));
+        var mol = molFrom(RDKit, molblockFrom(src.atoms, src.bonds));
         var mb = null;
         if (mol) {
           try { mb = mol.get_new_coords(); } catch (e) {}
@@ -4357,8 +4365,8 @@
         // to match, so loading cis-polyisoprene shows a cis double bond.
         (function () {
           var byLibId2 = {};
-          p.atoms.forEach(function (la, i) { if (made[i]) byLibId2[la.id] = made[i].id; });
-          p.bonds.forEach(function (lb) {
+          src.atoms.forEach(function (la, i) { if (made[i]) byLibId2[la.id] = made[i].id; });
+          src.bonds.forEach(function (lb) {
             if (lb.stereo !== 'cis' && lb.stereo !== 'trans') return;
             var ea = byLibId2[lb.a], eb = byLibId2[lb.b];
             bonds.forEach(function (x) {
@@ -4376,8 +4384,8 @@
         // Cosmetic repeat-unit bracket on the crossing bonds (matches SMILES import).
         var rbLoad = repeatUnitBracket();
         brackets = rbLoad ? [rbLoad] : [];
-        if (rbLoad && p.repeats) {
-          var bbRepeat = p.repeats.filter(function (r) { return r.role === 'backbone'; })[0];
+        if (rbLoad && src.repeats) {
+          var bbRepeat = src.repeats.filter(function (r) { return r.role === 'backbone'; })[0];
           if (bbRepeat) { rbLoad.label = bbRepeat.label; rbLoad.role = 'backbone'; }
         }
         // A bottlebrush's pendant chain is a polymer in its own right, so it gets
@@ -4386,10 +4394,10 @@
         // assert the side chain is one oxyethylene rather than a chain of them.
         // The declared unit is mapped through the layout: molblockFrom writes atoms
         // in library order, so p.atoms[i] is parsed.atoms[i] is made[i].
-        if (p.repeats) {
+        if (src.repeats) {
           var byLibId = {};
-          p.atoms.forEach(function (la, i) { if (made[i]) byLibId[la.id] = made[i].id; });
-          p.repeats.forEach(function (r) {
+          src.atoms.forEach(function (la, i) { if (made[i]) byLibId[la.id] = made[i].id; });
+          src.repeats.forEach(function (r) {
             if (r.role === 'backbone' || !Array.isArray(r.unit)) return;
             var set = {}, mapped = true;
             r.unit.forEach(function (u) {
@@ -4405,9 +4413,22 @@
           });
         }
         draw();
-        smilesNote('Loaded ' + p.name + ' into the editor.');
         var editorCard = document.getElementById('mol-editor-card');
         if (editorCard) editorCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (hasDepiction) {
+          // A depiction is a finished molecule with no open chain ends, so the
+          // structure search - which needs exactly two - cannot match it, and
+          // running it would answer "no match" about a polymer we already know.
+          // Identify it directly instead, which is what the button promised.
+          smilesNote('Loaded ' + p.name + ' — the whole molecule, core and all, with a bracket on each arm. ' +
+            'It has no open chain ends, so “Search this structure” does not apply to it; the identification is below.');
+          renderResults([p], null);
+          renderPublications(p);
+          var starStatus = document.getElementById('mol-status');
+          if (starStatus) starStatus.textContent = p.name + ':';
+          return;
+        }
+        smilesNote('Loaded ' + p.name + ' into the editor.');
         runStructureSearch();
       }).catch(function () {
         smilesNote('The chemistry engine could not load. Check your connection and try again.');
@@ -6745,7 +6766,23 @@
           if (exact.length > 1) msg = exact.length + ' polymers are known as "' + nameInput.value.trim() + '" — all shown:';
           // On a category query the category leads, so do not claim the named
           // ones are on top: they are ranked among the rest.
-          else if (facet && facet.exact) msg = matches.length + ' ' + (matches.length === 1 ? 'polymer is' : 'polymers are') + ' in that category:';
+          else if (facet && facet.exact) {
+            // Only the facet list is actually IN the category. The rest of the
+            // list got here because rank() matches a query as a substring of a
+            // name or alias, which is deliberate - it is how abbreviations
+            // resolve - but it means typing "star" also brings in "starch
+            // (linear fraction)", "animal starch", "SIBSTAR" and "Starburst
+            // dendrimer". Counting all of them as "in that category" claimed
+            // twelve star polymers where the library has five.
+            var inCategory = 0;
+            matches.forEach(function (p) { if (facet.list.indexOf(p) !== -1) inCategory++; });
+            var alsoNamed = matches.length - inCategory;
+            msg = inCategory + ' ' + (inCategory === 1 ? 'polymer is' : 'polymers are') + ' in that category' +
+              (alsoNamed
+                ? ', and ' + alsoNamed + ' more ' + (alsoNamed === 1 ? 'has' : 'have') +
+                  ' "' + nameInput.value.trim() + '" inside a name or alias'
+                : '') + ':';
+          }
           else if (added && named.length) msg = named.length + ' named that, and ' + added + ' more in that category:';
           else if (added) msg = matches.length + ' ' + (matches.length === 1 ? 'polymer is' : 'polymers are') + ' in that category:';
           else msg = matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ':';

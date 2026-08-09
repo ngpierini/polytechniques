@@ -409,6 +409,74 @@ function checkEntry(entry, idx, errors) {
     }
   }
 
+  // A star has no open chain ends, so it cannot be written as atoms/bonds at
+  // all: this file requires exactly one S0 and one S1. That is not a gap to
+  // route around - a 4-arm PEG genuinely is a finite molecule, not a repeat
+  // unit. "depiction" is the whole molecule, drawn for display only, with a
+  // bracket per arm so the arms can be shown at their real (unwritable) length.
+  // The searchable atoms/bonds stay whatever repeat unit the entry matches on.
+  if (entry.depiction !== undefined) {
+    const d = entry.depiction, dw = where + ": depiction";
+    if (!d || typeof d !== "object" || !Array.isArray(d.atoms) || !Array.isArray(d.bonds)) {
+      errors.push(dw + " must be an object with atoms and bonds arrays");
+    } else {
+      const dids = new Set();
+      d.atoms.forEach(function (a, ai) {
+        if (!a || a.id === undefined) { errors.push(dw + ", atom #" + ai + ": missing id"); return; }
+        if (dids.has(a.id)) errors.push(dw + ": duplicate atom id \"" + a.id + "\"");
+        dids.add(a.id);
+        if (a.el === "*") errors.push(dw + ": a depiction is a complete molecule and must not carry \"*\" chain ends");
+      });
+      const dval = {};
+      d.atoms.forEach(function (a) { dval[a.id] = 0; });
+      d.bonds.forEach(function (b, bi) {
+        if (!dids.has(b.a) || !dids.has(b.b)) { errors.push(dw + ", bond #" + bi + ": unknown atom id"); return; }
+        if (![1, 2, 3].includes(b.order)) errors.push(dw + ", bond #" + bi + ": bond order must be 1, 2 or 3");
+        dval[b.a] += b.order; dval[b.b] += b.order;
+      });
+      d.atoms.forEach(function (a) {
+        const max = MAX_VALENCE[a.el];
+        if (max !== undefined && dval[a.id] > max + Math.abs(a.charge || 0)) {
+          errors.push(dw + ": atom \"" + a.id + "\" (" + a.el + ") has bond-order sum " + dval[a.id] + ", exceeds max valence " + max);
+        }
+      });
+      // One bracket per arm, each cutting the chain in exactly two places, so
+      // the drawing says "n of these" rather than implying a fixed short arm.
+      if (!Array.isArray(d.repeats) || !d.repeats.length) {
+        errors.push(dw + ": must declare at least one bracketed repeat, or the arms are drawn as a fixed handful of units");
+      } else {
+        const dclaimed = new Set();
+        d.repeats.forEach(function (r, ri) {
+          const rw = dw + ", repeats[" + ri + "]";
+          if (!r || !Array.isArray(r.unit) || !r.unit.length) { errors.push(rw + ": \"unit\" must list the atom ids inside the bracket"); return; }
+          if (typeof r.label !== "string" || !r.label.trim()) errors.push(rw + ": \"label\" is the subscript drawn on the bracket");
+          const inUnit = new Set(r.unit);
+          r.unit.forEach(function (u) {
+            if (!dids.has(u)) errors.push(rw + ": unit atom \"" + u + "\" is not in the depiction");
+            if (dclaimed.has(u)) errors.push(rw + ": atom \"" + u + "\" is inside more than one bracket");
+            dclaimed.add(u);
+          });
+          if (!Array.isArray(r.cuts) || r.cuts.length !== 2) { errors.push(rw + ": \"cuts\" must name the two bonds the bracket crosses"); return; }
+          r.cuts.forEach(function (c, ci) {
+            const cw = rw + ", cuts[" + ci + "]";
+            if (!Array.isArray(c) || c.length !== 2) { errors.push(cw + ": must be a pair of atom ids"); return; }
+            const real = d.bonds.some(function (b) {
+              return (b.a === c[0] && b.b === c[1]) || (b.a === c[1] && b.b === c[0]);
+            });
+            if (!real) errors.push(cw + ": no bond between \"" + c[0] + "\" and \"" + c[1] + "\"");
+            else if (inUnit.has(c[0]) === inUnit.has(c[1])) errors.push(cw + ": a bracket cut must have exactly one end inside the unit");
+          });
+        });
+      }
+      // The whole point is that the arm count is visible, so it has to match.
+      if (entry.telechelic && typeof entry.telechelic.functionality === "number" &&
+          Array.isArray(d.repeats) && d.repeats.length !== entry.telechelic.functionality) {
+        errors.push(dw + ": has " + d.repeats.length + " bracketed arm(s) but the entry declares " +
+          entry.telechelic.functionality + " arms - the drawing would contradict the specification");
+      }
+    }
+  }
+
   const valence = {};
   entry.atoms.forEach(function (a) { valence[a.id] = 0; });
   const endpointBondCount = { S0: 0, S1: 0 };
