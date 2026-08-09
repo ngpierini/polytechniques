@@ -149,6 +149,11 @@
     var chargeDelta = 1;
     var currentEl = 'C';
     var brackets = [];   // repeat-unit brackets; 2+ means a copolymer (one block each)
+    // Reaction arrows. Pure annotation: they carry no chemistry and are kept in
+    // their own array precisely so they CANNOT reach the structure search - a
+    // scheme is a drawing about a reaction, not a molecule. They do render into
+    // the PNG/SVG exports, which is the point of having them.
+    var arrows = [];
     var draggingAtom = null;
     var draggingBracketHandle = null;
     var draggingBracketPreview = null;
@@ -196,13 +201,15 @@
     // the one users already expect from every other editor.
     var future = [];
     function editorState() {
-      return JSON.stringify({ atoms: atoms, bonds: bonds, brackets: brackets, nextAtomId: nextAtomId, nextBondId: nextBondId });
+      return JSON.stringify({ atoms: atoms, bonds: bonds, brackets: brackets, arrows: arrows, nextAtomId: nextAtomId, nextBondId: nextBondId });
     }
     function restoreState(json) {
       var s = JSON.parse(json);
       atoms = s.atoms; bonds = s.bonds; brackets = s.brackets || (s.bracket ? [s.bracket] : []);
+      arrows = s.arrows || [];
       nextAtomId = s.nextAtomId; nextBondId = s.nextBondId;
-      selectedAtom = null; selectedGroup = [];
+      selectedAtom = null; selectedGroup = []; selectedArrow = null;
+      syncArrowLabels();
       draw();
       syncHistoryButtons();
     }
@@ -550,6 +557,19 @@
       draw();
     }
 
+    var arrowPreview = null, draggingArrow = null, arrowDragFrom = null, selectedArrow = null;
+    // Two text fields beside the canvas, rather than typing onto it: the letter
+    // keys are already element hotkeys, and a scheme's arrow wants two separate
+    // strings anyway - reagents above, conditions below.
+    function syncArrowLabels() {
+      var wrap = document.getElementById('mol-arrow-labels');
+      var ab = document.getElementById('mol-arrow-above');
+      var bl = document.getElementById('mol-arrow-below');
+      if (!wrap || !ab || !bl) return;
+      wrap.hidden = !selectedArrow;
+      if (selectedArrow) { ab.value = selectedArrow.above || ''; bl.value = selectedArrow.below || ''; }
+    }
+
     // ---------- View transform (zoom + pan) ----------
     //
     // Atom coordinates are WORLD coordinates and never change when the view
@@ -601,6 +621,7 @@
     function drawStructure(textColor, bgColor) {
       var styles = getComputedStyle(document.body);
       var primary = (styles.getPropertyValue('--primary') || '#2563eb').trim() || '#2563eb';
+      arrows.forEach(function (ar) { drawArrow(ar, textColor); });
       bonds.forEach(function (b) {
         var a1 = atomById(b.a), a2 = atomById(b.b);
         if (!a1 || !a2) return;
@@ -753,6 +774,22 @@
         ctx.strokeStyle = primary;
         ctx.lineWidth = 1.5;
         line(bondDragAnchor.x, bondDragAnchor.y, previewEnd.x, previewEnd.y);
+        ctx.restore();
+      }
+      if (mode === 'arrow' && arrowPreview) {
+        ctx.save();
+        ctx.globalAlpha = 0.55;
+        drawArrow(arrowPreview, primary);
+        ctx.restore();
+      }
+      if (mode === 'arrow' && selectedArrow) {
+        ctx.save();
+        ctx.setLineDash([3, 3]);
+        ctx.strokeStyle = primary;
+        ctx.lineWidth = 1;
+        var pad = 12;
+        ctx.strokeRect(Math.min(selectedArrow.x1, selectedArrow.x2) - pad, Math.min(selectedArrow.y1, selectedArrow.y2) - pad,
+                       Math.abs(selectedArrow.x2 - selectedArrow.x1) + pad * 2, Math.abs(selectedArrow.y2 - selectedArrow.y1) + pad * 2);
         ctx.restore();
       }
       if (mode === 'ring' && pendingRing && ringHoverPos) drawRingGhost(primary);
@@ -1223,6 +1260,54 @@
     // idx < 0: a lone repeat unit, subscript "n". idx >= 0: one block of a
     // copolymer, subscripted m, n, x, y... so each bracketed block reads distinctly.
     var BLOCK_SUBSCRIPTS = ['m', 'n', 'x', 'y', 'z', 'p', 'q'];
+    // A reaction arrow, with optional text above and below the shaft - which is
+    // where a scheme puts reagents and conditions. The label is whatever the
+    // user types: this tool makes no claim about the chemistry, unlike the
+    // derived scheme on a search result, which is checked.
+    var ARROW_HEAD = 9;
+    function drawArrow(ar, color) {
+      var dx = ar.x2 - ar.x1, dy = ar.y2 - ar.y1;
+      var len = Math.hypot(dx, dy);
+      if (len < 1) return;
+      var ux = dx / len, uy = dy / len;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 1.6;
+      line(ar.x1, ar.y1, ar.x2 - ux * (ARROW_HEAD - 1), ar.y2 - uy * (ARROW_HEAD - 1));
+      var px = -uy, py = ux;
+      ctx.beginPath();
+      ctx.moveTo(ar.x2, ar.y2);
+      ctx.lineTo(ar.x2 - ux * ARROW_HEAD + px * 4.6, ar.y2 - uy * ARROW_HEAD + py * 4.6);
+      ctx.lineTo(ar.x2 - ux * ARROW_HEAD - px * 4.6, ar.y2 - uy * ARROW_HEAD - py * 4.6);
+      ctx.closePath();
+      ctx.fill();
+      var mx = (ar.x1 + ar.x2) / 2, my = (ar.y1 + ar.y2) / 2;
+      ctx.textAlign = 'center';
+      ctx.font = '12px system-ui, sans-serif';
+      if (ar.above) {
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(ar.above, mx + px * 8, my + py * 8 - 6);
+      }
+      if (ar.below) {
+        ctx.textBaseline = 'top';
+        ctx.fillText(ar.below, mx - px * 8, my - py * 8 + 6);
+      }
+      ctx.restore();
+    }
+    function findArrowAt(x, y) {
+      for (var i = arrows.length - 1; i >= 0; i--) {
+        var ar = arrows[i];
+        var dx = ar.x2 - ar.x1, dy = ar.y2 - ar.y1;
+        var len2 = dx * dx + dy * dy;
+        if (!len2) continue;
+        var t = Math.max(0, Math.min(1, ((x - ar.x1) * dx + (y - ar.y1) * dy) / len2));
+        var cx = ar.x1 + t * dx, cy = ar.y1 + t * dy;
+        if (Math.hypot(x - cx, y - cy) <= 10) return ar;
+      }
+      return null;
+    }
+
     function drawBracket(rect, color, idx) {
       var x1 = Math.min(rect.x1, rect.x2), x2 = Math.max(rect.x1, rect.x2);
       var y1 = Math.min(rect.y1, rect.y2), y2 = Math.max(rect.y1, rect.y2);
@@ -1305,14 +1390,24 @@
     // any) so exports crop to the molecule instead of the whole (mostly
     // empty) drawing canvas.
     function structureBBox() {
-      if (!atoms.length) return null;
+      if (!atoms.length && !arrows.length) return null;
       var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
       atoms.forEach(function (a) {
         minX = Math.min(minX, a.x); maxX = Math.max(maxX, a.x);
         minY = Math.min(minY, a.y); maxY = Math.max(maxY, a.y);
       });
       var pad = 28;
-      minX -= pad; minY -= pad; maxX += pad; maxY += pad;
+      if (atoms.length) { minX -= pad; minY -= pad; maxX += pad; maxY += pad; }
+      // Arrows sit outside the atoms - that is the whole point of a scheme -
+      // so an export framed on atoms alone crops them off, and a canvas holding
+      // only an arrow would export nothing at all. Extra vertical room because
+      // the reagent and condition text rides above and below the shaft.
+      arrows.forEach(function (ar) {
+        minX = Math.min(minX, ar.x1, ar.x2) - 10;
+        maxX = Math.max(maxX, ar.x1, ar.x2) + 10;
+        minY = Math.min(minY, ar.y1, ar.y2) - 26;
+        maxY = Math.max(maxY, ar.y1, ar.y2) + 26;
+      });
       brackets.forEach(function (bracket) {
         minX = Math.min(minX, bracket.x1, bracket.x2) - 4;
         maxX = Math.max(maxX, bracket.x1, bracket.x2) + 22;
@@ -1350,6 +1445,38 @@
       this._path = [];
       this._measureCtx = document.createElement('canvas').getContext('2d');
     }
+    // save/restore are part of the contract, not an optional extra. Anything
+    // drawStructure calls may bracket its work with them - the cis/trans bond
+    // label and the reaction arrow both do - and a shim without them throws
+    // "ctx.save is not a function" and silently produces no file at all. Only
+    // the style state needs preserving here; this shim has no transform.
+    SVGRenderContext.prototype.save = function () {
+      (this._stack || (this._stack = [])).push({
+        strokeStyle: this.strokeStyle, fillStyle: this.fillStyle, lineWidth: this.lineWidth,
+        font: this.font, textAlign: this.textAlign, textBaseline: this.textBaseline
+      });
+    };
+    SVGRenderContext.prototype.restore = function () {
+      var s = this._stack && this._stack.pop();
+      if (!s) return;
+      this.strokeStyle = s.strokeStyle; this.fillStyle = s.fillStyle; this.lineWidth = s.lineWidth;
+      this.font = s.font; this.textAlign = s.textAlign; this.textBaseline = s.textBaseline;
+    };
+    // Dashes are a canvas-only affordance for on-screen previews; the export
+    // never draws committed geometry dashed, so accepting and ignoring the call
+    // is correct and keeps the shim from throwing.
+    SVGRenderContext.prototype.setLineDash = function () {};
+    SVGRenderContext.prototype.arc = function (x, y, r, a0, a1) {
+      // Only ever used for full circles here (atom halos, ring markers).
+      this._path.push('M' + this._r(x + r) + ' ' + this._r(y) +
+        'A' + this._r(r) + ' ' + this._r(r) + ' 0 1 1 ' + this._r(x - r) + ' ' + this._r(y) +
+        'A' + this._r(r) + ' ' + this._r(r) + ' 0 1 1 ' + this._r(x + r) + ' ' + this._r(y));
+    };
+    SVGRenderContext.prototype.strokeRect = function (x, y, w, h) {
+      this.elements.push('<rect x="' + this._r(x) + '" y="' + this._r(y) + '" width="' + this._r(w) +
+        '" height="' + this._r(h) + '" fill="none" stroke="' + this._esc(this.strokeStyle) +
+        '" stroke-width="' + this._r(this.lineWidth) + '"/>');
+    };
     SVGRenderContext.prototype._r = function (n) { return Math.round(n * 100) / 100; };
     SVGRenderContext.prototype._esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
     SVGRenderContext.prototype.beginPath = function () { this._path = []; };
@@ -1471,6 +1598,12 @@
         rotating = true;
         return;
       }
+      if (mode === 'arrow') {
+        var hitAr = findArrowAt(pos.x, pos.y);
+        if (hitAr) { selectedArrow = hitAr; draggingArrow = hitAr; arrowDragFrom = pos; syncArrowLabels(); draw(); return; }
+        arrowPreview = { x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y };
+        return;
+      }
       if (mode === 'chain') {
         chainAnchor = findAtomAt(pos.x, pos.y) || null;
         return;
@@ -1485,6 +1618,22 @@
     }
     function handleMove(pos) {
       if (dragStart && Math.hypot(pos.x - dragStart.x, pos.y - dragStart.y) > 4) moved = true;
+
+      if (mode === 'arrow') {
+        if (draggingArrow && arrowDragFrom) {
+          var ddx = pos.x - arrowDragFrom.x, ddy = pos.y - arrowDragFrom.y;
+          draggingArrow.x1 += ddx; draggingArrow.x2 += ddx;
+          draggingArrow.y1 += ddy; draggingArrow.y2 += ddy;
+          arrowDragFrom = pos;
+          draw();
+          return;
+        }
+        if (arrowPreview) {
+          arrowPreview.x2 = pos.x; arrowPreview.y2 = pos.y;
+          draw();
+          return;
+        }
+      }
 
       var nowHover = findAtomAt(pos.x, pos.y);
       if (nowHover !== hoverAtom) { hoverAtom = nowHover; draw(); }
@@ -1546,6 +1695,33 @@
       }
     }
     function handleUp(pos) {
+      if (mode === 'arrow') {
+        if (draggingArrow) { draggingArrow = null; arrowDragFrom = null; dragStart = null; moved = false; return; }
+        if (arrowPreview) {
+          var len = Math.hypot(pos.x - arrowPreview.x1, pos.y - arrowPreview.y1);
+          var pending = arrowPreview;
+          arrowPreview = null;
+          if (len < 15) {
+            // Too short to be a deliberate drag: lay down a default horizontal
+            // arrow at the click, which is what a scheme wants nine times in ten.
+            snapshot();
+            selectedArrow = { x1: pending.x1 - 45, y1: pending.y1, x2: pending.x1 + 45, y2: pending.y1, above: '', below: '' };
+            arrows.push(selectedArrow);
+          } else {
+            snapshot();
+            // Nearly-horizontal drags snap flat; schemes read left to right and
+            // a two-degree tilt looks like a mistake.
+            var y2 = Math.abs(pos.y - pending.y1) < 12 ? pending.y1 : pos.y;
+            selectedArrow = { x1: pending.x1, y1: pending.y1, x2: pos.x, y2: y2, above: '', below: '' };
+            arrows.push(selectedArrow);
+          }
+          syncArrowLabels();
+          setStatus('Arrow added. Type above/below it in the two boxes under the canvas — reagents above, conditions below. Arrows are annotation only and never affect a search.');
+          draw();
+          dragStart = null; moved = false;
+          return;
+        }
+      }
       if (mode === 'bracket' && draggingBracketHandle === 'new') {
         if (moved) {
           snapshot();
@@ -1660,6 +1836,21 @@
       var a = findAtomAt(pos.x, pos.y);
       var b = !a ? findBondAt(pos.x, pos.y) : null;
 
+      // Erase has to reach arrows as well, or a stray one can only be removed
+      // by clearing the whole canvas. Atoms and bonds win the hit test, since
+      // an arrow drawn across a structure would otherwise shield it.
+      if (mode === 'erase' && !a && !b) {
+        var deadArrow = findArrowAt(pos.x, pos.y);
+        if (deadArrow) {
+          snapshot();
+          arrows = arrows.filter(function (x) { return x !== deadArrow; });
+          if (selectedArrow === deadArrow) selectedArrow = null;
+          syncArrowLabels();
+          draw();
+          return;
+        }
+      }
+
       if (b) {
         if (mode === 'erase') { snapshot(); bonds = bonds.filter(function (x) { return x.id !== b.id; }); draw(); return; }
         if (mode === 'draw-wedge' || mode === 'draw-hash') {
@@ -1724,7 +1915,7 @@
       // geom acts on a bond and nothing else; without this it would fall
       // through to the chain-building fallback below and drop a stray carbon
       // on the canvas every time someone missed the double bond.
-      if (mode === 'rotate' || mode === 'bracket' || mode === 'geom') return;
+      if (mode === 'rotate' || mode === 'bracket' || mode === 'geom' || mode === 'arrow') return;
 
       // draw, draw-wedge, draw-hash, chain (plain click fallback): a single
       // click on any atom immediately adds a bond off it at a sensible
@@ -2127,7 +2318,8 @@
     var clearBtn = document.getElementById('mol-clear');
     if (clearBtn) clearBtn.addEventListener('click', function () {
       snapshot();
-      atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
+      atoms = []; bonds = []; brackets = []; arrows = []; selectedAtom = null; selectedGroup = []; selectedArrow = null; nextAtomId = 1; nextBondId = 1;
+      syncArrowLabels();
       resetView();
       draw();
     });
@@ -4495,6 +4687,11 @@
     };
     function reactionSchemeHtml(p) {
       if (!p || !Array.isArray(p.atoms) || !p.atoms.length) return '';
+      // Some entries pass every structural test and are still wrong, because
+      // the polymerisation is not the isomerisation the class implies and only
+      // the curated monomer NAME reveals it. Those carry an explicit opt-out
+      // with the reason, rather than being caught by a rule that does not exist.
+      if (p.noScheme) return '';
       var m = PG.deriveMonomer(p.atoms, p.bonds, p.cls);
       if (!m) return '';
       pendingScheme = { polymer: p, monomer: m };
@@ -5376,6 +5573,16 @@
     if (subBtn) subBtn.addEventListener('click', function () {
       runSubstructureSearch();
       scrollResultsIntoView();
+    });
+
+    ['mol-arrow-above', 'mol-arrow-below'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', function () {
+        if (!selectedArrow) return;
+        selectedArrow[id === 'mol-arrow-above' ? 'above' : 'below'] = el.value;
+        draw();
+      });
     });
 
     var chainBtn = document.getElementById('mol-chain-btn');

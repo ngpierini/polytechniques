@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=73">
+<link rel="stylesheet" href="style.css?v=74">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -140,6 +140,9 @@
         </button>
         <button type="button" class="mol-mode-btn" data-mode="erase" title="Erase: click an atom or bond to remove it" aria-label="Erase tool">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l6-6 6 6-4 4H8z"/><line x1="4" y1="17" x2="14" y2="17"/></svg>
+        </button>
+        <button type="button" class="mol-mode-btn" data-mode="arrow" title="Reaction arrow: drag to draw one, or click for a default horizontal arrow. Type reagents above it and conditions below. Annotation only - arrows never affect a structure search." aria-label="Reaction arrow tool">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="10" x2="15" y2="10"/><polyline points="12,6.5 16.5,10 12,13.5" fill="currentColor" stroke="none"/></svg>
         </button>
         <button type="button" class="mol-mode-btn" data-mode="bracket" title="Bracket: drag a box around the repeat unit" aria-label="Bracket tool">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 3H5v14h3M12 3h3v14h-3"/></svg>
@@ -287,6 +290,12 @@
         &#9741; Show 3 units
       </button>
     </div>
+    <div id="mol-arrow-labels" class="mol-arrow-labels" hidden>
+      <span class="mol-arrow-lab">Over the arrow</span>
+      <input type="text" id="mol-arrow-above" placeholder="reagents &mdash; e.g. AIBN" aria-label="Text above the arrow">
+      <span class="mol-arrow-lab">Under it</span>
+      <input type="text" id="mol-arrow-below" placeholder="conditions &mdash; e.g. 60 &deg;C, toluene" aria-label="Text below the arrow">
+    </div>
     <div id="mol-chain-preview" class="mol-chain-preview" hidden>
       <canvas id="mol-chain-canvas" width="960" height="220"></canvas>
       <p id="mol-chain-note" class="guide-note"></p>
@@ -371,12 +380,12 @@
   <p>Reagent data and lab guidance are references for convenience. Always verify against your reagent's COA and your institution's safety protocols.</p>
 </footer>
 
-<script src="polymer-data.js?v=34"></script>
+<script src="polymer-data.js?v=36"></script>
 <script src="polymer-xref.js?v=1"></script>
-<script src="polymer-graph.js?v=8"></script>
+<script src="polymer-graph.js?v=9"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=154"></script>
+<script src="polymer-search.js?v=157"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

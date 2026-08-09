@@ -698,6 +698,7 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: "S1", order: 1 }]
   },
   {
+    noScheme: "made biologically from 3-hydroxyvaleryl-CoA, not by opening a lactone, so the ring this repeat unit closes to is not the monomer that was used",
     name: "Poly(3-hydroxyvalerate)", aka: ["PHV", "P3HV"], monomer: "3-Hydroxyvalerate",
     cls: "Ring-opening", cas: "26744-04-7", tg: "-15 °C", tm: "108 °C", tags: ["polyester", "biodegradable"],
     note: "The ethyl-branched PHA; copolymerized with PHB (as PHBV) to toughen it.",
@@ -1460,6 +1461,7 @@ window.POLYMER_DB = [
     note: "The blue emitter of the polymer LED family. Two benzene rings locked coplanar by a bridging carbon give a wide band gap and efficient blue fluorescence, and that bridging carbon is quaternary, so the two octyl chains hang off it without twisting the conjugated system - solubility bought at no optical cost, which is rare. Its known failure is a green emission band that grows with use, traced to oxidation at the bridge to a fluorenone."
   },
   {
+    noScheme: "the drawn structure is the free sulfonic acid while the name is the sodium salt, so the scheme would show a monomer the card does not name",
     name: "Poly(sodium 4-styrenesulfonate)", aka: ["PSS", "NaPSS", "poly(styrene sulfonate)", "polystyrene sulfonate"],
     monomer: "sodium 4-styrenesulfonate", cls: "Addition (vinyl)", cas: null,
     tags: ["water-soluble", "polyelectrolyte", "specialty"],
@@ -3011,6 +3013,7 @@ window.POLYMER_DB = [
     note: "The shortest strong polyacid there is - a sulfonate bonded straight to the backbone with no spacer. That gives the highest charge density per gram of any common vinyl polyelectrolyte, though the same crowding makes the monomer polymerise reluctantly to low molar mass. Used where charge density matters more than chain length, in scale control and as a proton conductor. Drawn as the free acid."
   },
   {
+    noScheme: "the drawn repeat unit is one carbon short of carboxybetaine methacrylate, so a derived monomer would contradict the name until the structure is rechecked",
     name: "Poly(carboxybetaine methacrylate)", aka: ["PCBMA", "polycarboxybetaine", "poly(carboxybetaine)"],
     monomer: "carboxybetaine methacrylate", cls: "Addition (methacrylate)", cas: null,
     tags: ["methacrylate", "water-soluble", "zwitterionic", "biomedical", "specialty"],
@@ -4695,6 +4698,7 @@ window.POLYMER_DB = [
     note: "A step-growth chain built by copper-catalysed azide-alkyne cycloaddition - the reaction that gave click chemistry its name and its 2022 Nobel. The triazole ring formed is aromatic, strongly dipolar and essentially inert once made, and because the coupling reaches high conversion without side reactions it is one of the few step-growth routes that reliably gives high molecular weight from ordinary difunctional monomers. Structure shown is the hexanediazide plus dipropargyl diethylene glycol pairing."
   },
   {
+    noScheme: "made by bacterial condensation of L-lysine, losing water - not a ring-opening, so closing the repeat unit invents a lactam monomer that is never used",
     name: "epsilon-Poly-L-lysine", aka: ["ePL", "epsilon-polylysine", "poly(epsilon-L-lysine)"],
     monomer: "L-lysine (bacterial)", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "water-soluble", "polyelectrolyte", "specialty"],
@@ -5388,6 +5392,7 @@ window.POLYMER_DB = [
     note: "Glycerol has three hydroxyls but an enzyme will only use the two primary ones, so a lipase-catalysed polymerisation gives a linear polyester with a free secondary alcohol on every repeat unit. Chemical catalysis would give a crosslinked mess. That pendant hydroxyl is then the attachment point for drugs, and the selectivity is entirely the enzyme's doing."
   },
   {
+    noScheme: "the repeat unit here does not correspond to morpholine-2,5-dione atom for atom, so a derived monomer would contradict the named one",
     name: "Poly(depsipeptide)", aka: ["polydepsipeptide", "poly(ester amide) alpha", "PDP"],
     monomer: "morpholine-2,5-dione", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biodegradable", "biopolymer", "biomedical", "specialty"],

@@ -8,7 +8,7 @@
 // Either way the calculators still work with no connection. Bump CACHE_NAME
 // whenever the pre-cache list below changes so old clients pick up the new
 // set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v197";
+const CACHE_NAME = "polytechniques-v200";
 
 const PRECACHE_URLS = [
   "home.html",
@@ -42,7 +42,7 @@ const PRECACHE_URLS = [
   "polymer-data.js",
   "polymer-xref.js?v=1",
   "lab-scene.js?v=9",
-  "polymer-graph.js?v=8",
+  "polymer-graph.js?v=9",
   "superatoms.js?v=1",
   "ocr-decoders.js?v=1",
   "polymer-search.js",

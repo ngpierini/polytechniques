@@ -611,6 +611,13 @@
     if (!byId[p.at] || !byId[q.at] || byId[p.at].el !== "C" || byId[q.at].el !== "C") return null;
     var link = findBond(bonds, p.at, q.at);
     if (!link || link.order !== 1) return null;
+    // The alkene of a vinyl monomer is never a RING bond, so if the chain
+    // attaches at two atoms that are already in a ring together, this was not
+    // vinyl addition. Poly(anthracene) is filed under "Addition (vinyl)" and
+    // is really made by oxidative coupling: turning its ring bond into an
+    // alkene produced C14H8, two hydrogens short of anthracene, and drew a
+    // monomer that does not exist.
+    if (inSameRing(atoms, bonds, link)) return null;
     var m = coreOf(atoms, bonds);
     var lb = findBond(m.bonds, p.at, q.at);
     if (!lb) return null;
@@ -641,8 +648,24 @@
     b12.stereo = undefined;
     return m;
   }
-  // lactam / lactone / carbonate / epoxide: the ring closes back up
-  function monomerRingOpen(atoms, bonds) {
+  // lactam / lactone / carbonate / epoxide: the ring closes back up.
+  //
+  // minRing is a floor on the size of the ring that reforms. It exists because
+  // closing the unit is only the reverse of the polymerisation when the ring
+  // that opens is the ring that closes - and for two whole families it is not:
+  //
+  //   - N-carboxyanhydrides expel CO2 as they polymerise, so a polypeptide
+  //     repeat unit closes to a 3-membered alpha-lactam, not to the 5-membered
+  //     NCA that was actually used. Poly(L-leucine) came out as C6H11NO when
+  //     leucine NCA is C7H11NO3, a whole CO2 adrift.
+  //   - 2-oxazolines rearrange: the 5-ring oxazoline becomes an amide-linked
+  //     backbone, which closes to a 3-membered acetylaziridine. Same molecular
+  //     formula as the real monomer, so a formula check waves it through -
+  //     a different compound entirely.
+  //
+  // Epoxides legitimately give 3-rings, so the floor is applied per class
+  // rather than globally.
+  function monomerRingOpen(atoms, bonds, minRing) {
     var closed = closeRepeatUnit(atoms, bonds);
     if (!closed) return null;
     var seen = {};
@@ -653,8 +676,18 @@
       if (seen[k]) return null;                     // two-membered ring
       seen[k] = 1;
     }
+    if (minRing) {
+      // The reformed ring is the shortest path between the two attachment
+      // atoms in the open unit, plus the bond that closes it.
+      var info = starAttachments(atoms, bonds);
+      if (!info) return null;
+      var core = coreOf(atoms, bonds);
+      var path = pathBetween(core, info.attach[0].at, info.attach[1].at);
+      if (!path || path.length < minRing) return null;
+    }
     return closed;
   }
+  function monomerLactam(atoms, bonds) { return monomerRingOpen(atoms, bonds, 5); }
 
   var MONOMER_RULES = {
     "Addition (vinyl)": { back: monomerVinyl, kind: "vinyl" },
@@ -662,7 +695,7 @@
     "Addition (methacrylate)": { back: monomerVinyl, kind: "vinyl" },
     "Addition (diene)": { back: monomerDiene, kind: "diene" },
     "Ring-opening": { back: monomerRingOpen, kind: "ring" },
-    "Ring-opening (polyamide)": { back: monomerRingOpen, kind: "ring" },
+    "Ring-opening (polyamide)": { back: monomerLactam, kind: "ring" },
     "Ring-opening (silicone)": { back: monomerRingOpen, kind: "ring" }
   };
 

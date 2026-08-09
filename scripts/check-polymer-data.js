@@ -131,6 +131,9 @@ function checkEntry(entry, idx, errors) {
   if (entry.tacticity !== undefined && TACTICITIES.indexOf(entry.tacticity) === -1) {
     errors.push(where + ": \"tacticity\" must be one of " + TACTICITIES.join(", ") + " (got " + JSON.stringify(entry.tacticity) + ")");
   }
+  if (entry.noScheme !== undefined && (typeof entry.noScheme !== "string" || entry.noScheme.trim().length < 20)) {
+    errors.push(where + ": \"noScheme\" must be a sentence explaining why the monomer cannot be derived, not a bare flag");
+  }
   if (entry.form !== undefined && (typeof entry.form !== "string" || !entry.form.trim() || entry.form.length > 40)) {
     errors.push(where + ": \"form\" must be a short non-empty label (got " + JSON.stringify(entry.form) + ")");
   }
@@ -402,11 +405,12 @@ function main() {
   // The floor is deliberately below the current count: entries legitimately
   // come and go, and the point is to catch a transform breaking, not to freeze
   // the number. Raise it if coverage climbs a lot.
-  const MONOMER_FLOOR = 225;
+  const MONOMER_FLOOR = 200;
   let monomersDerived = 0;
   db.forEach(function (entry) {
     if (!entry || entry.type === "copolymer") return;
     if (!Array.isArray(entry.atoms) || !entry.atoms.length) return;
+    if (entry.noScheme) return;
     if (deriveMonomer(entry.atoms, entry.bonds, entry.cls)) monomersDerived++;
   });
   if (monomersDerived < MONOMER_FLOOR) {

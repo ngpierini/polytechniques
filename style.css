@@ -2876,3 +2876,19 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
   line-height: 1.5;
   color: var(--text-dim);
 }
+
+/* Reaction-arrow label fields. Shown only while an arrow is selected, because
+   they act on that one arrow. */
+.mol-arrow-labels {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 0;
+}
+.mol-arrow-lab { font-size: 0.8rem; color: var(--text-dim); }
+.mol-arrow-labels input {
+  flex: 1 1 150px;
+  min-width: 120px;
+  margin: 0;
+}
