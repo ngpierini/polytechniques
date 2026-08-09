@@ -2,7 +2,7 @@
   "name": "PolyTechniques",
   "short_name": "PolyTechniques",
   "description": "Free tools for polymer synthesis: reaction calculators for ATRP, RAFT, ROMP, and FRP, GPC conversion, copolymer composition, Tg prediction, and a polymer structure search.",
-  "start_url": "home.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f4f6f8",

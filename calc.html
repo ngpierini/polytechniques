@@ -33,7 +33,7 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=19" defer></script>
+<script src="nav.js?v=20" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
@@ -93,7 +93,7 @@
     b.innerHTML = "<strong>" + msg + "</strong>" +
       (errs.length ? '<code style="display:block;white-space:pre-wrap;margin-top:6px;color:#b00020;font-size:0.85rem;">' + esc(errs.join("\n")) + "</code>" : "") +
       '<div style="margin-top:6px;font-size:0.8rem;color:#555;">' + esc(navigator.userAgent) + "</div>" +
-      '<div style="margin-top:4px;font-size:0.8rem;">The other tools are on the <a href="home.html">home page</a>.</div>';
+      '<div style="margin-top:4px;font-size:0.8rem;">The other tools are on the <a href="/">home page</a>.</div>';
     document.body.insertBefore(b, document.body.firstChild);
     return false;
   }

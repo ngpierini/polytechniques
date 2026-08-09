@@ -18,10 +18,17 @@ const errors = [];
 
 const pages = fs.readdirSync(ROOT).filter(f => f.endsWith(".html")).sort();
 const indexable = pages.filter(f => {
-  if (f === "index.html") return false;   // redirect stub to home.html
+  // index.html IS the home page now (it used to be a redirect stub), so it is indexable.
   return !/<meta\s+name=["']robots["']\s+content=["'][^"']*noindex/i.test(
     fs.readFileSync(path.join(ROOT, f), "utf8"));
 });
+
+// The home page is served at the apex, so its sitemap entry is the bare origin
+// rather than "index.html" - and it has to be, because listing index.html would
+// point crawlers at a URL Cloudflare Pages 308-redirects back to "/". These two
+// helpers keep the file<->URL mapping honest in both directions.
+const urlFor = f => (f === "index.html" ? SITE : SITE + f);
+const fileFor = loc => (loc === SITE || loc === SITE.replace(/\/$/, "") ? "index.html" : loc.slice(SITE.length));
 
 const xml = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
 const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim());
@@ -32,7 +39,7 @@ locs.forEach(loc => {
     errors.push('sitemap entry does not start with ' + SITE + ': ' + loc);
     return;
   }
-  const file = loc.slice(SITE.length);
+  const file = fileFor(loc);
   if (!pages.includes(file)) {
     errors.push("sitemap lists " + file + ", which is not a page in the repo");
   } else if (!indexable.includes(file)) {
@@ -42,7 +49,7 @@ locs.forEach(loc => {
 
 // indexable but not listed
 indexable.forEach(f => {
-  if (!locs.includes(SITE + f)) errors.push(f + " is indexable but missing from the sitemap");
+  if (!locs.includes(urlFor(f))) errors.push(f + " is indexable but missing from the sitemap");
 });
 
 // listed twice

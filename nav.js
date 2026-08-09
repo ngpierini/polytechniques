@@ -1,6 +1,6 @@
 // Shared cross-page navigation strip. Injected into the topbar of every
 // interior page so you can hop between tools without going through home.
-// home.html doesn't load this (its card grid is the navigation).
+// index.html (the home page) doesn't load this - its card grid is the navigation.
 (function () {
   "use strict";
 
@@ -113,8 +113,18 @@
     ["founder.html", "About the Founder", "nick pierini bio contact"],
     ["terms.html", "Terms of Use", "license proprietary copyright rights legal"],
     ["privacy.html", "Privacy", "privacy policy data cookies analytics gdpr tracking"],
-    ["home.html", "Home", "toolkit start"]
+    ["/", "Home", "toolkit start"]
   ];
+
+  // One key per page, agreed on by both the address bar and LINKS above.
+  // Strips a trailing slash and a .html extension, and calls the apex "index",
+  // so "/", "/index.html" and "index.html" are all one page.
+  function pageKey(href) {
+    var s = String(href || "").split("?")[0].split("#")[0].replace(/\/+$/, "");
+    var last = s.split("/").pop();
+    if (!last) return "index";
+    return last.replace(/\.html$/i, "").toLowerCase();
+  }
 
   // ---- Ad slot (Google AdSense), injected site-wide ----
   //
@@ -444,7 +454,7 @@
 
     var a = document.createElement("a");
     a.className = "brand-link";
-    a.href = "home.html";
+    a.href = "/";
     a.innerHTML =
       '<img src="favicon.svg" alt="" class="brand-mark">' +
       '<span class="brand-name"><span class="brand-poly">Poly</span>Techniques<sup>&trade;</sup></span>';
@@ -465,7 +475,14 @@
     injectGuideLinks(topbar);
     if (topbar.querySelector(".site-nav")) return;
 
-    var current = (location.pathname.split("/").pop() || "home.html").toLowerCase();
+    // Compare pages by name with the extension stripped, because the address
+    // bar and this list disagree about it: Cloudflare Pages 308-redirects
+    // "calculator.html" to "calculator", so pathname.pop() returns
+    // "calculator" and never matched the "calculator.html" in LINKS. The
+    // current-page pill was therefore highlighted on no page of the live site,
+    // while working locally where the .html survives. The apex normalises to
+    // "index" so the Home entry lights up there.
+    var current = pageKey(location.pathname);
 
     var nav = document.createElement("nav");
     nav.className = "site-nav";
@@ -475,7 +492,7 @@
       var a = document.createElement("a");
       a.href = l[0];
       a.textContent = l[1];
-      if (l[0] === current) {
+      if (pageKey(l[0]) === current) {
         a.className = "site-nav-current";
         a.setAttribute("aria-current", "page");
       }

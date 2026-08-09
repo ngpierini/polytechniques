@@ -1,0 +1,17 @@
+# Cloudflare Pages redirects.
+#
+# The home page used to live at home.html, with index.html a stub that carried
+# no content and bounced to it with a meta refresh plus location.replace. A
+# browser followed that fine. A crawler landing on the apex did not: it got
+# 1.3 KB of "Redirecting..." with nothing to read, and anything that would not
+# run the script saw no site at all. Google's AdSense ad-placement preview was
+# the case that surfaced it - it reported "We can't find the page you're
+# looking for" for getpolytechniques.com while the site was plainly up.
+#
+# The home page is now index.html, so the apex serves the real thing with a
+# 200 and no hop. These two rules keep every existing link and bookmark to the
+# old address working, as a real server-side redirect rather than a scripted
+# one. 301 rather than 302 because the move is permanent and the ranking
+# signal should follow.
+/home       /   301
+/home.html  /   301

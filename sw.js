@@ -8,10 +8,10 @@
 // Either way the calculators still work with no connection. Bump CACHE_NAME
 // whenever the pre-cache list below changes so old clients pick up the new
 // set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v223";
+const CACHE_NAME = "polytechniques-v224";
 
 const PRECACHE_URLS = [
-  "home.html",
+  "index.html",
   "calculator.html",
   "polymer-search.html",
   "tg-predictor.html",
@@ -37,7 +37,7 @@ const PRECACHE_URLS = [
   "404.html",
   "style.css",
   "theme.js?v=1",
-  "nav.js?v=19",
+  "nav.js?v=20",
   "polymer-calc-core.js?v=1",
   "polymer-data.js",
   "polymer-xref.js?v=1",
@@ -56,7 +56,7 @@ const PRECACHE_URLS = [
   "apple-touch-icon.png"
 ];
 
-// Cloudflare Pages 308-redirects "home.html" to "home", so a plain addAll
+// Cloudflare Pages 308-redirects "calculator.html" to "calculator", so a plain addAll
 // would store redirected responses — and Chrome refuses to serve a cached
 // redirected response for a navigation, which would break offline mode.
 // stripRedirect rebuilds the response so the cached copy is a clean 200.
@@ -130,7 +130,7 @@ self.addEventListener("fetch", function (event) {
         .then(function (res) { return cachePut(req, res); })
         .catch(function () {
           return caches.match(req).then(function (cached) {
-            return cached || caches.match("home.html");
+            return cached || caches.match("index.html");
           });
         })
     );
