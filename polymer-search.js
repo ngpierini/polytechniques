@@ -1814,11 +1814,24 @@
 
     function exportSVG() {
       var bbox = structureBBox();
-      if (!bbox) return;
+      if (!bbox) { smilesNote('Draw something first.'); return; }
       var shim = new SVGRenderContext();
       var savedCtx = ctx;
       ctx = shim;
-      drawStructure(EXPORT_TEXT, EXPORT_BG);
+      // This shim has now silently swallowed an export twice - once for a
+      // missing save/restore, once for quadraticCurveTo - because drawStructure
+      // grew a call it did not implement and the throw went nowhere. Catch it,
+      // name the method, and say so. A loud failure is the point; the next
+      // missing method should be a one-line fix, not an afternoon.
+      try {
+        drawStructure(EXPORT_TEXT, EXPORT_BG);
+      } catch (err) {
+        ctx = savedCtx;
+        var m = /(\w+) is not a function/.exec(String(err && err.message));
+        smilesNote('SVG export failed' + (m ? ': the vector exporter has no "' + m[1] + '". ' : '. ') +
+          'PNG and JPEG still work — please report this.');
+        return;
+      }
       ctx = savedCtx;
       var bgRect = '<rect x="' + shim._r(bbox.minX) + '" y="' + shim._r(bbox.minY) + '" width="' + shim._r(bbox.width) + '" height="' + shim._r(bbox.height) + '" fill="' + EXPORT_BG + '"/>';
       var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + shim._r(bbox.minX) + ' ' + shim._r(bbox.minY) + ' ' + shim._r(bbox.width) + ' ' + shim._r(bbox.height) +
@@ -5085,7 +5098,9 @@
 
       var sub = currentRepeatUnit();
       if (!sub) {
-        statusEl.textContent = 'Draw a repeat unit, then use the Bracket tool to mark it before searching.';
+        // Before refusing, ask the other question: is this a monomer?
+        if (searchAsMonomer(statusEl)) return;
+        statusEl.textContent = 'Draw a repeat unit and mark it with the Bracket tool — or draw a monomer, and this will tell you what it polymerises to.';
         renderResults([]);
         return;
       }
@@ -5200,6 +5215,42 @@
       if (card && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // Paint a soft band along each reaction-centre bond. `part` is the laid-out
+    // half (atoms numbered 1..n in source order); `sourceAtoms` is the graph it
+    // came from, so a library atom id maps to a laid-out atom by POSITION -
+    // molblockFrom writes atoms in order and the layout preserves it. If the
+    // counts disagree (a superatom expanded) the highlight is skipped rather
+    // than drawn in the wrong place.
+    var CENTRE_COLOR = 'rgba(37, 99, 235, 0.28)';
+    function highlightCentre(pctx, part, centre, sourceAtoms) {
+      if (!centre || !centre.length || !sourceAtoms) return;
+      if (part.atoms.length !== sourceAtoms.length) return;
+      var indexOfId = {};
+      sourceAtoms.forEach(function (a, i) { indexOfId[a.id] = i; });
+      pctx.save();
+      pctx.strokeStyle = CENTRE_COLOR;
+      pctx.lineWidth = 11;
+      pctx.lineCap = 'round';
+      centre.forEach(function (pair) {
+        var ia = indexOfId[pair[0]], ib = indexOfId[pair[1]];
+        if (ia == null || ib == null) return;
+        var p1 = part.atoms[ia], p2 = part.atoms[ib];
+        if (!p1 || !p2) return;
+        // Only mark a bond that is actually THERE. A ring-opening centre is the
+        // bond the ring closes across: it exists in the monomer and not in the
+        // polymer, and drawing it on the polymer would be a band over nothing.
+        var present = part.bonds.some(function (b) {
+          return (b.a === p1.id && b.b === p2.id) || (b.a === p2.id && b.b === p1.id);
+        });
+        if (!present) return;
+        pctx.beginPath();
+        pctx.moveTo(p1.x, p1.y);
+        pctx.lineTo(p2.x, p2.y);
+        pctx.stroke();
+      });
+      pctx.restore();
+    }
+
     function drawPendingScheme() {
       if (!pendingScheme) return;
       var job = pendingScheme;
@@ -5232,6 +5283,12 @@
         var savedHover = hoverAtom, savedSel = selectedAtom, savedGroup = selectedGroup;
         ctx = pctx; brackets = []; hoverAtom = null; selectedAtom = null; selectedGroup = [];
         try {
+          // The reaction centre, painted UNDER the structure so the bonds that
+          // change are obvious without redrawing them. This is what a reaction
+          // database charges for, and here it costs nothing: deriveMonomer had
+          // to know which bond moved in order to move it.
+          highlightCentre(pctx, left, job.monomer.centre, job.monomer.atoms);
+          highlightCentre(pctx, right, job.monomer.centre, job.polymer.atoms);
           atoms = left.atoms; bonds = left.bonds;
           drawStructure(textColor, bgColor);
           atoms = right.atoms; bonds = right.bonds;
@@ -5372,6 +5429,53 @@
       }).catch(function () {
         if (note) note.textContent = 'The chemistry engine could not load. Check your connection and try again.';
       });
+    }
+
+    // ---------- Search by monomer ----------
+    //
+    // The other direction: draw what you HAVE and find what it makes. Until
+    // now drawing styrene - the actual monomer - returned "draw a repeat unit"
+    // and no matches, even though the library derives styrene from polystyrene
+    // for 207 entries. The information was there and only ran one way.
+    //
+    // Keyed on the plain-molecule hash of the DERIVED monomer, so a match means
+    // the same verified round trip that put the scheme on screen; nothing new
+    // is claimed here.
+    var monomerIdx = null;
+    function monomerIndex() {
+      if (monomerIdx) return monomerIdx;
+      monomerIdx = {};
+      (window.POLYMER_DB || []).forEach(function (p) {
+        if (!Array.isArray(p.atoms) || !p.atoms.length || p.noScheme) return;
+        var m = PG.deriveMonomer(p.atoms, p.bonds, p.cls);
+        if (!m) return;
+        var h = wlHash(m.atoms, m.bonds);
+        (monomerIdx[h] || (monomerIdx[h] = [])).push({ p: p, m: m });
+      });
+      return monomerIdx;
+    }
+    function searchAsMonomer(statusEl) {
+      if (!atoms.length) return false;
+      if (atoms.some(function (a) { return a.el === '*'; })) return false;  // that is a repeat unit
+      var ex = expandSuperatoms(atoms, bonds);
+      var h = wlHash(ex.atoms, ex.bonds.map(function (b) { return { a: b.a, b: b.b, order: b.order }; }));
+      var hits = monomerIndex()[h];
+      if (!hits || !hits.length) return false;
+      var names = hits.map(function (x) { return x.p.name; });
+      // Dienes are the interesting case: one monomer, two polymers, and the
+      // catalyst decides which. Say so rather than listing them silently.
+      var isDiene = hits.every(function (x) { return x.m.kind === 'diene'; });
+      statusEl.textContent = hits.length === 1
+        ? 'That is a monomer. It polymerises to ' + names[0] + ':'
+        : 'That is a monomer. It polymerises to ' + hits.length + ' polymers in this library' +
+          (isDiene ? ' — same monomer, and the catalyst decides which geometry you get' : '') + ':';
+      // Several hits from one monomer usually means one polymer with declared
+      // variants (polystyrene and its foam) or the diene pair, and those share a
+      // repeat unit - so the scheme still belongs to the set.
+      var hitPolymers = hits.map(function (x) { return x.p; });
+      renderResults(hitPolymers, schemeCandidate(hitPolymers));
+      renderPublications(hits[0].p);
+      return true;
     }
 
     // The one place that decides what the drawing's repeat unit IS. The chain

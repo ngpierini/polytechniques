@@ -622,6 +622,10 @@
     var lb = findBond(m.bonds, p.at, q.at);
     if (!lb) return null;
     lb.order = 2;
+    // The reaction centre: the bond that differs between monomer and polymer.
+    // It was already known here - the whole rule is "change this bond" - and
+    // was simply being thrown away.
+    m.centre = [[p.at, q.at]];
     return m;
   }
   // conjugated diene, 1,4-addition: *-CH2-CH=CH-CH2-* came from CH2=CH-CH=CH2
@@ -641,6 +645,7 @@
         b23 = findBond(m.bonds, path[2], path[3]);
     if (!b01 || !b12 || !b23 || b12.order !== 2) return null;
     b01.order = 2; b12.order = 1; b23.order = 2;
+    m.centre = [[path[0], path[1]], [path[1], path[2]], [path[2], path[3]]];
     // The monomer has no backbone geometry. cis- and trans-1,4-polybutadiene
     // come from the SAME butadiene; which one you get is the catalyst's doing,
     // not the monomer's. So the geometry is dropped here, and the round-trip
@@ -685,6 +690,10 @@
       var path = pathBetween(core, info.attach[0].at, info.attach[1].at);
       if (!path || path.length < minRing) return null;
     }
+    // The bond the ring reforms across is exactly the one that broke on
+    // opening - the reaction centre, free of charge.
+    var att = starAttachments(atoms, bonds);
+    if (att) closed.centre = [[att.attach[0].at, att.attach[1].at]];
     return closed;
   }
   function monomerLactam(atoms, bonds) { return monomerRingOpen(atoms, bonds, 5); }
@@ -757,7 +766,7 @@
     var h1 = blind ? blindHash(atoms, bonds) : closedHash(atoms, bonds);
     var h2 = blind ? blindHash(rebuilt.atoms, rebuilt.bonds) : closedHash(rebuilt.atoms, rebuilt.bonds);
     if (h1 == null || h1 !== h2) return null;
-    return { atoms: m.atoms, bonds: m.bonds, kind: rule.kind };
+    return { atoms: m.atoms, bonds: m.bonds, kind: rule.kind, centre: m.centre || [] };
   }
 
   function elementProfile(atoms) {

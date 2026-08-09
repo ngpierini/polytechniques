@@ -79,6 +79,9 @@
         <strong>How it is made.</strong> Where a match's monomer can be recovered from its repeat unit, the result shows the polymerisation as a scheme: monomer, arrow, repeat unit. Addition and ring-opening are isomerisations &ndash; the repeat unit is the monomer with one bond moved &ndash; so the move can be reversed, and every derived monomer is checked by rebuilding the polymer from it before it is drawn. Around 230 entries qualify. Step-growth never does: a polyester repeat unit came from a diol <em>and</em> a diacid, and one unit cannot say which pair, so no scheme is drawn rather than a guessed one. <strong>Reaction conditions are not in this library</strong> &ndash; no initiator, catalyst, solvent or temperature is recorded for any entry, so the arrow names the mechanism and nothing more. <a href="mechanisms.html">Mechanisms</a> is where the actual chemistry of running these polymerisations lives.
       </p>
       <p class="guide-note">
+        <strong>Draw a monomer instead.</strong> The search runs both ways. Draw a repeat unit and it names the polymer; draw a <em>monomer</em> &ndash; styrene, caprolactam, methyl methacrylate &ndash; and it names what that monomer polymerises to, because the same verified derivation that draws the scheme is indexed in reverse. Butadiene returns both 1,4-polybutadienes, since one monomer gives either geometry and the catalyst decides. The bonds that actually change are shaded in the scheme, on both sides of the arrow: the alkene that opens, or the ring bond that breaks.
+      </p>
+      <p class="guide-note">
         <strong>Stereochemistry.</strong> The geometry of a backbone double bond is part of the match, because it is part of the polymer: cis-1,4-polyisoprene is natural rubber and the trans isomer is gutta-percha, a hard resin, from the same atoms joined the same way. Use the cis/trans tool on a double bond to state it &mdash; "cis" meaning the chain continues on the same side, which is what a polymer name means by it, not the CIP priority rule. Leave it unset and the search matches every isomer of that skeleton and says which ones they are. <strong>Tacticity is different</strong>: it describes how one repeat unit follows the next, so no single repeat unit can carry it. The four polypropylenes are one drawing, and a structure search returns all four together and says why.
       </p>
     </details>
@@ -248,9 +251,9 @@
             <div class="mol-tip"><dt>Zoom &amp; pan</dt><dd>Ctrl and the scroll wheel zooms about the cursor, or use the magnifier buttons. Pan with the middle mouse button, or hold Space and drag. The framed button resets both. Zooming changes nothing about the structure &ndash; the search and every export see the same drawing either way.</dd></div>
             <div class="mol-tip"><dt>Show 3 units</dt><dd>Draws three of your repeat unit joined end to end. The quickest way to catch a bracket that cuts the wrong bond, or that holds two units where you meant one.</dd></div>
             <div class="mol-tip"><dt>Reaction arrow</dt><dd>Drag to draw one, or click for a default horizontal arrow; near-horizontal drags snap flat. Drag either end dot to re-aim or resize it, or the shaft to move it. The three shape buttons give a plain arrow, an equilibrium (RAFT, ATRP and ROMP are all equilibria) or a fishhook for one-electron radical steps &ndash; and set the shape for the next arrow you draw.</dd></div>
-            <div class="mol-tip"><dt>Curly arrows</dt><dd>Two of the five arrow shapes are curved electron pushes &ndash; a full head for a two-electron move, a single barb for one. Drag the middle handle to bend one. They carry no reagent text, because a curly arrow says where electrons go, not what was added.</dd></div>
-            <div class="mol-tip"><dt>Subscripts</dt><dd>Digits after a letter subscript themselves, so typing H2O renders H<sub>2</sub>O and Mn renders as written. Force one anywhere with an underscore. The row of buttons inserts &deg;, &Delta;, &middot;, &rarr;, &hArr;, &alpha;, &beta; and &bull; into whichever field you were last typing in.</dd></div>
-            <div class="mol-tip"><dt>Edit as a drawing</dt><dd>A matched polymer&rsquo;s scheme has an <strong>Edit as a drawing</strong> button that drops the derived monomer, the arrow and the repeat unit onto the canvas, ready for your own reagents and conditions &ndash; the ones the library deliberately does not record. <strong>Copy image</strong> puts either the scheme or your drawing straight on the clipboard.</dd></div>
+            <div class="mol-tip"><dt>Curly arrows</dt><dd>Two of the five arrow shapes are curved electron pushes &ndash; a full head for a two-electron move, a single barb for one. Drag the middle handle to bend one. They carry no reagent text, because a curly arrow says where electrons go, not what was added.</dd></div>
+            <div class="mol-tip"><dt>Subscripts</dt><dd>Digits after a letter subscript themselves, so typing H2O renders H<sub>2</sub>O and Mn renders as written. Force one anywhere with an underscore. The row of buttons inserts &deg;, &Delta;, &middot;, &rarr;, &hArr;, &alpha;, &beta; and &bull; into whichever field you were last typing in.</dd></div>
+            <div class="mol-tip"><dt>Edit as a drawing</dt><dd>A matched polymer&rsquo;s scheme has an <strong>Edit as a drawing</strong> button that drops the derived monomer, the arrow and the repeat unit onto the canvas, ready for your own reagents and conditions &ndash; the ones the library deliberately does not record. <strong>Copy image</strong> puts either the scheme or your drawing straight on the clipboard.</dd></div>
             <div class="mol-tip"><dt>Text and +</dt><dd>The text tool drops a label anywhere &ndash; a species name, an "n", a note. The <strong>+</strong> button places a plus in one click, which is what a step-growth scheme needs, since a polyester comes from a diol <em>and</em> a diacid. Both are annotation: they render into every export and are never part of a search.</dd></div>
             <div class="mol-tip"><dt>Red rings</dt><dd>An atom circled in red has more bonds than the element allows. The bar under the canvas says how many and which elements. It is the same limit the reference library itself is checked against.</dd></div>
             <div class="mol-tip"><dt>Escape</dt><dd>Release the current chain without adding another atom.</dd></div>
@@ -415,10 +418,10 @@
 
 <script src="polymer-data.js?v=36"></script>
 <script src="polymer-xref.js?v=1"></script>
-<script src="polymer-graph.js?v=9"></script>
+<script src="polymer-graph.js?v=10"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=164"></script>
+<script src="polymer-search.js?v=166"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
