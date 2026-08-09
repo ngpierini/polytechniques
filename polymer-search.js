@@ -2947,6 +2947,26 @@
       return out.length ? '<div class="mol-xref">' + out.join('') + '</div>' : '';
     }
 
+    // The end-group block for a telechelic grade. Equivalent weight is the
+    // number someone actually weighs out, so it leads; the supplier's own
+    // published figure is shown next to it rather than instead of it, because
+    // AHEW and equivalent weight are not the same quantity and quietly
+    // presenting one as the other is how a formulation ends up off by two.
+    function telechelicHtml(p) {
+      var t = p && p.telechelic;
+      if (!t) return '';
+      var bits = [
+        escapeHtml(t.endGroup) + '-terminated',
+        'f ≈ ' + t.functionality,
+        '<strong>' + t.equivalentWeight + ' g/eq</strong> per end group'
+      ];
+      if (t.mn) bits.push('M<sub>n</sub> ≈ ' + t.mn);
+      return '<div class="mol-result-note mol-telechelic">' +
+        '<strong>End groups.</strong> ' + bits.join(' &nbsp;&middot;&nbsp; ') +
+        '. Supplier figure: ' + escapeHtml(t.spec) + '. ' +
+        '<em>' + escapeHtml(t.source) + '</em></div>';
+    }
+
     function polymerCard(p) {
       var props = [];
       if (p.tg) props.push('T<sub>g</sub> ≈ ' + escapeHtml(p.tg));
@@ -2957,6 +2977,7 @@
         (p.aka && p.aka.length ? '<div class="mol-result-aka">' + escapeHtml(p.aka.join(', ')) + '</div>' : '') +
         '<div class="mol-result-meta">' + escapeHtml(p.monomer || '') + (p.cls ? ' &middot; ' + escapeHtml(p.cls) : '') + '</div>' +
         (props.length ? '<div class="mol-result-props">' + props.join(' &nbsp;&middot;&nbsp; ') + '</div>' : '') +
+        telechelicHtml(p) +
         (p.note ? '<div class="mol-result-note">' + escapeHtml(p.note) + '</div>' : '') +
         (canDrawEntry(p)
           ? '<div class="mol-result-actions">' +
@@ -5643,9 +5664,33 @@
         var f = fingerprintOf(p);
         return qClosed != null ? f._chash === qClosed : f._hash === qOpen;
       });
+      // An entry that declines to state its double-bond geometry is compatible
+      // with a drawing that states one, and the reverse. HTPB forced this: it is
+      // a mixture of cis-1,4, trans-1,4 and 1,2-vinyl, so its repeat unit states
+      // no geometry - which made it invisible to anyone who drew trans-1,4
+      // polybutadiene, while a geometry-free drawing found HTPB and none of the
+      // stereoregular polybutadienes. Two entries that BOTH state a geometry and
+      // disagree are still different materials and stay out of this.
+      var qCompat = blindHash(sub.atoms, sub.bonds);
+      var drawnIsomer = isomerOf(sub);
+      var compatible = qCompat == null ? [] : db.filter(function (p) {
+        if (exact.indexOf(p) !== -1) return false;
+        if (fingerprintOf(p)._bhash !== qCompat) return false;
+        return !drawnIsomer || !isomerOf(p);
+      });
+      function compatibilityNote(extras) {
+        if (!extras.length) return '';
+        var named = extras.map(function (p) {
+          return isomerOf(p) ? p.name + ' (' + isomerOf(p) + ')' : p.name + ' (geometry not stated)';
+        });
+        return ' Also shown, because one side leaves the backbone double bond’s geometry open rather than because it is the same material: ' +
+          named.join(', ') + '.';
+      }
       if (exact.length) {
-        statusEl.textContent = 'Exact match found:' + tacticityNote(exact);
-        renderResults(exact, schemeCandidate(exact));
+        statusEl.textContent = 'Exact match found:' + tacticityNote(exact) + compatibilityNote(compatible);
+        // The scheme stays tied to the exact hits: a merely geometry-compatible
+        // entry must not be the one whose reaction gets drawn.
+        renderResults(exact.concat(compatible), schemeCandidate(exact));
         renderPublications(exact[0]);
         return;
       }

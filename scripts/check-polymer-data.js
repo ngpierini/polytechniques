@@ -35,8 +35,25 @@ const TACTICITIES = ["isotactic", "syndiotactic", "atactic"];
 // molar mass or how the solid was made - the whole difference between HDPE,
 // LDPE and UHMWPE, which are one molecule and three materials.
 const VARIANT_FIELDS = ["tacticity", "form"];
+
+// End groups a repeat unit cannot show either. HTPB and polybutadiene share a
+// repeat unit; what differs is what terminates the chain, how many ends there
+// are, and the equivalent weight you actually weigh out. Grade matters too -
+// JEFFAMINE D-230, D-400 and D-2000 are one molecule at three chain lengths -
+// so the equivalent weight is part of the signature, exactly as "form" is what
+// separates HDPE from LDPE.
+const END_GROUPS = [
+  "hydroxyl", "amine", "carboxyl", "epoxy", "isocyanate",
+  "vinyl", "methacrylate", "acrylate", "thiol", "silanol", "anhydride",
+];
+function telechelicKey(entry) {
+  const t = entry.telechelic;
+  if (!t) return "-";
+  return t.endGroup + "/f" + t.functionality + "/ew" + t.equivalentWeight;
+}
 function variantKey(entry) {
-  return VARIANT_FIELDS.map(function (f) { return entry[f] || "-"; }).join("|");
+  return VARIANT_FIELDS.map(function (f) { return entry[f] || "-"; })
+    .concat(telechelicKey(entry)).join("|");
 }
 
 // Generous max valence per element (bond-order sum), with slack for formal
@@ -153,6 +170,45 @@ function checkEntry(entry, idx, errors) {
       }
       if (typeof c.summary === "string" && c.summary.length > 60) {
         errors.push(where + ": conditions.summary is what sits over the arrow; keep it under 60 characters");
+      }
+    }
+  }
+  // A telechelic is a commercial grade, so the numbers here are the ones someone
+  // weighs out. equivalentWeight is defined as grams per END GROUP (Mn / f), not
+  // whatever the trade literature happens to quote - AHEW counts N-H hydrogens
+  // and is half the amine equivalent weight, an epoxy EEW counts oxirane rings.
+  // The quoted figure goes in "spec" verbatim so both are available and neither
+  // is silently converted into the other.
+  if (entry.telechelic !== undefined) {
+    const t = entry.telechelic;
+    const w = where + ": telechelic";
+    if (!t || typeof t !== "object" || Array.isArray(t)) {
+      errors.push(w + " must be an object");
+    } else {
+      if (END_GROUPS.indexOf(t.endGroup) === -1) {
+        errors.push(w + ".endGroup must be one of " + END_GROUPS.join(", ") + " (got " + JSON.stringify(t.endGroup) + ")");
+      }
+      if (typeof t.functionality !== "number" || !(t.functionality > 1) || t.functionality > 10) {
+        errors.push(w + ".functionality must be a number above 1 and at most 10 (got " + JSON.stringify(t.functionality) + ")");
+      }
+      if (typeof t.equivalentWeight !== "number" || !(t.equivalentWeight > 20)) {
+        errors.push(w + ".equivalentWeight must be a number above 20, in grams per end group");
+      }
+      if (typeof t.spec !== "string" || !/\d/.test(t.spec)) {
+        errors.push(w + ".spec must quote the figure the supplier actually publishes, with its number");
+      }
+      // Grade numbers are nominal - Huntsman calls D-400 "about 400" - so this
+      // tolerance is deliberately loose. It is here to catch a typo or a decimal
+      // slip, not to referee marketing rounding.
+      if (typeof t.mn === "number" && typeof t.equivalentWeight === "number" && typeof t.functionality === "number") {
+        const implied = t.functionality * t.equivalentWeight;
+        if (Math.abs(t.mn - implied) / t.mn > 0.25) {
+          errors.push(w + ".mn " + t.mn + " disagrees with functionality x equivalentWeight (" +
+            Math.round(implied) + ") by more than 25% - one of the three is wrong");
+        }
+      }
+      if (typeof t.source !== "string" || !/\d{4}|data sheet|datasheet|technical bulletin|\bdoi\b|§/i.test(t.source)) {
+        errors.push(w + ".source must name a specific document - a technical bulletin, data sheet, year or DOI");
       }
     }
   }

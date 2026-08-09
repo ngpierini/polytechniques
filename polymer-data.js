@@ -6029,6 +6029,81 @@ window.POLYMER_DB = [
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "F" }, { id: 6, el: "F" }, { id: 7, el: "F" }, { id: 8, el: "C" }, { id: 9, el: "F" }, { id: 10, el: "F" }, { id: 11, el: "F" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 4, b: 6, order: 1 }, { a: 4, b: 7, order: 1 }, { a: 3, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 3, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: "S1", order: 1 }],
     note: "Two trifluoromethyls on the same backbone carbon, the same hexafluoroisopropylidene group that separates the rings in fluorinated polyimides. It disrupts chain packing severely, so the polymer has high free volume and correspondingly high gas permeability - the structural motif behind most of the fluorinated gas separation membranes."
+  },
+  {
+    name: "JEFFAMINE D-230 polyetheramine", aka: ["JEFFAMINE D-230","D-230","polyoxypropylenediamine 230","polyetheramine D-230","Jeffamine D230"],
+    monomer: "propylene oxide, then amination of the diol", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","curing agent","polyether","engineering"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "amine", functionality: 2,
+      equivalentWeight: 120, mn: 230,
+      spec: "AHEW 60 g/eq",
+      source: "Huntsman, \"Epoxy formulations using JEFFAMINE polyetheramines\" technical bulletin, Table 3.1"
+    },
+    noScheme: "this is a commercial grade rather than a polymerisation product in its own right - the chain is built from propylene oxide and then the terminal hydroxyls are aminated, so closing the repeat unit would show propylene oxide and say nothing about the amine ends that define the material",
+    note: "A poly(propylene oxide) chain of one to two oxypropylene units capped at both ends with a primary amine. The amines sit on secondary carbons, so the pendant methyl sterically hinders the nitrogen and the reactivity is moderate rather than fast - which is the point in epoxy work, where it buys pot life. At an AHEW of 60, 32 parts cure 100 parts of an epoxy resin of EEW 185."
+  },
+  {
+    name: "JEFFAMINE D-400 polyetheramine", aka: ["JEFFAMINE D-400","D-400","polyetheramine D-400","Jeffamine D400"],
+    monomer: "propylene oxide, then amination of the diol", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","curing agent","polyether","engineering"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "amine", functionality: 2,
+      equivalentWeight: 230, mn: 400,
+      spec: "AHEW 115 g/eq",
+      source: "Huntsman, \"Epoxy formulations using JEFFAMINE polyetheramines\" technical bulletin, Table 3.1"
+    },
+    noScheme: "a commercial grade rather than a polymerisation product in its own right - the chain is built from propylene oxide and then aminated, so a derived monomer would show propylene oxide and miss the amine ends entirely",
+    note: "The same amine-terminated poly(propylene oxide) as D-230 with a longer chain - about five to six oxypropylene units. Doubling the backbone roughly doubles the equivalent weight, so twice the mass is needed per epoxy group, and the extra ether backbone between crosslinks is what lowers the modulus and raises the elongation of the cured network."
+  },
+  {
+    name: "JEFFAMINE D-2000 polyetheramine", aka: ["JEFFAMINE D-2000","D-2000","polyetheramine D-2000","Jeffamine D2000"],
+    monomer: "propylene oxide, then amination of the diol", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","curing agent","polyether","elastomer"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "amine", functionality: 2,
+      equivalentWeight: 1028, mn: 2000,
+      spec: "AHEW 514 g/eq",
+      source: "Huntsman, \"Epoxy formulations using JEFFAMINE polyetheramines\" technical bulletin, Table 3.1"
+    },
+    noScheme: "a commercial grade rather than a polymerisation product in its own right - built from propylene oxide and then aminated, so a derived monomer would say nothing about the amine ends",
+    note: "The long member of the D series, about 33 oxypropylene units between the two amine ends. The equivalent weight is high enough that it is used less as a whole curative than as a flexibiliser blended with a shorter one: it puts a long, mobile polyether segment between crosslinks and turns a glassy network rubbery."
+  },
+  {
+    name: "JEFFAMINE T-403 polyetheramine", aka: ["JEFFAMINE T-403","T-403","polyetheramine T-403","trifunctional polyetheramine","Jeffamine T403"],
+    monomer: "propylene oxide on trimethylolpropane, then amination", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","curing agent","polyether","crosslinker","engineering"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "amine", functionality: 3,
+      equivalentWeight: 162, mn: 440,
+      spec: "AHEW 81 g/eq",
+      source: "Huntsman, \"Epoxy formulations using JEFFAMINE polyetheramines\" technical bulletin, Table 3.1"
+    },
+    noScheme: "a commercial grade rather than a polymerisation product in its own right, and a three-armed one: the repeat unit is oxypropylene but the trimethylolpropane core and the three amine ends are what the material is",
+    note: "Trifunctional rather than difunctional: propylene oxide grown on a trimethylolpropane initiator, x+y+z about 5.3, then all three ends aminated. The third arm is what makes it a crosslinker rather than a chain extender - a difunctional amine and a difunctional epoxy give a linear chain, and something has to exceed two for a network to form at all."
+  },
+  {
+    name: "Hydroxyl-terminated polybutadiene", aka: ["HTPB","Poly bd R-45HTLO","R-45HTLO","hydroxy-terminated polybutadiene","liquid hydroxyl-terminated polybutadiene"],
+    monomer: "1,3-butadiene (radical, hydroxyl-terminating initiator)", cls: "Addition (diene)", cas: null,
+    tags: ["telechelic","prepolymer","elastomer","diene","coating","adhesive"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "hydroxyl", functionality: 2.5,
+      equivalentWeight: 1120, mn: 2800,
+      spec: "functionality 2.4-2.6, Mn about 2800",
+      source: "Cray Valley, Poly bd R-45HTLO technical data sheet"
+    },
+    noScheme: "the repeat unit is butadiene but this is a telechelic grade, not a homopolymerisation product: the hydroxyl ends come from the initiator, and a derived monomer would show butadiene and miss the thing that makes the material useful",
+    note: "A liquid hydroxyl-terminated polybutadiene, Mn about 2800, and the classic example of why functionality is quoted as a number rather than an integer: at 2.4-2.6 there is roughly one extra hydroxyl along the chain for every two oligomer units, so it crosslinks with a diisocyanate instead of merely chain-extending. The hydroxyls are primary allylic alcohols. The hydrocarbon backbone gives hydrophobicity, a low Tg, low moisture permeability and resistance to aqueous acid and base, which is what puts it in potting and encapsulation, sealants, adhesives, waterproof membranes and cast polyurethanes."
   }
 ];
 
