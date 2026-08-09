@@ -3298,12 +3298,12 @@ window.POLYMER_DB = [
   },
   {
     name: "Cellulose nanocrystal", aka: ["CNC", "nanocrystalline cellulose", "cellulose nanowhisker"],
+    form: "acid-hydrolysed nanocrystal",
     monomer: "cellulose (acid-hydrolysed to the crystalline domains)", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Not a distinct polymer but a distinct material: acid hydrolysis eats the disordered regions of a cellulose fibre and leaves the crystalline segments, rods a few nanometres across and a few hundred long. They have the stiffness of a defect-free crystal, carry sulfate charges from the hydrolysis that keep them dispersed, and above a critical concentration order into a chiral nematic phase that dries to an iridescent film. Not drawn: the chemistry is cellulose's; what is new is the size and shape."
+    atoms: [{"id":"S0","el":"*"},{"id":2,"el":"O"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"O"},{"id":8,"el":"C"},{"id":"S1","el":"*"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"O"}], bonds: [{"a":"S0","b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":4,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":"S1","order":1},{"a":8,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":10,"b":12,"order":1},{"a":3,"b":12,"order":1},{"a":12,"b":13,"order":1}],
+    note: "The repeat unit is cellulose because a nanocrystal is cellulose: sulfuric acid removes the disordered regions and leaves the crystalline domains behind as rods a few nanometres across. The difference is entirely one of dimension and surface - the hydrolysis leaves anionic sulfate half-esters that keep the rods dispersed - and none of that is visible in one glucose unit."
   },
   {
     name: "Lignosulfonate", aka: ["lignosulphonate", "sulfite lignin", "lignin sulfonate"],
@@ -3541,12 +3541,12 @@ window.POLYMER_DB = [
   },
   {
     name: "Chitosan oligosaccharide", aka: ["COS", "chitooligosaccharide", "oligochitosan"],
+    form: "oligosaccharide",
     monomer: "D-glucosamine (short chains)", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "biomedical", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Chitosan cut short enough to change its behaviour rather than merely its viscosity. Below about twenty units it dissolves in water at neutral pH, which chitosan will not, and it crosses membranes and is absorbed where the polymer is not - so the antimicrobial and immunostimulant activity attributed to chitosan is often really the oligomer's. Not drawn: it is chitosan's structure at a length that no repeat unit conveys."
+    atoms: [{"id":"S0","el":"*"},{"id":2,"el":"O"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"O"},{"id":8,"el":"C"},{"id":"S1","el":"*"},{"id":10,"el":"C"},{"id":11,"el":"N"},{"id":12,"el":"C"},{"id":13,"el":"O"}], bonds: [{"a":"S0","b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":4,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":"S1","order":1},{"a":8,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":10,"b":12,"order":1},{"a":3,"b":12,"order":1},{"a":12,"b":13,"order":1}],
+    note: "Chitosan cut short. The repeat unit is unchanged; what changes is chain length, and with it everything practical - the oligosaccharide is water-soluble at neutral pH where the polymer needs acid, and it is short enough to be absorbed rather than merely act as a bulk material."
   },
   {
     name: "Alginate lyase-degraded oligoalginate", aka: ["oligoalginate", "alginate oligosaccharide", "AOS"],
@@ -3559,12 +3559,12 @@ window.POLYMER_DB = [
   },
   {
     name: "Bacterial cellulose", aka: ["nata de coco", "microbial cellulose", "Acetobacter cellulose"],
+    form: "bacterially synthesised",
     monomer: "D-glucose (beta-1,4 linked, bacterially synthesised)", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "biomedical", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Chemically identical to plant cellulose and completely different as a material. A bacterium extrudes it as ribbons a few tens of nanometres wide, free of lignin and hemicellulose and far more crystalline, which gives a wet pellicle with the strength of a fibre mat and a water content above ninety percent. It is used as a wound dressing that will not stick, as an acoustic diaphragm, and eaten as nata de coco. Not drawn: the chemistry is cellulose's; the morphology is what is new."
+    atoms: [{"id":"S0","el":"*"},{"id":2,"el":"O"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"O"},{"id":8,"el":"C"},{"id":"S1","el":"*"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"O"}], bonds: [{"a":"S0","b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":4,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":"S1","order":1},{"a":8,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":10,"b":12,"order":1},{"a":3,"b":12,"order":1},{"a":12,"b":13,"order":1}],
+    note: "Chemically this is cellulose - the same beta-1,4-glucan repeat unit, drawn here identically - and the entry exists because the material is not. Grown by Komagataeibacter rather than extracted from a plant, it arrives free of lignin and hemicellulose and as a hydrated ribbon network of much higher crystallinity and purity, which is what the medical and acoustic uses are actually buying. Nothing about that difference lives in the repeat unit."
   },
   {
     name: "Poly(3-hydroxyoctanoate)", aka: ["PHO", "P3HO", "poly(3-hydroxyoctanoate)"],
@@ -4384,8 +4384,7 @@ window.POLYMER_DB = [
     monomer: "norbornene derivative by ROMP, then hydrogenation", cls: "Ring-opening", cas: null,
     tags: ["engineering", "optical", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
+    atoms: [{"id":"S0","el":"*"},{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":"S1","el":"*"}], bonds: [{"a":"S0","b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1},{"a":1,"b":2,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":1,"order":1},{"a":1,"b":7,"order":1},{"a":7,"b":4,"order":1}],
     note: "The homopolymer route to the same class: a substituted norbornene is ring-opened by metathesis and the resulting backbone double bonds are hydrogenated away, leaving a saturated amorphous polymer with rings hanging off it. Compared with the ethylene copolymer it is more uniform and has lower birefringence, which matters for optical discs and lenses. Not drawn: the norbornene derivative varies by grade."
   },
   {
@@ -4672,8 +4671,7 @@ window.POLYMER_DB = [
     monomer: "dichlorodialkylgermane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
+    atoms: [{"id":"S0","el":"*"},{"id":2,"el":"Ge"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":"S1","el":"*"}], bonds: [{"a":"S0","b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":2,"b":"S1","order":1}],
     note: "The germanium analogue of a polysilane, with the same sigma-conjugation along a chain of group 14 atoms but with electrons more loosely held - so the absorption sits further to the red and the photoconductivity is higher. Descending the group from silicon to germanium to tin shifts the optical gap systematically, which is what makes the series worth studying. Not drawn: germanium is outside the element set."
   },
   {
@@ -5873,8 +5871,7 @@ window.POLYMER_DB = [
     monomer: "orthophosphate", cls: "Step-growth (polyester)", cas: null,
     tags: ["water-soluble", "polyelectrolyte", "biopolymer", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
+    atoms: [{"id":"S0","el":"*"},{"id":2,"el":"O"},{"id":3,"el":"P"},{"id":4,"el":"O"},{"id":5,"el":"O"},{"id":"S1","el":"*"}], bonds: [{"a":"S0","b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":3,"b":5,"order":1},{"a":3,"b":"S1","order":1}],
     note: "A chain of phosphates joined by anhydride bonds - chemically the same linkage ATP stores energy in, extended to hundreds of units. It is found in every cell from bacteria to human platelets, and industrially it sequesters calcium, which is why it is in detergents and processed cheese. Undrawn: a wholly inorganic backbone the structure editor here does not represent."
   },
   {
