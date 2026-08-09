@@ -562,13 +562,29 @@
     }
 
     var arrowPreview = null, draggingArrow = null, arrowDragFrom = null, selectedArrow = null;
-    var draggingEnd = null;           // 1 or 2 while an arrow endpoint is being dragged
+    var draggingEnd = null, draggingBow = null;           // 1 or 2 while an arrow endpoint is being dragged
     var selectedLabel = null, draggingLabel = null, labelDragFrom = null;
     var ENDPOINT_GRAB = 10;
     // What the NEXT drawn arrow / placed label will be. The "+" button sets
     // pendingLabelText so a plus costs one click and no typing.
     var pendingArrowKind = 'arrow';
     var pendingLabelText = null;
+
+    // A scheme reads as a line, so an arrow dropped a few pixels off the
+    // molecules' centre looks like a mistake. Snap to that centre when close,
+    // the same way bond angles snap. Returns y unchanged when there is nothing
+    // to align to, or when the arrow is deliberately somewhere else.
+    var ALIGN_SNAP = 18;
+    function structureCentreY() {
+      if (!atoms.length) return null;
+      var min = Infinity, max = -Infinity;
+      atoms.forEach(function (a) { min = Math.min(min, a.y); max = Math.max(max, a.y); });
+      return (min + max) / 2;
+    }
+    function snapToStructureY(y) {
+      var c = structureCentreY();
+      return (c != null && Math.abs(y - c) <= ALIGN_SNAP) ? c : y;
+    }
 
     // One panel beside the canvas for whichever annotation is selected, rather
     // than typing onto the canvas: the letter keys are already element hotkeys.
@@ -826,7 +842,9 @@
         // Endpoint handles, so it is visible that the ends can be grabbed.
         ctx.save();
         ctx.fillStyle = primary;
-        [[selectedArrow.x1, selectedArrow.y1], [selectedArrow.x2, selectedArrow.y2]].forEach(function (p) {
+        var handles = [[selectedArrow.x1, selectedArrow.y1], [selectedArrow.x2, selectedArrow.y2]];
+        if (isCurly(selectedArrow)) { var cc = curlyControl(selectedArrow); handles.push([cc.x, cc.y]); }
+        handles.forEach(function (p) {
           ctx.beginPath();
           ctx.arc(p[0], p[1], 3.5, 0, Math.PI * 2);
           ctx.fill();
@@ -1332,6 +1350,44 @@
         ctx.stroke();
       }
     }
+    // Curly (electron-pushing) arrows are a quadratic Bezier. The control point
+    // is stored as a perpendicular offset from the chord midpoint rather than
+    // as absolute coordinates, so moving or re-aiming the arrow keeps the bow
+    // it was given instead of flattening it.
+    function curlyControl(ar) {
+      var mx = (ar.x1 + ar.x2) / 2, my = (ar.y1 + ar.y2) / 2;
+      var dx = ar.x2 - ar.x1, dy = ar.y2 - ar.y1;
+      var len = Math.hypot(dx, dy) || 1;
+      var px = -dy / len, py = dx / len;
+      var bow = ar.bow == null ? 0.45 : ar.bow;
+      return { x: mx + px * len * bow, y: my + py * len * bow };
+    }
+    function bezierAt(ar, t) {
+      var c = curlyControl(ar), s = 1 - t;
+      return {
+        x: s * s * ar.x1 + 2 * s * t * c.x + t * t * ar.x2,
+        y: s * s * ar.y1 + 2 * s * t * c.y + t * t * ar.y2
+      };
+    }
+    function drawCurly(ar, color, halfHead) {
+      var c = curlyControl(ar);
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(ar.x1, ar.y1);
+      ctx.quadraticCurveTo(c.x, c.y, ar.x2, ar.y2);
+      ctx.stroke();
+      // head aimed along the curve's tangent at the end, not along the chord
+      var near = bezierAt(ar, 0.94);
+      var tx = ar.x2 - near.x, ty = ar.y2 - near.y;
+      var tl = Math.hypot(tx, ty) || 1;
+      var ux = tx / tl, uy = ty / tl;
+      arrowBarb(ar.x2, ar.y2, ux, uy, -uy, ux, !halfHead);
+      ctx.restore();
+    }
+
     function drawArrow(ar, color) {
       var dx = ar.x2 - ar.x1, dy = ar.y2 - ar.y1;
       var len = Math.hypot(dx, dy);
@@ -1339,6 +1395,12 @@
       var ux = dx / len, uy = dy / len;
       var px = -uy, py = ux;
       var kind = ar.kind || 'arrow';
+      if (kind === 'curly' || kind === 'curly-half') {
+        // A curly arrow shows where electrons go; it carries no reagents, so
+        // the above/below text is deliberately not drawn on it.
+        drawCurly(ar, color, kind === 'curly-half');
+        return;
+      }
       ctx.save();
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
@@ -1362,33 +1424,82 @@
       // +y is DOWN on a canvas - so "above" has to subtract it. Getting that
       // sign backwards put the reagents under the shaft, the conditions over
       // it, and both on top of each other.
-      var TEXT_GAP = 9;
-      if (ar.above) {
-        ctx.textBaseline = 'bottom';
-        ctx.fillText(ar.above, mx - px * TEXT_GAP, my - py * TEXT_GAP);
-      }
-      if (ar.below) {
-        ctx.textBaseline = 'top';
-        ctx.fillText(ar.below, mx + px * TEXT_GAP, my + py * TEXT_GAP);
-      }
+      var TEXT_GAP = 13;
+      if (ar.above) fillRuns(ar.above, mx - px * TEXT_GAP, my - py * TEXT_GAP, ARROW_FONT, ARROW_SUB_FONT, 'middle');
+      if (ar.below) fillRuns(ar.below, mx + px * TEXT_GAP, my + py * TEXT_GAP, ARROW_FONT, ARROW_SUB_FONT, 'middle');
       ctx.restore();
     }
 
+    // Scheme text is chemistry, so "H2O" has to be able to render as H₂O.
+    // Digits following a letter drop to a subscript automatically, which is
+    // the convention in every formula anyone will type here; "60 C" keeps its
+    // digits because they do not follow a letter. An explicit "_" forces one.
+    //
+    // Drawn as a run of fillText calls rather than one, which means the SVG
+    // export gets it for free - the shim implements fillText and nothing here
+    // needs a second code path.
+    function textRuns(str) {
+      var runs = [], i = 0, buf = '', sub = false;
+      function flush() { if (buf) { runs.push({ t: buf, sub: sub }); buf = ''; } }
+      while (i < str.length) {
+        var ch = str.charAt(i);
+        if (ch === '_' && i + 1 < str.length) {
+          flush(); sub = true;
+          buf = str.charAt(i + 1); flush(); sub = false;
+          i += 2;
+          continue;
+        }
+        if (/[0-9]/.test(ch) && i > 0 && /[A-Za-z)\]]/.test(str.charAt(i - 1))) {
+          flush(); sub = true;
+          while (i < str.length && /[0-9]/.test(str.charAt(i))) { buf += str.charAt(i); i++; }
+          flush(); sub = false;
+          continue;
+        }
+        buf += ch; i++;
+      }
+      flush();
+      return runs;
+    }
+    function measureRuns(runs, baseFont, subFont) {
+      var w = 0;
+      runs.forEach(function (r) {
+        ctx.font = r.sub ? subFont : baseFont;
+        w += ctx.measureText(r.t).width;
+      });
+      return w;
+    }
+    // Draws centred on (x,y); returns the width used.
+    function fillRuns(str, x, y, baseFont, subFont, baseline) {
+      var runs = textRuns(str);
+      var total = measureRuns(runs, baseFont, subFont);
+      var cx = x - total / 2;
+      var prevAlign = ctx.textAlign, prevBaseline = ctx.textBaseline;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = baseline || 'middle';
+      runs.forEach(function (r) {
+        ctx.font = r.sub ? subFont : baseFont;
+        ctx.fillText(r.t, cx, r.sub ? y + 3 : y);
+        cx += ctx.measureText(r.t).width;
+      });
+      ctx.textAlign = prevAlign;
+      ctx.textBaseline = prevBaseline;
+      return total;
+    }
+
     var LABEL_FONT = '600 15px system-ui, sans-serif';
+    var LABEL_SUB_FONT = '600 11px system-ui, sans-serif';
+    var ARROW_FONT = '12px system-ui, sans-serif';
+    var ARROW_SUB_FONT = '9px system-ui, sans-serif';
     function drawLabel(lb, color) {
       if (!lb.text) return;
       ctx.save();
       ctx.fillStyle = color;
-      ctx.font = LABEL_FONT;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(lb.text, lb.x, lb.y);
+      fillRuns(lb.text, lb.x, lb.y, LABEL_FONT, LABEL_SUB_FONT, 'middle');
       ctx.restore();
     }
     function labelWidth(lb) {
       ctx.save();
-      ctx.font = LABEL_FONT;
-      var w = ctx.measureText(lb.text || '').width;
+      var w = measureRuns(textRuns(lb.text || ''), LABEL_FONT, LABEL_SUB_FONT);
       ctx.restore();
       return w;
     }
@@ -1400,14 +1511,23 @@
       }
       return null;
     }
+    function isCurly(ar) { return ar && (ar.kind === 'curly' || ar.kind === 'curly-half'); }
     function findArrowAt(x, y) {
       for (var i = arrows.length - 1; i >= 0; i--) {
         var ar = arrows[i];
+        if (isCurly(ar)) {
+          // sample the curve; a straight-line test would miss the bow entirely
+          for (var t = 0; t <= 1.0001; t += 0.05) {
+            var p = bezierAt(ar, t);
+            if (Math.hypot(x - p.x, y - p.y) <= 10) return ar;
+          }
+          continue;
+        }
         var dx = ar.x2 - ar.x1, dy = ar.y2 - ar.y1;
         var len2 = dx * dx + dy * dy;
         if (!len2) continue;
-        var t = Math.max(0, Math.min(1, ((x - ar.x1) * dx + (y - ar.y1) * dy) / len2));
-        var cx = ar.x1 + t * dx, cy = ar.y1 + t * dy;
+        var tt = Math.max(0, Math.min(1, ((x - ar.x1) * dx + (y - ar.y1) * dy) / len2));
+        var cx = ar.x1 + tt * dx, cy = ar.y1 + tt * dy;
         if (Math.hypot(x - cx, y - cy) <= 10) return ar;
       }
       return null;
@@ -1527,6 +1647,48 @@
       return { minX: minX, minY: minY, width: maxX - minX, height: maxY - minY };
     }
 
+    // Downloading a PNG is the wrong verb for the common case: a scheme is
+    // going into a slide or a manuscript, which wants a paste, not a file in
+    // Downloads. Needs a secure context and a browser with async clipboard
+    // images, so it reports honestly when it cannot.
+    function copyCanvasToClipboard(sourceCanvas, done) {
+      if (!navigator.clipboard || !window.ClipboardItem) {
+        done('This browser cannot copy images to the clipboard. Use the export menu to save a file instead.');
+        return;
+      }
+      sourceCanvas.toBlob(function (blob) {
+        if (!blob) { done('Could not render that image.'); return; }
+        var item = {};
+        item[blob.type] = blob;
+        navigator.clipboard.write([new window.ClipboardItem(item)])
+          .then(function () { done(null); })
+          .catch(function () {
+            done('The browser refused the clipboard write. Use the export menu to save a file instead.');
+          });
+      }, 'image/png');
+    }
+
+    // Render just the drawing (no selection chrome, on an opaque background)
+    // into an offscreen canvas at export resolution. Shared by the clipboard
+    // copy and anything else that wants a clean bitmap.
+    function renderToOffscreen(scale) {
+      var bbox = structureBBox();
+      if (!bbox) return null;
+      scale = scale || 3;
+      var off = document.createElement('canvas');
+      off.width = Math.max(1, Math.round(bbox.width * scale));
+      off.height = Math.max(1, Math.round(bbox.height * scale));
+      var offCtx = off.getContext('2d');
+      offCtx.scale(scale, scale);
+      offCtx.translate(-bbox.minX, -bbox.minY);
+      offCtx.fillStyle = EXPORT_BG;
+      offCtx.fillRect(bbox.minX, bbox.minY, bbox.width, bbox.height);
+      var savedCtx = ctx;
+      ctx = offCtx;
+      try { drawStructure(EXPORT_TEXT, EXPORT_BG); } finally { ctx = savedCtx; }
+      return off;
+    }
+
     function downloadBlob(blob, filename) {
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
@@ -1576,6 +1738,13 @@
     // never draws committed geometry dashed, so accepting and ignoring the call
     // is correct and keeps the shim from throwing.
     SVGRenderContext.prototype.setLineDash = function () {};
+    // Curly arrows are quadratic Beziers. Without this the export threw the
+    // moment a mechanism arrow was on the canvas - the same failure the missing
+    // save/restore caused, so the shim is now checked against everything
+    // drawStructure actually calls rather than only what it called at the time.
+    SVGRenderContext.prototype.quadraticCurveTo = function (cx, cy, x, y) {
+      this._path.push('Q' + this._r(cx) + ' ' + this._r(cy) + ' ' + this._r(x) + ' ' + this._r(y));
+    };
     SVGRenderContext.prototype.arc = function (x, y, r, a0, a1) {
       // Only ever used for full circles here (atom halos, ring markers).
       this._path.push('M' + this._r(x + r) + ' ' + this._r(y) +
@@ -1733,6 +1902,10 @@
         // arrow. Without this an arrow's length and angle were fixed the moment
         // it was drawn, which nothing else in the editor is.
         if (selectedArrow) {
+          if (isCurly(selectedArrow)) {
+            var ctrl = curlyControl(selectedArrow);
+            if (Math.hypot(pos.x - ctrl.x, pos.y - ctrl.y) <= ENDPOINT_GRAB) { snapshot(); draggingBow = true; return; }
+          }
           if (Math.hypot(pos.x - selectedArrow.x1, pos.y - selectedArrow.y1) <= ENDPOINT_GRAB) {
             snapshot(); draggingEnd = 1; return;
           }
@@ -1773,6 +1946,15 @@
         return;
       }
       if (mode === 'arrow') {
+        if (draggingBow && selectedArrow) {
+          var bdx = selectedArrow.x2 - selectedArrow.x1, bdy = selectedArrow.y2 - selectedArrow.y1;
+          var blen = Math.hypot(bdx, bdy) || 1;
+          var bpx = -bdy / blen, bpy = bdx / blen;
+          var bmx = (selectedArrow.x1 + selectedArrow.x2) / 2, bmy = (selectedArrow.y1 + selectedArrow.y2) / 2;
+          selectedArrow.bow = ((pos.x - bmx) * bpx + (pos.y - bmy) * bpy) / blen;
+          draw();
+          return;
+        }
         if (draggingEnd && selectedArrow) {
           // near-horizontal still snaps flat, same as when drawing
           var other = draggingEnd === 1 ? { x: selectedArrow.x2, y: selectedArrow.y2 } : { x: selectedArrow.x1, y: selectedArrow.y1 };
@@ -1786,6 +1968,10 @@
           var ddx = pos.x - arrowDragFrom.x, ddy = pos.y - arrowDragFrom.y;
           draggingArrow.x1 += ddx; draggingArrow.x2 += ddx;
           draggingArrow.y1 += ddy; draggingArrow.y2 += ddy;
+          if (draggingArrow.y1 === draggingArrow.y2) {
+            var sy2 = snapToStructureY(draggingArrow.y1);
+            draggingArrow.y1 = sy2; draggingArrow.y2 = sy2;
+          }
           arrowDragFrom = pos;
           draw();
           return;
@@ -1862,6 +2048,7 @@
         return;
       }
       if (mode === 'arrow') {
+        if (draggingBow) { draggingBow = null; dragStart = null; moved = false; return; }
         if (draggingEnd) { draggingEnd = null; dragStart = null; moved = false; return; }
         if (draggingArrow) { draggingArrow = null; arrowDragFrom = null; dragStart = null; moved = false; return; }
         if (arrowPreview) {
@@ -1872,14 +2059,17 @@
             // Too short to be a deliberate drag: lay down a default horizontal
             // arrow at the click, which is what a scheme wants nine times in ten.
             snapshot();
-            selectedArrow = { x1: pending.x1 - 45, y1: pending.y1, x2: pending.x1 + 45, y2: pending.y1, above: '', below: '', kind: pendingArrowKind };
+            var cy0 = snapToStructureY(pending.y1);
+            selectedArrow = { x1: pending.x1 - 45, y1: cy0, x2: pending.x1 + 45, y2: cy0, above: '', below: '', kind: pendingArrowKind };
             arrows.push(selectedArrow);
           } else {
             snapshot();
             // Nearly-horizontal drags snap flat; schemes read left to right and
             // a two-degree tilt looks like a mistake.
-            var y2 = Math.abs(pos.y - pending.y1) < 12 ? pending.y1 : pos.y;
-            selectedArrow = { x1: pending.x1, y1: pending.y1, x2: pos.x, y2: y2, above: '', below: '', kind: pendingArrowKind };
+            var flat = pendingArrowKind.indexOf('curly') !== 0 && Math.abs(pos.y - pending.y1) < 12;
+            var y1s = flat ? snapToStructureY(pending.y1) : pending.y1;
+            var y2s = flat ? y1s : pos.y;
+            selectedArrow = { x1: pending.x1, y1: y1s, x2: pos.x, y2: y2s, above: '', below: '', kind: pendingArrowKind };
             arrows.push(selectedArrow);
           }
           selectedLabel = null;
@@ -2492,7 +2682,14 @@
       exportMenu.querySelectorAll('button[data-export]').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var kind = btn.getAttribute('data-export');
-          if (kind === 'svg') exportSVG();
+          if (kind === 'clipboard') {
+            var off = renderToOffscreen(3);
+            if (!off) smilesNote('Draw something first.');
+            else copyCanvasToClipboard(off, function (err) {
+              smilesNote(err || 'Copied to the clipboard — paste it straight into a slide or a document.');
+            });
+          }
+          else if (kind === 'svg') exportSVG();
           else exportRaster(kind);
           exportMenu.hidden = true;
         });
@@ -4926,10 +5123,82 @@
       return '<div class="mol-scheme" id="mol-scheme">' +
         '<h4>How it is made</h4>' +
         '<canvas id="mol-scheme-canvas" width="900" height="200"></canvas>' +
+        '<div class="mol-scheme-actions">' +
+        '<button type="button" id="mol-scheme-edit" class="copy-btn" title="Put this scheme on the drawing canvas, where you can add reagents and conditions and export it">&#9998; Edit as a drawing</button>' +
+        '<button type="button" id="mol-scheme-copy" class="copy-btn" title="Copy this scheme to the clipboard as an image, ready to paste into a slide or a document">&#128203; Copy image</button>' +
+        '</div>' +
         '<p id="mol-scheme-note"></p>' +
         '</div>';
     }
     var pendingScheme = null;
+
+    // Lay the monomer in the left third and the polymer in the right third of
+    // a box, in that box's coordinates. Shared by the preview panel and by
+    // "Edit as a drawing", so the figure you edit is the figure you were shown.
+    function schemeLayout(RDKit, job, boxW, boxH) {
+      function layout(graph, w, h) {
+        var ex = expandSuperatoms(graph.atoms, graph.bonds);
+        var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
+        var mb = null;
+        if (mol) {
+          try { mb = mol.get_new_coords(); } catch (e) {}
+          if (!mb) { try { mb = mol.get_molblock(); } catch (e2) {} }
+          mol.delete();
+        }
+        var parsed = mb && parseMolblockToEditor(mb);
+        if (!parsed || !parsed.atoms.length) return null;
+        var pos = fitParsedCoords(parsed, { width: w, height: h });
+        return {
+          atoms: parsed.atoms.map(function (ra, i) { return { id: i + 1, el: ra.el || 'C', x: pos[i].x, y: pos[i].y }; }),
+          bonds: parsed.bonds.map(function (rb) { return { id: rb.a * 1000 + rb.b, a: rb.a, b: rb.b, order: rb.order }; })
+        };
+      }
+      var third = Math.round(boxW * 0.36);
+      var left = layout(job.monomer, third, boxH);
+      var right = layout({ atoms: job.polymer.atoms, bonds: job.polymer.bonds }, third, boxH);
+      if (!left || !right) return null;
+      right.atoms.forEach(function (a) { a.x += boxW - third; });
+      return { third: third, left: left, right: right };
+    }
+
+    // Put the derived scheme on the canvas so it can be finished by hand. This
+    // is the join between the two halves of the feature: the tool supplies the
+    // chemistry it can prove, and the annotation tools add the conditions it
+    // deliberately refuses to invent. Until now the scheme was a picture with
+    // no way out of it.
+    function editSchemeOnCanvas(job) {
+      ensureRDKit().then(function (RDKit) {
+        var placed = schemeLayout(RDKit, job, canvas.width, canvas.height);
+        if (!placed) { setStatus('That scheme could not be laid out for editing.'); return; }
+        snapshot();
+        atoms = []; bonds = []; brackets = []; arrows = []; labels = [];
+        selectedAtom = null; selectedGroup = []; selectedArrow = null; selectedLabel = null;
+        nextAtomId = 1; nextBondId = 1;
+        resetView();
+        [placed.left, placed.right].forEach(function (part) {
+          var map = {};
+          part.atoms.forEach(function (a) { map[a.id] = addAtom(a.el, a.x, a.y).id; });
+          part.bonds.forEach(function (b) { addBond(map[b.a], map[b.b], b.order); });
+        });
+        var midY = canvas.height / 2;
+        arrows.push({
+          x1: placed.third + 24, y1: midY,
+          x2: canvas.width - placed.third - 24, y2: midY,
+          above: '', below: SCHEME_LABEL[job.monomer.kind] || 'polymerisation',
+          kind: 'arrow'
+        });
+        labels.push({ x: (canvas.width) / 2, y: midY + 24, text: 'n' });
+        syncAnnotationPanel();
+        draw();
+        scrollEditorIntoView();
+        setStatus('Scheme loaded for editing. Add your own reagents over the arrow — the library records none, so nothing here is claimed for you. ' +
+          'Two molecules are on the canvas now, so "Search this structure" will not apply until you clear it.');
+      }).catch(function () { setStatus('The chemistry engine could not load.'); });
+    }
+    function scrollEditorIntoView() {
+      var card = document.getElementById('mol-editor-card');
+      if (card && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
     function drawPendingScheme() {
       if (!pendingScheme) return;
@@ -4938,32 +5207,20 @@
       var cv = document.getElementById('mol-scheme-canvas');
       var note = document.getElementById('mol-scheme-note');
       if (!cv) return;
+      // The panel is re-created on every render, so its buttons are wired here
+      // rather than once at startup.
+      var editBtn = document.getElementById('mol-scheme-edit');
+      if (editBtn) editBtn.addEventListener('click', function () { editSchemeOnCanvas(job); });
+      var copyBtn = document.getElementById('mol-scheme-copy');
+      if (copyBtn) copyBtn.addEventListener('click', function () {
+        copyCanvasToClipboard(cv, function (err) {
+          if (note) note.textContent = err || 'Scheme copied — paste it into a slide or a document.';
+        });
+      });
       ensureRDKit().then(function (RDKit) {
-        // Lay each side out on its own, then place them in the left and right
-        // thirds with the arrow between.
-        function layout(graph, boxW, boxH) {
-          var ex = expandSuperatoms(graph.atoms, graph.bonds);
-          var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
-          var mb = null;
-          if (mol) {
-            try { mb = mol.get_new_coords(); } catch (e) {}
-            if (!mb) { try { mb = mol.get_molblock(); } catch (e2) {} }
-            mol.delete();
-          }
-          var parsed = mb && parseMolblockToEditor(mb);
-          if (!parsed || !parsed.atoms.length) return null;
-          var pos = fitParsedCoords(parsed, { width: boxW, height: boxH });
-          return {
-            atoms: parsed.atoms.map(function (ra, i) { return { id: i + 1, el: ra.el || 'C', x: pos[i].x, y: pos[i].y }; }),
-            bonds: parsed.bonds.map(function (rb) { return { id: rb.a * 1000 + rb.b, a: rb.a, b: rb.b, order: rb.order }; })
-          };
-        }
-        var third = Math.round(cv.width * 0.36);
-        var left = layout(job.monomer, third, cv.height);
-        var right = layout({ atoms: job.polymer.atoms, bonds: job.polymer.bonds }, third, cv.height);
-        if (!left || !right) { if (note) note.textContent = ''; return; }
-        right.atoms.forEach(function (a) { a.x += cv.width - third; });
-
+        var placed = schemeLayout(RDKit, job, cv.width, cv.height);
+        if (!placed) { if (note) note.textContent = ''; return; }
+        var third = placed.third, left = placed.left, right = placed.right;
         var pctx = cv.getContext('2d');
         pctx.clearRect(0, 0, cv.width, cv.height);
         var styles = getComputedStyle(document.body);
@@ -5837,6 +6094,28 @@
       var textBtn = document.querySelector('.mol-mode-btn[data-mode="text"]');
       if (textBtn) textBtn.click();
       setStatus('Click where the + belongs, between the two reactants.');
+    });
+
+    // Character inserts act on whichever annotation field was last focused, so
+    // they work for the arrow's two lines and for a text label alike.
+    var lastAnnotationField = null;
+    ['mol-arrow-above', 'mol-arrow-below', 'mol-label-text'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('focus', function () { lastAnnotationField = el; });
+    });
+    document.querySelectorAll('.mol-char-btn').forEach(function (btn) {
+      btn.addEventListener('mousedown', function (evt) { evt.preventDefault(); });  // keep focus
+      btn.addEventListener('click', function () {
+        var el = lastAnnotationField ||
+          document.getElementById(selectedLabel ? 'mol-label-text' : 'mol-arrow-above');
+        if (!el || el.hidden) return;
+        var ch = btn.getAttribute('data-char');
+        var at = typeof el.selectionStart === 'number' ? el.selectionStart : el.value.length;
+        el.value = el.value.slice(0, at) + ch + el.value.slice(el.selectionEnd != null ? el.selectionEnd : at);
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.focus();
+        try { el.setSelectionRange(at + ch.length, at + ch.length); } catch (e) {}
+      });
     });
 
     var chainBtn = document.getElementById('mol-chain-btn');

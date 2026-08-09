@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=75">
+<link rel="stylesheet" href="style.css?v=76">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -248,6 +248,9 @@
             <div class="mol-tip"><dt>Zoom &amp; pan</dt><dd>Ctrl and the scroll wheel zooms about the cursor, or use the magnifier buttons. Pan with the middle mouse button, or hold Space and drag. The framed button resets both. Zooming changes nothing about the structure &ndash; the search and every export see the same drawing either way.</dd></div>
             <div class="mol-tip"><dt>Show 3 units</dt><dd>Draws three of your repeat unit joined end to end. The quickest way to catch a bracket that cuts the wrong bond, or that holds two units where you meant one.</dd></div>
             <div class="mol-tip"><dt>Reaction arrow</dt><dd>Drag to draw one, or click for a default horizontal arrow; near-horizontal drags snap flat. Drag either end dot to re-aim or resize it, or the shaft to move it. The three shape buttons give a plain arrow, an equilibrium (RAFT, ATRP and ROMP are all equilibria) or a fishhook for one-electron radical steps &ndash; and set the shape for the next arrow you draw.</dd></div>
+            <div class="mol-tip"><dt>Curly arrows</dt><dd>Two of the five arrow shapes are curved electron pushes &ndash; a full head for a two-electron move, a single barb for one. Drag the middle handle to bend one. They carry no reagent text, because a curly arrow says where electrons go, not what was added.</dd></div>
+            <div class="mol-tip"><dt>Subscripts</dt><dd>Digits after a letter subscript themselves, so typing H2O renders H<sub>2</sub>O and Mn renders as written. Force one anywhere with an underscore. The row of buttons inserts &deg;, &Delta;, &middot;, &rarr;, &hArr;, &alpha;, &beta; and &bull; into whichever field you were last typing in.</dd></div>
+            <div class="mol-tip"><dt>Edit as a drawing</dt><dd>A matched polymer&rsquo;s scheme has an <strong>Edit as a drawing</strong> button that drops the derived monomer, the arrow and the repeat unit onto the canvas, ready for your own reagents and conditions &ndash; the ones the library deliberately does not record. <strong>Copy image</strong> puts either the scheme or your drawing straight on the clipboard.</dd></div>
             <div class="mol-tip"><dt>Text and +</dt><dd>The text tool drops a label anywhere &ndash; a species name, an "n", a note. The <strong>+</strong> button places a plus in one click, which is what a step-growth scheme needs, since a polyester comes from a diol <em>and</em> a diacid. Both are annotation: they render into every export and are never part of a search.</dd></div>
             <div class="mol-tip"><dt>Red rings</dt><dd>An atom circled in red has more bonds than the element allows. The bar under the canvas says how many and which elements. It is the same limit the reference library itself is checked against.</dd></div>
             <div class="mol-tip"><dt>Escape</dt><dd>Release the current chain without adding another atom.</dd></div>
@@ -283,6 +286,7 @@
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v10M6 9l4 4 4-4"/><path d="M4 16v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1"/></svg>
         </button>
         <div id="mol-export-menu" class="mol-export-menu" hidden>
+          <button type="button" data-export="clipboard">Copy image</button>
           <button type="button" data-export="png">PNG image</button>
           <button type="button" data-export="jpeg">JPEG image</button>
           <button type="button" data-export="svg">SVG (vector)</button>
@@ -307,6 +311,18 @@
         <button type="button" class="mol-kind-btn active" data-kind="arrow" title="Reaction arrow">&rarr;</button>
         <button type="button" class="mol-kind-btn" data-kind="equilibrium" title="Equilibrium &mdash; RAFT, ATRP and ROMP are all equilibria">&#8652;</button>
         <button type="button" class="mol-kind-btn" data-kind="fishhook" title="Fishhook: a single-barbed arrow for one-electron (radical) steps">&#8641;</button>
+        <button type="button" class="mol-kind-btn" data-kind="curly" title="Curly arrow: a curved two-electron push. Drag the middle handle to bend it.">&#10551;</button>
+        <button type="button" class="mol-kind-btn" data-kind="curly-half" title="Curly fishhook: a curved single-electron push, for radical mechanisms. Drag the middle handle to bend it.">&#10549;</button>
+      </span>
+      <span class="mol-char-row" title="Insert a character into the field you were last typing in. Digits after a letter already subscript themselves, so H2O renders as H&#8322;O.">
+        <button type="button" class="mol-char-btn" data-char="&deg;">&deg;</button>
+        <button type="button" class="mol-char-btn" data-char="&Delta;">&Delta;</button>
+        <button type="button" class="mol-char-btn" data-char="&middot;">&middot;</button>
+        <button type="button" class="mol-char-btn" data-char="&rarr;">&rarr;</button>
+        <button type="button" class="mol-char-btn" data-char="&hArr;">&hArr;</button>
+        <button type="button" class="mol-char-btn" data-char="&alpha;">&alpha;</button>
+        <button type="button" class="mol-char-btn" data-char="&beta;">&beta;</button>
+        <button type="button" class="mol-char-btn" data-char="&bull;">&bull;</button>
       </span>
       <span id="mol-label-edit" hidden>
         <span class="mol-arrow-lab">Text</span>
@@ -402,7 +418,7 @@
 <script src="polymer-graph.js?v=9"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=161"></script>
+<script src="polymer-search.js?v=164"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

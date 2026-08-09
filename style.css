@@ -2911,3 +2911,19 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 .mol-kind-btn.active { border-color: var(--primary); color: var(--primary); font-weight: 700; }
 #mol-label-edit { display: inline-flex; align-items: center; gap: 6px; flex: 1 1 200px; }
 #mol-label-edit input { flex: 1 1 auto; min-width: 110px; margin: 0; }
+
+/* Character inserts for scheme text, and the scheme panel's own actions. */
+.mol-char-row { display: inline-flex; gap: 3px; }
+.mol-char-btn {
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 4px 7px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.mol-char-btn:hover { border-color: var(--primary); color: var(--primary); }
+.mol-scheme-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 0; }
