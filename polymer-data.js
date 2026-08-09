@@ -23,13 +23,24 @@
 // relying on a number here.
 window.POLYMER_DB = [
   {
-    name: "Polyethylene", aka: ["PE", "HDPE", "LDPE", "polyethene"], monomer: "Ethylene",
+    // "HDPE" and "LDPE" deliberately do NOT appear here. They name the two
+    // specific grades, which are separate entries with their own densities,
+    // branching and process conditions; listing them on the generic entry made
+    // both abbreviations ambiguous, which suppressed the "how it is made" panel
+    // on precisely the two cards that carry the sourced conditions.
+    name: "Polyethylene", aka: ["PE", "polyethene"], monomer: "Ethylene",
     cls: "Addition (vinyl)", cas: "9002-88-4", tg: "-110 °C", tm: "130 °C (HDPE)",
     tags: ["commodity", "packaging"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "Ziegler–Natta, slurry or gas phase, 70–105 °C",
+      process: "coordination, slurry or gas phase",
+      detail: "Commercial propene polymerisation is run as a slurry (suspension) or a gas-phase process. Only traditional Ziegler–Natta initiators are used for propene — Phillips-type metal-oxide initiators are not stereoselective, so they cannot make the isotactic polymer that has useful properties, even though they work perfectly well for ethylene. Gas-phase reactors run at about 2–3 MPa and 70–105 °C in fluidized-bed or stirred-bed form, with no solvent at all; the reaction medium is a stirred mixture of initiator and polymer powder under gaseous monomer. Holding the temperature below the softening point of the polymer is critical, because agglomeration into lumps costs control of the reactor temperature and then the product and the run.",
+      source: "Odian, Principles of Polymerization (4th ed.), §8-11a"
+    },
     name: "Polypropylene", aka: ["PP", "polypropene"], monomer: "Propylene",
     cls: "Addition (vinyl)", cas: "9003-07-0", tg: "-10 °C", tm: "165 °C (isotactic)",
     tags: ["commodity", "packaging"],
@@ -92,12 +103,19 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "emulsion polymerisation, latex used as made",
+      process: "emulsion",
+      detail: "Emulsion polymerisation is the predominant commercial process, and the resulting latices are used directly for most applications — water-based paints, and adhesives for paper, textiles and wood. Poly(vinyl acetate) is also the feedstock for two polymers that cannot be synthesised directly because their monomers do not exist: alcoholysis with methanol gives poly(vinyl alcohol), and reacting that with an aldehyde gives the poly(vinyl acetal)s, of which the formal and the butyral matter most.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14c-2"
+    },
     name: "Poly(vinyl acetate)", aka: ["PVAc"], monomer: "Vinyl acetate", cls: "Addition (vinyl)",
     cas: "9003-20-7", tg: "30 °C", tags: ["coating", "adhesive"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "O" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    noScheme: "vinyl alcohol does not exist - it is the enol form of acetaldehyde and sits entirely as that tautomer - so closing this repeat unit invents a monomer that was never polymerised; PVA is made by alcoholysis of poly(vinyl acetate) with methanol (Odian, 4th ed., Sec. 9-4)",
     name: "Poly(vinyl alcohol)", aka: ["PVA", "PVOH"], monomer: "Vinyl alcohol (via PVAc hydrolysis)",
     cls: "Addition (vinyl)", cas: "9002-89-5", tg: "85 °C", tm: "230 °C", tags: ["water-soluble", "packaging"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -219,6 +237,12 @@ window.POLYMER_DB = [
     note: "The same four carbons as butadiene rubber with the double bond the other way round, and a 139 C higher melting point for it: the trans chain is symmetric enough to crystallise, so this is a hard thermoplastic rather than an elastomer. Tg and Tm from Odian's Table 8-1. Commercial \"polybutadiene rubber\" is the cis isomer; the trans form turns up in golf-ball cores and as a crystallising component in tyre compounds."
   },
   {
+    conditions: {
+      summary: "ring-opening of ethylene oxide; grade set by molar mass",
+      process: "ring-opening",
+      detail: "Ring-opening polymerisation of ethylene oxide, where the target molar mass decides what the product is called and what it is for. Around 500–6000 it is a telechelic polyether macrodiol — a polyether glycol or polyol — used as the soft segment in polyurethane and polyester block copolymers and elastomers. Up to about 20,000 it serves as hydraulic fluid, lubricant, cosmetic additive and ceramic binder. Only the 10⁵–10⁶ range is normally called poly(ethylene oxide), and its uses — flocculation, packaging film, thickening acid cleaners and paints, friction reduction — all trade on the viscosity of its aqueous solutions. Odian gives no temperature or initiator in this section, so none is stated here.",
+      source: "Odian, Principles of Polymerization (4th ed.), §7-2b-7"
+    },
     name: "Poly(ethylene oxide)", aka: ["PEO", "PEG", "polyethylene glycol"], monomer: "Ethylene oxide",
     cls: "Ring-opening", cas: "25322-68-3", tg: "-60 °C", tm: "65 °C", tags: ["polyether", "water-soluble", "biomedical"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -231,6 +255,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "anionic from formaldehyde, or cationic from trioxane",
+      process: "anionic, or cationic ring-opening copolymerisation",
+      detail: "Two routes, and neither is a plain homopolymerisation of this repeat unit: anionic polymerisation of formaldehyde, or cationic ring-opening copolymerisation of trioxane with a small amount of a cyclic ether or acetal such as ethylene oxide or 1,3-dioxolane. That is consistent with this card deriving no monomer from the structure — closing the repeat unit would invent a cyclic monomer that neither route uses.",
+      source: "Odian, Principles of Polymerization (4th ed.), §7-2b-7"
+    },
     name: "Polyoxymethylene", aka: ["POM", "acetal", "Delrin"], monomer: "Trioxane (or formaldehyde)", cls: "Ring-opening",
     cas: "9002-81-7", tg: "-60 °C", tm: "175 °C", tags: ["engineering"],
     note: "Made two ways: cationic ring-opening copolymerization of trioxane (the tougher acetal copolymer) or anionic chain polymerization of formaldehyde (the Delrin homopolymer). Standard tables (Brandrup/Odian) list Tg near -83 °C and Tm near 181 °C.",
@@ -245,6 +275,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "hydrolytic, 5–10% water, 250–270 °C, 12 h to over 24 h",
+      process: "hydrolytic ring-opening, batch or continuous",
+      detail: "Hydrolytic polymerisation of ε-caprolactam, run commercially both batch and continuous: the monomer is heated with 5–10% water at 250–270 °C for 12 h to more than 24 h. Water first hydrolyses the lactam to ε-aminocaproic acid; that acid then step-polymerises with itself and also initiates ring-opening of the remaining lactam, its carboxyl group protonating the lactam so the amine can attack. Hydrolytic polymerisation is therefore a special case of cationic polymerisation. Commercial processes often add ε-aminocaproic acid or the 1:1 ammonium carboxylate salt directly rather than waiting for water to make it.",
+      source: "Odian, Principles of Polymerization (4th ed.), §7-3b"
+    },
     name: "Nylon 6", aka: ["Polycaprolactam", "PA6"], monomer: "Caprolactam", cls: "Ring-opening (polyamide)",
     cas: "25038-54-4", tg: "47 °C", tm: "220 °C", tags: ["polyamide", "engineering", "fiber"],
     atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -448,7 +484,13 @@ window.POLYMER_DB = [
   },
   {
     // AUTO-GENERATED by scripts/discover-polymers.js (ring-opening (lactam/lactone/carbonate)) - verify structure before trusting
-    name: "Poly(caprolactone)", aka: ["PCL"], monomer: "epsilon-caprolactone",
+    conditions: {
+      summary: "tin(II) 2-ethylhexanoate with an alcohol, ring-opening",
+      process: "ring-opening, coordination–insertion",
+      detail: "Tin(II) 2-ethylhexanoate is an important industrial initiator for cyclic ester polymerisation. Metal carboxylates work only in the presence of an alcohol — the rate without one is under 1% of the rate with one — because the real initiator is the metal alkoxide formed in situ from carboxylate and alcohol. Each alkoxide group initiates one chain, which is the practical handle on chain count.",
+      source: "Odian, Principles of Polymerization (4th ed.), §7-5a"
+    },
+    name: "Poly(caprolactone)", aka: ["PCL", "polycaprolactone", "poly(ε-caprolactone)"], monomer: "epsilon-caprolactone",
     cls: "Ring-opening", cas: "24980-41-4",
     tags: ["biodegradable", "biomedical"],
     verified: false,
@@ -466,7 +508,13 @@ window.POLYMER_DB = [
   },
   {
     // AUTO-GENERATED by scripts/discover-polymers.js (ring-opening (lactam/lactone/carbonate)) - verify structure before trusting
-    name: "Poly(lactide)", aka: ["PLA"], monomer: "lactide",
+    conditions: {
+      summary: "tin(II) 2-ethylhexanoate with an alcohol, ring-opening",
+      process: "ring-opening, coordination–insertion",
+      detail: "Tin(II) 2-ethylhexanoate is an important industrial initiator for cyclic ester polymerisation, but metal carboxylates are useful initiators only in the presence of an alcohol. Without one the polymerisation rate is less than 1% of the rate with it, because the actual initiator is the metal alkoxide formed in situ by reaction of the carboxylate with the alcohol. Each alkoxide group initiates one growing chain, so the alcohol is not a trace additive to be left out of the recipe — it sets how many chains there are.",
+      source: "Odian, Principles of Polymerization (4th ed.), §7-5a"
+    },
+    name: "Poly(lactide)", aka: ["PLA", "polylactide", "poly(lactic acid)"], monomer: "lactide",
     cls: "Ring-opening", cas: "26680-10-4",
     tags: ["biodegradable", "biomedical", "commodity"],
     verified: false,
@@ -528,6 +576,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 4, b: 9, order: 1 }, { a: 3, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "interfacial phosgene route, 0–50 °C",
+      process: "interfacial, step-growth",
+      detail: "Two routes exist — phosgene, or ester interchange with diphenyl carbonate — but most industrial processes use phosgene in a stirred interfacial polymerisation, because both the overall economics and the ease of controlling molar mass favour it. Bisphenol A is dissolved in aqueous alkali as the phenolate salt, the organic solvent is added (chlorobenzene, 1,2-dichloroethane, THF, anisole or dioxane), then phosgene. The solvent is doing two jobs: keeping the phosgene from hydrolysing away, and keeping the polymer from precipitating before it has reached the molar mass wanted. Temperatures are 0–50 °C. Phase-transfer catalysts — quaternary ammonium and sulfonium salts, crown ethers — carry the phenolate across the interface into the organic phase. The reaction is staged: oligomers form first, then tertiary amines are added to drive it to high molar mass. The ester-interchange alternative is a two-stage melt polymerisation much like the PET process.",
+      source: "Odian, Principles of Polymerization (4th ed.), §2-8e"
+    },
     name: "Polycarbonate (bisphenol A)", aka: ["PC", "BPA-PC", "Lexan", "Makrolon"],
     monomer: "Bisphenol A + phosgene (or diphenyl carbonate)", cls: "Step-growth (polyester)",
     cas: "25037-45-0", tg: "145 °C", tags: ["engineering"],
@@ -1534,6 +1588,7 @@ window.POLYMER_DB = [
     note: "A weak polycation with a primary amine on a short arm off the backbone, which makes it both charged and easy to react with. Its charge titrates with pH, unlike a quaternary ammonium, so layer-by-layer films built from it can be assembled and then disassembled by changing pH - the basis of a large fraction of the polyelectrolyte multilayer literature. Normally supplied and used as the hydrochloride."
   },
   {
+    noScheme: "vinylamine is an enamine that sits as its tautomer acetaldimine and is not isolable as a monomer, so the derived structure was never in the pot; poly(vinylamine) is made by polymerising N-vinylformamide and hydrolysing the polymer",
     name: "Poly(vinylamine)", aka: ["PVAm", "poly(vinyl amine)"],
     monomer: "N-vinylformamide, then hydrolysis", cls: "Addition (vinyl)", cas: null,
     tags: ["water-soluble", "polyelectrolyte", "specialty"],
@@ -1750,6 +1805,12 @@ window.POLYMER_DB = [
     note: "A high-temperature poly(ether sulfone) built around a twisted, non-coplanar phthalazinone unit rather than a flat aromatic one. The twist is deliberate: it stops chains packing and crystallising, so the polymer stays amorphous and soluble in ordinary solvents while its glass transition sits above 260 C - unusually, both processable and heat-resistant, which the fully planar aromatics are not. Not drawn: the phthalazinone unit is reported with several attachment patterns and drawing one would assert a regiochemistry the class does not fix."
   },
   {
+    conditions: {
+      summary: "diisocyanate + diol; foams are blown by CO₂ from added water",
+      process: "step-growth",
+      detail: "Writing a polyurethane as isocyanate plus alcohol giving a urethane linkage is an oversimplification of what the commercial materials are. Foamed products such as seat cushions and bedding are the largest application, and water is often deliberately added: isocyanate groups react with water to put urea linkages in the chain and release carbon dioxide, which is the blowing agent. Rigid foams instead get a low-boiling solvent such as fluorotrichloromethane. Many polyurethanes are made from mixtures of diols and diamines, the diamines adding still more urea, so the typical polyurethane contains both urethane and urea repeat units. The N–H bonds of both then add to further isocyanate to give allophanate and biuret linkages, which branch and crosslink the polymer. Odian gives no temperature in this section, so none is stated here.",
+      source: "Odian, Principles of Polymerization (4th ed.), §2-12e"
+    },
     name: "Polyurethane (MDI-butanediol)", aka: ["PU", "polyurethane", "MDI-BDO hard segment"],
     monomer: "4,4'-methylenediphenyl diisocyanate + 1,4-butanediol", cls: "Step-growth (polyester)", cas: null,
     tags: ["elastomer", "engineering", "specialty"],
@@ -4063,8 +4124,8 @@ window.POLYMER_DB = [
     conditions: {
       summary: "Ziegler–Natta or Phillips catalyst, low pressure",
       process: "coordination",
-      detail: "Made with traditional Ziegler–Natta or Phillips-type initiators rather than radically, which is why it is also called low-pressure polyethylene. The branching that results is far lower than the radical route gives — 0.5–3 versus 15–30 methyl groups per 500 monomer units — and that alone accounts for the higher crystallinity, density and melting point.",
-      source: "Odian, Principles of Polymerization (4th ed.), §8-11b"
+      detail: "Made with traditional Ziegler–Natta or Phillips-type initiators rather than radically, which is why it is also called low-pressure polyethylene. The branching that results is far lower than the radical route gives — 0.5–3 versus 15–30 methyl groups per 500 monomer units — and that alone accounts for the higher crystallinity, density and melting point. Commercially it is a slurry (suspension) or gas-phase process; gas-phase runs at about 2–3 MPa and 70–105 °C. Solution polymerisation at 140–150 °C and up to about 8 MPa in cyclohexane was used with the early low-efficiency Phillips initiators, but high-efficiency initiators moved production to the cooler suspension and gas-phase routes, and solution work is now limited to low-molar-mass polyethylene. For ethylene, titanium-based initiators give narrower molar-mass distributions than chromium-based ones.",
+      source: "Odian, Principles of Polymerization (4th ed.), §8-11a, §8-11b"
     },
     name: "High-density polyethylene", aka: ["HDPE", "PE-HD", "high density polyethylene"],
     monomer: "ethylene (coordination catalysis)", cls: "Addition (vinyl)", cas: null,
@@ -4120,6 +4181,12 @@ window.POLYMER_DB = [
     note: "Polyethylene tied into a network after shaping, which removes its melting point - it softens but cannot flow, so a pipe holds pressure at temperatures where HDPE would sag. That is why domestic hot water plumbing and medium-voltage cable insulation use it. The crosslinking is done after extrusion precisely because the crosslinked material cannot be extruded. Not drawn: a network with no repeat unit."
   },
   {
+    conditions: {
+      summary: "Ziegler–Natta only; Phillips is not stereoselective",
+      process: "coordination, slurry or gas phase",
+      detail: "The isotactic polymer is why the initiator choice is not free. Both Ziegler–Natta and Phillips-type initiators are used for ethylene, but only traditional Ziegler–Natta initiators are used for propene, because Phillips-type initiators do not give stereoselective polymerisation. Commercially this is a slurry (suspension) or gas-phase process; gas-phase runs at about 2–3 MPa and 70–105 °C. Metallocene initiators reached commercialisation around 2000 and accounted for roughly 5% of HDPE, LLDPE and PP production in 2002.",
+      source: "Odian, Principles of Polymerization (4th ed.), §8-11a"
+    },
     name: "Isotactic polypropylene", aka: ["iPP", "isotactic PP"],
     monomer: "propylene (stereospecific catalysis)", cls: "Addition (vinyl)", cas: null,
     tags: ["commodity", "packaging", "specialty"],
@@ -4619,6 +4686,7 @@ window.POLYMER_DB = [
     note: "The polymer nearly all carbon fibre starts as. Pure polyacrylonitrile is too tightly hydrogen-bonded to spin well and cyclises uncontrollably on heating; a few percent of a comonomer opens the structure enough to dissolve and draw it, and moderates the exotherm during stabilisation so the fibre does not burn instead of cyclising. Not drawn: the comonomer fraction is the specification."
   },
   {
+    noScheme: "the same monomer problem as poly(vinyl alcohol) - vinyl alcohol exists only as its tautomer acetaldehyde - and this entry is a processed form on top of that, gel-spun and acetalised from the finished polymer rather than made from any monomer",
     name: "Poly(vinyl alcohol) high-tenacity fibre", aka: ["PVA fibre", "vinylon", "Kuralon"],
     monomer: "poly(vinyl alcohol), gel-spun and acetalised", cls: "Addition (vinyl)", cas: null,
     tags: ["specialty"],
