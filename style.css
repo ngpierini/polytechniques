@@ -2851,3 +2851,28 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
   font-size: 0.83rem;
   color: var(--text-dim);
 }
+
+/* Reaction scheme: monomer -> repeat unit, drawn only where the monomer can be
+   recovered from the polymer and verified. Framed as a note, not a result. */
+.mol-scheme {
+  margin: 4px 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+}
+.mol-scheme h4 {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.mol-scheme canvas { display: block; width: 100%; height: auto; max-width: 100%; }
+.mol-scheme p {
+  margin: 6px 0 0;
+  font-size: 0.83rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}

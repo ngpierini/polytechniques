@@ -2371,8 +2371,17 @@
       var resultsEl = document.getElementById('mol-results');
       if (!resultsEl) return;
       clearIdentification();
+      pendingScheme = null;
       if (!list.length) { resultsEl.innerHTML = '<p class="guide-note">No matches.</p>'; return; }
-      resultsEl.innerHTML = list.map(polymerCard).join('');
+      // The scheme goes with a single confident answer. On a multi-hit result
+      // (the four polypropylenes, both polybutadienes) they share one repeat
+      // unit and therefore one monomer, so it still belongs to the set - but
+      // only draw it when the whole set agrees on a mechanism class.
+      var scheme = '';
+      var sameCls = list.every(function (p) { return p.cls === list[0].cls; });
+      if (sameCls) scheme = reactionSchemeHtml(list[0]);
+      resultsEl.innerHTML = scheme + list.map(polymerCard).join('');
+      drawPendingScheme();
     }
 
     // ---------- RDKit-powered graph matching ----------
@@ -4464,6 +4473,129 @@
         return;
       }
       searchSub(sub);
+    }
+
+    // ---------- Reaction scheme: monomer -> polymer ----------
+    //
+    // Shown for an exact match whose monomer can be RECOVERED from the repeat
+    // unit and verified by round trip (polymer-graph.js deriveMonomer). About
+    // 230 of the library's drawn entries qualify; the rest render nothing
+    // rather than a guess. Step-growth never qualifies - a polyester unit came
+    // from a diol and a diacid, and one unit cannot say which pair.
+    //
+    // What sits over the arrow is the entry's own mechanism class and nothing
+    // else. THERE IS NO REAGENT DATA IN THIS LIBRARY: no initiator, catalyst,
+    // solvent or temperature field exists on any of the 654 entries. Printing
+    // "AIBN, 60 °C" here would be inventing it, so the arrow carries what is
+    // actually known and points at the mechanisms page for the rest.
+    var SCHEME_LABEL = {
+      vinyl: 'chain-growth addition',
+      diene: '1,4-addition',
+      ring: 'ring-opening'
+    };
+    function reactionSchemeHtml(p) {
+      if (!p || !Array.isArray(p.atoms) || !p.atoms.length) return '';
+      var m = PG.deriveMonomer(p.atoms, p.bonds, p.cls);
+      if (!m) return '';
+      pendingScheme = { polymer: p, monomer: m };
+      return '<div class="mol-scheme" id="mol-scheme">' +
+        '<h4>How it is made</h4>' +
+        '<canvas id="mol-scheme-canvas" width="900" height="200"></canvas>' +
+        '<p id="mol-scheme-note"></p>' +
+        '</div>';
+    }
+    var pendingScheme = null;
+
+    function drawPendingScheme() {
+      if (!pendingScheme) return;
+      var job = pendingScheme;
+      pendingScheme = null;
+      var cv = document.getElementById('mol-scheme-canvas');
+      var note = document.getElementById('mol-scheme-note');
+      if (!cv) return;
+      ensureRDKit().then(function (RDKit) {
+        // Lay each side out on its own, then place them in the left and right
+        // thirds with the arrow between.
+        function layout(graph, boxW, boxH) {
+          var ex = expandSuperatoms(graph.atoms, graph.bonds);
+          var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
+          var mb = null;
+          if (mol) {
+            try { mb = mol.get_new_coords(); } catch (e) {}
+            if (!mb) { try { mb = mol.get_molblock(); } catch (e2) {} }
+            mol.delete();
+          }
+          var parsed = mb && parseMolblockToEditor(mb);
+          if (!parsed || !parsed.atoms.length) return null;
+          var pos = fitParsedCoords(parsed, { width: boxW, height: boxH });
+          return {
+            atoms: parsed.atoms.map(function (ra, i) { return { id: i + 1, el: ra.el || 'C', x: pos[i].x, y: pos[i].y }; }),
+            bonds: parsed.bonds.map(function (rb) { return { id: rb.a * 1000 + rb.b, a: rb.a, b: rb.b, order: rb.order }; })
+          };
+        }
+        var third = Math.round(cv.width * 0.36);
+        var left = layout(job.monomer, third, cv.height);
+        var right = layout({ atoms: job.polymer.atoms, bonds: job.polymer.bonds }, third, cv.height);
+        if (!left || !right) { if (note) note.textContent = ''; return; }
+        right.atoms.forEach(function (a) { a.x += cv.width - third; });
+
+        var pctx = cv.getContext('2d');
+        pctx.clearRect(0, 0, cv.width, cv.height);
+        var styles = getComputedStyle(document.body);
+        var textColor = (styles.getPropertyValue('--text') || '#111').trim() || '#111';
+        var bgColor = (styles.getPropertyValue('--card-bg') || '#fff').trim() || '#fff';
+        var dim = (styles.getPropertyValue('--text-dim') || '#666').trim() || '#666';
+
+        var savedAtoms = atoms, savedBonds = bonds, savedBrackets = brackets, savedCtx = ctx;
+        var savedHover = hoverAtom, savedSel = selectedAtom, savedGroup = selectedGroup;
+        ctx = pctx; brackets = []; hoverAtom = null; selectedAtom = null; selectedGroup = [];
+        try {
+          atoms = left.atoms; bonds = left.bonds;
+          drawStructure(textColor, bgColor);
+          atoms = right.atoms; bonds = right.bonds;
+          drawStructure(textColor, bgColor);
+        } finally {
+          ctx = savedCtx;
+          atoms = savedAtoms; bonds = savedBonds; brackets = savedBrackets;
+          hoverAtom = savedHover; selectedAtom = savedSel; selectedGroup = savedGroup;
+        }
+
+        // the arrow, and the mechanism over it
+        var ax = third + 20, bx = cv.width - third - 20, ay = cv.height / 2;
+        pctx.save();
+        pctx.strokeStyle = dim;
+        pctx.fillStyle = dim;
+        pctx.lineWidth = 1.6;
+        pctx.beginPath();
+        pctx.moveTo(ax, ay);
+        pctx.lineTo(bx - 8, ay);
+        pctx.stroke();
+        pctx.beginPath();
+        pctx.moveTo(bx, ay);
+        pctx.lineTo(bx - 9, ay - 4.5);
+        pctx.lineTo(bx - 9, ay + 4.5);
+        pctx.closePath();
+        pctx.fill();
+        pctx.font = '600 12px system-ui, sans-serif';
+        pctx.textAlign = 'center';
+        pctx.textBaseline = 'bottom';
+        pctx.fillText(SCHEME_LABEL[job.monomer.kind] || 'polymerisation', (ax + bx) / 2, ay - 7);
+        pctx.font = '11px system-ui, sans-serif';
+        pctx.textBaseline = 'top';
+        pctx.fillText('n', (ax + bx) / 2, ay + 6);
+        pctx.restore();
+
+        if (note) {
+          var extra = job.monomer.kind === 'diene'
+            ? ' The monomer carries no geometry of its own: the same butadiene gives the cis or the trans polymer depending on the catalyst, which is why both are separate entries here.'
+            : '';
+          note.innerHTML = escapeHtml(job.polymer.monomer || 'The monomer') +
+            ' polymerises to this repeat unit. The structure on the left is derived from the one on the right and checked by rebuilding the polymer from it.' +
+            extra +
+            ' <strong>Conditions are not in this library</strong> &mdash; no initiator, catalyst or temperature is recorded for any entry, so the arrow names the mechanism only. ' +
+            '<a href="mechanisms.html">Mechanisms</a> covers how these polymerisations are actually run.';
+        }
+      }).catch(function () { if (note) note.textContent = ''; });
     }
 
     // ---------- Chain preview: what your bracket actually means ----------

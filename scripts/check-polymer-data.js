@@ -23,7 +23,7 @@ function loadDb() {
 // WL-hash now comes from the shared, DOM-free polymer-graph.js module (the
 // same code the browser and the search-index build use) instead of a copy
 // kept in sync here by hand.
-const { wlHash, closedHash, inSameRing } = require("../polymer-graph.js");
+const { wlHash, closedHash, inSameRing, deriveMonomer } = require("../polymer-graph.js");
 
 // The declared stereo-sequence values. Anything outside this list is a typo,
 // not a new kind of polymer.
@@ -393,6 +393,26 @@ function main() {
       }
     }
   });
+
+  // Monomer recovery is shown on the site as a reaction scheme, so it must not
+  // quietly stop working. deriveMonomer verifies each result by round trip and
+  // returns null rather than guessing, which means a regression shows up as a
+  // silent DROP in coverage, not as an error. Hence a floor.
+  //
+  // The floor is deliberately below the current count: entries legitimately
+  // come and go, and the point is to catch a transform breaking, not to freeze
+  // the number. Raise it if coverage climbs a lot.
+  const MONOMER_FLOOR = 225;
+  let monomersDerived = 0;
+  db.forEach(function (entry) {
+    if (!entry || entry.type === "copolymer") return;
+    if (!Array.isArray(entry.atoms) || !entry.atoms.length) return;
+    if (deriveMonomer(entry.atoms, entry.bonds, entry.cls)) monomersDerived++;
+  });
+  if (monomersDerived < MONOMER_FLOOR) {
+    errors.push("monomer recovery fell to " + monomersDerived + " entries (floor " + MONOMER_FLOOR +
+      "); a reverse transform in polymer-graph.js is probably broken, since deriveMonomer fails silently by design");
+  }
 
   // Referential integrity: every copolymer component must name a real entry.
   db.forEach(function (entry, idx) {

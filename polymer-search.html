@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=72">
+<link rel="stylesheet" href="style.css?v=73">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -74,6 +74,9 @@
       </p>
       <p class="guide-note">
         <strong>Asking a generic question.</strong> "Contains fragment" matches exactly what you drew &mdash; those elements, those bond orders. Some questions can't be drawn at all: <em>any</em> halogen, <em>any</em> aromatic ring, an ester however it happens to be substituted. Type a <strong>SMARTS</strong> pattern for those, or press one of the examples under the box to see the notation next to its answer. <code>[F,Cl,Br,I]</code> finds every halogenated polymer in the library; <code>[CX3](=O)[OX2H0]</code> finds every ester, including formates, because SMARTS counts implicit hydrogens.
+      </p>
+      <p class="guide-note">
+        <strong>How it is made.</strong> Where a match's monomer can be recovered from its repeat unit, the result shows the polymerisation as a scheme: monomer, arrow, repeat unit. Addition and ring-opening are isomerisations &ndash; the repeat unit is the monomer with one bond moved &ndash; so the move can be reversed, and every derived monomer is checked by rebuilding the polymer from it before it is drawn. Around 230 entries qualify. Step-growth never does: a polyester repeat unit came from a diol <em>and</em> a diacid, and one unit cannot say which pair, so no scheme is drawn rather than a guessed one. <strong>Reaction conditions are not in this library</strong> &ndash; no initiator, catalyst, solvent or temperature is recorded for any entry, so the arrow names the mechanism and nothing more. <a href="mechanisms.html">Mechanisms</a> is where the actual chemistry of running these polymerisations lives.
       </p>
       <p class="guide-note">
         <strong>Stereochemistry.</strong> The geometry of a backbone double bond is part of the match, because it is part of the polymer: cis-1,4-polyisoprene is natural rubber and the trans isomer is gutta-percha, a hard resin, from the same atoms joined the same way. Use the cis/trans tool on a double bond to state it &mdash; "cis" meaning the chain continues on the same side, which is what a polymer name means by it, not the CIP priority rule. Leave it unset and the search matches every isomer of that skeleton and says which ones they are. <strong>Tacticity is different</strong>: it describes how one repeat unit follows the next, so no single repeat unit can carry it. The four polypropylenes are one drawing, and a structure search returns all four together and says why.
@@ -370,10 +373,10 @@
 
 <script src="polymer-data.js?v=34"></script>
 <script src="polymer-xref.js?v=1"></script>
-<script src="polymer-graph.js?v=7"></script>
+<script src="polymer-graph.js?v=8"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=153"></script>
+<script src="polymer-search.js?v=154"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

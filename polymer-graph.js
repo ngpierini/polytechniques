@@ -534,6 +534,199 @@
     return bad;
   }
 
+  // ---- monomer recovery ---------------------------------------------------
+  //
+  // Addition and ring-opening polymerisation are isomerisations: the repeat
+  // unit is the monomer with one bond moved. That move is reversible, but only
+  // if you know WHICH move it was - and the entry's mechanism class says. So
+  // the rule is chosen by declared class, never inferred from the shape of the
+  // graph, and a class with no defined reverse yields nothing at all.
+  //
+  // Every derived monomer is checked by ROUND TRIP: re-apply the forward
+  // transform and require the original hash back. A monomer that does not
+  // rebuild its own polymer is not returned. That is what makes this safe to
+  // put on a page - the alternative, printing a plausible-looking monomer,
+  // would be a chemistry claim nobody verified.
+  //
+  // Step-growth is absent on purpose: a polyester repeat unit came from a diol
+  // AND a diacid, and one unit cannot say which pair. Silicones and
+  // polyoxymethylene are refused too - closing their unit gives a two-membered
+  // ring, when the real monomers are cyclic oligomers (D4, trioxane).
+  function starAttachments(atoms, bonds) {
+    var stars = {}, n = 0;
+    atoms.forEach(function (a) { if (a.el === "*") { stars[a.id] = 1; n++; } });
+    if (n !== 2) return null;
+    var attach = [];
+    for (var i = 0; i < bonds.length; i++) {
+      var b = bonds[i], aS = !!stars[b.a], bS = !!stars[b.b];
+      if (aS && bS) return null;
+      if (aS) attach.push({ at: b.b, order: b.order });
+      else if (bS) attach.push({ at: b.a, order: b.order });
+    }
+    return attach.length === 2 ? { stars: stars, attach: attach } : null;
+  }
+  function coreOf(atoms, bonds) {
+    var stars = {};
+    atoms.forEach(function (a) { if (a.el === "*") stars[a.id] = 1; });
+    return {
+      atoms: atoms.filter(function (a) { return !stars[a.id]; })
+                  .map(function (a) { return { id: a.id, el: a.el, charge: a.charge }; }),
+      bonds: bonds.filter(function (b) { return !stars[b.a] && !stars[b.b]; })
+                  .map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo }; })
+    };
+  }
+  function findBond(list, x, y) {
+    for (var i = 0; i < list.length; i++) {
+      if ((list[i].a === x && list[i].b === y) || (list[i].a === y && list[i].b === x)) return list[i];
+    }
+    return null;
+  }
+  function pathBetween(graph, from, to) {
+    var adj = {};
+    graph.atoms.forEach(function (a) { adj[a.id] = []; });
+    graph.bonds.forEach(function (b) { if (adj[b.a] && adj[b.b]) { adj[b.a].push(b.b); adj[b.b].push(b.a); } });
+    var prev = {}, seen = {}, queue = [from];
+    seen[from] = 1;
+    while (queue.length) {
+      var c = queue.shift();
+      for (var i = 0; i < adj[c].length; i++) {
+        var nb = adj[c][i];
+        if (seen[nb]) continue;
+        seen[nb] = 1; prev[nb] = c; queue.push(nb);
+      }
+    }
+    if (!seen[to]) return null;
+    var path = [to], w = to;
+    while (w !== from) { w = prev[w]; path.push(w); }
+    return path.reverse();
+  }
+
+  // vinyl / acrylate / methacrylate: the two attachment carbons were the alkene
+  function monomerVinyl(atoms, bonds) {
+    var info = starAttachments(atoms, bonds);
+    if (!info) return null;
+    var byId = {};
+    atoms.forEach(function (a) { byId[a.id] = a; });
+    var p = info.attach[0], q = info.attach[1];
+    if (!byId[p.at] || !byId[q.at] || byId[p.at].el !== "C" || byId[q.at].el !== "C") return null;
+    var link = findBond(bonds, p.at, q.at);
+    if (!link || link.order !== 1) return null;
+    var m = coreOf(atoms, bonds);
+    var lb = findBond(m.bonds, p.at, q.at);
+    if (!lb) return null;
+    lb.order = 2;
+    return m;
+  }
+  // conjugated diene, 1,4-addition: *-CH2-CH=CH-CH2-* came from CH2=CH-CH=CH2
+  function monomerDiene(atoms, bonds) {
+    var info = starAttachments(atoms, bonds);
+    if (!info) return null;
+    var p = info.attach[0], q = info.attach[1];
+    if (findBond(bonds, p.at, q.at)) return null;
+    var m = coreOf(atoms, bonds);
+    var path = pathBetween(m, p.at, q.at);
+    if (!path || path.length !== 4) return null;
+    var byId = {};
+    m.atoms.forEach(function (a) { byId[a.id] = a; });
+    for (var i = 0; i < 4; i++) if (!byId[path[i]] || byId[path[i]].el !== "C") return null;
+    var b01 = findBond(m.bonds, path[0], path[1]),
+        b12 = findBond(m.bonds, path[1], path[2]),
+        b23 = findBond(m.bonds, path[2], path[3]);
+    if (!b01 || !b12 || !b23 || b12.order !== 2) return null;
+    b01.order = 2; b12.order = 1; b23.order = 2;
+    // The monomer has no backbone geometry. cis- and trans-1,4-polybutadiene
+    // come from the SAME butadiene; which one you get is the catalyst's doing,
+    // not the monomer's. So the geometry is dropped here, and the round-trip
+    // check for dienes compares stereo-blind for exactly that reason.
+    b12.stereo = undefined;
+    return m;
+  }
+  // lactam / lactone / carbonate / epoxide: the ring closes back up
+  function monomerRingOpen(atoms, bonds) {
+    var closed = closeRepeatUnit(atoms, bonds);
+    if (!closed) return null;
+    var seen = {};
+    for (var i = 0; i < closed.bonds.length; i++) {
+      var b = closed.bonds[i];
+      if (b.a === b.b) return null;                 // self-loop: not a ring
+      var k = [b.a, b.b].sort().join("|");
+      if (seen[k]) return null;                     // two-membered ring
+      seen[k] = 1;
+    }
+    return closed;
+  }
+
+  var MONOMER_RULES = {
+    "Addition (vinyl)": { back: monomerVinyl, kind: "vinyl" },
+    "Addition (acrylate)": { back: monomerVinyl, kind: "vinyl" },
+    "Addition (methacrylate)": { back: monomerVinyl, kind: "vinyl" },
+    "Addition (diene)": { back: monomerDiene, kind: "diene" },
+    "Ring-opening": { back: monomerRingOpen, kind: "ring" },
+    "Ring-opening (polyamide)": { back: monomerRingOpen, kind: "ring" },
+    "Ring-opening (silicone)": { back: monomerRingOpen, kind: "ring" }
+  };
+
+  // Forward transforms, used only to verify the reverse.
+  function forwardVinyl(m, info) {
+    var p = info.attach[0], q = info.attach[1];
+    var out = { atoms: m.atoms.slice(), bonds: m.bonds.map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo }; }) };
+    var lb = findBond(out.bonds, p.at, q.at);
+    if (!lb) return null;
+    lb.order = 1;
+    out.atoms = out.atoms.concat([{ id: "__m0", el: "*" }, { id: "__m1", el: "*" }]);
+    out.bonds.push({ a: "__m0", b: p.at, order: p.order }, { a: q.at, b: "__m1", order: q.order });
+    return out;
+  }
+  function forwardDiene(m, info) {
+    var p = info.attach[0], q = info.attach[1];
+    var out = { atoms: m.atoms.slice(), bonds: m.bonds.map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo }; }) };
+    var path = pathBetween(m, p.at, q.at);
+    if (!path || path.length !== 4) return null;
+    var b01 = findBond(out.bonds, path[0], path[1]),
+        b12 = findBond(out.bonds, path[1], path[2]),
+        b23 = findBond(out.bonds, path[2], path[3]);
+    if (!b01 || !b12 || !b23) return null;
+    b01.order = 1; b12.order = 2; b23.order = 1;
+    out.atoms = out.atoms.concat([{ id: "__m0", el: "*" }, { id: "__m1", el: "*" }]);
+    out.bonds.push({ a: "__m0", b: p.at, order: p.order }, { a: q.at, b: "__m1", order: q.order });
+    return out;
+  }
+  function forwardRingOpen(m, info) {
+    var p = info.attach[0], q = info.attach[1];
+    var out = {
+      atoms: m.atoms.concat([{ id: "__m0", el: "*" }, { id: "__m1", el: "*" }]),
+      bonds: m.bonds.filter(function (b) {
+        return !((b.a === p.at && b.b === q.at) || (b.a === q.at && b.b === p.at));
+      }).map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo }; })
+    };
+    out.bonds.push({ a: "__m0", b: p.at, order: p.order }, { a: q.at, b: "__m1", order: q.order });
+    return out;
+  }
+  var MONOMER_FORWARD = { vinyl: forwardVinyl, diene: forwardDiene, ring: forwardRingOpen };
+
+  // Returns { atoms, bonds, kind } for the monomer, or null when the class has
+  // no defined reverse, the pattern does not match, or the round trip fails.
+  function deriveMonomer(atoms, bonds, cls) {
+    var rule = MONOMER_RULES[cls];
+    if (!rule) return null;
+    var info = starAttachments(atoms, bonds);
+    if (!info) return null;
+    var m;
+    try { m = rule.back(atoms, bonds); } catch (e) { return null; }
+    if (!m) return null;
+    var fwd = MONOMER_FORWARD[rule.kind];
+    var rebuilt;
+    try { rebuilt = fwd(m, info); } catch (e2) { return null; }
+    if (!rebuilt) return null;
+    // Dienes compare stereo-blind: the geometry is the catalyst's, not the
+    // monomer's, so a correct monomer cannot reproduce it.
+    var blind = rule.kind === "diene";
+    var h1 = blind ? blindHash(atoms, bonds) : closedHash(atoms, bonds);
+    var h2 = blind ? blindHash(rebuilt.atoms, rebuilt.bonds) : closedHash(rebuilt.atoms, rebuilt.bonds);
+    if (h1 == null || h1 !== h2) return null;
+    return { atoms: m.atoms, bonds: m.bonds, kind: rule.kind };
+  }
+
   function elementProfile(atoms) {
     var p = {};
     atoms.forEach(function (a) { if (a.el !== "*") p[a.el] = (p[a.el] || 0) + 1; });
@@ -549,5 +742,5 @@
     return d;
   }
 
-  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance };
+  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, deriveMonomer: deriveMonomer, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance };
 });
