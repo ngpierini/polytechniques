@@ -2361,12 +2361,12 @@ window.POLYMER_DB = [
   },
   {
     name: "Vulcanised natural rubber", aka: ["vulcanized rubber", "sulfur-crosslinked polyisoprene", "ebonite (high sulfur)"],
+    form: "sulfur crosslinked",
     monomer: "cis-1,4-polyisoprene + sulfur", cls: "Addition (diene)", cas: null,
     tags: ["elastomer", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "The invention that made rubber a material rather than a curiosity. A few sulfur bridges per hundred isoprene units tie the chains into a network, so the material springs back instead of flowing, and stops going sticky when warm and brittle when cold. The crosslink density is nearly the only variable: a little sulfur gives a tyre, a lot gives ebonite, a hard black thermoset. Not drawn: crosslinks fall where the sulfur happens to react, so there is no repeat unit."
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}], bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":2,"stereo":"cis"},{"a":4,"b":5,"order":1},{"a":5,"b":"S1","order":1}],
+    note: "cis-1,4-polyisoprene with sulfur bridges between chains. The repeat unit is untouched - vulcanisation consumes only a small fraction of the double bonds - and yet it is the whole difference between a tacky thermoplastic mass and an elastomer that returns to its shape, because the crosslinks stop chains from flowing past one another permanently. At high sulfur the same chemistry gives ebonite, a hard solid."
   },
   {
     name: "Poly(ethylene-alt-tetrafluoroethylene)", aka: ["ETFE", "Tefzel", "ethylene tetrafluoroethylene"],
@@ -3522,12 +3522,12 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(gamma-glutamic acid) crosslinked hydrogel", aka: ["gamma-PGA hydrogel", "crosslinked polyglutamate"],
+    form: "crosslinked hydrogel",
     monomer: "poly(gamma-glutamic acid), radiation or chemically crosslinked", cls: "Step-growth (polyamide)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "biomedical", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "The bacterial polyglutamate tied into a network, which turns a viscous solution into a superabsorbent that takes up hundreds of times its weight in water and is fully biodegradable - the property acrylate superabsorbents provide but do not degrade. Crosslinking by gamma irradiation needs no added chemistry, so nothing has to be washed out afterwards. Not drawn: a network with no repeat unit."
+    atoms: [{"id":"S0","el":"*"},{"id":2,"el":"N"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"O"},{"id":"S1","el":"*"},{"id":9,"el":"C"},{"id":10,"el":"O"},{"id":11,"el":"O"}], bonds: [{"a":"S0","b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":2},{"a":6,"b":"S1","order":1},{"a":3,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1}],
+    note: "The same gamma-linked glutamic acid chain, tied into a network by radiation or by a chemical crosslinker. The repeat unit does not change, and the carboxyl on every unit is still what does the work - it is what makes the network take up many times its own weight in water."
   },
   {
     name: "Poly(malic acid-co-lactide)", aka: ["PMLA-co-PLA", "poly(malic acid-co-lactic acid)"],
@@ -4169,12 +4169,12 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(acrylamide) crosslinked gel", aka: ["polyacrylamide gel", "PAGE gel", "bis-acrylamide crosslinked polyacrylamide"],
+    form: "crosslinked gel",
     monomer: "acrylamide + N,N'-methylenebisacrylamide", cls: "Addition (acrylate)", cas: null,
     tags: ["acrylate", "water-soluble", "biomedical", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "The separation medium of protein electrophoresis, and one whose pore size is set by two independent variables - total monomer concentration and the fraction that is crosslinker - which is why a gel can be tuned to resolve a chosen molecular weight range. The monomer is a neurotoxin and the polymer is not, a distinction that governs how it is handled. Not drawn: a network with no repeat unit."
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":5,"el":"N"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}], bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":3,"b":5,"order":1},{"a":2,"b":"S1","order":1}],
+    note: "Polyacrylamide as a network rather than a soluble chain, tied together by a few percent of a bis-acrylamide that carries two vinyl groups and so ends up in two chains at once. The repeat unit is unchanged; the crosslink ratio is what sets the pore size, which is the entire basis of using these gels to sieve proteins and nucleic acids by size."
   },
   {
     name: "Poly(N,N'-methylenebisacrylamide)", aka: ["bis-acrylamide", "MBA crosslinker"],
@@ -4280,12 +4280,12 @@ window.POLYMER_DB = [
   },
   {
     name: "Crosslinked polyethylene", aka: ["PEX", "XLPE", "cross-linked polyethylene"],
+    form: "peroxide or silane crosslinked",
     monomer: "polyethylene, peroxide or silane crosslinked", cls: "Addition (vinyl)", cas: null,
     tags: ["commodity", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Polyethylene tied into a network after shaping, which removes its melting point - it softens but cannot flow, so a pipe holds pressure at temperatures where HDPE would sag. That is why domestic hot water plumbing and medium-voltage cable insulation use it. The crosslinking is done after extrusion precisely because the crosslinked material cannot be extruded. Not drawn: a network with no repeat unit."
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}], bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":"S1","order":1}],
+    note: "The repeat unit is ethylene and stays ethylene - what changes is that a few carbons per thousand are joined to a neighbouring chain, by peroxide or by grafted silane that condenses in hot water. That is a relationship between chains, not a change to any one of them, so it cannot appear in a repeat unit; what it does appear in is the behaviour, since the network no longer melts and the pipe holds pressure at temperatures where polyethylene would creep."
   },
   {
     conditions: {
@@ -5094,9 +5094,8 @@ window.POLYMER_DB = [
     monomer: "L-aspartic acid + L-arginine", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "water-soluble", "specialty"],
     verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "A nitrogen store cyanobacteria build when nitrogen is plentiful: a poly(aspartic acid) backbone with an arginine hung off every side-chain carboxyl, giving four nitrogen atoms per repeat. Unusually for a polypeptide it is made by a single enzyme rather than a ribosome, so it is not template-encoded, and it is of interest as a renewable source of both polyaspartate and arginine. Undrawn pending a checked structure for the branched repeat."
+    atoms: [{"id":"S0","el":"*"},{"id":2,"el":"N"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":8,"el":"C"},{"id":9,"el":"O"},{"id":"S1","el":"*"},{"id":10,"el":"N"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"O"},{"id":14,"el":"O"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"N"},{"id":19,"el":"C"},{"id":20,"el":"N"},{"id":21,"el":"N"}], bonds: [{"a":"S0","b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":2},{"a":3,"b":8,"order":1},{"a":8,"b":9,"order":2},{"a":8,"b":"S1","order":1},{"a":5,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":2},{"a":12,"b":14,"order":1},{"a":11,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":2},{"a":19,"b":21,"order":1}],
+    note: "A bacterial nitrogen store, and structurally a poly(aspartic acid) backbone with an arginine hung by an amide off every beta-carboxyl. That is a nitrogen-dense arrangement on purpose: five nitrogens per repeat, four of them in the arginine, which is why cyanobacteria use it as a reserve rather than as a structural polymer. It is made by a single enzyme rather than at the ribosome, so it is a genuine polymer with a repeat unit rather than a sequence-defined protein."
   },
   {
     name: "Fibrin", aka: ["fibrin clot", "polymerised fibrinogen"],
