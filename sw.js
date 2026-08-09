@@ -8,7 +8,7 @@
 // Either way the calculators still work with no connection. Bump CACHE_NAME
 // whenever the pre-cache list below changes so old clients pick up the new
 // set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v212";
+const CACHE_NAME = "polytechniques-v213";
 
 const PRECACHE_URLS = [
   "home.html",

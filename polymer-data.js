@@ -77,6 +77,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "suspension or emulsion",
+      process: "suspension or emulsion",
+      detail: "Poly(vinylidene chloride) and its copolymers with vinyl chloride, acrylonitrile and acrylates are usually produced by the suspension or emulsion process. Most of the familiar uses are actually the copolymers rather than the homopolymer — oil-, fat-, oxygen- and moisture-resistant packaging film, containers, coatings, tank liners, and monofilaments for drapery fabric and industrial filter cloth. Odian gives no temperature or initiator here, so none is stated.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14c-2"
+    },
     name: "Poly(vinylidene chloride)", aka: ["PVDC", "Saran"], monomer: "Vinylidene chloride",
     cls: "Addition (vinyl)", cas: "9002-85-1", tg: "-18 °C", tm: "190 °C",
     tags: ["vinyl-halide", "packaging"],
@@ -84,6 +90,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "suspension mainly; emulsion also practised",
+      process: "suspension or emulsion",
+      detail: "The fluoropolymers are obtained mainly by suspension polymerisation, with emulsion also practised. PTFE reaches very high molar mass — up to 10⁵–10⁶ — apparently because there is little chain transfer and because the growing radicals precipitate, which greatly decreases termination. The same properties that follow, high crystallinity, a Tm of 327 °C and a very high melt viscosity, are why PTFE cannot be processed by the usual plastics techniques at all: it is fabricated by the powder and cold-extrusion methods of metal forming. DuPont commercialised polymerisation in supercritical CO₂ in 2002, for a copolymer of tetrafluoroethylene with hexafluoropropene and a perfluoroalkyl vinyl ether.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14e"
+    },
     name: "Polytetrafluoroethylene", aka: ["PTFE", "Teflon"], monomer: "Tetrafluoroethylene",
     cls: "Addition (vinyl)", cas: "9002-84-0", tm: "327 °C", tags: ["engineering", "fluoropolymer"],
     note: "Multiple sub-ambient and near-ambient transitions are reported instead of a single clean Tg. Standard handbook tables (Brandrup, Odian's Table 1-3) nonetheless quote a Tg near 117 °C.",
@@ -91,12 +103,24 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }, { a: 2, b: 5, order: 1 }, { a: 2, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "suspension or emulsion, like the fluoropolymer family",
+      process: "suspension or emulsion",
+      detail: "Made like the rest of the fluoropolymer family — mainly suspension polymerisation, with emulsion also practised. PVDF exists commercially for the reason the whole family beyond PTFE does: PTFE's crystallinity and melt viscosity make it unprocessable by normal plastics methods, so the other fluoropolymers and the tetrafluoroethylene copolymers were developed with lower Tm and lower crystallinity to buy back melt processability. Odian gives no temperature or initiator for PVDF specifically, so none is stated here.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14e"
+    },
     name: "Poly(vinylidene fluoride)", aka: ["PVDF"], monomer: "Vinylidene fluoride", cls: "Addition (vinyl)",
     cas: "24937-79-9", tg: "-35 °C", tm: "170 °C", tags: ["engineering", "fluoropolymer"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "F" }, { id: 4, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "suspension or emulsion, like the fluoropolymer family",
+      process: "suspension or emulsion",
+      detail: "One of the four main fluoropolymers, obtained like the others mainly by suspension polymerisation, with emulsion also practised. Odian treats the family together and gives no temperature or initiator for PVF specifically, so none is stated here. The family as a whole is a small volume next to the commodity polymers — about 20 million pounds a year in the United States — but covers a service range from −200 °C to 260 °C and resists hot concentrated acids and bases.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14e"
+    },
     name: "Poly(vinyl fluoride)", aka: ["PVF"], monomer: "Vinyl fluoride", cls: "Addition (vinyl)",
     cas: "24981-14-4", tg: "-20 °C", tm: "200 °C", tags: ["fluoropolymer"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -209,12 +233,24 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "radical emulsion polymerisation of chloroprene",
+      process: "emulsion, radical",
+      detail: "Made by radical polymerisation of chloroprene in emulsion — over 100 million pounds a year in the United States — and the polymer comes out highly trans-1,4 in structure. It is surpassed in oil and fuel resistance only by nitrile rubber, and in strength only by cis-1,4-polyisoprene; its cost is what confines it to applications needing that particular combination, such as wire and cable jackets, industrial belts and hoses, seals for buildings and highway joints, roof coatings, adhesives, gloves and coated fabrics.",
+      source: "Odian, Principles of Polymerization (4th ed.), §8-11g"
+    },
     name: "Polychloroprene", aka: ["Neoprene"], monomer: "Chloroprene", cls: "Addition (diene)",
     cas: "9010-98-4", tg: "-43 °C", tm: "45 °C", tags: ["elastomer", "vinyl-halide"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "Cl" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "over 90% of it is harvested, not polymerised",
+      process: "natural, or anionic with alkyllithium",
+      detail: "More than 90% of all cis-1,4-polyisoprene used commercially is natural Hevea rubber, tapped from Hevea brasiliensis and containing over 98% of its double bonds in the cis configuration — so for this polymer the honest answer is that it is mostly harvested rather than polymerised. The synthetic material, about 100 million pounds a year in the United States against 2 billion pounds of natural rubber, is made with alkyllithium or Ti/Al Ziegler–Natta initiators. Alkyllithium works for isoprene where it would not for most dienes: lithium in n-hexane at 25 °C gives 93% cis-1,4, while sodium in the same solvent gives none at all, because only the lithium counterion coordinates strongly enough to localise the allyl carbanion and force 1,4-addition.",
+      source: "Odian, Principles of Polymerization (4th ed.), §8-2a-2, §8-10b, §8-11g"
+    },
     name: "Polyisoprene (cis-1,4)", aka: ["Natural rubber", "NR"], monomer: "Isoprene", cls: "Addition (diene)",
     cas: "9003-31-0", tg: "-70 °C", tm: "28 °C", tags: ["elastomer"],
     note: "Nearly amorphous at room temperature (crystalline Tm near 28 °C, Odian's Table 8-1). The trans-1,4 isomer, gutta-percha, is a harder, more crystalline, thermoplastic-like material (Tg near -58 °C, Tm near 74 °C).",
@@ -222,6 +258,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 2, stereo: "cis" }, { a: 4, b: 5, order: 1 }, { a: 5, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "coordination initiator; alkyllithium gives only ~35% cis",
+      process: "coordination",
+      detail: "Anionic polymerisation will not do this one. Lithium in n-pentane at 0 °C gives only about 35% cis-1,4 from 1,3-butadiene, with 52% trans and 13% 1,2 — nothing like the 93% cis that the same initiator gives with isoprene — so the high-cis commercial polymer comes from coordination initiators, which surpass what alkyllithium can reach. How far is specific to both the initiator and the conditions: butadiene with vanadium(III) acetylacetonate and MAO in toluene is 64% cis-1,4 at 40 °C but 9% cis and 87% trans at −18 °C, and adding triethylamine at 40 °C swings the product to 80% 1,2 — whereas cobalt(III) acetylacetonate with MAO holds 94–97% cis-1,4 anywhere from 60 down to −78 °C. About 1.5 billion pounds were made in the United States in 2001; it is blended with natural rubber or SBR for truck and car tyres rather than used alone.",
+      source: "Odian, Principles of Polymerization (4th ed.), §8-10b, §8-10d, §8-11g"
+    },
     name: "Polybutadiene (cis-1,4)", aka: ["BR", "butadiene rubber"], monomer: "1,3-Butadiene", cls: "Addition (diene)",
     cas: "9003-17-2", tg: "-100 °C", tm: "6 °C", tags: ["elastomer"],
     note: "The trans-1,4 isomer is markedly more crystalline (Tg near -83 °C, Tm near 145 °C, Odian's Table 8-1). Sources spread on the cis Tg: Odian's Table 8-1 gives -95 °C where -100 °C is also widely quoted, and the real value moves with cis content, so treat anything in that range as the same material rather than a disagreement.",
@@ -268,6 +310,12 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
   {
+    conditions: {
+      summary: "anionic or cationic ring-opening of the cyclic tetramer",
+      process: "ring-opening, anionic or cationic",
+      detail: "The higher-molar-mass polysiloxanes are made by anionic or cationic polymerisation of cyclic siloxanes, most commonly the cyclic trimer and tetramer — octamethylcyclotetrasiloxane is the usual one. Anionic polymerisation is initiated by alkali metal hydroxides, alkyls and alkoxides, by silanolates such as potassium trimethylsilanoate, and by other bases; initiation and propagation are both nucleophilic attack on monomer, mechanistically the same as the anionic polymerisation of epoxides. The thermodynamics are the unusual part: ΔH is nearly zero and ΔS is positive, at 6.7 J mol⁻¹ K⁻¹, so this polymerisation is driven by an increase in entropy rather than by the enthalpy of the bonds it makes.",
+      source: "Odian, Principles of Polymerization (4th ed.), §7-11a"
+    },
     name: "Poly(dimethylsiloxane)", aka: ["PDMS", "silicone rubber"], monomer: "Dimethylsiloxane / D4 or D3 cyclics",
     cls: "Ring-opening (silicone)", cas: "9016-00-6", tg: "-125 °C", tm: "-40 °C", tags: ["silicone", "elastomer"],
     note: "Crystallizes only well below room temperature, so its melting point (Odian's Table 1-3) is far sub-ambient.",
@@ -421,6 +469,12 @@ window.POLYMER_DB = [
   },
   {
     // AUTO-GENERATED by scripts/discover-polymers.js (vinyl addition (single non-ring C=C)) - verify structure before trusting
+    conditions: {
+      summary: "suspension or emulsion, like the fluoropolymer family",
+      process: "suspension or emulsion",
+      detail: "One of the four main fluoropolymers, made mainly by suspension polymerisation with emulsion also practised. Odian names no temperature or initiator for PCTFE specifically, so none is stated here. Its copolymer with ethylene is also commercial, and like the other lower-melting members of the family it exists to be melt-processable where PTFE is not.",
+      source: "Odian, Principles of Polymerization (4th ed.), §3-14e"
+    },
     name: "Poly(chlorotrifluoroethylene)", aka: ["PCTFE"], monomer: "chlorotrifluoroethylene",
     cls: "Addition (vinyl)", cas: "9002-83-9", tg: "45 °C", tm: "220 °C",
     tags: ["engineering", "fluoropolymer"],
@@ -2892,6 +2946,12 @@ window.POLYMER_DB = [
     note: "Butadiene polymerised through only one of its double bonds, leaving the other hanging as a pendant vinyl instead of sitting in the backbone. That changes the polymer completely: where 1,4-polybutadiene is a rubber with a glass transition near -100 C, this is a crystallisable plastic, and the pendant vinyls are convenient handles for grafting and crosslinking."
   },
   {
+    conditions: {
+      summary: "gutta percha from trees, or V/Al Ziegler–Natta",
+      process: "natural, or coordination",
+      detail: "The trans isomer occurs naturally as gutta percha or balata, from trees mostly in Central America and Malaysia. Synthetically it is a specialty material made in small amounts with V/Al Ziegler–Natta initiators. The stereochemistry is the entire point of the entry: the trans polymer has higher molecular symmetry, so it crystallises far more than the cis and has much higher transitions — Tg −58 °C and Tm 74 °C against −73 °C and 28 °C for the cis — which makes it hard and thermoplastic rather than rubbery. That is why it goes into golf-ball covers and orthopaedic devices instead of tyres.",
+      source: "Odian, Principles of Polymerization (4th ed.), §8-2a-2, §8-11g"
+    },
     name: "Polyisoprene (trans-1,4)", aka: ["gutta-percha", "balata", "trans-polyisoprene"],
     monomer: "isoprene (trans-1,4 addition)", cls: "Addition (diene)", cas: null,
     tags: ["biopolymer", "specialty"],
