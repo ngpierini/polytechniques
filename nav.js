@@ -175,14 +175,19 @@
       var footer = document.querySelector("footer");
       if (!main && !footer) return;
 
-      // Built hidden and revealed only once Google reports the unit filled.
-      // AdSense stamps data-ad-status on the <ins>, so that is the honest
-      // signal to watch: an "ADVERTISEMENT" label over blank space is worse
-      // than no slot, and a slot that expands late shifts the page under the
-      // reader. Unfilled or silent, and the whole thing is removed.
+      // The unit must have real WIDTH when adsbygoogle.push() measures it.
+      // This used to be built with hidden = true, and `.ad-slot[hidden]` is
+      // display:none, so the <ins> was zero-width at push time and AdSense
+      // threw "No slot size for availableWidth=0" on every page of the site,
+      // every load. It never filled, the observer below then saw "unfilled",
+      // and the slot deleted itself - hidden until it fills, unable to fill
+      // while hidden. So the container now sits in the flow at full width from
+      // the start and is merely EMPTY: the "pending" class collapses its
+      // vertical margins and hides the label, and an <ins> with no ad in it
+      // has no height, so nothing shows. The label and the spacing appear only
+      // when Google reports the unit filled.
       var slot = document.createElement("div");
-      slot.className = "ad-slot";
-      slot.hidden = true;
+      slot.className = "ad-slot ad-slot-pending";
       var label = document.createElement("span");
       label.className = "ad-slot-label";
       label.textContent = "Advertisement";
@@ -202,14 +207,17 @@
       if ("MutationObserver" in window) {
         var mo = new MutationObserver(function () {
           var st = ins.getAttribute("data-ad-status");
-          if (st === "filled") { slot.hidden = false; mo.disconnect(); }
+          if (st === "filled") { slot.classList.remove("ad-slot-pending"); mo.disconnect(); }
           else if (st === "unfilled") { slot.remove(); mo.disconnect(); }
         });
         mo.observe(ins, { attributes: true, attributeFilter: ["data-ad-status"] });
+        // 10 s was tight enough that a slow fill looked like no fill. The slot
+        // costs nothing to leave in place while pending - it is empty and takes
+        // no vertical space - so the deadline can afford to be generous.
         setTimeout(function () {
           mo.disconnect();
           if (ins.getAttribute("data-ad-status") !== "filled") slot.remove();
-        }, 10000);
+        }, 20000);
       }
 
       // The library is already requested from the page <head>; this only asks

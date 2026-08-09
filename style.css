@@ -2693,6 +2693,13 @@ input.input-invalid {
   text-align: center;
 }
 .ad-slot[hidden] { display: none; }
+/* Pending: in the flow and full width, so adsbygoogle can measure the unit,
+   but visually absent. Collapsing display:none here is what broke ads
+   site-wide - a zero-width <ins> makes AdSense throw "No slot size for
+   availableWidth=0" and the unit never fills. An <ins> holding no ad has no
+   height, so this shows nothing until Google reports the unit filled. */
+.ad-slot-pending { margin-top: 0; margin-bottom: 0; }
+.ad-slot-pending .ad-slot-label { display: none; }
 .ad-slot-label {
   display: block;
   font-size: 0.7rem;
