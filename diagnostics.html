@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="canonical" href="https://getpolytechniques.com/diagnostics.html">
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=21" defer></script>
+<script src="nav.js?v=22" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
@@ -74,6 +74,23 @@
       <button type="button" class="copy-btn" id="diag-rerun">Run again</button>
     </div>
     <p class="guide-note" id="diag-env" style="margin-top:10px; color:var(--text-dim); font-size:0.85rem;"></p>
+  </div>
+
+  <div class="card">
+    <h3>Ad serving</h3>
+    <p class="guide-note">
+      Ads are only ever shown on this site as a single unit below the content, and the page removes that unit
+      unless Google reports it filled &mdash; so &ldquo;no ads anywhere&rdquo; looks identical whether the cause is a site still
+      getting ready, a network blocking the ad script, or nothing on offer to fill it. This asks Google for
+      <strong>one real ad</strong> and reports exactly which of those it is.
+    </p>
+    <p class="guide-note" style="color:var(--danger);">
+      It places a genuine ad below. Do not click it &mdash; clicking your own ads breaks the AdSense terms.
+      Nothing is requested until you press the button.
+    </p>
+    <button type="button" class="copy-btn" id="diag-ad-run">Request one ad and report</button>
+    <div class="diag-summary" id="diag-ad-out" style="margin-top:12px; border-left-color:var(--text-dim);">Not run yet.</div>
+    <div id="diag-ad-host" style="margin-top:12px;"></div>
   </div>
 
   <div class="card">
@@ -215,6 +232,34 @@
         });
     } },
     { name: "Site API (/api/health)", affects: "AI photo-to-structure recognition", run: function () { return probe("api/health", true); } },
+    { name: "Ad script delivered", affects: "The single ad unit below the content — blocked here means no ads, whatever AdSense says", run: function () {
+        return new Promise(function (resolve) {
+          // Whether the library ARRIVED, which is a different question from
+          // whether it fills. An ad blocker or a network filter stops it here,
+          // and that looks exactly like "no ads available" unless it is
+          // separated out. Uses a fresh script element rather than inspecting
+          // window.adsbygoogle, because that array exists whether or not the
+          // real library ever landed on top of it.
+          // nav.js is deferred, so window.PT_ADS may not exist yet when this
+          // runs - the order is a race, and it only passed by luck. The
+          // publisher id is also sitting in the AdSense tag in this page's own
+          // head, which is parsed before anything here, so read that first.
+          var head = document.querySelector('script[src*="adsbygoogle.js"]');
+          var m = head && head.src.match(/[?&]client=([^&]+)/);
+          var client = (m && decodeURIComponent(m[1])) || (window.PT_ADS && window.PT_ADS.client);
+          if (!client) { resolve({ status: "warn", detail: "no AdSense tag found on this page" }); return; }
+          var ads = { client: client };
+          var sc = document.createElement("script");
+          var done = false, fin = function (s, d) { if (!done) { done = true; try { sc.remove(); } catch (_) {} resolve({ status: s, detail: d }); } };
+          sc.async = true;
+          sc.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + encodeURIComponent(ads.client);
+          sc.crossOrigin = "anonymous";
+          sc.onload = function () { fin("ok", "delivered (publisher " + ads.client + ")"); };
+          sc.onerror = function () { fin("fail", "blocked — an ad blocker or this network is stopping googlesyndication.com"); };
+          setTimeout(function () { fin("fail", "no response (blocked or timed out)"); }, 8000);
+          document.head.appendChild(sc);
+        });
+    } },
     { name: "Crossref (publications)", affects: "The live publications search and Hot Off the Press", run: function () { return probe("https://api.crossref.org/works?rows=1", false); } },
     { name: "PubChem", affects: "Naming an unknown drawn structure", run: function () { return probe("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/962/property/Title/JSON", false); } },
     { name: "Public CDN (jsdelivr)", affects: "Reading text off an uploaded photo (OCR)", run: function () { return probe("https://cdn.jsdelivr.net/npm/tesseract.js@5/package.json", false); } }
@@ -344,6 +389,101 @@
   });
 
   runAll();
+})();
+</script>
+
+<script>
+// ---- Live ad fill test, on demand ----
+// The site removes its ad unit whenever Google does not fill it, which is the
+// right behaviour but hides WHY: a site still getting ready, a blocked script
+// and no available ad all render as an empty page. This asks for one real ad
+// against the real unit and names the outcome.
+//
+// On demand rather than on load, deliberately: every run is a real ad request,
+// and firing one automatically on every visit to this page would report
+// impressions nobody ever saw.
+(function () {
+  "use strict";
+  var btn = document.getElementById("diag-ad-run");
+  var out = document.getElementById("diag-ad-out");
+  var host = document.getElementById("diag-ad-host");
+  if (!btn || !out || !host) return;
+
+  // The page's other escapeHtml is private to its own IIFE, and the only text
+  // interpolated here is a thrown error message, which is exactly the kind of
+  // string that should not be trusted into innerHTML.
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function say(colour, html) {
+    out.style.borderLeftColor = colour;
+    out.innerHTML = html;
+  }
+
+  btn.addEventListener("click", function () {
+    var ads = window.PT_ADS;
+    if (!ads || !ads.client || !ads.slot) {
+      say("var(--danger)", "<strong>Cannot test.</strong> nav.js did not run on this page, so the publisher and slot ids are unknown.");
+      return;
+    }
+    btn.disabled = true;
+    host.innerHTML = "";
+    say("var(--text-dim)", "Requesting one ad&hellip;");
+
+    var ins = document.createElement("ins");
+    ins.className = "adsbygoogle";
+    ins.style.display = "block";
+    ins.setAttribute("data-ad-client", ads.client);
+    ins.setAttribute("data-ad-slot", ads.slot);
+    ins.setAttribute("data-ad-format", "auto");
+    ins.setAttribute("data-full-width-responsive", "true");
+    host.appendChild(ins);
+
+    // The width AdSense will measure. Zero here is its own answer: that is
+    // exactly the fault that kept this site's unit from ever filling.
+    var width = Math.round(ins.getBoundingClientRect().width);
+    if (!width) {
+      say("var(--danger)", "<strong>Zero width.</strong> The unit is in a container with no width, so AdSense will refuse to size it " +
+        "(&ldquo;No slot size for availableWidth=0&rdquo;) and it can never fill.");
+      btn.disabled = false;
+      return;
+    }
+
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      say("var(--danger)", "<strong>The ad request threw.</strong> " + escapeHtml(String(e && e.message || e)));
+      btn.disabled = false;
+      return;
+    }
+
+    var started = Date.now();
+    var iv = setInterval(function () {
+      var st = ins.getAttribute("data-ad-status");
+      var secs = ((Date.now() - started) / 1000).toFixed(1);
+      if (st === "filled") {
+        clearInterval(iv);
+        say("var(--ok, #2e7d32)", "<strong>Filled.</strong> Google served an ad in " + secs + " s at " + width + " px wide. " +
+          "Ad serving is working &mdash; please do not click it.");
+        btn.disabled = false;
+      } else if (st === "unfilled") {
+        clearInterval(iv);
+        say("var(--warn, #b26a00)", "<strong>Unfilled.</strong> The request reached Google and it returned no ad (" + secs + " s, " + width + " px wide). " +
+          "The tag is correct; there was nothing to serve. Usual causes: the site is still &ldquo;Getting ready&rdquo; in AdSense, " +
+          "the unit is new, or there is no demand for this page right now.");
+        btn.disabled = false;
+      } else if (Date.now() - started > 20000) {
+        clearInterval(iv);
+        say("var(--danger)", "<strong>No response in 20 s.</strong> Google never marked the unit either way, which usually means the ad " +
+          "script was blocked before the request left this browser &mdash; an ad blocker, a privacy extension, or a network filter. " +
+          "Check the &ldquo;Ad script delivered&rdquo; row above.");
+        btn.disabled = false;
+      }
+    }, 250);
+  });
 })();
 </script>
 

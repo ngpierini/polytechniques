@@ -138,6 +138,10 @@
   // unit is placed and no space is taken on any page.
   var ADSENSE_CLIENT = "ca-pub-9553775926809206";
   var ADSENSE_SLOT = "5973263397";   // "PolyTechniques below content", a responsive display unit
+  // Published so the diagnostics page can run a live fill test against the REAL
+  // unit rather than a second copy of these ids that could drift out of step.
+  // check-adsense.js reads nav.js, so this stays the single source of truth.
+  window.PT_ADS = { client: ADSENSE_CLIENT, slot: ADSENSE_SLOT };
   //
   // STILL OUTSTANDING, and it is not optional: a Google-certified consent
   // management platform, switched on in the AdSense dashboard under Privacy &
