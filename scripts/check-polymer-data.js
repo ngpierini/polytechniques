@@ -46,6 +46,31 @@ const END_GROUPS = [
   "hydroxyl", "amine", "carboxyl", "epoxy", "isocyanate",
   "vinyl", "methacrylate", "acrylate", "thiol", "silanol", "anhydride",
 ];
+// Recompute the equivalent weight from the figure quoted in `spec`, using the
+// relation that applies to that kind of figure. equivalentWeight and spec are
+// transcribed from different places in the same document, so a slip in either
+// one is invisible until they are made to agree:
+//   hydroxyl value / OH number (mg KOH/g) -> 56100 / value
+//   AHEW (amine)                          -> 2 x value, two N-H per primary amine
+//   weight per epoxide / EEW (g/eq)       -> the value itself
+// Returns null when the spec quotes something else (a functionality range, say),
+// which is not an error - it just cannot be cross-checked this way.
+function specImpliedEW(spec) {
+  if (typeof spec !== "string") return null;
+  const range = function (re) {
+    const m = spec.match(re);
+    if (!m) return null;
+    return m[2] ? (parseFloat(m[1]) + parseFloat(m[2])) / 2 : parseFloat(m[1]);
+  };
+  const ahew = range(/AHEW\D{0,12}([\d.]+)(?:\s*-\s*([\d.]+))?/i);
+  if (ahew) return 2 * ahew;
+  const oh = range(/([\d.]+)(?:\s*-\s*([\d.]+))?\s*mg\s*KOH/i);
+  if (oh) return 56100 / oh;
+  const eew = range(/(?:epoxide|EEW)\D{0,12}([\d.]+)(?:\s*-\s*([\d.]+))?/i);
+  if (eew) return eew;
+  return null;
+}
+
 function telechelicKey(entry) {
   const t = entry.telechelic;
   if (!t) return "-";
@@ -209,6 +234,14 @@ function checkEntry(entry, idx, errors) {
       }
       if (typeof t.source !== "string" || !/\d{4}|data sheet|datasheet|technical bulletin|\bdoi\b|§/i.test(t.source)) {
         errors.push(w + ".source must name a specific document - a technical bulletin, data sheet, year or DOI");
+      }
+      const implied = specImpliedEW(t.spec);
+      if (implied != null && typeof t.equivalentWeight === "number") {
+        const off = Math.abs(implied - t.equivalentWeight) / t.equivalentWeight;
+        if (off > 0.03) {
+          errors.push(w + ".equivalentWeight " + t.equivalentWeight + " does not follow from the quoted spec (" +
+            t.spec + "), which implies " + Math.round(implied) + " g/eq - check which of the two was transcribed wrong");
+        }
       }
     }
   }

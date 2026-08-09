@@ -6104,6 +6104,77 @@ window.POLYMER_DB = [
     },
     noScheme: "the repeat unit is butadiene but this is a telechelic grade, not a homopolymerisation product: the hydroxyl ends come from the initiator, and a derived monomer would show butadiene and miss the thing that makes the material useful",
     note: "A liquid hydroxyl-terminated polybutadiene, Mn about 2800, and the classic example of why functionality is quoted as a number rather than an integer: at 2.4-2.6 there is roughly one extra hydroxyl along the chain for every two oligomer units, so it crosslinks with a diisocyanate instead of merely chain-extending. The hydroxyls are primary allylic alcohols. The hydrocarbon backbone gives hydrophobicity, a low Tg, low moisture permeability and resistance to aqueous acid and base, which is what puts it in potting and encapsulation, sealants, adhesives, waterproof membranes and cast polyurethanes."
+  },
+  {
+    name: "PTMEG 2000 polyether diol", aka: ["PTMEG 2000","PTMEG-2000","polytetramethylene ether glycol 2000","PTMO 2000","Terathane 2000","PolyTHF 2000"],
+    monomer: "tetrahydrofuran (cationic ring-opening)", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","polyurethane","elastomer"],
+    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "hydroxyl", functionality: 2,
+      equivalentWeight: 1002, mn: 2000,
+      spec: "hydroxyl value 56 mg KOH/g",
+      source: "Everchem Specialty Chemicals, \"PTMEG 2000\" technical data sheet, 2016"
+    },
+    note: "A linear polyether diol from ring-opened tetrahydrofuran, and the soft segment behind most high-performance polyurethanes - spandex fibre, TPU, cast elastomers. Its hydroxyls are primary, so it reacts faster with isocyanate than a poly(propylene glycol) of the same molar mass, whose ends are secondary. The tetramethylene backbone is regular enough to crystallise, which is where the strength comes from and also why the neat polyol is a waxy solid near room temperature."
+  },
+  {
+    name: "Capa 2201A polycaprolactone diol", aka: ["Capa 2201A","Capa 2201","polycaprolactone diol 2000","PCL diol 2000","caprolactone polyester diol"],
+    monomer: "ε-caprolactone (ring-opening from a diol initiator)", cls: "Ring-opening", cas: "69089-45-8",
+    tags: ["telechelic","prepolymer","polyester","polyurethane","elastomer","biodegradable"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":4,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":1,"b":8,"order":1},{"a":6,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "hydroxyl", functionality: 2,
+      equivalentWeight: 1002, mn: 2000,
+      spec: "OH value 56 mg KOH/g",
+      source: "Perstorp, Capa 2201A product data sheet, valid from 5 October 2010"
+    },
+    note: "A premium-grade linear polycaprolactone diol terminated in primary hydroxyls, a white waxy solid melting at 40-50 °C. Polyester polyols of this kind give cast and thermoplastic urethane elastomers better mechanical properties than the polyethers, at the cost of the ester's vulnerability to hydrolysis - the A grade exists specifically to improve prepolymer stability and hydrolysis resistance over the standard one."
+  },
+  {
+    name: "Poly(propylene glycol) 2000 diol", aka: ["PPG 2000","PPG-2000","polypropylene glycol 2000","poly(propylene glycol) diol 2000"],
+    monomer: "propylene oxide (from a diol initiator)", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","polyurethane","sealant"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "hydroxyl", functionality: 2,
+      equivalentWeight: 1002, mn: 2000,
+      spec: "hydroxyl number 54.5-57.5 mg KOH/g",
+      source: "Bisley International, PPG 2000 product information, 2021"
+    },
+    note: "The workhorse polyether diol: cast elastomers, sealants, adhesives, reaction injection moulding, plasticisers and de-emulsifiers. The methyl on every repeat is what keeps it a liquid where PTMEG of the same molar mass is waxy, but it also puts the hydroxyls on secondary carbons, so it is measurably slower with isocyanate than a primary-terminated polyol - the reason formulations mix the two or cap this one with ethylene oxide."
+  },
+  {
+    name: "Glycerine-initiated polyether triol 3000", aka: ["Rokopol F3000","polyether triol 3000","glycerol-initiated polyether triol","PPG triol 3000","polyol triol 3000"],
+    monomer: "propylene oxide on glycerine", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","polyurethane","crosslinker","foam"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "hydroxyl", functionality: 3,
+      equivalentWeight: 1002,
+      spec: "hydroxyl value 53-59 mg KOH/g",
+      source: "PCC Rokita, Rokopol F3000 product specification, PCC Group product portal (accessed 2026)"
+    },
+    note: "Propylene oxide grown on glycerine, so three arms rather than two. This is the hydroxyl counterpart of a trifunctional amine: a diol and a diisocyanate give a linear chain and nothing else, and something in the recipe has to exceed a functionality of two before a network can form at all. Used for flexible slab and moulded foam. The data sheet quotes only the hydroxyl value, so no molar mass is stated here - at 56 mg KOH/g and three arms it works out near 3000, which is where the grade number comes from."
+  },
+  {
+    name: "Liquid bisphenol A epoxy resin (EEW 185-192)", aka: ["EPON 828","EPON Resin 828","DER 331","D.E.R. 331","liquid epoxy resin","DGEBA resin","BADGE resin"],
+    monomer: "bisphenol A + epichlorohydrin", cls: "Step-growth (polyester)", cas: null,
+    tags: ["telechelic","prepolymer","epoxy","adhesive","composite","engineering"],
+    needsStructure: true,
+    atoms: [],
+    bonds: [],
+    telechelic: {
+      endGroup: "epoxy", functionality: 2,
+      equivalentWeight: 188,
+      spec: "weight per epoxide 185-192 g/eq (ASTM D-1652)",
+      source: "Westlake Epoxy, EPON Resin 828 technical data sheet, issue date 21 June 2021"
+    },
+    note: "The undiluted difunctional liquid epoxy resin that most epoxy work starts from, and the other half of the stoichiometry the polyetheramines are sold against: at 188 g/eq against JEFFAMINE D-230's AHEW of 60, 32 parts of amine cure 100 parts of resin. Weight per epoxide is a specification, 185-192 g/eq, not a typical value - the batch-to-batch spread is why the ratio is calculated per lot rather than assumed. Not drawn: at n of about 0.14 the liquid resin is mostly the discrete difunctional molecule rather than a chain with a repeat unit, so there is nothing to bracket."
   }
 ];
 
