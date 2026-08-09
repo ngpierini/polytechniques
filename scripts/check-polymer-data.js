@@ -81,7 +81,12 @@ function specImpliedEW(spec) {
 function telechelicKey(entry) {
   const t = entry.telechelic;
   if (!t) return "-";
-  return t.endGroup + "/f" + t.functionality + "/ew" + t.equivalentWeight;
+  // The core belongs in the signature too. JenKem sells an 8-arm PEG-OH at
+  // 20 kDa on hexaglycerol AND on tripentaerythritol - same arm count, same
+  // arm mass, same end group - and says the second is the purer one, with a
+  // polydispersity of 1.08 against 1.12. Without the core here they collide as
+  // one entry listed twice, which is what the duplicate check reported.
+  return t.endGroup + "/f" + t.functionality + "/ew" + t.equivalentWeight + "/" + (t.core || "-");
 }
 function variantKey(entry) {
   return VARIANT_FIELDS.map(function (f) { return entry[f] || "-"; })
