@@ -6067,6 +6067,7 @@ window.POLYMER_DB = [
   },
   {
     name: "JEFFAMINE D-2000 polyetheramine", aka: ["JEFFAMINE D-2000","D-2000","polyetheramine D-2000","Jeffamine D2000"],
+    queryTerms: ["polyetheramine epoxy flexibiliser"],
     monomer: "propylene oxide, then amination of the diol", cls: "Ring-opening", cas: null,
     tags: ["telechelic","prepolymer","curing agent","polyether","elastomer"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
@@ -6088,6 +6089,7 @@ window.POLYMER_DB = [
   },
   {
     name: "JEFFAMINE T-403 polyetheramine", aka: ["JEFFAMINE T-403","T-403","polyetheramine T-403","trifunctional polyetheramine","Jeffamine T403"],
+    queryTerms: ["polyetheramine epoxy curing","trifunctional amine curing agent"],
     arch: "star",
     monomer: "propylene oxide on trimethylolpropane, then amination", cls: "Ring-opening", cas: null,
     tags: ["star","telechelic","prepolymer","curing agent","polyether","crosslinker","engineering"],
@@ -6131,6 +6133,7 @@ window.POLYMER_DB = [
   },
   {
     name: "PTMEG 2000 polyether diol", aka: ["PTMEG 2000","PTMEG-2000","polytetramethylene ether glycol 2000","PTMO 2000","Terathane 2000","PolyTHF 2000"],
+    queryTerms: ["polytetramethylene ether glycol polyurethane"],
     monomer: "tetrahydrofuran (cationic ring-opening)", cls: "Ring-opening", cas: null,
     tags: ["telechelic","prepolymer","polyether","polyurethane","elastomer"],
     atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
@@ -6151,6 +6154,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Capa 2201A polycaprolactone diol", aka: ["Capa 2201A","Capa 2201","polycaprolactone diol 2000","PCL diol 2000","caprolactone polyester diol"],
+    queryTerms: ["polycaprolactone diol","caprolactone polyol polyurethane"],
     monomer: "ε-caprolactone (ring-opening from a diol initiator)", cls: "Ring-opening", cas: "69089-45-8",
     tags: ["telechelic","prepolymer","polyester","polyurethane","elastomer","biodegradable"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
@@ -6171,6 +6175,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(propylene glycol) 2000 diol", aka: ["PPG 2000","PPG-2000","polypropylene glycol 2000","poly(propylene glycol) diol 2000"],
+    queryTerms: ["poly(propylene glycol) diol polyurethane","polypropylene glycol polyol"],
     monomer: "propylene oxide (from a diol initiator)", cls: "Ring-opening", cas: null,
     tags: ["telechelic","prepolymer","polyether","polyurethane","sealant"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
@@ -6191,6 +6196,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Glycerine-initiated polyether triol 3000", aka: ["Rokopol F3000","polyether triol 3000","glycerol-initiated polyether triol","PPG triol 3000","polyol triol 3000"],
+    queryTerms: ["polyether triol polyurethane","glycerol initiated polyol"],
     arch: "star",
     monomer: "propylene oxide on glycerine", cls: "Ring-opening", cas: null,
     tags: ["star","telechelic","prepolymer","polyether","polyurethane","crosslinker","foam"],
@@ -6267,6 +6273,7 @@ window.POLYMER_DB = [
       repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,6]],"label":"n"},{"unit":[8,9,10],"cuts":[[7,8],[10,11]],"label":"n"},{"unit":[13,14,15],"cuts":[[12,13],[15,16]],"label":"n"},{"unit":[18,19,20],"cuts":[[17,18],[20,21]],"label":"n"}]
     },
     name: "4-arm PEG-OH, 10 kDa", aka: ["4arm-PEG-OH 10K","4-arm PEG hydroxyl 10k","4arm PEG-OH","tetra-PEG-OH","pentaerythritol ethoxylate 10k"],
+    queryTerms: ["four-arm poly(ethylene glycol)","multi-arm PEG","star PEG hydrogel"],
     monomer: "ethylene oxide grown on pentaerythritol", cls: "Ring-opening", cas: null,
     arch: "star", tags: ["telechelic","star","prepolymer","polyether","hydrogel","biomedical"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
@@ -6366,6 +6373,7 @@ window.POLYMER_DB = [
   },
   {
     name: "8-arm PEG-OH, 20 kDa (hexaglycerol core)", aka: ["8arm-PEG-OH 20K","8-arm PEG hydroxyl 20k hexaglycerol","8arm PEG-OH hexaglycerol"],
+    queryTerms: ["eight-arm poly(ethylene glycol)","multi-arm PEG","star PEG hydrogel"],
     monomer: "ethylene oxide grown on a polyol core", cls: "Ring-opening", cas: null,
     arch: "star", tags: ["telechelic","star","prepolymer","polyether","hydrogel","biomedical"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
@@ -6386,6 +6394,7 @@ window.POLYMER_DB = [
   },
   {
     name: "8-arm PEG-OH, 20 kDa (tripentaerythritol core)", aka: ["8arm-PEG(TP)-OH 20K","8ARM(TP) PEG-OH","8-arm PEG hydroxyl 20k tripentaerythritol"],
+    queryTerms: ["eight-arm poly(ethylene glycol)","multi-arm PEG","star PEG hydrogel"],
     monomer: "ethylene oxide grown on a polyol core", cls: "Ring-opening", cas: null,
     arch: "star", tags: ["telechelic","star","prepolymer","polyether","hydrogel","biomedical"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
@@ -6427,6 +6436,7 @@ window.POLYMER_DB = [
   },
   {
     name: "8-arm PEG-carboxyl, 20 kDa (tripentaerythritol core)", aka: ["8arm-PEG(TP)-COOH 20K","8arm PEG acetic acid tripentaerythritol","8-arm PEG-COOH 20k","8arm PEG carboxyl"],
+    queryTerms: ["multi-arm poly(ethylene glycol) carboxyl"],
     monomer: "ethylene oxide grown on a polyol core", cls: "Ring-opening", cas: null,
     arch: "star", tags: ["telechelic","star","prepolymer","polyether","hydrogel","biomedical"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],

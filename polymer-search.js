@@ -3267,6 +3267,11 @@
     var pubPool = [];           // venue-ranked papers fetched but not yet shown
     var pubPoolPos = 0;         // next pool index to render
     var pubFetchOffset = 0;     // Crossref offset of the next page to fetch
+    var pubRetried = false;     // one retry per request when Crossref throttles
+    // Crossref's polite pool wants a contact address; it triples the rate limit.
+    // Already published on the founder and privacy pages, so this is not a new
+    // disclosure.
+    var CROSSREF_CONTACT = 'ngpierini@gmail.com';
 
     // High-impact journal weighting. Crossref can't rank by venue, so each
     // fetched page is re-ranked client-side: a paper in a flagship chemistry
@@ -3373,6 +3378,17 @@
       function add(s) { s = String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); if (s) out.push(s); }
       if (polymer.monomer) add(polymer.monomer.split('(')[0]);
       (polymer.aka || []).forEach(add);
+      // A telechelic's end group is the whole point of the grade, and the token
+      // rule below only promotes words of seven characters or more - so "thiol"
+      // and "amine" were thrown away while "maleimide" and "acrylate" survived.
+      // Measured on the 4-arm PEGs: of thirty papers fetched, the maleimide and
+      // acrylate grades kept 17 and 14, while the thiol kept 1 and the amine and
+      // hydroxyl kept 2 each, purely because of that length cutoff. The end
+      // group and the core are named in the data, so use them directly.
+      if (polymer.telechelic) {
+        add(polymer.telechelic.endGroup);
+        add(polymer.telechelic.core);
+      }
       var nm = String(polymer.name || '').toLowerCase();
       add(nm);
       add(nm.replace(/^poly\s*\(/, '').replace(/\)\s*$/, ''));
@@ -3417,15 +3433,42 @@
       // Fetch a page of 30 so the venue re-ranking has a real pool to work
       // with; "New papers" then walks the ranked pool six at a time without
       // another request until it runs dry.
+      // `mailto` puts this in Crossref's "polite pool". It is not etiquette
+      // alone: measured against the live API, an anonymous caller is capped at
+      // ONE request per second and starts returning 429 on the third rapid
+      // call, while a request carrying a contact address is allowed three. The
+      // old code turned any non-200 into an empty list, so a throttled reply
+      // was reported as "no journal articles came back" - a user clicking
+      // through several polymers, or pressing "New papers" twice, was being
+      // told the literature was empty when it was Crossref saying slow down.
+      // The address is already published on the founder and privacy pages.
       var url = 'https://api.crossref.org/works?query.bibliographic=' +
         encodeURIComponent(terms.join(' ')) +
         '&filter=' + encodeURIComponent(filters.join(',')) +
         '&rows=30' +
         (pubFetchOffset ? '&offset=' + pubFetchOffset : '') +
+        '&mailto=' + encodeURIComponent(CROSSREF_CONTACT) +
         '&select=' + encodeURIComponent('title,author,container-title,short-container-title,DOI,published,published-print,published-online');
 
-      fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+      fetch(url).then(function (r) {
+        // Throttling is a temporary, self-correcting condition and has to say so
+        // rather than masquerade as an empty result set.
+        if (r.status === 429) return { __throttled: true };
+        return r.ok ? r.json() : null;
+      }).then(function (data) {
         if (myToken !== pubToken) return;       // a newer request superseded this
+        if (data && data.__throttled) {
+          if (pubRetried) {
+            pubRetried = false;
+            list.innerHTML = '<div class="guide-note">Crossref is limiting requests right now. Give it a few seconds and press &#8635; New papers, or use the search links on the match above.</div>';
+            return;
+          }
+          pubRetried = true;
+          list.innerHTML = '<div class="mol-pub-loading guide-note">Crossref asked us to slow down &mdash; retrying&hellip;</div>';
+          setTimeout(function () { if (myToken === pubToken) fetchPublications(polymer); }, 1500);
+          return;
+        }
+        pubRetried = false;
         var items = (data && data.message && data.message.items) || [];
         var papers = items.map(normalizePub).filter(function (p) { return p; });
         // Paged past the end of what Crossref has for this query: wrap back to
