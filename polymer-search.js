@@ -11,6 +11,8 @@
   // Binding to the shared module is what makes a precomputed hash trustworthy.
   if (!window.PolymerGraph) throw new Error("polymer-graph.js must load before polymer-search.js");
   var PG = window.PolymerGraph;
+  if (!window.BracketGeometry) throw new Error("bracket-geometry.js must load before polymer-search.js");
+  var BG = window.BracketGeometry;
   var wlHash = PG.wlHash,
       closeRepeatUnit = PG.closeRepeatUnit,
       closedHash = PG.closedHash,
@@ -3836,74 +3838,29 @@
     // notation is drawn and turning them to each bond makes the pair look
     // crooked. A side chain has no such axis to follow, so its bars are set
     // across the bond instead, which is right at whatever angle it runs.
+    // The bracket geometry itself lives in bracket-geometry.js, DOM-free, so
+    // scripts/check-bracket-geometry.js can exercise it over a sweep of bond
+    // angles in Node. These three are thin adapters that hand it the editor's
+    // current atoms and bonds; the call sites are unchanged.
+    //
+    // BAR_OUT slides each bar along its bond away from the unit. The midpoint is
+    // the crowded end whenever the bond leaves a ring - which is exactly when
+    // the clipper has least room - so a small outward bias buys clearance
+    // without touching the clipper's floor, and the floor is what stops a bar
+    // slicing through a neighbouring bond.
+    var BAR_OUT = 0.16;
+    var BAR_FLOOR_FRAC = 0.22;
+
     function barOnBond(outside, inside, upright) {
-      var vx = inside.x - outside.x, vy = inside.y - outside.y;
-      var m = Math.hypot(vx, vy) || 1;
-      var bar = {
-        x: (inside.x + outside.x) / 2, y: (inside.y + outside.y) / 2,
-        cutA: outside.id, cutB: inside.id
-      };
-      // "Upright" is a tidiness preference, not a rule: on a zigzag backbone the
-      // bonds run at about 30 degrees and a vertical bar crosses them cleanly and
-      // looks like the bracket in a textbook. It only holds while the bond is
-      // nearer horizontal than vertical. On a steep bond an upright bar is almost
-      // PARALLEL to the thing it is supposed to cut - it stops crossing the bond
-      // at all, and clipBarHalf then shortens it to a stub against whatever it
-      // does run into. Polyetherimide showed this plainly: both chain ends hang
-      // straight down off a ring, so both brackets collapsed to specks. When the
-      // bond is steep, fall back to a bar perpendicular to it, which is what a
-      // bracket has to be.
-      if (upright && Math.abs(vx) < Math.abs(vy)) upright = false;
-      if (upright) { bar.ax = 0; bar.ay = 1; bar.tx = vx >= 0 ? 1 : -1; bar.ty = 0; }
-      else { bar.ax = -vy / m; bar.ay = vx / m; bar.tx = vx / m; bar.ty = vy / m; }
-      return bar;
+      return BG.barOnBond(outside, inside, upright, BAR_OUT);
     }
 
-    // How far a line may run from a point in one direction before it meets a bond
-    // it is not cutting, capped at "want" and kept a little clear of the meeting.
     function clearRun(px, py, dx, dy, want, cutA, cutB) {
-      var lim = want, margin = 3;
-      bonds.forEach(function (b) {
-        if ((b.a === cutA && b.b === cutB) || (b.a === cutB && b.b === cutA)) return;
-        var p = atomById(b.a), q = atomById(b.b);
-        if (!p || !q) return;
-        var rx = q.x - p.x, ry = q.y - p.y;
-        var det = -dx * ry + rx * dy;
-        if (Math.abs(det) < 1e-9) return;
-        var ex = p.x - px, ey = p.y - py;
-        var s = (dx * ey - ex * dy) / det;
-        if (s < 0 || s > 1) return;
-        var t = (-ex * ry + rx * ey) / det;
-        if (t >= 0) lim = Math.min(lim, t - margin);
-      });
-      return Math.max(lim, 0);
+      return BG.clearRun(atoms, bonds, px, py, dx, dy, want, cutA, cutB);
     }
 
-    // How far a bar may run before it meets a bond it is not cutting. A bar that
-    // runs through a neighbouring bond reads as cutting that bond too: on a
-    // methacrylate the ester leaves the backbone carbon almost sideways, so the
-    // upright bar sliced straight through it and the bracket claimed the ester
-    // was a chain continuation rather than a side group.
     function clipBarHalf(bar, want) {
-      var ux = bar.ax, uy = bar.ay;                 // along the bar
-      var pos = want, neg = want, margin = 5;
-      bonds.forEach(function (b) {
-        if ((b.a === bar.cutA && b.b === bar.cutB) || (b.a === bar.cutB && b.b === bar.cutA)) return;
-        var p = atomById(b.a), q = atomById(b.b);
-        if (!p || !q) return;
-        var rx = q.x - p.x, ry = q.y - p.y;
-        var det = -ux * ry + rx * uy;
-        if (Math.abs(det) < 1e-9) return;           // parallel
-        var ex = p.x - bar.x, ey = p.y - bar.y;
-        var s = (ux * ey - ex * uy) / det;
-        if (s < 0 || s > 1) return;                 // meets the line, not the bond
-        var t = (-ex * ry + rx * ey) / det;
-        if (t > 0) pos = Math.min(pos, t - margin);
-        else neg = Math.min(neg, -t - margin);
-      });
-      // Never collapse to nothing: a stub still reads as a bracket, and a bar
-      // this cramped means the drawing is crowded, not that the bracket is wrong.
-      return { pos: Math.max(pos, BOND_LEN * 0.22), neg: Math.max(neg, BOND_LEN * 0.22) };
+      return BG.clipBarHalf(atoms, bonds, bar, want, BOND_LEN * BAR_FLOOR_FRAC);
     }
 
     // A repeat unit marked by two "*" chain ends gets a cosmetic bracket. Put
