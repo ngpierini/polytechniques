@@ -3843,6 +3843,17 @@
         x: (inside.x + outside.x) / 2, y: (inside.y + outside.y) / 2,
         cutA: outside.id, cutB: inside.id
       };
+      // "Upright" is a tidiness preference, not a rule: on a zigzag backbone the
+      // bonds run at about 30 degrees and a vertical bar crosses them cleanly and
+      // looks like the bracket in a textbook. It only holds while the bond is
+      // nearer horizontal than vertical. On a steep bond an upright bar is almost
+      // PARALLEL to the thing it is supposed to cut - it stops crossing the bond
+      // at all, and clipBarHalf then shortens it to a stub against whatever it
+      // does run into. Polyetherimide showed this plainly: both chain ends hang
+      // straight down off a ring, so both brackets collapsed to specks. When the
+      // bond is steep, fall back to a bar perpendicular to it, which is what a
+      // bracket has to be.
+      if (upright && Math.abs(vx) < Math.abs(vy)) upright = false;
       if (upright) { bar.ax = 0; bar.ay = 1; bar.tx = vx >= 0 ? 1 : -1; bar.ty = 0; }
       else { bar.ax = -vy / m; bar.ay = vx / m; bar.tx = vx / m; bar.ty = vy / m; }
       return bar;
