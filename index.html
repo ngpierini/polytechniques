@@ -597,93 +597,795 @@
   var QUESTIONS = [
     {
       q: "Who accidentally discovered PTFE (Teflon) in 1938 while working at DuPont?",
-      options: ["Wallace Carothers", "Roy Plunkett", "Leo Baekeland", "Stephanie Kwolek"],
-      correct: 1,
+      options: ["Roy Plunkett","Leo Baekeland","Stephanie Kwolek","Wallace Carothers"],
+      correct: 0,
       explain: "Roy Plunkett found that a cylinder of tetrafluoroethylene gas had polymerized on its own into a waxy, slippery white solid, the first batch of PTFE."
     },
     {
       q: "Which metal is most commonly used to mediate the reversible activation and deactivation equilibrium in ATRP?",
-      options: ["Iron", "Copper", "Ruthenium", "Palladium"],
+      options: ["Iron","Copper","Ruthenium","Palladium"],
       correct: 1,
       explain: "Copper, usually as a Cu(I)/ligand complex in equilibrium with Cu(II), is the classic ATRP catalyst, though iron and ruthenium based ATRP also exist."
     },
     {
       q: "Karl Ziegler shared the 1963 Nobel Prize in Chemistry with Giulio Natta for developing:",
-      options: ["Living anionic polymerization", "Coordination catalysts for polyolefins", "The first synthetic rubber", "Nylon"],
-      correct: 1,
+      options: ["Nylon","Living anionic polymerization","Coordination catalysts for polyolefins","The first synthetic rubber"],
+      correct: 2,
       explain: "Ziegler Natta catalysts enabled controlled, stereoregular polymerization of alpha olefins like ethylene and propylene, reshaping the plastics industry."
     },
     {
       q: "The 2005 Nobel Prize in Chemistry, for developing the metathesis reaction that underlies ROMP, was shared by Robert Grubbs, Richard Schrock, and:",
-      options: ["Yves Chauvin", "George Whitesides", "Barry Sharpless", "Roger Tsien"],
-      correct: 0,
+      options: ["George Whitesides","Barry Sharpless","Roger Tsien","Yves Chauvin"],
+      correct: 3,
       explain: "Chauvin proposed the metal carbene mechanism for olefin metathesis; Grubbs and Schrock developed the practical catalysts built on that mechanism."
     },
     {
       q: "Hermann Staudinger, often called the father of polymer science, is best known for proposing that polymers are:",
-      options: ["Colloidal aggregates of small molecules", "Long chains of covalently bonded repeat units", "Crystalline salts", "Metal organic frameworks"],
-      correct: 1,
+      options: ["Long chains of covalently bonded repeat units","Crystalline salts","Metal organic frameworks","Colloidal aggregates of small molecules"],
+      correct: 0,
       explain: "Staudinger's macromolecular hypothesis from the 1920s, controversial at the time, established polymers as true covalent long chain molecules."
     },
     {
       q: "Kevlar, the high strength aramid fiber used in body armor, was discovered in 1965 by:",
-      options: ["Rosalind Franklin", "Stephanie Kwolek", "Ruth Benerito", "Marie Curie"],
+      options: ["Rosalind Franklin","Stephanie Kwolek","Ruth Benerito","Marie Curie"],
       correct: 1,
       explain: "Kwolek, a chemist at DuPont, found that a liquid crystalline aramid solution could be spun into an exceptionally strong, stiff fiber."
     },
     {
       q: "What does dispersity (Đ) describe about a polymer sample?",
-      options: ["Its color", "How uniform the chain lengths are", "Its glass transition temperature", "Its solubility"],
-      correct: 1,
+      options: ["Its solubility","Its color","How uniform the chain lengths are","Its glass transition temperature"],
+      correct: 2,
       explain: "Đ is Mw divided by Mn. A value of 1.00 means every chain is exactly the same length; broader distributions give higher values."
     },
     {
       q: "Which of these is not one of the four polymerization techniques covered by this calculator?",
-      options: ["Ring opening metathesis polymerization", "Reversible addition fragmentation chain transfer", "Anionic ring opening polymerization", "Atom transfer radical polymerization"],
-      correct: 2,
+      options: ["Atom transfer radical polymerization","Ring opening metathesis polymerization","Reversible addition fragmentation chain transfer","Anionic ring opening polymerization"],
+      correct: 3,
       explain: "The calculator covers ATRP, RAFT, ROMP, and FRP. Anionic ring opening polymerization is a real, useful technique, just not one of these four."
     },
     {
       q: "Bakelite, generally considered the first fully synthetic plastic, was created in 1907 by:",
-      options: ["Leo Baekeland", "Wallace Carothers", "John Wesley Hyatt", "Charles Goodyear"],
+      options: ["Leo Baekeland","Wallace Carothers","John Wesley Hyatt","Charles Goodyear"],
       correct: 0,
       explain: "Leo Baekeland's phenol formaldehyde resin was the first plastic made from entirely synthetic components, not derived from a natural polymer."
     },
     {
       q: "PET, the plastic most commonly used for beverage bottles, stands for:",
-      options: ["Polyethylene terephthalate", "Poly ether toluene", "Polyester thermoplastic", "Polyethylene thiophene"],
-      correct: 0,
+      options: ["Polyethylene thiophene","Polyethylene terephthalate","Poly ether toluene","Polyester thermoplastic"],
+      correct: 1,
       explain: "Polyethylene terephthalate is a polyester made from ethylene glycol and terephthalic acid, valued for its clarity and gas barrier properties."
     },
     {
       q: "In a Mayo Lewis copolymerization, if both reactivity ratios r1 and r2 are much less than 1, the copolymer strongly tends toward:",
-      options: ["A blocky structure", "Alternation", "Homopolymerizing only monomer 1", "No polymerization at all"],
-      correct: 1,
+      options: ["No polymerization at all","A blocky structure","Alternation","Homopolymerizing only monomer 1"],
+      correct: 2,
       explain: "When each chain end strongly prefers crossing over to the other monomer, the two monomers alternate along the backbone almost regardless of feed ratio."
     },
     {
       q: "What common polymer is widely cited as the world's most produced plastic by mass?",
-      options: ["Polystyrene", "Polyethylene", "PVC", "Polycarbonate"],
-      correct: 1,
+      options: ["PVC","Polycarbonate","Polystyrene","Polyethylene"],
+      correct: 3,
       explain: "Polyethylene, spanning grades from LDPE to HDPE and UHMWPE, is produced in greater total volume than any other synthetic plastic."
     },
     {
       q: "A polymer's glass transition temperature (Tg) marks the transition between:",
-      options: ["Solid and liquid states (melting)", "Glassy/rigid and rubbery/flexible amorphous states", "Crystalline and amorphous regions forming", "Two different crystal structures"],
-      correct: 1,
+      options: ["Glassy/rigid and rubbery/flexible amorphous states","Crystalline and amorphous regions forming","Two different crystal structures","Solid and liquid states (melting)"],
+      correct: 0,
       explain: "Below Tg, amorphous chain segments are frozen in place; above Tg, they have enough mobility to flow and deform easily."
     },
     {
       q: "Charles Goodyear's discovery of rubber vulcanization in 1839 is popularly described as happening when he:",
-      options: ["Read about it in a chemistry journal", "Accidentally dropped a rubber sulfur mixture on a hot stove", "Purchased the process from another inventor", "Ran a carefully designed experiment"],
+      options: ["Read about it in a chemistry journal","Accidentally dropped a rubber sulfur mixture on a hot stove","Purchased the process from another inventor","Ran a carefully designed experiment"],
       correct: 1,
       explain: "The popular account has Goodyear spilling a rubber and sulfur mixture onto a hot stove, discovering that heat transformed sticky rubber into a durable, elastic material."
     },
     {
       q: "In RAFT polymerization, what does the R group of the chain transfer agent become at the end of the reaction?",
-      options: ["It is cleaved off entirely and discarded", "It becomes the other end of the finished chain", "It becomes part of the catalyst", "It stays permanently bonded to unreacted monomer"],
-      correct: 1,
+      options: ["It stays permanently bonded to unreacted monomer","It is cleaved off entirely and discarded","It becomes the other end of the finished chain","It becomes part of the catalyst"],
+      correct: 2,
       explain: "The R group is the initial leaving and reinitiating fragment; once polymerization ends, it sits at the chain end opposite the thiocarbonylthio group."
+    },
+    {
+      q: "Which polymer chemist's 1974 Nobel Prize recognised work on the physical chemistry of macromolecules, including the theory of chain conformation?",
+      options: ["Herman Mark","Wallace Carothers","Maurice Huggins","Paul Flory"],
+      correct: 3,
+      explain: "Flory won the 1974 Nobel Prize in Chemistry for his fundamental achievements in the physical chemistry of macromolecules, including excluded volume, chain statistics and gelation theory."
+    },
+    {
+      q: "The 2000 Nobel Prize in Chemistry went to Heeger, MacDiarmid and Shirakawa for the discovery of conductive polymers, based on which material?",
+      options: ["Polyacetylene","Polypyrrole","PEDOT","Polyaniline"],
+      correct: 0,
+      explain: "Doped polyacetylene was the first polymer shown to conduct electricity like a metal, which opened the whole field of conjugated polymers."
+    },
+    {
+      q: "Bakelite, the first fully synthetic commercial plastic, was made from phenol and which other reactant?",
+      options: ["Acetone","Formaldehyde","Urea","Glycerol"],
+      correct: 1,
+      explain: "Leo Baekeland's phenol-formaldehyde resin, patented in 1907, was the first commercial plastic made entirely from synthetic components rather than modified natural materials."
+    },
+    {
+      q: "Living anionic polymerization, and the term 'living polymer' itself, is credited to:",
+      options: ["Giulio Natta","Hermann Mark","Michael Szwarc","Otto Bayer"],
+      correct: 2,
+      explain: "Szwarc showed in 1956 that styrene polymerised by sodium naphthalenide gave chains with no termination step, which could be reactivated by adding more monomer."
+    },
+    {
+      q: "Charles Goodyear's 1839 discovery that transformed natural rubber into a useful engineering material was:",
+      options: ["Latex coagulation","Carbon black filling","Mastication","Vulcanization with sulfur"],
+      correct: 3,
+      explain: "Heating rubber with sulfur creates crosslinks between chains, which is what stops it flowing when warm and cracking when cold."
+    },
+    {
+      q: "Nylon 6,6 was developed at DuPont under the direction of:",
+      options: ["Wallace Carothers","Roy Plunkett","Waldo Semon","Herman Mark"],
+      correct: 0,
+      explain: "Carothers' group made nylon 6,6 in 1935 as part of a programme that also produced neoprene, and his work established step-growth polymerization on a quantitative footing."
+    },
+    {
+      q: "The 1991 Nobel Prize in Physics went to Pierre-Gilles de Gennes, whose polymer contribution included:",
+      options: ["The WLF equation","The reptation model of chain motion","The Flory-Huggins parameter","Gel permeation chromatography"],
+      correct: 1,
+      explain: "Reptation pictures an entangled chain moving snakelike along a tube formed by its neighbours, which explains why melt viscosity scales so steeply with molar mass."
+    },
+    {
+      q: "Poly(ethylene terephthalate) was patented in 1941 by Whinfield and Dickson working at:",
+      options: ["ICI","DuPont","the Calico Printers' Association","BASF"],
+      correct: 2,
+      explain: "They made PET at the Calico Printers' Association in Britain; ICI and DuPont later licensed it as Terylene and Dacron."
+    },
+    {
+      q: "Which prize-winning reaction class, recognised in 2022, includes the copper-catalysed azide-alkyne cycloaddition widely used for polymer conjugation?",
+      options: ["Cross-coupling","Organocatalysis","Olefin metathesis","Click chemistry"],
+      correct: 3,
+      explain: "Bertozzi, Meldal and Sharpless shared the 2022 Nobel Prize for click chemistry and bioorthogonal chemistry; CuAAC is the reaction most used to join polymer chains to other molecules."
+    },
+    {
+      q: "PVC was made commercially useful in the 1920s when Waldo Semon discovered that it could be:",
+      options: ["Plasticized to make it flexible","Spun into fibre","Foamed with CO2","Crosslinked with sulfur"],
+      correct: 0,
+      explain: "Unplasticized PVC is hard and hard to process; Semon found that blending it with a liquid plasticizer gave a flexible, workable material."
+    },
+    {
+      q: "In a linear step-growth polymerization of a stoichiometric AA + BB system, the Carothers equation gives the number-average degree of polymerization as:",
+      options: ["p/(1-p)","1/(1-p)","1/p","(1+p)/(1-p)"],
+      correct: 1,
+      explain: "Xn = 1/(1-p). A high polymer therefore needs very high conversion: p = 0.99 gives only Xn = 100."
+    },
+    {
+      q: "Why does step-growth polymerization require such high conversion to reach useful molar mass?",
+      options: ["Termination is fast","The rate constant is small","Monomer is consumed early while chain growth continues slowly through oligomer coupling","The initiator decomposes"],
+      correct: 2,
+      explain: "Monomer disappears at low conversion, but average chain length only climbs steeply as p approaches 1, because every remaining end group must find a partner."
+    },
+    {
+      q: "Adding a small amount of a monofunctional acid to a polyester synthesis will:",
+      options: ["Cause crosslinking","Have no effect","Raise the molar mass","Cap chains and limit the molar mass"],
+      correct: 3,
+      explain: "A monofunctional reagent ends a chain permanently, so it is the standard way to control molar mass deliberately in a step polymerization."
+    },
+    {
+      q: "Gelation in a step-growth system containing a trifunctional monomer is predicted by:",
+      options: ["The Flory-Stockmayer theory","The WLF equation","The Mark-Houwink relation","The Mayo equation"],
+      correct: 0,
+      explain: "Flory-Stockmayer predicts the critical conversion at which the branched structure first spans the whole sample and an insoluble network appears."
+    },
+    {
+      q: "Which is a condensation polymer in the strict sense, releasing a small molecule on each linkage formed?",
+      options: ["Polystyrene","Nylon 6,6","Polyethylene","Polypropylene"],
+      correct: 1,
+      explain: "Nylon 6,6 forms an amide and releases water. Polyethylene and polystyrene are addition polymers, where nothing leaves."
+    },
+    {
+      q: "A polyurethane is formed without releasing a small molecule, because the reaction is:",
+      options: ["A radical chain reaction","A condensation","An addition of an alcohol across an isocyanate","A ring-opening"],
+      correct: 2,
+      explain: "The O-H adds across the N=C of the isocyanate. It is a step-growth polymerization but not a condensation, since nothing is expelled."
+    },
+    {
+      q: "In a step polymerization, an imbalance in the stoichiometric ratio of the two monomers will:",
+      options: ["Cause branching","Change the repeat unit","Increase molar mass","Decrease the attainable molar mass"],
+      correct: 3,
+      explain: "Excess of one end group means the other is exhausted first, and the excess ends cap the chains. This is why the nylon salt is used to fix the ratio exactly."
+    },
+    {
+      q: "The Trommsdorff, or gel, effect in a radical polymerization is an autoacceleration caused by:",
+      options: ["Diffusion-limited termination as viscosity rises","Monomer purification","Chain transfer to solvent","Faster initiation"],
+      correct: 0,
+      explain: "As the medium thickens, two long radicals can no longer find each other, so termination slows while propagation continues, and the rate and molar mass both jump."
+    },
+    {
+      q: "Above the ceiling temperature of a monomer:",
+      options: ["Propagation is faster","Depropagation matches propagation and no high polymer forms","Initiation stops","Termination stops"],
+      correct: 1,
+      explain: "Polymerization is exothermic but loses entropy, so above Tc the equilibrium favours monomer. Alpha-methylstyrene has a notoriously low ceiling temperature."
+    },
+    {
+      q: "In a conventional radical polymerization the instantaneous kinetic chain length is proportional to:",
+      options: ["The square of initiator concentration","The square root of initiator concentration","The inverse square root of initiator concentration","Initiator concentration"],
+      correct: 2,
+      explain: "More initiator means more radicals, faster termination and shorter chains. Rate goes as [I]^0.5 while chain length goes as [I]^-0.5."
+    },
+    {
+      q: "Chain transfer to a thiol during a radical polymerization mainly:",
+      options: ["Stops the reaction","Raises the dispersity above 10","Raises the molar mass","Lowers the molar mass without greatly changing the rate"],
+      correct: 3,
+      explain: "A transfer agent ends one chain and starts another, so the number of chains rises and the average length falls while the radical count is unchanged."
+    },
+    {
+      q: "Oxygen inhibits radical polymerization because it:",
+      options: ["Adds to carbon radicals to give unreactive peroxy radicals","Raises the ceiling temperature","Precipitates the polymer","Quenches the initiator"],
+      correct: 0,
+      explain: "Molecular oxygen is itself a diradical and traps propagating radicals as relatively stable peroxy species, which is why monomers are degassed."
+    },
+    {
+      q: "AIBN is a common radical initiator that decomposes to give:",
+      options: ["Hydroxyl radicals","Two carbon radicals and nitrogen gas","Alkoxy radicals and CO2","Sulfate radical anions"],
+      correct: 1,
+      explain: "The loss of N2 is what drives the homolysis, and the nitrogen evolved is sometimes used to follow the decomposition."
+    },
+    {
+      q: "The Mayo equation relates the degree of polymerization to:",
+      options: ["Monomer polarity","Temperature and pressure","Chain-transfer constants and transfer-agent concentration","Tg and Tm"],
+      correct: 2,
+      explain: "1/Xn = 1/Xn0 + Cs[S]/[M]. A plot against [S]/[M] gives the transfer constant from the slope."
+    },
+    {
+      q: "Emulsion polymerization is unusual in that it can increase rate AND molar mass together, because:",
+      options: ["The monomer is more reactive","Initiators are more efficient","Termination is faster","Radicals are compartmentalised in separate particles"],
+      correct: 3,
+      explain: "A growing radical in one particle cannot meet a radical in another, so termination is suppressed while propagation continues at full monomer concentration."
+    },
+    {
+      q: "ATRP controls chain growth by:",
+      options: ["A reversible halogen transfer between dormant chains and a metal complex","Rapid chain transfer to monomer","Precipitation of active chains","Irreversible termination"],
+      correct: 0,
+      explain: "The Cu(I)/Cu(II) equilibrium keeps the instantaneous radical concentration very low, so termination is rare and all chains grow at a similar rate."
+    },
+    {
+      q: "A RAFT agent is typically a:",
+      options: ["Peroxide","Thiocarbonylthio compound","Nitroxide","Copper complex"],
+      correct: 1,
+      explain: "The C=S group of a dithioester, trithiocarbonate or xanthate reversibly adds and fragments propagating radicals, sharing growth evenly among chains."
+    },
+    {
+      q: "In an ideal living polymerization with fast initiation, the dispersity approaches:",
+      options: ["1.5","DPn","1 + 1/DPn","2"],
+      correct: 2,
+      explain: "A Poisson distribution gives D = 1 + 1/DPn, so long chains made this way approach D = 1.0 and short ones are inherently broader."
+    },
+    {
+      q: "Nitroxide-mediated polymerization relies on a reversible reaction between a growing radical and:",
+      options: ["A copper halide","An alkyl iodide","A thiol","A stable nitroxide radical such as TEMPO"],
+      correct: 3,
+      explain: "The persistent nitroxide caps the chain reversibly; the persistent radical effect is what makes the equilibrium self-correcting."
+    },
+    {
+      q: "The persistent radical effect gives control in ATRP and NMP because:",
+      options: ["The persistent species accumulates and suppresses radical-radical termination","Termination products reinitiate","The monomer scavenges radicals","Both radicals are equally reactive"],
+      correct: 0,
+      explain: "Every termination event raises the concentration of the persistent species, which then pushes the equilibrium further toward dormant chains."
+    },
+    {
+      q: "A linear increase in molar mass with conversion is the practical signature of:",
+      options: ["An uncontrolled radical polymerization","A controlled or living polymerization","A step-growth polymerization","A cationic chain transfer"],
+      correct: 1,
+      explain: "If all chains are initiated early and none die, every chain grows in step, so Mn rises in proportion to the monomer consumed."
+    },
+    {
+      q: "Anionic polymerization is best suited to monomers whose double bond bears:",
+      options: ["No substituents","Electron-donating groups","Electron-withdrawing groups","Halogens only"],
+      correct: 2,
+      explain: "Groups such as nitrile, ester and phenyl stabilise the carbanion, which is why styrene, methyl methacrylate and acrylonitrile go anionically."
+    },
+    {
+      q: "Cationic polymerization suits monomers such as isobutylene because the intermediate is:",
+      options: ["A primary carbanion","A neutral radical","A metal alkyl","A stabilised tertiary carbocation"],
+      correct: 3,
+      explain: "The two methyls stabilise the growing cation. Vinyl ethers behave similarly through oxygen lone-pair donation."
+    },
+    {
+      q: "Ziegler-Natta catalysts made isotactic polypropylene possible because they:",
+      options: ["Control the face of monomer insertion at the metal centre","Prevent chain transfer","Increase the initiator efficiency","Raise the ceiling temperature"],
+      correct: 0,
+      explain: "Coordination and insertion at a chiral metal site place each monomer the same way up, giving the regular stereochemistry that lets the chain crystallize."
+    },
+    {
+      q: "Methylaluminoxane (MAO) is used with metallocene catalysts mainly to:",
+      options: ["Terminate chains","Alkylate and ionise the metallocene to form the active cation","Scavenge monomer","Raise the melting point"],
+      correct: 1,
+      explain: "MAO both alkylates the metal and abstracts a ligand to generate the cationic active species, and it is used in large excess."
+    },
+    {
+      q: "Ring-opening polymerization of a cyclic monomer is driven mainly by:",
+      options: ["Radical stabilisation","Hydrogen bonding","The release of ring strain","The loss of a small molecule"],
+      correct: 2,
+      explain: "Strained rings such as epoxides, lactones and lactams give up enthalpy on opening. Six-membered rings are usually too stable to polymerize this way."
+    },
+    {
+      q: "Why does tetrahydrofuran polymerize cationically while its six-membered analogue does not?",
+      options: ["THF has a lower boiling point","The six-membered ring is more nucleophilic","THF is more basic","The five-membered ring is strained enough to make polymerization favourable"],
+      correct: 3,
+      explain: "Tetrahydropyran is essentially strain-free, so there is no thermodynamic driving force for ring opening."
+    },
+    {
+      q: "Gel permeation chromatography separates polymer chains by:",
+      options: ["Hydrodynamic volume","Polarity","Charge","Molar mass directly"],
+      correct: 0,
+      explain: "Columns separate by size in solution, so a calibration made with one polymer does not transfer to another without a Mark-Houwink correction."
+    },
+    {
+      q: "In GPC, which elutes first?",
+      options: ["The smallest chains","The largest chains","The most polar chains","The most crystalline chains"],
+      correct: 1,
+      explain: "Large chains cannot enter the pores and pass through the interstitial volume, so they leave the column earliest."
+    },
+    {
+      q: "The Mark-Houwink equation relates intrinsic viscosity to molar mass as:",
+      options: ["[eta] = M/K","[eta] = a log M","[eta] = K M^a","[eta] = K + aM"],
+      correct: 2,
+      explain: "The exponent a reflects chain shape in that solvent: about 0.5 at theta conditions, 0.7-0.8 in a good solvent, and up to 2 for a rigid rod."
+    },
+    {
+      q: "A Mark-Houwink exponent near 0.5 indicates the chain is behaving as:",
+      options: ["A hard sphere","A branched star","A rigid rod","An unperturbed random coil at theta conditions"],
+      correct: 3,
+      explain: "At the theta temperature, excluded-volume and solvent effects cancel and the coil takes its unperturbed dimensions."
+    },
+    {
+      q: "Which technique measures the glass transition as a step change in heat flow?",
+      options: ["DSC","GPC","FTIR","TGA"],
+      correct: 0,
+      explain: "Tg is a second-order transition, so it appears in DSC as a shift in baseline, corresponding to the change in heat capacity, rather than a peak."
+    },
+    {
+      q: "A melting endotherm and a crystallization exotherm in DSC both come from:",
+      options: ["The amorphous fraction","The crystalline fraction","Residual solvent","Chain ends"],
+      correct: 1,
+      explain: "Only ordered regions melt and recrystallize, so the enthalpy of these peaks scales with the degree of crystallinity."
+    },
+    {
+      q: "Thermogravimetric analysis measures:",
+      options: ["Refractive index against temperature","Heat flow against temperature","Mass against temperature","Modulus against frequency"],
+      correct: 2,
+      explain: "TGA follows decomposition, filler content and residual volatiles by weighing the sample continuously as it is heated."
+    },
+    {
+      q: "In dynamic mechanical analysis, the peak in tan delta is commonly used to report:",
+      options: ["The degree of crystallinity","The molar mass","The melting point","The glass transition"],
+      correct: 3,
+      explain: "Tan delta peaks where the material is most dissipative. The value read there is usually a few degrees above the DSC Tg, so the method should be quoted."
+    },
+    {
+      q: "Which NMR observation is the standard way to assign tacticity in poly(methyl methacrylate)?",
+      options: ["The alpha-methyl region split by triad sequence","The aromatic region","The residual solvent peak","The ester carbonyl shift"],
+      correct: 0,
+      explain: "The alpha-methyl protons resolve into mm, mr and rr triads, and their integrals give the stereochemical composition directly."
+    },
+    {
+      q: "End-group analysis by NMR gives which average molar mass?",
+      options: ["Mw","Mn","Mz","Mv"],
+      correct: 1,
+      explain: "Counting end groups counts molecules, so the result is a number average. Light scattering, which weights by mass, gives Mw."
+    },
+    {
+      q: "Static light scattering from a dilute polymer solution gives, most directly:",
+      options: ["The dispersity","Mn","Mw and the radius of gyration","Tg"],
+      correct: 2,
+      explain: "Scattered intensity scales with mass, so the average obtained is the weight average, and the angular dependence gives Rg."
+    },
+    {
+      q: "A bimodal GPC trace most often indicates:",
+      options: ["Column overload only","A detector fault only","A single well-controlled population","Two distinct populations, for instance from termination by coupling or a second initiation event"],
+      correct: 3,
+      explain: "A shoulder at roughly twice the main peak's mass is the classic signature of chains that have terminated by combination."
+    },
+    {
+      q: "The Fox equation estimates the glass transition of a miscible blend from:",
+      options: ["The weight fractions and the reciprocals of the component Tg values","The molar masses","The crystallinities","The arithmetic mean of the two Tg values"],
+      correct: 0,
+      explain: "1/Tg = w1/Tg1 + w2/Tg2, with all temperatures in kelvin. A single Tg between the two is itself evidence of miscibility."
+    },
+    {
+      q: "Increasing crystallinity in a semicrystalline polymer generally:",
+      options: ["Lowers modulus and raises transparency","Raises modulus and lowers transparency","Lowers both","Raises both"],
+      correct: 1,
+      explain: "Crystallites stiffen the solid and scatter light at the crystal-amorphous boundary, which is why quenched films are clearer than slowly cooled ones."
+    },
+    {
+      q: "A plasticizer lowers the glass transition of a polymer by:",
+      options: ["Increasing crystallinity","Crosslinking chains","Increasing free volume and separating chains","Raising the molar mass"],
+      correct: 2,
+      explain: "Small mobile molecules space the chains apart, so segmental motion becomes possible at a lower temperature."
+    },
+    {
+      q: "Why does the modulus of an ideal rubber INCREASE with temperature?",
+      options: ["Crystallinity increases","Crosslinks multiply","Bonds stiffen on heating","Elasticity is entropic, and the retractive force scales with absolute temperature"],
+      correct: 3,
+      explain: "Stretching a rubber reduces the number of available chain conformations, so the restoring force is entropic and rises with T."
+    },
+    {
+      q: "For many polymers, Tg in kelvin is roughly what fraction of Tm in kelvin?",
+      options: ["One half to two thirds","Nine tenths","Equal","One third"],
+      correct: 0,
+      explain: "The rough two-thirds rule holds for symmetrical polymers and about one half for unsymmetrical ones, and is useful as a sanity check rather than a prediction."
+    },
+    {
+      q: "The WLF equation describes:",
+      options: ["Crystallization kinetics","The temperature dependence of relaxation near Tg","Molar mass distribution","Gel point conversion"],
+      correct: 1,
+      explain: "It is the basis of time-temperature superposition, letting data taken at several temperatures be shifted onto one master curve."
+    },
+    {
+      q: "Melt viscosity of an entangled linear polymer scales with weight-average molar mass approximately as:",
+      options: ["M^2.0","M^1.0","M^3.4","M^0.5"],
+      correct: 2,
+      explain: "Below the entanglement molar mass viscosity goes roughly as M; above it the exponent jumps to about 3.4, which reptation explains."
+    },
+    {
+      q: "The theta condition for a polymer solution is where:",
+      options: ["Viscosity is highest","The solution becomes a gel","The polymer precipitates completely","Excluded volume effects vanish and the chain adopts unperturbed dimensions"],
+      correct: 3,
+      explain: "At theta the second virial coefficient is zero, the solvent is effectively neutral, and Rg scales as N^0.5."
+    },
+    {
+      q: "In a good solvent, the radius of gyration of a linear coil scales with degree of polymerization approximately as:",
+      options: ["N^0.6","N^1.0","N^0.33","N^0.5"],
+      correct: 0,
+      explain: "Excluded volume swells the coil beyond the ideal N^0.5 random walk; the Flory exponent is about 3/5."
+    },
+    {
+      q: "The Flory-Huggins parameter chi describes:",
+      options: ["Chain stiffness","The enthalpy of mixing between polymer and solvent or another polymer","The crosslink density","The rate of crystallization"],
+      correct: 1,
+      explain: "Small chi favours mixing. Because the entropy of mixing is tiny for long chains, most polymer pairs are immiscible even at modest chi."
+    },
+    {
+      q: "Why are most pairs of high polymers immiscible?",
+      options: ["Their densities differ","Their enthalpy of mixing is always large","The combinatorial entropy of mixing falls as chain length rises","They always crystallize"],
+      correct: 2,
+      explain: "Mixing entropy per unit volume goes roughly as 1/N, so long chains gain almost nothing from mixing and even a small positive chi drives demixing."
+    },
+    {
+      q: "Crosslink density in a swollen network is commonly obtained from swelling measurements using:",
+      options: ["The Mayo equation","The Carothers equation","The Mark-Houwink relation","The Flory-Rehner equation"],
+      correct: 3,
+      explain: "Flory-Rehner balances the elastic retractive force of the network against the free energy of mixing with solvent."
+    },
+    {
+      q: "Isotactic, syndiotactic and atactic describe:",
+      options: ["The configuration of successive stereocentres along the chain","Branching","End groups","Chain length"],
+      correct: 0,
+      explain: "Isotactic has all substituents on the same side, syndiotactic alternates, atactic is random. Only the regular forms usually crystallize."
+    },
+    {
+      q: "Atactic polypropylene is a soft, tacky material while isotactic polypropylene is a strong plastic, because:",
+      options: ["The molar mass differs","Only the regular chain can pack into crystals","Atactic chains are shorter","Isotactic chains are crosslinked"],
+      correct: 1,
+      explain: "Stereoregularity lets chains register with one another; without it there is no crystallinity and no load-bearing structure."
+    },
+    {
+      q: "Short-chain branching in LDPE lowers density because it:",
+      options: ["Raises the Tg","Increases molar mass","Interferes with crystal packing","Adds oxygen"],
+      correct: 2,
+      explain: "Branches cannot be accommodated in the crystal lattice, so branched polyethylene crystallizes less and is less dense than the linear polymer."
+    },
+    {
+      q: "The very high strength of aramid fibres such as Kevlar comes chiefly from:",
+      options: ["High crystallinity of the amorphous phase","A high glass transition alone","High crosslink density","Extended chains aligned along the fibre with strong interchain hydrogen bonding"],
+      correct: 3,
+      explain: "The rigid para-linked backbone forms a liquid-crystalline solution that can be spun into nearly fully extended, hydrogen-bonded sheets."
+    },
+    {
+      q: "A block copolymer of two immiscible blocks typically:",
+      options: ["Microphase separates into nanoscale domains","Forms a random solution","Always crystallizes","Macrophase separates like a blend"],
+      correct: 0,
+      explain: "The covalent junction stops the blocks separating beyond the chain dimension, so the domains are tens of nanometres rather than micrometres."
+    },
+    {
+      q: "In a thermoplastic elastomer such as SBS, the hard styrene domains act as:",
+      options: ["Plasticizers","Physical crosslinks that melt on heating","Chain transfer agents","Nucleating agents only"],
+      correct: 1,
+      explain: "Because the crosslinks are physical rather than covalent, the material can be melted and reprocessed, unlike vulcanized rubber."
+    },
+    {
+      q: "A thermoset differs from a thermoplastic in that it:",
+      options: ["Contains no crosslinks","Has a higher molar mass","Cannot be melted and reshaped once cured","Is always crystalline"],
+      correct: 2,
+      explain: "Curing builds one covalently bonded network through the whole part, so heating degrades it rather than melting it."
+    },
+    {
+      q: "Hydrogen bonding between amide groups is the main reason nylons have:",
+      options: ["No crystallinity","Low modulus","Low melting points","High melting points and moisture uptake"],
+      correct: 3,
+      explain: "The same interchain hydrogen bonds that raise Tm also attract water, which is why nylon parts change dimension with humidity."
+    },
+    {
+      q: "Polytetrafluoroethylene cannot be melt processed by conventional means because of its:",
+      options: ["Extremely high melt viscosity","Solubility in common solvents","Low molar mass","Low melting point"],
+      correct: 0,
+      explain: "PTFE's melt is so viscous it does not flow usefully, so parts are made by sintering powder or by paste extrusion."
+    },
+    {
+      q: "Which polymer is produced in the largest volume worldwide?",
+      options: ["Polystyrene","Polyethylene","Nylon 6,6","Polycarbonate"],
+      correct: 1,
+      explain: "Polyethylene in its various densities outweighs every other synthetic polymer, with polypropylene and PVC next."
+    },
+    {
+      q: "The resin identification code 1, used on beverage bottles, corresponds to:",
+      options: ["Polystyrene","HDPE","PET","PVC"],
+      correct: 2,
+      explain: "Code 1 is poly(ethylene terephthalate), chosen for bottles because it is clear, tough and a reasonable gas barrier."
+    },
+    {
+      q: "Poly(lactic acid) is described as biobased mainly because its monomer is:",
+      options: ["Made from natural gas","Recovered from waste plastic","Extracted from petroleum","Produced by fermenting sugars"],
+      correct: 3,
+      explain: "Lactic acid is produced by bacterial fermentation of corn or cane sugar, then converted to lactide for ring-opening polymerization."
+    },
+    {
+      q: "Expanded polystyrene foam is produced using:",
+      options: ["A blowing agent such as pentane","Radiation grafting","Solvent casting only","Sulfur crosslinking"],
+      correct: 0,
+      explain: "Beads impregnated with pentane expand when steamed, and the expanded beads then fuse together in the mould."
+    },
+    {
+      q: "Poly(vinyl alcohol) cannot be made from its own monomer because:",
+      options: ["Vinyl alcohol is too costly to isolate","Vinyl alcohol tautomerises to acetaldehyde and does not exist as a stable monomer","The monomer is too expensive","It polymerizes too fast"],
+      correct: 1,
+      explain: "PVA is made instead by hydrolysing poly(vinyl acetate), and the degree of hydrolysis is the specification that matters."
+    },
+    {
+      q: "Superabsorbent polymers in nappies are typically lightly crosslinked:",
+      options: ["Polycarbonate","Polyethylene","Sodium polyacrylate","Polystyrene"],
+      correct: 2,
+      explain: "The carboxylate groups draw in water osmotically while the crosslinks keep the swollen gel from dissolving."
+    },
+    {
+      q: "Polycarbonate is favoured for safety glazing chiefly because of its:",
+      options: ["Low cost","Chemical resistance to all solvents","High crystallinity","Exceptional impact toughness and transparency"],
+      correct: 3,
+      explain: "Its high Tg and ductile failure give an unusual combination of clarity and impact strength, though it is notch sensitive and attacked by some solvents."
+    },
+    {
+      q: "Silicone rubbers remain flexible at very low temperature largely because the Si-O backbone has:",
+      options: ["A very low barrier to rotation and a low Tg","Strong hydrogen bonding","High crystallinity","A high rotational barrier"],
+      correct: 0,
+      explain: "The siloxane bond is long and flexible, giving poly(dimethylsiloxane) a Tg near -125 C, among the lowest of any polymer."
+    },
+    {
+      q: "A copolymer described as 'alternating' has:",
+      options: ["Long runs of each monomer","A regular ABAB sequence","A random sequence","Blocks joined at one point"],
+      correct: 1,
+      explain: "Alternating sequences arise when both reactivity ratios are near zero, as in styrene with maleic anhydride."
+    },
+    {
+      q: "In copolymerization, reactivity ratios r1 = r2 = 1 describe a:",
+      options: ["Graft copolymer","Alternating copolymer","Ideal random copolymer","Block copolymer"],
+      correct: 2,
+      explain: "Each radical adds either monomer with equal preference, so the copolymer composition simply follows the feed."
+    },
+    {
+      q: "An azeotropic copolymer composition is one where:",
+      options: ["Both monomers are exhausted together only at full conversion","The reaction stops","The copolymer is 50:50 by definition","The instantaneous copolymer composition equals the feed composition, so neither drifts"],
+      correct: 3,
+      explain: "At the azeotrope the feed does not change composition as it is consumed, so the product stays uniform throughout the run."
+    },
+    {
+      q: "Composition drift in a batch copolymerization happens because:",
+      options: ["The more reactive monomer is consumed faster, changing the feed","The temperature rises","Chains terminate by coupling","The initiator decays"],
+      correct: 0,
+      explain: "Unless the system is at its azeotrope, the feed becomes progressively richer in the less reactive monomer and the chains made late differ from those made early."
+    },
+    {
+      q: "Which processing route is used to make a bottle by inflating a molten tube against a mould?",
+      options: ["Injection moulding","Blow moulding","Rotational moulding","Compression moulding"],
+      correct: 1,
+      explain: "Blow moulding suits hollow parts; the parison is extruded or injection moulded first, then inflated."
+    },
+    {
+      q: "Biaxial orientation of a film improves strength because it:",
+      options: ["Removes crystallinity","Increases molar mass","Aligns chains in two directions in the plane","Adds crosslinks"],
+      correct: 2,
+      explain: "Stretching in both in-plane directions distributes the chain alignment, which is why BOPP and biaxially oriented PET films are so tough for their thickness."
+    },
+    {
+      q: "Annealing a semicrystalline polymer just below its melting point generally:",
+      options: ["Increases the Tg sharply","Causes crosslinking","Lowers crystallinity","Increases crystallinity and perfects existing crystals"],
+      correct: 3,
+      explain: "Chains gain enough mobility to reorganise into thicker, more perfect lamellae without melting the whole sample."
+    },
+    {
+      q: "Quenching a semicrystalline polymer rapidly from the melt tends to give:",
+      options: ["Less crystallinity and a clearer part","Higher modulus","Higher melting point","Larger spherulites"],
+      correct: 0,
+      explain: "There is no time for crystals to grow, so more of the material is trapped in the amorphous state."
+    },
+    {
+      q: "A nucleating agent is added to a semicrystalline polymer to:",
+      options: ["Lower the molar mass","Increase the number of crystal nuclei, giving smaller spherulites and faster cycles","Prevent crystallization","Raise the Tg"],
+      correct: 1,
+      explain: "More nuclei means many small spherulites rather than a few large ones, which improves clarity and shortens moulding cycles."
+    },
+    {
+      q: "Carbon black is added to outdoor polyethylene mainly to:",
+      options: ["Improve transparency","Increase density","Absorb UV and protect the polymer from photodegradation","Lower the melting point"],
+      correct: 2,
+      explain: "Carbon black is an extremely effective UV screen, which is why buried and exposed PE pipe is usually black."
+    },
+    {
+      q: "Hindered amine light stabilisers protect polymers by:",
+      options: ["Crosslinking the surface","Increasing crystallinity","Absorbing all incident light","Scavenging radicals formed during photo-oxidation, regenerating in the process"],
+      correct: 3,
+      explain: "HALS work catalytically through the nitroxide cycle, which is why very small loadings are effective for a long time."
+    },
+    {
+      q: "The main environmental concern specific to phthalate plasticizers is that they:",
+      options: ["Are not chemically bound and can migrate out of the product","Raise the melting point","Make PVC crystalline","Crosslink over time"],
+      correct: 0,
+      explain: "Because a plasticizer is only dissolved in the polymer, it can leach or evaporate, which both changes the part and releases the additive."
+    },
+    {
+      q: "Chemical recycling differs from mechanical recycling in that it:",
+      options: ["Melts and reforms the polymer","Breaks the polymer back to monomer or feedstock chemicals","Only sorts the plastic","Adds virgin resin"],
+      correct: 1,
+      explain: "Depolymerizing PET back to its monomers, for instance, avoids the property loss that repeated melt processing causes."
+    },
+    {
+      q: "Repeated melt reprocessing of a thermoplastic usually reduces properties because of:",
+      options: ["Loss of colour only","Increased crystallinity","Chain scission and oxidation","Crosslinking only"],
+      correct: 2,
+      explain: "Each heat history shortens chains and introduces oxidised groups, so molar mass and toughness fall."
+    },
+    {
+      q: "A polymer's number-average molar mass Mn is always:",
+      options: ["Equal to Mz","Independent of the distribution","Greater than Mw","Less than or equal to Mw"],
+      correct: 3,
+      explain: "Mw weights by mass and so is pulled up by the longest chains; the two are equal only for a perfectly uniform sample."
+    },
+    {
+      q: "Which average is most sensitive to a small number of very long chains?",
+      options: ["Mz","Mv","Mn","Mw"],
+      correct: 0,
+      explain: "Mz weights by the square of mass, so it responds strongly to the high tail, which is why it correlates with melt elasticity."
+    },
+    {
+      q: "Degree of polymerization is:",
+      options: ["The mass of the polymer","The number of repeat units per chain","The number of chains","The conversion"],
+      correct: 1,
+      explain: "Molar mass is the degree of polymerization multiplied by the repeat unit mass, plus the end groups."
+    },
+    {
+      q: "A telechelic polymer is one that:",
+      options: ["Is a copolymer","Has no end groups","Carries reactive functional groups at both chain ends","Is highly branched"],
+      correct: 2,
+      explain: "Telechelic prepolymers such as HTPB and the polyether diols are the building blocks of polyurethanes and many networks."
+    },
+    {
+      q: "The functionality of a hydroxyl-terminated prepolymer matters because it determines:",
+      options: ["The Tg alone","The molar mass alone","The colour","Whether the cured product is a chain-extended linear polymer or a network"],
+      correct: 3,
+      explain: "A difunctional polyol plus a diisocyanate gives a linear chain; something in the formulation must exceed a functionality of two before a network forms."
+    },
+    {
+      q: "Equivalent weight of a polyol is defined as:",
+      options: ["Its molar mass divided by its functionality","Its hydroxyl number","Its viscosity","Its molar mass"],
+      correct: 0,
+      explain: "It is the mass containing one reactive group, which is exactly what a stoichiometric calculation needs."
+    },
+    {
+      q: "A dendrimer differs from a hyperbranched polymer chiefly in that it is:",
+      options: ["Linear","Made generation by generation with near-perfect structure","Always crosslinked","Made by radical polymerization"],
+      correct: 1,
+      explain: "Stepwise synthesis gives a defined generation and very low dispersity, whereas hyperbranched polymers are made in one pot and are irregular."
+    },
+    {
+      q: "A bottlebrush polymer consists of:",
+      options: ["A crosslinked network","A single long chain","A backbone with a densely grafted side chain at nearly every unit","Two blocks"],
+      correct: 2,
+      explain: "Steric crowding between side chains stretches the backbone, which is what gives these polymers their unusual stiffness and low entanglement."
+    },
+    {
+      q: "A hydrogel is best described as:",
+      options: ["A dry powder","A melt","A polymer solution","A crosslinked hydrophilic network swollen with water"],
+      correct: 3,
+      explain: "The crosslinks stop it dissolving while the hydrophilic groups draw water in, so it holds its shape while being mostly water."
+    },
+    {
+      q: "The lower critical solution temperature behaviour of poly(N-isopropylacrylamide) in water means it:",
+      options: ["Precipitates on heating above about 32 C","Never dissolves","Crystallizes on heating","Dissolves on heating"],
+      correct: 0,
+      explain: "Above the LCST the entropic gain of releasing ordered water outweighs hydrogen bonding, so the chains collapse and the solution turns cloudy."
+    },
+    {
+      q: "Conjugated polymers conduct after doping because doping:",
+      options: ["Adds metal particles","Creates mobile charge carriers along the delocalised backbone","Crosslinks the chains","Increases crystallinity"],
+      correct: 1,
+      explain: "Oxidation or reduction produces polarons and bipolarons that move along and between chains, so conductivity can rise by many orders of magnitude."
+    },
+    {
+      q: "An ionomer is a polymer containing:",
+      options: ["Metal backbone atoms","Only ionic repeat units","A small fraction of ionic groups that aggregate into clusters","No polar groups"],
+      correct: 2,
+      explain: "The ionic clusters act as reversible physical crosslinks, which is what gives materials like Surlyn their toughness and self-healing behaviour."
+    },
+    {
+      q: "Nafion's proton conductivity depends on:",
+      options: ["Metal dopants","Its low molar mass","Its crystalline PTFE regions","Water-filled channels lined with sulfonic acid groups"],
+      correct: 3,
+      explain: "The fluorinated backbone gives stability while the phase-separated ionic channels carry protons, which is why hydration level matters so much."
+    },
+    {
+      q: "Electrospinning produces:",
+      options: ["Submicron fibres drawn from a solution by a high electric field","Thick films","Foams","Bulk mouldings"],
+      correct: 0,
+      explain: "The charged jet whips and thins as the solvent evaporates, giving non-woven mats with very high surface area."
+    },
+    {
+      q: "The main reason a polymer melt is described as viscoelastic is that it:",
+      options: ["Only stores energy elastically","Both stores and dissipates energy depending on timescale","Is incompressible","Only flows"],
+      correct: 1,
+      explain: "Short deformations are taken up elastically by chain stretching, while long ones let chains disentangle and flow, which is why frequency matters in every rheological measurement."
+    },
+    {
+      q: "Die swell in extrusion is caused by:",
+      options: ["Water absorption","Thermal expansion","Elastic recovery of chains oriented in the die","Crystallization"],
+      correct: 2,
+      explain: "Chains stretched as they pass through the die relax once free of it, so the extrudate is wider than the opening."
+    },
+    {
+      q: "Melt fracture, the rough surface seen at high extrusion rates, is a consequence of:",
+      options: ["Excess plasticizer","Low molar mass only","Too low a temperature only","Exceeding a critical shear stress at the die wall"],
+      correct: 3,
+      explain: "Above a critical stress the melt no longer flows smoothly at the wall, and the surface becomes distorted or sharkskinned."
+    },
+    {
+      q: "Environmental stress cracking occurs when a polymer:",
+      options: ["Cracks under stress in the presence of a fluid that would not attack it unstressed","Absorbs water only","Loses colour","Melts under load"],
+      correct: 0,
+      explain: "The fluid accelerates crazing at stress concentrations, which is why polyethylene pipe and polycarbonate parts are tested against specific chemicals under load."
+    },
+    {
+      q: "Crazing in a glassy polymer differs from cracking because a craze:",
+      options: ["Contains no material","Is bridged by drawn fibrils and can still carry load","Only occurs above Tg","Requires crosslinks"],
+      correct: 1,
+      explain: "The load-bearing fibrils are what make crazing an energy-absorbing mechanism rather than immediate failure, and why toughened grades encourage it."
+    },
+    {
+      q: "Rubber toughening of a glassy polymer such as polystyrene works by:",
+      options: ["Removing entanglements","Raising the Tg","Dispersing rubber particles that initiate many small crazes or shear bands","Increasing crystallinity"],
+      correct: 2,
+      explain: "The particles turn a single catastrophic crack into a large number of small energy-absorbing events, which is the basis of HIPS and ABS."
+    },
+    {
+      q: "Poly(3-hydroxybutyrate) is unusual among commercial polyesters because it is:",
+      options: ["Made only from petroleum","Crosslinked in the reactor","Never crystalline","Made by bacteria as an intracellular carbon store"],
+      correct: 3,
+      explain: "PHB accumulates in bacterial cells as granules, and is harvested rather than polymerized in a reactor."
+    },
+    {
+      q: "The main practical drawback of poly(3-hydroxybutyrate) as a plastic is that it:",
+      options: ["Is brittle and degrades near its melting point","Dissolves in water","Cannot be moulded","Will not crystallize"],
+      correct: 0,
+      explain: "Its melting point is close to its decomposition temperature, leaving a narrow processing window, and secondary crystallization embrittles it on storage."
+    },
+    {
+      q: "A polymer with a very low ceiling temperature is attractive for depolymerizable materials because it:",
+      options: ["Cannot be made at all","Unzips back to monomer under mild conditions","Crosslinks on heating","Has no Tg"],
+      correct: 1,
+      explain: "Poly(phthalaldehyde) and poly(alpha-methylstyrene) are studied for exactly this reason, since triggered depolymerization gives chemically recyclable plastics."
+    },
+    {
+      q: "Self-healing polymers most often rely on:",
+      options: ["Low molar mass","Permanent covalent crosslinks only","Reversible bonds or encapsulated healing agents","High crystallinity"],
+      correct: 2,
+      explain: "Dynamic covalent chemistry, hydrogen bonding or ionic clusters let damage be repaired, and microcapsules of monomer achieve the same by releasing it into a crack."
+    },
+    {
+      q: "A vitrimer differs from a conventional thermoset in that it:",
+      options: ["Melts like a thermoplastic","Is always crystalline","Has no crosslinks","Has crosslinks that exchange, so it can flow at high temperature while staying insoluble"],
+      correct: 3,
+      explain: "Associative bond exchange keeps the crosslink density constant while allowing topology to rearrange, so the network can be reshaped and recycled."
     }
   ];
 

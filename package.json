@@ -11,7 +11,8 @@
     "check-index": "node scripts/build-search-index.js --check",
     "check-chain": "node scripts/check-chain-data.js",
     "backfill": "node scripts/backfill-structures.js",
-    "check-brackets": "node scripts/check-bracket-geometry.js"
+    "check-brackets": "node scripts/check-bracket-geometry.js",
+    "check-trivia": "node scripts/check-trivia.js"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"
