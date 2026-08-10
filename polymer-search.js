@@ -3809,6 +3809,35 @@
     // count how badly each runs into itself, and keep the cleaner one; ties go to
     // the horizontal backbone, which leaves every structure that already drew
     // well exactly as it was.
+    // Turn a drawing so a named pair of bonds lies on a horizontal axis, the
+    // first on the left. layoutBest orients a repeat unit by its two "*" chain
+    // ends; a DEPICTION has none - it is a finished molecule - so both layout
+    // routines bail out and it keeps whatever angle RDKit happened to produce.
+    // That is why the brackets on a telechelic met their bonds at unrelated
+    // angles and did not read as a pair. The bracket's own two cut bonds are
+    // the axis a polymer is conventionally drawn along, so use those.
+    function orientByCuts(parsed, srcAtoms, cuts) {
+      var idxOf = {};
+      srcAtoms.forEach(function (a, i) { idxOf[a.id] = i; });
+      var mid = cuts.map(function (c) {
+        var p = parsed.atoms[idxOf[c[0]]], q = parsed.atoms[idxOf[c[1]]];
+        if (!p || !q) return null;
+        return { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
+      });
+      if (!mid[0] || !mid[1]) return;
+      var dx = mid[1].x - mid[0].x, dy = mid[1].y - mid[0].y;
+      if (Math.hypot(dx, dy) < 1e-6) return;
+      var ang = Math.atan2(dy, dx), cos = Math.cos(-ang), sin = Math.sin(-ang);
+      var cx = 0, cy = 0;
+      parsed.atoms.forEach(function (a) { cx += a.x; cy += a.y; });
+      cx /= parsed.atoms.length; cy /= parsed.atoms.length;
+      parsed.atoms.forEach(function (a) {
+        var x = a.x - cx, y = a.y - cy;
+        a.x = cx + x * cos - y * sin;
+        a.y = cy + x * sin + y * cos;
+      });
+    }
+
     function layoutBest(parsed) {
       var rdkit = parsed.atoms.map(function (a) { return { x: a.x, y: a.y }; });
       function restore() { parsed.atoms.forEach(function (a, i) { a.x = rdkit[i].x; a.y = rdkit[i].y; }); }
@@ -4326,6 +4355,15 @@
           return;
         }
         layoutBest(parsed);
+        // A linear telechelic's depiction has exactly one bracket, and the two
+        // bonds it cuts are the chain axis. Laying that axis flat is what makes
+        // the two bars come out parallel and upright, the way a bracket is drawn
+        // on paper. A star has one bracket per arm and no single axis, so it is
+        // left as laid out.
+        if (hasDepiction && Array.isArray(src.repeats) && src.repeats.length === 1 &&
+            Array.isArray(src.repeats[0].cuts) && src.repeats[0].cuts.length === 2) {
+          orientByCuts(parsed, src.atoms, src.repeats[0].cuts);
+        }
         // A freshly laid-out structure is positioned in canvas coordinates, so
         // any zoom or pan left over from the previous drawing would put it
         // off-screen or the wrong size.
