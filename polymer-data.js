@@ -6029,6 +6029,11 @@ window.POLYMER_DB = [
     tags: ["telechelic","prepolymer","curing agent","polyether","engineering"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
     bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    depiction: {
+      atoms: [{"id":1,"el":"N"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"N"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":7,"b":9,"order":1}],
+      repeats: [{"unit":[5,6,7,8],"cuts":[[4,5],[7,9]],"label":"n"}]
+    },
     telechelic: {
       endGroup: "amine", functionality: 2,
       equivalentWeight: 120, mn: 230,
@@ -6044,6 +6049,11 @@ window.POLYMER_DB = [
     tags: ["telechelic","prepolymer","curing agent","polyether","engineering"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
     bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    depiction: {
+      atoms: [{"id":1,"el":"N"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"N"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":7,"b":9,"order":1}],
+      repeats: [{"unit":[5,6,7,8],"cuts":[[4,5],[7,9]],"label":"n"}]
+    },
     telechelic: {
       endGroup: "amine", functionality: 2,
       equivalentWeight: 230, mn: 400,
@@ -6059,6 +6069,11 @@ window.POLYMER_DB = [
     tags: ["telechelic","prepolymer","curing agent","polyether","elastomer"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
     bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    depiction: {
+      atoms: [{"id":1,"el":"N"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"N"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":7,"b":9,"order":1}],
+      repeats: [{"unit":[5,6,7,8],"cuts":[[4,5],[7,9]],"label":"n"}]
+    },
     telechelic: {
       endGroup: "amine", functionality: 2,
       equivalentWeight: 1028, mn: 2000,
@@ -6070,12 +6085,19 @@ window.POLYMER_DB = [
   },
   {
     name: "JEFFAMINE T-403 polyetheramine", aka: ["JEFFAMINE T-403","T-403","polyetheramine T-403","trifunctional polyetheramine","Jeffamine T403"],
+    arch: "star",
     monomer: "propylene oxide on trimethylolpropane, then amination", cls: "Ring-opening", cas: null,
-    tags: ["telechelic","prepolymer","curing agent","polyether","crosslinker","engineering"],
+    tags: ["star","telechelic","prepolymer","curing agent","polyether","crosslinker","engineering"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
     bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"N"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"N"},{"id":16,"el":"C"},{"id":17,"el":"O"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"C"},{"id":21,"el":"N"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":1,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":7,"b":9,"order":1},{"a":1,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":13,"b":15,"order":1},{"a":1,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":1},{"a":19,"b":21,"order":1}],
+      repeats: [{"unit":[5,6,7,8],"cuts":[[4,5],[7,9]],"label":"n"},{"unit":[11,12,13,14],"cuts":[[10,11],[13,15]],"label":"n"},{"unit":[17,18,19,20],"cuts":[[16,17],[19,21]],"label":"n"}]
+    },
     telechelic: {
       endGroup: "amine", functionality: 3,
+      core: "trimethylolpropane",
       equivalentWeight: 162, mn: 440,
       spec: "AHEW 81 g/eq",
       source: "Huntsman, \"Epoxy formulations using JEFFAMINE polyetheramines\" technical bulletin, Table 3.1"
@@ -6089,6 +6111,11 @@ window.POLYMER_DB = [
     tags: ["telechelic","prepolymer","elastomer","diene","coating","adhesive"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
     bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    depiction: {
+      atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1}],
+      repeats: [{"unit":[2,3,4,5],"cuts":[[1,2],[5,6]],"label":"n"}]
+    },
     telechelic: {
       endGroup: "hydroxyl", functionality: 2.5,
       equivalentWeight: 1120, mn: 2800,
@@ -6104,6 +6131,11 @@ window.POLYMER_DB = [
     tags: ["telechelic","prepolymer","polyether","polyurethane","elastomer"],
     atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
     bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":"S1","order":1}],
+    depiction: {
+      atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"O"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1}],
+      repeats: [{"unit":[6,7,8,9,10],"cuts":[[5,6],[10,11]],"label":"n"}]
+    },
     telechelic: {
       endGroup: "hydroxyl", functionality: 2,
       equivalentWeight: 1002, mn: 2000,
@@ -6118,6 +6150,11 @@ window.POLYMER_DB = [
     tags: ["telechelic","prepolymer","polyester","polyurethane","elastomer","biodegradable"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
     bonds: [{"a":"S0","b":4,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":1,"b":8,"order":1},{"a":6,"b":"S1","order":1}],
+    depiction: {
+      atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"O"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"O"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1}],
+      repeats: [{"unit":[7,8,9,10,11,12,13,14],"cuts":[[6,7],[14,15]],"label":"n"}]
+    },
     telechelic: {
       endGroup: "hydroxyl", functionality: 2,
       equivalentWeight: 1002, mn: 2000,
@@ -6132,6 +6169,11 @@ window.POLYMER_DB = [
     tags: ["telechelic","prepolymer","polyether","polyurethane","sealant"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
     bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    depiction: {
+      atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":7,"b":9,"order":1}],
+      repeats: [{"unit":[5,6,7,8],"cuts":[[4,5],[7,9]],"label":"n"}]
+    },
     telechelic: {
       endGroup: "hydroxyl", functionality: 2,
       equivalentWeight: 1002, mn: 2000,
@@ -6142,12 +6184,19 @@ window.POLYMER_DB = [
   },
   {
     name: "Glycerine-initiated polyether triol 3000", aka: ["Rokopol F3000","polyether triol 3000","glycerol-initiated polyether triol","PPG triol 3000","polyol triol 3000"],
+    arch: "star",
     monomer: "propylene oxide on glycerine", cls: "Ring-opening", cas: null,
-    tags: ["telechelic","prepolymer","polyether","polyurethane","crosslinker","foam"],
+    tags: ["star","telechelic","prepolymer","polyether","polyurethane","crosslinker","foam"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
     bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"O"},{"id":16,"el":"C"},{"id":17,"el":"O"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"C"},{"id":21,"el":"O"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":1,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":7,"b":9,"order":1},{"a":2,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":13,"b":15,"order":1},{"a":3,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":1},{"a":19,"b":21,"order":1}],
+      repeats: [{"unit":[5,6,7,8],"cuts":[[4,5],[7,9]],"label":"n"},{"unit":[11,12,13,14],"cuts":[[10,11],[13,15]],"label":"n"},{"unit":[17,18,19,20],"cuts":[[16,17],[19,21]],"label":"n"}]
+    },
     telechelic: {
       endGroup: "hydroxyl", functionality: 3,
+      core: "glycerine",
       equivalentWeight: 1002,
       spec: "hydroxyl value 53-59 mg KOH/g",
       source: "PCC Rokita, Rokopol F3000 product specification, PCC Group product portal (accessed 2026)"
@@ -6175,6 +6224,11 @@ window.POLYMER_DB = [
     tags: ["telechelic","prepolymer","silicone","sealant","elastomer"],
     atoms: [{"id":1,"el":"Si"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
     bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":1,"b":3,"order":1},{"a":1,"b":4,"order":1},{"a":4,"b":"S1","order":1}],
+    depiction: {
+      atoms: [{"id":1,"el":"O"},{"id":2,"el":"Si"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"Si"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":2,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":6,"b":8,"order":1},{"a":6,"b":9,"order":1}],
+      repeats: [{"unit":[5,6,7,8],"cuts":[[2,5],[6,9]],"label":"n"}]
+    },
     telechelic: {
       endGroup: "silanol", functionality: 2,
       equivalentWeight: 17391,

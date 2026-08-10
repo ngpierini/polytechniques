@@ -473,11 +473,18 @@ function checkEntry(entry, idx, errors) {
           });
         });
       }
-      // The whole point is that the arm count is visible, so it has to match.
-      if (entry.telechelic && typeof entry.telechelic.functionality === "number" &&
+      // On a STAR the arm count is the point of the drawing, so one bracket per
+      // arm or the picture contradicts the specification. A linear telechelic is
+      // one chain with a cap at each end and therefore exactly one bracket,
+      // however many end groups it has - so the rule is scoped to stars.
+      if (entry.arch === "star" && entry.telechelic &&
+          typeof entry.telechelic.functionality === "number" &&
           Array.isArray(d.repeats) && d.repeats.length !== entry.telechelic.functionality) {
         errors.push(dw + ": has " + d.repeats.length + " bracketed arm(s) but the entry declares " +
           entry.telechelic.functionality + " arms - the drawing would contradict the specification");
+      }
+      if (entry.arch !== "star" && Array.isArray(d.repeats) && d.repeats.length !== 1) {
+        errors.push(dw + ": a linear telechelic is one chain and takes exactly one bracket (got " + d.repeats.length + ")");
       }
     }
   }
