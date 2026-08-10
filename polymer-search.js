@@ -3851,8 +3851,8 @@
     var BAR_OUT = 0.16;
     var BAR_FLOOR_FRAC = 0.22;
 
-    function barOnBond(outside, inside, upright) {
-      return BG.barOnBond(outside, inside, upright, BAR_OUT);
+    function barOnBond(outside, inside, upright, bias) {
+      return BG.barOnBond(outside, inside, upright, bias === undefined ? BAR_OUT : bias);
     }
 
     function clearRun(px, py, dx, dy, want, cutA, cutB) {
@@ -3952,7 +3952,15 @@
         var ain = !!idSet[b.a], bin = !!idSet[b.b];
         if (ain === bin) return;
         var ia = atomById(ain ? b.a : b.b), ea = atomById(ain ? b.b : b.a);
-        if (ia && ea) { crossings.push({ x: (ia.x + ea.x) / 2, y: (ia.y + ea.y) / 2 }); barsT.push(barOnBond(ea, ia, true)); }
+        // INWARD bias here, the opposite of a repeat-unit bracket. Two adjacent
+        // blocks share their junction bond, so each puts a bar on it. Biased
+        // outward, each bar slides away from its own block and the two cross:
+        // the left block's closing bar ends up to the RIGHT of the right
+        // block's opening bar, which draws "[ ]" where "] [" belongs. Measured
+        // on polystyrene-b-polyisoprene, where the two bars on the shared bond
+        // sat at x = 467 and x = 442. Biasing each toward its own block keeps
+        // them in order and separates them at the same time.
+        if (ia && ea) { crossings.push({ x: (ia.x + ea.x) / 2, y: (ia.y + ea.y) / 2 }); barsT.push(barOnBond(ea, ia, true, -BAR_OUT)); }
       });
       if (crossings.length !== 2) return null;
       var a = crossings[0], b2 = crossings[1];

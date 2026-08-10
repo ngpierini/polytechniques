@@ -71,6 +71,28 @@ for (let deg = 0; deg < 360; deg += 15) {
   }
 }
 
+// ---- 2b. Two blocks sharing a junction bond must not cross their bars ----
+// Adjacent blocks of a copolymer both put a bar on the bond between them. The
+// left block's bar closes it and the right block's bar opens the next, so the
+// closing bar has to stay on the left. Biased outward they swap over and the
+// drawing reads "[ ]" where "] [" belongs; this is that case in the abstract.
+{
+  const left = atomAt("L", 0, 0);          // last atom of the left block
+  const right = atomAt("R", BOND, 0);      // first atom of the right block
+  // Each block's bar: its own atom is "inside", the neighbour is "outside".
+  const leftBar = BG.barOnBond(right, left, true, -BIAS);   // belongs to the left block
+  const rightBar = BG.barOnBond(left, right, true, -BIAS);  // belongs to the right block
+  if (!(leftBar.x < rightBar.x)) {
+    errors.push("at a block junction the left block's bar is at x=" + leftBar.x.toFixed(1) +
+      " and the right block's at x=" + rightBar.x.toFixed(1) +
+      " - the closing bracket is not to the left of the opening one");
+  }
+  if (Math.abs(leftBar.x - rightBar.x) < 4) {
+    errors.push("the two bars on a shared junction bond are only " +
+      Math.abs(leftBar.x - rightBar.x).toFixed(1) + " apart and will draw on top of each other");
+  }
+}
+
 // ---- 3. The clipper must shorten a bar that would cut a neighbour --------
 // The case it was written for: a substituent leaving the same atom almost
 // sideways, which an unclipped bar would slice through, making the bracket
