@@ -3605,15 +3605,21 @@
     // repeat unit isn't a simple chain (a ring sits in the backbone, e.g. PET),
     // so the caller can fall back to orientRepeatUnit. Rewrites parsed.atoms in
     // place, in the molblock frame fitParsedCoords expects (y up).
-    function layoutRepeatUnit(parsed) {
+    // `ends` overrides how the two ends of the chain are found. A repeat unit
+    // marks them with "*"; a depiction has no "*" at all, so it names them in
+    // its data instead - the longest path through JEFFAMINE D-230 is a tie
+    // between amine-to-amine and methyl-to-methyl, and the wrong choice lays
+    // the methyls along the backbone with the amines hanging off the side.
+    function layoutRepeatUnit(parsed, ends) {
       var A = parsed.atoms, BND = parsed.bonds, n = A.length;
       function sub(p, q) { return { x: p.x - q.x, y: p.y - q.y }; }
       function nrm(p) { var m = Math.hypot(p.x, p.y) || 1; return { x: p.x / m, y: p.y / m }; }
       function rot(p, a) { var c = Math.cos(a), s = Math.sin(a); return { x: p.x * c - p.y * s, y: p.x * s + p.y * c }; }
 
       var stars = [];
-      for (var i = 0; i < n; i++) if (A[i].el === '*') stars.push(i);
-      if (stars.length !== 2) return false;
+      if (ends && ends.length === 2) stars = ends.slice();
+      else for (var i = 0; i < n; i++) if (A[i].el === '*') stars.push(i);
+      if (stars.length !== 2 || stars[0] === stars[1]) return false;
       var adj = []; for (i = 0; i < n; i++) adj.push([]);
       BND.forEach(function (bd) { var a = bd.a - 1, b = bd.b - 1; adj[a].push(b); adj[b].push(a); });
 
@@ -4354,15 +4360,28 @@
           smilesNote('Could not draw ' + p.name + '. Use the publication links on its card instead.');
           return;
         }
-        layoutBest(parsed);
-        // A linear telechelic's depiction has exactly one bracket, and the two
-        // bonds it cuts are the chain axis. Laying that axis flat is what makes
-        // the two bars come out parallel and upright, the way a bracket is drawn
-        // on paper. A star has one bracket per arm and no single axis, so it is
-        // left as laid out.
-        if (hasDepiction && Array.isArray(src.repeats) && src.repeats.length === 1 &&
-            Array.isArray(src.repeats[0].cuts) && src.repeats[0].cuts.length === 2) {
-          orientByCuts(parsed, src.atoms, src.repeats[0].cuts);
+        // A linear telechelic's depiction names its two chain ends, so it can be
+        // laid out as a proper zigzag with the end groups IN LINE with the chain
+        // and the substituents hanging off it - the same routine a repeat unit
+        // gets. Rotating RDKit's own layout, which is what this did before, put
+        // the axis flat but left a terminal NH2 sitting above the chain, so the
+        // bond its bracket bar had to cut still pointed steeply up and the two
+        // bars came out at unrelated angles. Laying the chain out properly is
+        // what actually fixes that. Falls back to the rotation if the zigzag
+        // cannot be built (a ring riding in the backbone, say).
+        var laidOut = false;
+        if (hasDepiction && Array.isArray(src.chainEnds) && src.chainEnds.length === 2) {
+          var idxByDepId = {};
+          src.atoms.forEach(function (a, i) { idxByDepId[a.id] = i; });
+          var e0 = idxByDepId[src.chainEnds[0]], e1 = idxByDepId[src.chainEnds[1]];
+          if (e0 !== undefined && e1 !== undefined) laidOut = layoutRepeatUnit(parsed, [e0, e1]);
+        }
+        if (!laidOut) {
+          layoutBest(parsed);
+          if (hasDepiction && Array.isArray(src.repeats) && src.repeats.length === 1 &&
+              Array.isArray(src.repeats[0].cuts) && src.repeats[0].cuts.length === 2) {
+            orientByCuts(parsed, src.atoms, src.repeats[0].cuts);
+          }
         }
         // A freshly laid-out structure is positioned in canvas coordinates, so
         // any zoom or pan left over from the previous drawing would put it

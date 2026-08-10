@@ -486,6 +486,27 @@ function checkEntry(entry, idx, errors) {
       if (entry.arch !== "star" && Array.isArray(d.repeats) && d.repeats.length !== 1) {
         errors.push(dw + ": a linear telechelic is one chain and takes exactly one bracket (got " + d.repeats.length + ")");
       }
+      // chainEnds names the two ends of the chain so the drawing can be laid out
+      // as a zigzag along them. It has to be stated rather than inferred: the
+      // longest path through JEFFAMINE D-230 is a tie between amine-to-amine and
+      // methyl-to-methyl, and guessing it wrong lays the methyls along the
+      // backbone and hangs the amines off the side.
+      if (d.chainEnds !== undefined) {
+        const degree = {};
+        d.bonds.forEach(function (b) { degree[b.a] = (degree[b.a] || 0) + 1; degree[b.b] = (degree[b.b] || 0) + 1; });
+        if (!Array.isArray(d.chainEnds) || d.chainEnds.length !== 2 || d.chainEnds[0] === d.chainEnds[1]) {
+          errors.push(dw + ".chainEnds must name two different atoms");
+        } else {
+          d.chainEnds.forEach(function (id) {
+            const a = d.atoms.filter(function (x) { return x.id === id; })[0];
+            if (!a) errors.push(dw + ".chainEnds names atom " + id + ", which is not in the depiction");
+            else if (degree[id] !== 1) {
+              errors.push(dw + ".chainEnds atom " + id + " has " + degree[id] +
+                " bonds - a chain end has exactly one, or it is not an end");
+            }
+          });
+        }
+      }
     }
   }
 

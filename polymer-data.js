@@ -6032,6 +6032,7 @@ window.POLYMER_DB = [
     depiction: {
       atoms: [{"id":1,"el":"N"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"N"}],
       bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":7,"b":9,"order":1}],
+      chainEnds: [1,9],
       repeats: [{"unit":[5,6,7,8],"cuts":[[4,5],[7,9]],"label":"n"}]
     },
     telechelic: {
@@ -6052,6 +6053,7 @@ window.POLYMER_DB = [
     depiction: {
       atoms: [{"id":1,"el":"N"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"N"}],
       bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":7,"b":9,"order":1}],
+      chainEnds: [1,9],
       repeats: [{"unit":[5,6,7,8],"cuts":[[4,5],[7,9]],"label":"n"}]
     },
     telechelic: {
@@ -6072,6 +6074,7 @@ window.POLYMER_DB = [
     depiction: {
       atoms: [{"id":1,"el":"N"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"N"}],
       bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":7,"b":9,"order":1}],
+      chainEnds: [1,9],
       repeats: [{"unit":[5,6,7,8],"cuts":[[4,5],[7,9]],"label":"n"}]
     },
     telechelic: {
@@ -6114,6 +6117,7 @@ window.POLYMER_DB = [
     depiction: {
       atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"}],
       bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1}],
+      chainEnds: [1,6],
       repeats: [{"unit":[2,3,4,5],"cuts":[[1,2],[5,6]],"label":"n"}]
     },
     telechelic: {
@@ -6134,6 +6138,7 @@ window.POLYMER_DB = [
     depiction: {
       atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"O"}],
       bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1}],
+      chainEnds: [1,11],
       repeats: [{"unit":[6,7,8,9,10],"cuts":[[5,6],[10,11]],"label":"n"}]
     },
     telechelic: {
@@ -6153,6 +6158,7 @@ window.POLYMER_DB = [
     depiction: {
       atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"O"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"O"}],
       bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1}],
+      chainEnds: [1,15],
       repeats: [{"unit":[7,8,9,10,11,12,13,14],"cuts":[[6,7],[14,15]],"label":"n"}]
     },
     telechelic: {
@@ -6172,6 +6178,7 @@ window.POLYMER_DB = [
     depiction: {
       atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"}],
       bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":7,"b":9,"order":1}],
+      chainEnds: [1,9],
       repeats: [{"unit":[5,6,7,8],"cuts":[[4,5],[7,9]],"label":"n"}]
     },
     telechelic: {
@@ -6227,6 +6234,7 @@ window.POLYMER_DB = [
     depiction: {
       atoms: [{"id":1,"el":"O"},{"id":2,"el":"Si"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"Si"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"}],
       bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":2,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":6,"b":8,"order":1},{"a":6,"b":9,"order":1}],
+      chainEnds: [1,9],
       repeats: [{"unit":[5,6,7,8],"cuts":[[2,5],[6,9]],"label":"n"}]
     },
     telechelic: {
