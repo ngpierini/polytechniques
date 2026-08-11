@@ -270,6 +270,24 @@ function checkEntry(entry, idx, errors) {
       }
     }
   }
+  // queryTerms replaces the entry's name when searching Crossref, for grades
+  // whose name is full of molar mass and supplier codes that no paper title
+  // uses. Every one here was chosen by measuring it against the live API, so
+  // the rule is only that it be usable: real phrases, and not a copy of the
+  // name it exists to replace.
+  if (entry.queryTerms !== undefined) {
+    const qw = where + ": queryTerms";
+    if (!Array.isArray(entry.queryTerms) || !entry.queryTerms.length) {
+      errors.push(qw + " must be a non-empty array of search phrases");
+    } else {
+      entry.queryTerms.forEach(function (t) {
+        if (typeof t !== "string" || t.trim().length < 4) errors.push(qw + ": each term must be a real phrase (got " + JSON.stringify(t) + ")");
+        else if (t.trim().toLowerCase() === String(entry.name).trim().toLowerCase()) {
+          errors.push(qw + ": one term is just the entry name, which is what queryTerms exists to replace");
+        }
+      });
+    }
+  }
   if (entry.noScheme !== undefined && (typeof entry.noScheme !== "string" || entry.noScheme.trim().length < 20)) {
     errors.push(where + ": \"noScheme\" must be a sentence explaining why the monomer cannot be derived, not a bare flag");
   }

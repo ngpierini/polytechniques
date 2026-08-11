@@ -2451,6 +2451,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(methylvinylsiloxane)", aka: ["PMVS", "vinyl silicone", "poly(methylvinylsiloxane)"],
+    queryTerms: ["methylvinylsiloxane silicone vinyl crosslink"],
     monomer: "methylvinylcyclosiloxane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "elastomer", "specialty"],
     verified: false,
@@ -3980,6 +3981,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinylimidazolium)", aka: ["poly(1-vinyl-3-alkylimidazolium)", "PIL", "poly(ionic liquid)"],
+    queryTerms: ["poly(ionic liquid) imidazolium","polymerized ionic liquid"],
     monomer: "1-vinyl-3-methylimidazolium salt", cls: "Addition (vinyl)", cas: null,
     tags: ["water-soluble", "polyelectrolyte", "specialty"],
     verified: false,
@@ -4034,6 +4036,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(octadecyl vinyl ether)", aka: ["PODVE", "poly(stearyl vinyl ether)"],
+    queryTerms: ["octadecyl vinyl ether comb-like side chain crystalline"],
     monomer: "octadecyl vinyl ether", cls: "Addition (vinyl)", cas: null,
     tags: ["specialty"],
     verified: false,
@@ -4441,6 +4444,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinyl ferrocene)", aka: ["PVFc", "poly(vinylferrocene)"],
+    queryTerms: ["vinylferrocene redox-active metallopolymer"],
     monomer: "vinylferrocene", cls: "Addition (vinyl)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
@@ -5324,6 +5328,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinyl versatate)", aka: ["PVeoVa", "poly(vinyl neodecanoate)", "VeoVa"],
+    queryTerms: ["vinyl versatate VeoVa emulsion copolymer"],
     monomer: "vinyl versatate", cls: "Addition (vinyl)", cas: null,
     tags: ["coating", "weather-resistant", "specialty"],
     verified: false,
@@ -5613,6 +5618,7 @@ window.POLYMER_DB = [
   {
     noScheme: "the repeat unit here does not correspond to morpholine-2,5-dione atom for atom, so a derived monomer would contradict the named one",
     name: "Poly(depsipeptide)", aka: ["polydepsipeptide", "poly(ester amide) alpha", "PDP"],
+    queryTerms: ["depsipeptide poly(ester amide) morpholine-2,5-dione"],
     monomer: "morpholine-2,5-dione", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biodegradable", "biopolymer", "biomedical", "specialty"],
     verified: false,
