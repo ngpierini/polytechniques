@@ -8034,6 +8034,576 @@ window.POLYMER_DB = [
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 2 }]
+  },
+
+  // ---- end-functionalised linear PEG. Every molar mass is a grade a supplier
+  // actually lists; equivalentWeight is Mn/2 throughout ----
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"N"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":5,"b":7,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,7]],"label":"n"}]
+    },
+    name: "PEG diamine, 2 kDa", aka: ["NH2-PEG2000-NH2","PEG diamine 2kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "amine", functionality: 2,
+      equivalentWeight: 1000, mn: 2000,
+      spec: "MW 2,000 Da (NH2-PEG2000-NH2); supplied as the hydrochloride salt",
+      source: "JenKem Technology USA, PEG (Amine)2 HCl Salt product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) diamine","amine-terminated PEG PEGylation"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "A difunctional PEG spacer that couples through amide, urethane, urea or secondary-amine links - the stable-linkage workhorse of PEGylation, as distinct from the hydrolysable ester-linked reagents. It ships as the hydrochloride because the free amine slowly attacks the ether backbone and picks up carbon dioxide from the air; the salt has to be neutralised in situ before it will react."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"N"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":5,"b":7,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,7]],"label":"n"}]
+    },
+    name: "PEG diamine, 3.5 kDa", aka: ["NH2-PEG3500-NH2","PEG diamine 3.5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "amine", functionality: 2,
+      equivalentWeight: 1750, mn: 3500,
+      spec: "MW 3,500 Da (NH2-PEG3500-NH2); supplied as the hydrochloride salt",
+      source: "JenKem Technology USA, PEG (Amine)2 HCl Salt product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) diamine","amine-terminated PEG PEGylation"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "A difunctional PEG spacer that couples through amide, urethane, urea or secondary-amine links - the stable-linkage workhorse of PEGylation, as distinct from the hydrolysable ester-linked reagents. It ships as the hydrochloride because the free amine slowly attacks the ether backbone and picks up carbon dioxide from the air; the salt has to be neutralised in situ before it will react."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"N"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":5,"b":7,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,7]],"label":"n"}]
+    },
+    name: "PEG diamine, 5 kDa", aka: ["NH2-PEG5000-NH2","PEG diamine 5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "amine", functionality: 2,
+      equivalentWeight: 2500, mn: 5000,
+      spec: "MW 5,000 Da (NH2-PEG5000-NH2); supplied as the hydrochloride salt",
+      source: "JenKem Technology USA, PEG (Amine)2 HCl Salt product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) diamine","amine-terminated PEG PEGylation"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "A difunctional PEG spacer that couples through amide, urethane, urea or secondary-amine links - the stable-linkage workhorse of PEGylation, as distinct from the hydrolysable ester-linked reagents. It ships as the hydrochloride because the free amine slowly attacks the ether backbone and picks up carbon dioxide from the air; the salt has to be neutralised in situ before it will react."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"N"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":5,"b":7,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,7]],"label":"n"}]
+    },
+    name: "PEG diamine, 7.5 kDa", aka: ["NH2-PEG7500-NH2","PEG diamine 7.5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "amine", functionality: 2,
+      equivalentWeight: 3750, mn: 7500,
+      spec: "MW 7,500 Da (NH2-PEG7500-NH2); supplied as the hydrochloride salt",
+      source: "JenKem Technology USA, PEG (Amine)2 HCl Salt product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) diamine","amine-terminated PEG PEGylation"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "A difunctional PEG spacer that couples through amide, urethane, urea or secondary-amine links - the stable-linkage workhorse of PEGylation, as distinct from the hydrolysable ester-linked reagents. It ships as the hydrochloride because the free amine slowly attacks the ether backbone and picks up carbon dioxide from the air; the salt has to be neutralised in situ before it will react."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"S"},{"id":7,"el":"S"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":5,"b":7,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,7]],"label":"n"}]
+    },
+    name: "PEG dithiol, 3.5 kDa", aka: ["HS-PEG3500-SH","PEG dithiol 3.5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","hydrogel","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "thiol", functionality: 2,
+      equivalentWeight: 1750, mn: 3500,
+      spec: "MW 3,500 Da (HS-PEG3500-SH); >= 95% purity",
+      source: "JenKem Technology USA, PEG (Thiol)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) dithiol","thiol-terminated PEG hydrogel"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The linear partner for a multi-arm maleimide or norbornene in thiol-Michael and thiol-ene gels, and the standard way to tether PEG to gold. Both ends oxidise to disulfide on standing, which quietly consumes the functionality that was weighed out - degassed solvent and an inert headspace are not optional here."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"S"},{"id":7,"el":"S"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":5,"b":7,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,7]],"label":"n"}]
+    },
+    name: "PEG dithiol, 5 kDa", aka: ["HS-PEG5000-SH","PEG dithiol 5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","hydrogel","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "thiol", functionality: 2,
+      equivalentWeight: 2500, mn: 5000,
+      spec: "MW 5,000 Da (HS-PEG5000-SH); >= 95% purity",
+      source: "JenKem Technology USA, PEG (Thiol)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) dithiol","thiol-terminated PEG hydrogel"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The linear partner for a multi-arm maleimide or norbornene in thiol-Michael and thiol-ene gels, and the standard way to tether PEG to gold. Both ends oxidise to disulfide on standing, which quietly consumes the functionality that was weighed out - degassed solvent and an inert headspace are not optional here."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":13,"el":"N"},{"id":14,"el":"C"},{"id":15,"el":"O"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"O"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":11,"b":6,"order":1},{"a":5,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":2},{"a":14,"b":16,"order":1},{"a":16,"b":17,"order":2},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":2},{"a":18,"b":13,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,13]],"label":"n"}]
+    },
+    name: "PEG dimaleimide, 2 kDa", aka: ["MAL-PEG2000-MAL","PEG dimaleimide 2kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","hydrogel","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "maleimide", functionality: 2,
+      equivalentWeight: 1000, mn: 2000,
+      spec: "MW 2,000 Da (MAL-PEG2000-MAL); >= 90% substitution",
+      source: "JenKem Technology USA, PEG (Maleimide)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["maleimide PEG maleimide crosslinker","PEG maleimide thiol conjugation"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "A thiol-selective crosslinker: between pH 6.5 and 7.5 the maleimide adds to a cysteine thiol far faster than to any amine present, which is what makes site-specific protein conjugation possible. Above pH 8 the ring hydrolyses to an unreactive maleamic acid, so the same buffer that speeds the reaction destroys the reagent. The substitution figure matters - at 90% the average functionality is 1.8, not 2."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":13,"el":"N"},{"id":14,"el":"C"},{"id":15,"el":"O"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"O"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":11,"b":6,"order":1},{"a":5,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":2},{"a":14,"b":16,"order":1},{"a":16,"b":17,"order":2},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":2},{"a":18,"b":13,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,13]],"label":"n"}]
+    },
+    name: "PEG dimaleimide, 3.5 kDa", aka: ["MAL-PEG3500-MAL","PEG dimaleimide 3.5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","hydrogel","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "maleimide", functionality: 2,
+      equivalentWeight: 1750, mn: 3500,
+      spec: "MW 3,500 Da (MAL-PEG3500-MAL); >= 90% substitution",
+      source: "JenKem Technology USA, PEG (Maleimide)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["maleimide PEG maleimide crosslinker","PEG maleimide thiol conjugation"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "A thiol-selective crosslinker: between pH 6.5 and 7.5 the maleimide adds to a cysteine thiol far faster than to any amine present, which is what makes site-specific protein conjugation possible. Above pH 8 the ring hydrolyses to an unreactive maleamic acid, so the same buffer that speeds the reaction destroys the reagent. The substitution figure matters - at 90% the average functionality is 1.8, not 2."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":13,"el":"N"},{"id":14,"el":"C"},{"id":15,"el":"O"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"O"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":11,"b":6,"order":1},{"a":5,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":2},{"a":14,"b":16,"order":1},{"a":16,"b":17,"order":2},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":2},{"a":18,"b":13,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,13]],"label":"n"}]
+    },
+    name: "PEG dimaleimide, 5 kDa", aka: ["MAL-PEG5000-MAL","PEG dimaleimide 5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","hydrogel","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "maleimide", functionality: 2,
+      equivalentWeight: 2500, mn: 5000,
+      spec: "MW 5,000 Da (MAL-PEG5000-MAL); >= 90% substitution",
+      source: "JenKem Technology USA, PEG (Maleimide)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["maleimide PEG maleimide crosslinker","PEG maleimide thiol conjugation"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "A thiol-selective crosslinker: between pH 6.5 and 7.5 the maleimide adds to a cysteine thiol far faster than to any amine present, which is what makes site-specific protein conjugation possible. Above pH 8 the ring hydrolyses to an unreactive maleamic acid, so the same buffer that speeds the reaction destroys the reagent. The substitution figure matters - at 90% the average functionality is 1.8, not 2."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":13,"el":"N"},{"id":14,"el":"C"},{"id":15,"el":"O"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"O"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":11,"b":6,"order":1},{"a":5,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":2},{"a":14,"b":16,"order":1},{"a":16,"b":17,"order":2},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":2},{"a":18,"b":13,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,13]],"label":"n"}]
+    },
+    name: "PEG dimaleimide, 7.5 kDa", aka: ["MAL-PEG7500-MAL","PEG dimaleimide 7.5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","hydrogel","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "maleimide", functionality: 2,
+      equivalentWeight: 3750, mn: 7500,
+      spec: "MW 7,500 Da (MAL-PEG7500-MAL); >= 90% substitution",
+      source: "JenKem Technology USA, PEG (Maleimide)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["maleimide PEG maleimide crosslinker","PEG maleimide thiol conjugation"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "A thiol-selective crosslinker: between pH 6.5 and 7.5 the maleimide adds to a cysteine thiol far faster than to any amine present, which is what makes site-specific protein conjugation possible. Above pH 8 the ring hydrolyses to an unreactive maleamic acid, so the same buffer that speeds the reaction destroys the reagent. The substitution figure matters - at 90% the average functionality is 1.8, not 2."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"O"},{"id":14,"el":"C"},{"id":15,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":5,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":2},{"a":12,"b":14,"order":1},{"a":14,"b":15,"order":2}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,11]],"label":"n"}]
+    },
+    name: "PEG diacrylate, 2 kDa", aka: ["ACLT-PEG2000-ACLT","PEG diacrylate 2kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","biomedical","crosslinker","acrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "acrylate", functionality: 2,
+      equivalentWeight: 1000, mn: 2000,
+      spec: "MW 2,000 Da (ACLT-PEG2000-ACLT)",
+      source: "JenKem Technology USA, PEG (Acrylate)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) diacrylate hydrogel","PEGDA photopolymerised network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The photocrosslinker behind most PEG hydrogels: two acrylates per chain, radical-cured in seconds, with the molar mass between them setting the mesh size and therefore the modulus and what can diffuse through it. The ester links are hydrolysable, so these gels degrade over weeks in buffer where the ether-linked ones do not."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"O"},{"id":14,"el":"C"},{"id":15,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":5,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":2},{"a":12,"b":14,"order":1},{"a":14,"b":15,"order":2}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,11]],"label":"n"}]
+    },
+    name: "PEG diacrylate, 3.5 kDa", aka: ["ACLT-PEG3500-ACLT","PEG diacrylate 3.5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","biomedical","crosslinker","acrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "acrylate", functionality: 2,
+      equivalentWeight: 1750, mn: 3500,
+      spec: "MW 3,500 Da (ACLT-PEG3500-ACLT)",
+      source: "JenKem Technology USA, PEG (Acrylate)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) diacrylate hydrogel","PEGDA photopolymerised network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The photocrosslinker behind most PEG hydrogels: two acrylates per chain, radical-cured in seconds, with the molar mass between them setting the mesh size and therefore the modulus and what can diffuse through it. The ester links are hydrolysable, so these gels degrade over weeks in buffer where the ether-linked ones do not."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"O"},{"id":14,"el":"C"},{"id":15,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":5,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":2},{"a":12,"b":14,"order":1},{"a":14,"b":15,"order":2}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,11]],"label":"n"}]
+    },
+    name: "PEG diacrylate, 5 kDa", aka: ["ACLT-PEG5000-ACLT","PEG diacrylate 5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","biomedical","crosslinker","acrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "acrylate", functionality: 2,
+      equivalentWeight: 2500, mn: 5000,
+      spec: "MW 5,000 Da (ACLT-PEG5000-ACLT)",
+      source: "JenKem Technology USA, PEG (Acrylate)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) diacrylate hydrogel","PEGDA photopolymerised network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The photocrosslinker behind most PEG hydrogels: two acrylates per chain, radical-cured in seconds, with the molar mass between them setting the mesh size and therefore the modulus and what can diffuse through it. The ester links are hydrolysable, so these gels degrade over weeks in buffer where the ether-linked ones do not."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"O"},{"id":14,"el":"C"},{"id":15,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":5,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":2},{"a":12,"b":14,"order":1},{"a":14,"b":15,"order":2}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,11]],"label":"n"}]
+    },
+    name: "PEG diacrylate, 7.5 kDa", aka: ["ACLT-PEG7500-ACLT","PEG diacrylate 7.5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","biomedical","crosslinker","acrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "acrylate", functionality: 2,
+      equivalentWeight: 3750, mn: 7500,
+      spec: "MW 7,500 Da (ACLT-PEG7500-ACLT)",
+      source: "JenKem Technology USA, PEG (Acrylate)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) diacrylate hydrogel","PEGDA photopolymerised network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The photocrosslinker behind most PEG hydrogels: two acrylates per chain, radical-cured in seconds, with the molar mass between them setting the mesh size and therefore the modulus and what can diffuse through it. The ester links are hydrolysable, so these gels degrade over weeks in buffer where the ether-linked ones do not."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"O"},{"id":14,"el":"C"},{"id":15,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":5,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":2},{"a":12,"b":14,"order":1},{"a":14,"b":15,"order":2}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,11]],"label":"n"}]
+    },
+    name: "PEG diacrylate, 35 kDa", aka: ["ACLT-PEG35000-ACLT","PEG diacrylate 35kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","biomedical","crosslinker","acrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "acrylate", functionality: 2,
+      equivalentWeight: 17500, mn: 35000,
+      spec: "MW 35,000 Da (ACLT-PEG35000-ACLT)",
+      source: "JenKem Technology USA, PEG (Acrylate)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) diacrylate hydrogel","PEGDA photopolymerised network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The photocrosslinker behind most PEG hydrogels: two acrylates per chain, radical-cured in seconds, with the molar mass between them setting the mesh size and therefore the modulus and what can diffuse through it. The ester links are hydrolysable, so these gels degrade over weeks in buffer where the ether-linked ones do not."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":13,"el":"C"},{"id":14,"el":"O"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":5,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":13,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":15,"b":17,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,12]],"label":"n"}]
+    },
+    name: "PEG dimethacrylate, 600 Da", aka: ["PEG600DMA","PEG dimethacrylate 600Da"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","crosslinker","biomedical","methacrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "methacrylate", functionality: 2,
+      equivalentWeight: 300, mn: 600,
+      spec: "MW 600 Da, linear bifunctional grade",
+      source: "Creative PEGWorks, Methacrylate-PEG-Methacrylate product listing (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) dimethacrylate","PEGDMA hydrogel network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The methacrylate analogue of PEG diacrylate. The alpha-methyl slows propagation, so cure needs more initiator or a longer exposure, but the resulting network is less prone to the oxygen inhibition that leaves acrylate gels tacky at the surface, and the ester is more hydrolytically stable."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":13,"el":"C"},{"id":14,"el":"O"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":5,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":13,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":15,"b":17,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,12]],"label":"n"}]
+    },
+    name: "PEG dimethacrylate, 1 kDa", aka: ["PEG1000DMA","PEG dimethacrylate 1kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","crosslinker","biomedical","methacrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "methacrylate", functionality: 2,
+      equivalentWeight: 500, mn: 1000,
+      spec: "MW 1,000 Da, linear bifunctional grade",
+      source: "Creative PEGWorks, Methacrylate-PEG-Methacrylate product listing (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) dimethacrylate","PEGDMA hydrogel network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The methacrylate analogue of PEG diacrylate. The alpha-methyl slows propagation, so cure needs more initiator or a longer exposure, but the resulting network is less prone to the oxygen inhibition that leaves acrylate gels tacky at the surface, and the ester is more hydrolytically stable."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":13,"el":"C"},{"id":14,"el":"O"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":5,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":13,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":15,"b":17,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,12]],"label":"n"}]
+    },
+    name: "PEG dimethacrylate, 2 kDa", aka: ["PEG2000DMA","PEG dimethacrylate 2kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","crosslinker","biomedical","methacrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "methacrylate", functionality: 2,
+      equivalentWeight: 1000, mn: 2000,
+      spec: "MW 2,000 Da, linear bifunctional grade",
+      source: "Creative PEGWorks, Methacrylate-PEG-Methacrylate product listing (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) dimethacrylate","PEGDMA hydrogel network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The methacrylate analogue of PEG diacrylate. The alpha-methyl slows propagation, so cure needs more initiator or a longer exposure, but the resulting network is less prone to the oxygen inhibition that leaves acrylate gels tacky at the surface, and the ester is more hydrolytically stable."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":13,"el":"C"},{"id":14,"el":"O"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":5,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":13,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":15,"b":17,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,12]],"label":"n"}]
+    },
+    name: "PEG dimethacrylate, 3.4 kDa", aka: ["PEG3400DMA","PEG dimethacrylate 3.4kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","crosslinker","biomedical","methacrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "methacrylate", functionality: 2,
+      equivalentWeight: 1700, mn: 3400,
+      spec: "MW 3,400 Da, linear bifunctional grade",
+      source: "Creative PEGWorks, Methacrylate-PEG-Methacrylate product listing (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) dimethacrylate","PEGDMA hydrogel network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The methacrylate analogue of PEG diacrylate. The alpha-methyl slows propagation, so cure needs more initiator or a longer exposure, but the resulting network is less prone to the oxygen inhibition that leaves acrylate gels tacky at the surface, and the ester is more hydrolytically stable."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":13,"el":"C"},{"id":14,"el":"O"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":5,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":13,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":15,"b":17,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,12]],"label":"n"}]
+    },
+    name: "PEG dimethacrylate, 8 kDa", aka: ["PEG8000DMA","PEG dimethacrylate 8kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","crosslinker","biomedical","methacrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "methacrylate", functionality: 2,
+      equivalentWeight: 4000, mn: 8000,
+      spec: "MW 8,000 Da, linear bifunctional grade",
+      source: "Creative PEGWorks, Methacrylate-PEG-Methacrylate product listing (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) dimethacrylate","PEGDMA hydrogel network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The methacrylate analogue of PEG diacrylate. The alpha-methyl slows propagation, so cure needs more initiator or a longer exposure, but the resulting network is less prone to the oxygen inhibition that leaves acrylate gels tacky at the surface, and the ester is more hydrolytically stable."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":13,"el":"C"},{"id":14,"el":"O"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":5,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":13,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":15,"b":17,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,12]],"label":"n"}]
+    },
+    name: "PEG dimethacrylate, 20 kDa", aka: ["PEG20000DMA","PEG dimethacrylate 20kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","crosslinker","biomedical","methacrylate","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "methacrylate", functionality: 2,
+      equivalentWeight: 10000, mn: 20000,
+      spec: "MW 20,000 Da, linear bifunctional grade",
+      source: "Creative PEGWorks, Methacrylate-PEG-Methacrylate product listing (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) dimethacrylate","PEGDMA hydrogel network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The methacrylate analogue of PEG diacrylate. The alpha-methyl slows propagation, so cure needs more initiator or a longer exposure, but the resulting network is less prone to the oxygen inhibition that leaves acrylate gels tacky at the surface, and the ester is more hydrolytically stable."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"O"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":3},{"a":5,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":3}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,10]],"label":"n"}]
+    },
+    name: "PEG dialkyne, 5 kDa", aka: ["ALKYNE-PEG5000-ALKYNE","PEG dialkyne 5kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "alkyne", functionality: 2,
+      equivalentWeight: 2500, mn: 5000,
+      spec: "MW 5,000 Da (ALKYNE-PEG5000-ALKYNE)",
+      source: "JenKem Technology USA, PEG (Alkyne)2 product specification (accessed 2026)"
+    },
+    queryTerms: ["alkyne-terminated poly(ethylene glycol)","PEG click chemistry azide alkyne"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "Half of a click pair, drawn here as the propargyl ether. The copper-catalysed cycloaddition it is made for is essentially quantitative and orthogonal to everything in a protein, but the copper it needs is what keeps this chemistry out of live cells - which is why the strained-alkyne reagents exist."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"N","charge":1},{"id":8,"el":"N","charge":-1},{"id":9,"el":"N"},{"id":10,"el":"N","charge":1},{"id":11,"el":"N","charge":-1}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":2},{"a":7,"b":8,"order":2},{"a":5,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":2}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,9]],"label":"n"}]
+    },
+    name: "PEG diazide, 3.4 kDa", aka: ["N3-PEG3400-N3","PEG diazide 3.4kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "azide", functionality: 2,
+      equivalentWeight: 1700, mn: 3400,
+      spec: "MW 3.4k (3,400 Da); PDI 1.02-1.05",
+      source: "Creative PEGWorks, Azide-PEG-Azide product specification (accessed 2026)"
+    },
+    queryTerms: ["azide-terminated poly(ethylene glycol)","PEG diazide click crosslinker"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The other half of the click pair, and the one that survives more: the azide is inert to almost everything in a biological buffer until it meets an alkyne. It is also the reason these are shipped and stored cold - organic azides decompose on heating, and a low-molar-mass one would be a genuine hazard."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"N","charge":1},{"id":8,"el":"N","charge":-1},{"id":9,"el":"N"},{"id":10,"el":"N","charge":1},{"id":11,"el":"N","charge":-1}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":2},{"a":7,"b":8,"order":2},{"a":5,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":2}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,9]],"label":"n"}]
+    },
+    name: "PEG diazide, 10 kDa", aka: ["N3-PEG10000-N3","PEG diazide 10kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","biomedical","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "azide", functionality: 2,
+      equivalentWeight: 5000, mn: 10000,
+      spec: "MW 10k (10,000 Da); PDI 1.02-1.05",
+      source: "Creative PEGWorks, Azide-PEG-Azide product specification (accessed 2026)"
+    },
+    queryTerms: ["azide-terminated poly(ethylene glycol)","PEG diazide click crosslinker"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "The other half of the click pair, and the one that survives more: the azide is inert to almost everything in a biological buffer until it meets an alkyne. It is also the reason these are shipped and stored cold - organic azides decompose on heating, and a low-molar-mass one would be a genuine hazard."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"N"},{"id":17,"el":"C"},{"id":18,"el":"O"},{"id":19,"el":"C"},{"id":20,"el":"C"},{"id":21,"el":"C"},{"id":22,"el":"C"},{"id":23,"el":"C"},{"id":24,"el":"C"},{"id":25,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":10,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":14,"b":9,"order":1},{"a":9,"b":15,"order":1},{"a":12,"b":15,"order":1},{"a":5,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":2},{"a":17,"b":20,"order":1},{"a":19,"b":20,"order":1},{"a":20,"b":21,"order":1},{"a":21,"b":22,"order":1},{"a":22,"b":23,"order":1},{"a":23,"b":24,"order":2},{"a":24,"b":19,"order":1},{"a":19,"b":25,"order":1},{"a":22,"b":25,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,16]],"label":"n"}]
+    },
+    name: "PEG dinorbornene, 3.4 kDa", aka: ["NB-PEG3400-NB","PEG dinorbornene 3.4kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","biomedical","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "norbornene", functionality: 2,
+      equivalentWeight: 1700, mn: 3400,
+      spec: "MW 3.4k (3,400 Da); norbornene joined through an amide bond",
+      source: "Creative PEGWorks, Norbornene-PEG-Norbornene product specification (accessed 2026)"
+    },
+    queryTerms: ["norbornene PEG thiol-ene hydrogel","PEG norbornene step-growth network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "A thiol-ene gel former that avoids the two failings of the acrylates: the strained alkene reacts by a step-growth radical addition rather than chain growth, so the network is far more uniform, and the amide link does not hydrolyse. It also needs a thiol partner to react at all, which means it will not homopolymerise in the vial."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"N"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"N"},{"id":17,"el":"C"},{"id":18,"el":"O"},{"id":19,"el":"C"},{"id":20,"el":"C"},{"id":21,"el":"C"},{"id":22,"el":"C"},{"id":23,"el":"C"},{"id":24,"el":"C"},{"id":25,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":10,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":14,"b":9,"order":1},{"a":9,"b":15,"order":1},{"a":12,"b":15,"order":1},{"a":5,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":2},{"a":17,"b":20,"order":1},{"a":19,"b":20,"order":1},{"a":20,"b":21,"order":1},{"a":21,"b":22,"order":1},{"a":22,"b":23,"order":1},{"a":23,"b":24,"order":2},{"a":24,"b":19,"order":1},{"a":19,"b":25,"order":1},{"a":22,"b":25,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,16]],"label":"n"}]
+    },
+    name: "PEG dinorbornene, 10 kDa", aka: ["NB-PEG10000-NB","PEG dinorbornene 10kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","hydrogel","biomedical","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "norbornene", functionality: 2,
+      equivalentWeight: 5000, mn: 10000,
+      spec: "MW 10k (10,000 Da); norbornene joined through an amide bond",
+      source: "Creative PEGWorks, Norbornene-PEG-Norbornene product specification (accessed 2026)"
+    },
+    queryTerms: ["norbornene PEG thiol-ene hydrogel","PEG norbornene step-growth network"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "A thiol-ene gel former that avoids the two failings of the acrylates: the strained alkene reacts by a step-growth radical addition rather than chain growth, so the network is far more uniform, and the amide link does not hydrolyse. It also needs a thiol partner to react at all, which means it will not homopolymerise in the vial."
+  },
+  {
+    depiction: {
+      atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"O"},{"id":15,"el":"C"}],
+      bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":1,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":8,"order":1},{"a":5,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":13,"order":1}],
+      repeats: [{"unit":[3,4,5],"cuts":[[2,3],[5,11]],"label":"n"}]
+    },
+    name: "PEG diglycidyl ether, 3.4 kDa", aka: ["PEG3400DGE","PEG diglycidyl ether 3.4kDa"],
+    monomer: "ethylene oxide on a difunctional initiator", cls: "Ring-opening", cas: null,
+    tags: ["telechelic","prepolymer","polyether","crosslinker","specialty"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
+    bonds: [{"a":"S0","b":1,"order":1},{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":"S1","order":1}],
+    telechelic: {
+      endGroup: "epoxy", functionality: 2,
+      equivalentWeight: 1700, mn: 3400,
+      spec: "MW 3.4k (3,400 Da); two glycidyl ether ends",
+      source: "Creative PEGWorks, Epoxide-PEG-Epoxide product specification (accessed 2026)"
+    },
+    queryTerms: ["poly(ethylene glycol) diglycidyl ether","PEGDGE crosslinker amine"],
+    noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
+    note: "Crosslinks amines and hydroxyls without a catalyst or a radical source, which is why it is used to gel proteins, polysaccharides and amine-functional surfaces where a photoinitiator would not be tolerated. The oxirane opens to a secondary alcohol, so the link it forms is a stable ether rather than an ester."
   }
 ];
 
