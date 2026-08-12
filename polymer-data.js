@@ -1549,7 +1549,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyacetylene", aka: ["PA", "poly(acetylene)", "polyethyne"],
-    monomer: "acetylene", cls: "Addition (vinyl)", cas: "25067-58-7",
+    monomer: "acetylene", cls: "Addition (alkyne)", cas: "25067-58-7",
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }],
@@ -1558,7 +1558,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polythiophene", aka: ["PT", "poly(thiophene)"],
-    monomer: "thiophene", cls: "Addition (vinyl)", cas: "25233-34-5",
+    monomer: "thiophene", cls: "Step-growth (coupling)", cas: "25233-34-5",
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: "S1", el: "*" }],
@@ -1567,7 +1567,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(3-hexylthiophene)", aka: ["P3HT", "poly(3-hexylthiophene-2,5-diyl)", "regioregular P3HT"],
-    monomer: "3-hexylthiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "3-hexylthiophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: "S1", el: "*" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }],
@@ -1576,7 +1576,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(3,4-ethylenedioxythiophene)", aka: ["PEDOT", "PEDOT:PSS (as the cation)", "poly(3,4-ethylenedioxythiophene)"],
-    monomer: "3,4-ethylenedioxythiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "3,4-ethylenedioxythiophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "S" }, { id: "S1", el: "*" }],
@@ -1585,7 +1585,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polypyrrole", aka: ["PPy", "poly(pyrrole)"],
-    monomer: "pyrrole", cls: "Addition (vinyl)", cas: null,
+    monomer: "pyrrole", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "biomedical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "N" }, { id: "S1", el: "*" }],
@@ -1594,7 +1594,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyaniline", aka: ["PANI", "emeraldine", "poly(aniline)", "aniline black"],
-    monomer: "aniline", cls: "Addition (vinyl)", cas: "25233-30-1",
+    monomer: "aniline", cls: "Step-growth (coupling)", cas: "25233-30-1",
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "N" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S1", el: "*" }],
@@ -1603,6 +1603,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(p-phenylene vinylene)", aka: ["PPV", "poly(1,4-phenylene vinylene)"],
+    noScheme: "made by eliminating from a precursor polymer (the Gilch or Wessling route) rather than by polymerising a monomer, so closing this repeat unit would invent a monomer that was never in the pot",
     monomer: "p-xylylene precursor (Gilch or Wessling route)", cls: "Addition (vinyl)", cas: "26009-24-5",
     tags: ["conductive", "optical", "specialty"],
     verified: false,
@@ -1612,7 +1613,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(p-phenylene)", aka: ["PPP", "poly(1,4-phenylene)"],
-    monomer: "benzene (oxidative) or dihalobenzene (coupling)", cls: "Addition (vinyl)", cas: null,
+    monomer: "benzene (oxidative) or dihalobenzene (coupling)", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "high-temperature", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S1", el: "*" }],
@@ -1621,7 +1622,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(9,9-dioctylfluorene)", aka: ["PFO", "polyfluorene", "F8"],
-    monomer: "9,9-dioctylfluorene", cls: "Addition (vinyl)", cas: null,
+    monomer: "9,9-dioctylfluorene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "C" }, { id: 27, el: "C" }, { id: 28, el: "C" }, { id: 29, el: "C" }, { id: 30, el: "C" }, { id: "S1", el: "*" }],
@@ -2145,6 +2146,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinyl formal)", aka: ["PVFM", "Formvar", "poly(vinyl formal)"],
+    noScheme: "made by treating poly(vinyl alcohol) with formaldehyde, so the acetal rings form on a finished chain - and PVA itself cannot be made from its own monomer either, which puts this two steps away from any real monomer",
     monomer: "poly(vinyl alcohol) + formaldehyde", cls: "Addition (vinyl)", cas: null,
     tags: ["specialty"],
     verified: false,
@@ -2154,6 +2156,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinyl butyral)", aka: ["PVB", "Butvar", "poly(vinyl butyral)"],
+    noScheme: "made by treating poly(vinyl alcohol) with butyraldehyde on a finished chain, and acetalisation never goes to completion, so the real material keeps unreacted hydroxyls this single repeat unit cannot show",
     monomer: "poly(vinyl alcohol) + butyraldehyde", cls: "Addition (vinyl)", cas: null,
     tags: ["specialty"],
     verified: false,
@@ -2587,6 +2590,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Parylene N", aka: ["poly(p-xylylene)", "parylene", "PPX"],
+    noScheme: "formed by vapour-phase polymerisation of the p-xylylene diradical cracked from [2.2]paracyclophane, so the species that polymerises is a transient diradical rather than the cyclophane the drawing would close to",
     monomer: "[2.2]paracyclophane (vapour-phase pyrolysis)", cls: "Addition (vinyl)", cas: null,
     tags: ["engineering", "specialty"],
     verified: false,
@@ -2596,6 +2600,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Parylene C", aka: ["poly(chloro-p-xylylene)", "parylene C coating"],
+    noScheme: "the same vapour-phase diradical route as Parylene N, from dichloro[2.2]paracyclophane, so closing this repeat unit names a cyclophane rather than the diradical that actually polymerises",
     monomer: "dichloro[2.2]paracyclophane", cls: "Addition (vinyl)", cas: null,
     tags: ["engineering", "specialty"],
     verified: false,
@@ -2786,7 +2791,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(phenylene ethynylene)", aka: ["PPE", "poly(p-phenylene ethynylene)"],
-    monomer: "diethynylbenzene + diiodobenzene (Sonogashira)", cls: "Addition (vinyl)", cas: null,
+    monomer: "diethynylbenzene + diiodobenzene (Sonogashira)", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S1", el: "*" }],
@@ -2795,7 +2800,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(3-octylthiophene)", aka: ["P3OT", "poly(3-octylthiophene-2,5-diyl)"],
-    monomer: "3-octylthiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "3-octylthiophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: "S1", el: "*" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }],
@@ -2804,6 +2809,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2-methoxy-5-(2-ethylhexyloxy)-p-phenylene vinylene)", aka: ["MEH-PPV", "MEH PPV"],
+    noScheme: "the same precursor-polymer elimination route as unsubstituted PPV - a substituted p-xylylene precursor is polymerised and then eliminated, so no monomer closes to this repeat unit",
     monomer: "substituted p-xylylene precursor", cls: "Addition (vinyl)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
@@ -2813,7 +2819,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(triarylamine)", aka: ["PTAA", "polytriarylamine", "poly(triaryl amine)"],
-    monomer: "substituted triarylamine", cls: "Addition (vinyl)", cas: null,
+    monomer: "substituted triarylamine", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: "S1", el: "*" }],
@@ -2822,7 +2828,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2,7-carbazole)", aka: ["polycarbazole", "poly(N-alkyl-2,7-carbazole)", "PCz"],
-    monomer: "N-alkyl-2,7-dibromocarbazole", cls: "Addition (vinyl)", cas: null,
+    monomer: "N-alkyl-2,7-dibromocarbazole", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "N" }, { id: 15, el: "C" }, { id: "S1", el: "*" }],
@@ -2831,7 +2837,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyfuran", aka: ["PFu", "poly(furan)"],
-    monomer: "furan", cls: "Addition (vinyl)", cas: null,
+    monomer: "furan", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "biobased", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: "S1", el: "*" }],
@@ -3918,7 +3924,7 @@ window.POLYMER_DB = [
 ,
   {
     name: "Poly(3-methylthiophene)", aka: ["P3MT", "poly(3-methylthiophene)"],
-    monomer: "3-methylthiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "3-methylthiophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: "S1", el: "*" }, { id: 8, el: "C" }],
@@ -3927,7 +3933,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(3-butylthiophene)", aka: ["P3BT", "poly(3-butylthiophene)"],
-    monomer: "3-butylthiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "3-butylthiophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: "S1", el: "*" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }],
@@ -3936,7 +3942,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(3-dodecylthiophene)", aka: ["P3DDT", "poly(3-dodecylthiophene)"],
-    monomer: "3-dodecylthiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "3-dodecylthiophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: "S1", el: "*" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }],
@@ -3945,7 +3951,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(3,4-propylenedioxythiophene)", aka: ["ProDOT", "PProDOT", "poly(3,4-propylenedioxythiophene)"],
-    monomer: "3,4-propylenedioxythiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "3,4-propylenedioxythiophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "S" }, { id: "S1", el: "*" }],
@@ -3954,7 +3960,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyselenophene", aka: ["PSe", "poly(selenophene)"],
-    monomer: "selenophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "selenophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "Se" }, { id: "S1", el: "*" }],
@@ -3963,7 +3969,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(9,9-dihexylfluorene)", aka: ["PDHF", "poly(9,9-dihexylfluorene)", "F6"],
-    monomer: "9,9-dihexylfluorene", cls: "Addition (vinyl)", cas: null,
+    monomer: "9,9-dihexylfluorene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "C" }, { id: "S1", el: "*" }],
@@ -3972,6 +3978,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2,5-dialkoxy-p-phenylene vinylene)", aka: ["OC1C10-PPV", "dialkoxy PPV", "DO-PPV"],
+    noScheme: "made by eliminating from a dialkoxy p-xylylene precursor polymer, not by polymerising a monomer, so a derived monomer would misstate the route",
     monomer: "2,5-dialkoxy-p-xylylene precursor", cls: "Addition (vinyl)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
@@ -4408,7 +4415,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(phenylacetylene)", aka: ["PPA (acetylene)", "poly(phenylacetylene)"],
-    monomer: "phenylacetylene", cls: "Addition (vinyl)", cas: null,
+    monomer: "phenylacetylene", cls: "Addition (alkyne)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }],
@@ -4417,7 +4424,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(diphenylacetylene)", aka: ["PDPA", "poly(diphenylacetylene)"],
-    monomer: "diphenylacetylene", cls: "Addition (vinyl)", cas: null,
+    monomer: "diphenylacetylene", cls: "Addition (alkyne)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S1", el: "*" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }],
@@ -4435,7 +4442,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(3,4-ethylenedioxypyrrole)", aka: ["PEDOP", "poly(3,4-ethylenedioxypyrrole)"],
-    monomer: "3,4-ethylenedioxypyrrole", cls: "Addition (vinyl)", cas: null,
+    monomer: "3,4-ethylenedioxypyrrole", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "N" }, { id: "S1", el: "*" }],
@@ -4869,7 +4876,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(3-hexylselenophene)", aka: ["P3HS", "poly(3-hexylselenophene)"],
-    monomer: "3-hexylselenophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "3-hexylselenophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "Se" }, { id: "S1", el: "*" }],
@@ -5310,7 +5317,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(thiophene-3-acetic acid)", aka: ["P3TAA", "poly(3-thiopheneacetic acid)"],
-    monomer: "thiophene-3-acetic acid", cls: "Addition (vinyl)", cas: null,
+    monomer: "thiophene-3-acetic acid", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "water-soluble", "polyelectrolyte", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "S" }, { id: "S1", el: "*" }],
@@ -5374,7 +5381,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(triptycene)", aka: ["triptycene polymer", "poly(triptycene)", "iptycene polymer"],
-    monomer: "triptycene", cls: "Addition (vinyl)", cas: null,
+    monomer: "triptycene", cls: "Step-growth (coupling)", cas: null,
     tags: ["specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }],
@@ -5383,7 +5390,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(spirobifluorene)", aka: ["PSBF", "poly(9,9'-spirobifluorene)", "spiro polymer"],
-    monomer: "9,9'-spirobifluorene", cls: "Addition (vinyl)", cas: null,
+    monomer: "9,9'-spirobifluorene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "high-temperature", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: "S1", el: "*" }, { id: 26, el: "C" }, { id: 27, el: "C" }],
@@ -5401,7 +5408,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(cyclopentadithiophene)", aka: ["PCPDT", "poly(cyclopentadithiophene)", "CPDT polymer"],
-    monomer: "4,4-dihexylcyclopentadithiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "4,4-dihexylcyclopentadithiophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "S" }, { id: "S1", el: "*" }],
@@ -5410,7 +5417,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(dithienosilole)", aka: ["PDTS", "poly(dithienosilole)", "silole polymer"],
-    monomer: "dithienosilole", cls: "Addition (vinyl)", cas: null,
+    monomer: "dithienosilole", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "Si" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "S" }, { id: "S1", el: "*" }],
@@ -5419,7 +5426,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(benzodithiophene)", aka: ["PBDT", "poly(benzodithiophene)", "BDT polymer"],
-    monomer: "benzo[1,2-b:4,5-b']dithiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "benzo[1,2-b:4,5-b']dithiophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "S" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S1", el: "*" }],
@@ -5437,7 +5444,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(diketopyrrolopyrrole)", aka: ["PDPP", "poly(diketopyrrolopyrrole)", "DPP polymer"],
-    monomer: "thienyl diketopyrrolopyrrole", cls: "Addition (vinyl)", cas: null,
+    monomer: "thienyl diketopyrrolopyrrole", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "N" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "O" }, { id: 17, el: "N" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "S" }, { id: "S1", el: "*" }],
@@ -5455,7 +5462,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(benzothiadiazole-alt-thiophene)", aka: ["PTBT", "poly(benzothiadiazole-alt-thiophene)", "BT polymer"],
-    monomer: "benzothiadiazole + thiophene", cls: "Addition (vinyl)", cas: null,
+    monomer: "benzothiadiazole + thiophene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "S" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "N" }, { id: 12, el: "N" }, { id: 13, el: "S" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }],
@@ -5464,7 +5471,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(phenylene ethynylene vinylene)", aka: ["PPEV", "poly(phenylene ethynylene-alt-vinylene)"],
-    monomer: "diethynylbenzene + divinylbenzene route", cls: "Addition (vinyl)", cas: null,
+    monomer: "diethynylbenzene + divinylbenzene route", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: "S1", el: "*" }],
@@ -5473,7 +5480,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(anthracene)", aka: ["PAnt", "poly(9,10-anthracenylene)", "polyanthracene"],
-    monomer: "anthracene", cls: "Addition (vinyl)", cas: null,
+    monomer: "anthracene", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }],
@@ -5482,7 +5489,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(thiazole)", aka: ["PTz", "poly(thiazole)", "polythiazole"],
-    monomer: "thiazole", cls: "Addition (vinyl)", cas: null,
+    monomer: "thiazole", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "high-temperature", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "S" }, { id: 5, el: "C" }, { id: 6, el: "N" }, { id: "S1", el: "*" }],

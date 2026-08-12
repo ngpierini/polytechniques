@@ -698,6 +698,46 @@
   }
   function monomerLactam(atoms, bonds) { return monomerRingOpen(atoms, bonds, 5); }
 
+  // Coupling: the monomer is the repeat unit with its two chain ends capped.
+  // Oxidative and cross-coupling polymerisations join ring to ring, losing two
+  // hydrogens (FeCl3, oxidative) or two halides (Suzuki, Stille, Yamamoto), so
+  // reversing one is simply removing the two attachment points - the implicit
+  // hydrogen returns on its own. Thiophene-2,5-diyl becomes thiophene.
+  //
+  // No reaction centre is reported. For a vinyl polymer the centre is the bond
+  // that was the alkene; here the two attachment atoms are not bonded to each
+  // other at all, so there is no bond to highlight and claiming one would point
+  // at the wrong place.
+  function monomerCoupling(atoms, bonds) {
+    var info = starAttachments(atoms, bonds);
+    if (!info) return null;
+    var m = coreOf(atoms, bonds);
+    if (!m || !m.atoms.length) return null;
+    return { atoms: m.atoms, bonds: m.bonds };
+  }
+
+  // Alkyne addition is the vinyl rule one bond order up: the repeat unit's
+  // backbone C=C was a C#C in the monomer, just as a vinyl unit's C-C was a
+  // C=C. Polyacetylene is -CH=CH- and comes from HC#CH.
+  function monomerAlkyne(atoms, bonds) {
+    var info = starAttachments(atoms, bonds);
+    if (!info) return null;
+    var byId = {};
+    atoms.forEach(function (a) { byId[a.id] = a; });
+    var p = info.attach[0], q = info.attach[1];
+    if (!byId[p.at] || !byId[q.at] || byId[p.at].el !== "C" || byId[q.at].el !== "C") return null;
+    var link = findBond(bonds, p.at, q.at);
+    if (!link || link.order !== 2) return null;
+    if (inSameRing(atoms, bonds, link)) return null;
+    var m = coreOf(atoms, bonds);
+    if (!m) return null;
+    var lb = findBond(m.bonds, p.at, q.at);
+    if (!lb) return null;
+    lb.order = 3;
+    lb.stereo = undefined;
+    return { atoms: m.atoms, bonds: m.bonds, centre: [[p.at, q.at]] };
+  }
+
   var MONOMER_RULES = {
     "Addition (vinyl)": { back: monomerVinyl, kind: "vinyl" },
     "Addition (acrylate)": { back: monomerVinyl, kind: "vinyl" },
@@ -705,10 +745,29 @@
     "Addition (diene)": { back: monomerDiene, kind: "diene" },
     "Ring-opening": { back: monomerRingOpen, kind: "ring" },
     "Ring-opening (polyamide)": { back: monomerLactam, kind: "ring" },
-    "Ring-opening (silicone)": { back: monomerRingOpen, kind: "ring" }
+    "Ring-opening (silicone)": { back: monomerRingOpen, kind: "ring" },
+    "Step-growth (coupling)": { back: monomerCoupling, kind: "coupling" },
+    "Addition (alkyne)": { back: monomerAlkyne, kind: "alkyne" }
   };
 
   // Forward transforms, used only to verify the reverse.
+  function forwardAlkyne(m, info) {
+    var p = info.attach[0], q = info.attach[1];
+    var out = { atoms: m.atoms.slice(), bonds: m.bonds.map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo }; }) };
+    var lb = findBond(out.bonds, p.at, q.at);
+    if (!lb || lb.order !== 3) return null;
+    lb.order = 2;
+    out.atoms = out.atoms.concat([{ id: "__m0", el: "*" }, { id: "__m1", el: "*" }]);
+    out.bonds.push({ a: "__m0", b: p.at, order: p.order }, { a: q.at, b: "__m1", order: q.order });
+    return out;
+  }
+  function forwardCoupling(m, info) {
+    var p = info.attach[0], q = info.attach[1];
+    var out = { atoms: m.atoms.slice(), bonds: m.bonds.map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo }; }) };
+    out.atoms = out.atoms.concat([{ id: "__m0", el: "*" }, { id: "__m1", el: "*" }]);
+    out.bonds.push({ a: "__m0", b: p.at, order: p.order }, { a: q.at, b: "__m1", order: q.order });
+    return out;
+  }
   function forwardVinyl(m, info) {
     var p = info.attach[0], q = info.attach[1];
     var out = { atoms: m.atoms.slice(), bonds: m.bonds.map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo }; }) };
@@ -744,7 +803,7 @@
     out.bonds.push({ a: "__m0", b: p.at, order: p.order }, { a: q.at, b: "__m1", order: q.order });
     return out;
   }
-  var MONOMER_FORWARD = { vinyl: forwardVinyl, diene: forwardDiene, ring: forwardRingOpen };
+  var MONOMER_FORWARD = { vinyl: forwardVinyl, diene: forwardDiene, ring: forwardRingOpen, coupling: forwardCoupling, alkyne: forwardAlkyne };
 
   // Returns { atoms, bonds, kind } for the monomer, or null when the class has
   // no defined reverse, the pattern does not match, or the round trip fails.

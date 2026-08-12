@@ -104,7 +104,12 @@ const MAX_VALENCE = require("../polymer-graph.js").MAX_VALENCE;
 const VALID_CLASSES = new Set([
   "Addition (vinyl)", "Addition (acrylate)", "Addition (methacrylate)",
   "Addition (diene)", "Ring-opening", "Ring-opening (silicone)",
-  "Ring-opening (polyamide)", "Step-growth (polyamide)", "Step-growth (polyester)"
+  "Ring-opening (polyamide)", "Step-growth (polyamide)", "Step-growth (polyester)",
+  // Conjugated polymers are joined ring-to-ring by oxidative or cross-coupling
+  // polymerisation, not by adding across a vinyl double bond; alkynes add across
+  // a triple bond and are a genuine chain-growth addition. Both were previously
+  // filed as "Addition (vinyl)", which told a reader the wrong chemistry.
+  "Step-growth (coupling)", "Addition (alkyne)"
 ]);
 
 // --- CAS sanity -----------------------------------------------------------
