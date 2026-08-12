@@ -7611,6 +7611,429 @@ window.POLYMER_DB = [
     verified: false,
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 5, order: 1 }, { a: 2, b: 11, order: 1 }]
+  },
+
+  // ---- silicone expansion: the substituted siloxanes, from the dialkyl
+  // series through the functional fluids that carry a group on a propyl tether ----
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C3H8OSi, repeat mass 88.2.
+    name: "Poly(methylethylsiloxane)", aka: [], monomer: "methylethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","elastomer","specialty"],
+    note: "One methylene beyond PDMS. The asymmetric substitution frustrates the crystallisation that gives PDMS its -40 C melting transition, so this stays amorphous to lower temperatures.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H10OSi, repeat mass 102.2.
+    name: "Poly(methylpropylsiloxane)", aka: [], monomer: "methylpropylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","elastomer","specialty"],
+    note: "A siloxane fluid whose propyl group raises compatibility with hydrocarbon oils while keeping the low-temperature flexibility of the Si-O backbone.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C5H12OSi, repeat mass 116.2.
+    name: "Poly(methylbutylsiloxane)", aka: [], monomer: "methylbutylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "Alkyl-modified silicone fluid. Each added carbon raises the solubility parameter towards that of a hydrocarbon and lowers the surface activity that pure PDMS is used for.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C7H16OSi, repeat mass 144.3.
+    name: "Poly(methylhexylsiloxane)", aka: [], monomer: "methylhexylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "The hexyl substituent makes this miscible with mineral oil, which is why alkylmethyl siloxanes of this length are used as antifoams in systems where PDMS itself would be rejected.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C13H28OSi, repeat mass 228.5.
+    name: "Poly(methyldodecylsiloxane)", aka: [], monomer: "methyldodecylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A comb silicone. The C12 side chains associate with each other and with hydrocarbon waxes, which is the property used in personal-care emollients and in wax-crystal modification.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C19H40OSi, repeat mass 312.6.
+    name: "Poly(methyloctadecylsiloxane)", aka: ["poly(stearylmethylsiloxane)"], monomer: "methyloctadecylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "The C18 alkyl silicone. The side chains crystallise well above room temperature, so this is a waxy solid rather than a fluid despite a backbone that is among the most flexible known.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H14OSi, repeat mass 130.3.
+    name: "Poly(dipropylsiloxane)", aka: [], monomer: "hexapropylcyclotrisiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "Symmetrically substituted like PDMS but with three-carbon groups, which is enough to shift the mesophase behaviour that the dialkylsiloxanes are studied for.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 3, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H18OSi, repeat mass 158.3.
+    name: "Poly(dibutylsiloxane)", aka: [], monomer: "octabutylcyclotetrasiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A symmetric dialkylsiloxane. Members of this series from dipropyl upwards form columnar mesophases between their glass transition and melting point - liquid crystallinity from side chains alone.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 3, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C12H26OSi, repeat mass 214.4.
+    name: "Poly(dihexylsiloxane)", aka: [], monomer: "hexahexylcyclotrisiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","liquid crystalline","specialty"],
+    note: "One of the dialkylsiloxane mesophase formers; the hexyl chains pack into a two-dimensional lattice while the backbone stays disordered.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 3, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C16H34OSi, repeat mass 270.5.
+    name: "Poly(dioctylsiloxane)", aka: [], monomer: "octyl cyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","liquid crystalline","specialty"],
+    note: "The longer symmetric dialkylsiloxane, where side-chain crystallisation begins to override the mesophase.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 3, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H11NOSi, repeat mass 117.2.
+    name: "Poly(aminopropylmethylsiloxane)", aka: ["poly(3-aminopropylmethylsiloxane)"], monomer: "aminopropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","coating","specialty"],
+    note: "The amine-functional silicone fluid. Pendant primary amines give it substantivity to hair, textiles and cellulose - the chemistry behind almost every silicone fabric and hair conditioner - and a site for cure with epoxies and isocyanates.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H16N2OSi, repeat mass 160.3.
+    name: "Poly(N-(2-aminoethyl)aminopropylmethylsiloxane)", aka: [], monomer: "aminoethylaminopropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","coating","specialty"],
+    note: "The diamine-functional fluid. The secondary amine next to a primary one chelates and adsorbs far more strongly than a plain aminopropyl group, at the cost of yellowing on heat ageing.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "N" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H10OSSi, repeat mass 134.3.
+    name: "Poly(mercaptopropylmethylsiloxane)", aka: [], monomer: "mercaptopropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A thiol-functional silicone. The pendant SH adds across vinyl groups under UV in a thiol-ene cure and binds gold and other soft metals, which puts it in both adhesives and particle surface chemistry.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "S" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C7H14O3Si, repeat mass 174.3.
+    name: "Poly(glycidoxypropylmethylsiloxane)", aka: [], monomer: "glycidoxypropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","coating","specialty"],
+    note: "An epoxy-functional silicone fluid, cured cationically or with amines. Used to toughen epoxy resins, where the silicone phase-separates into rubbery domains that arrest cracks.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 10, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H14O3Si, repeat mass 186.3.
+    name: "Poly(methacryloxypropylmethylsiloxane)", aka: [], monomer: "methacryloxypropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","coating","specialty"],
+    note: "A UV-curable silicone: the pendant methacrylate polymerises by free radicals while the siloxane backbone supplies the release and flexibility. The basis of radiation-cured release liners.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 11, b: 13, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C7H12O3Si, repeat mass 172.3.
+    name: "Poly(acryloxypropylmethylsiloxane)", aka: [], monomer: "acryloxypropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","coating","specialty"],
+    note: "The acrylate analogue, appreciably faster under UV than the methacrylate and correspondingly more prone to premature gelation in storage.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H9ClOSi, repeat mass 136.7.
+    name: "Poly(chloropropylmethylsiloxane)", aka: [], monomer: "chloropropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A precursor fluid rather than an end product: the pendant chloride is displaced by amines, azide or thiolate to reach functional silicones that cannot survive the polymerisation directly.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "Cl" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H10O2Si, repeat mass 118.2.
+    name: "Poly(hydroxypropylmethylsiloxane)", aka: ["poly(carbinol-functional methylsiloxane)"], monomer: "hydroxypropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A carbinol-functional silicone. The pendant primary hydroxyls react with isocyanates, which is how silicone segments are built into polyurethane coatings and foams.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C5H10O3Si, repeat mass 146.2.
+    name: "Poly(carboxypropylmethylsiloxane)", aka: [], monomer: "carboxypropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","polyelectrolyte","specialty"],
+    note: "A carboxy-functional silicone fluid, used where an anionic or salt-forming group is needed on an otherwise strongly hydrophobic chain.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 8, b: 10, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C9H12OSi, repeat mass 164.3.
+    name: "Poly(phenethylmethylsiloxane)", aka: [], monomer: "phenethylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","optical","specialty"],
+    note: "The two-carbon spacer keeps the phenyl ring off silicon, so this raises the refractive index like poly(methylphenylsiloxane) without the same loss of chain flexibility.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C7H7F9OSi, repeat mass 306.2.
+    name: "Poly(nonafluorohexylmethylsiloxane)", aka: [], monomer: "nonafluorohexylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","fluoropolymer","specialty"],
+    note: "A longer-tail fluorosilicone than the trifluoropropyl standard. More fluorine means better fuel and solvent resistance, but the tails crystallise and the fluid stiffens.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "F" }, { id: 9, el: "F" }, { id: 10, el: "C" }, { id: 11, el: "F" }, { id: 12, el: "F" }, { id: 13, el: "C" }, { id: 14, el: "F" }, { id: 15, el: "F" }, { id: 16, el: "C" }, { id: 17, el: "F" }, { id: 18, el: "F" }, { id: 19, el: "F" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 7, b: 9, order: 1 }, { a: 7, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 10, b: 12, order: 1 }, { a: 10, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 13, b: 15, order: 1 }, { a: 13, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 16, b: 18, order: 1 }, { a: 16, b: 19, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H8OSi, repeat mass 148.2.
+    name: "Poly(phenylvinylsiloxane)", aka: [], monomer: "phenylvinylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","optical","specialty"],
+    note: "Carries both the refractive-index-raising phenyl and the vinyl group that hydrosilylation cure needs, so it appears as the resin component of high-index LED encapsulants.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 4, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H6OSi, repeat mass 122.2.
+    name: "Poly(phenylhydrosiloxane)", aka: ["poly(phenyl-H-siloxane)"], monomer: "phenylhydrocyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","high-temperature","specialty"],
+    note: "A hydride-functional aryl siloxane used as the crosslinker in high-refractive-index addition-cure silicones, where a methylhydrosiloxane would drag the index back down.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 4, b: 5, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 4, order: 1 }, { a: 3, b: 4, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H6OSi, repeat mass 98.2.
+    name: "Poly(divinylsiloxane)", aka: [], monomer: "tetravinylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","crosslinker","specialty"],
+    note: "Two vinyl groups per silicon makes every repeat unit a crosslink site, so this is a curing resin rather than a fluid.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 3, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C3H8O2Si, repeat mass 104.2.
+    name: "Poly(methylethoxysiloxane)", aka: [], monomer: "methyltriethoxysilane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","coating","specialty"],
+    note: "An alkoxy-functional siloxane that keeps condensing on exposure to moisture. Used as a masonry water repellent and as a silica precursor, where the ethoxy groups hydrolyse in place.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H8OSi, repeat mass 100.2.
+    name: "Poly(methylallylsiloxane)", aka: [], monomer: "methylallylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","crosslinker","specialty"],
+    note: "The allyl group is one carbon further from silicon than a vinyl, which makes it react more slowly in hydrosilylation but leaves the resulting Si-C link less strained.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C12H24OSi, repeat mass 212.4.
+    name: "Poly(methylundecenylsiloxane)", aka: [], monomer: "methylundecenylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A long tether ending in a terminal alkene. The distance between silicon and the reactive end lets a graft be attached without the siloxane backbone crowding it - the usual way silicones are grafted onto surfaces and particles.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H7NOSi, repeat mass 113.2.
+    name: "Poly(cyanoethylmethylsiloxane)", aka: [], monomer: "cyanoethylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A shorter-tether relative of the cyanopropyl fluid. The nitrile raises the dielectric constant sharply, which is what these polar silicones are used for.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 3 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H9N3OSi, repeat mass 143.2.
+    name: "Poly(azidopropylmethylsiloxane)", aka: [], monomer: "azidopropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A clickable silicone. The pendant azide survives the cationic ring-opening used to make it and then couples to alkynes, which is how silicones are joined to blocks that will not tolerate hydrosilylation catalysts.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "N", charge: 1 }, { id: 10, el: "N", charge: -1 }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H14OSi, repeat mass 178.3.
+    name: "Poly(methyl(2-phenylpropyl)siloxane)", aka: [], monomer: "methyl(2-phenylpropyl)cyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","optical","specialty"],
+    note: "A branched aralkyl silicone fluid sold as a high-refractive-index, non-volatile alternative to poly(methylphenylsiloxane) for optical couplants.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 8, order: 1 }, { a: 6, b: 8, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H10OSi, repeat mass 150.3.
+    name: "Poly(methylbenzylsiloxane)", aka: [], monomer: "methylbenzylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","optical","specialty"],
+    note: "The benzyl group raises the refractive index while the methylene spacer keeps the ring from conjugating with silicon, so the fluid stays colourless on heat ageing better than the phenyl siloxanes.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 6, order: 1 }, { a: 5, b: 6, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C15H32OSi, repeat mass 256.5.
+    name: "Poly(methyltetradecylsiloxane)", aka: [], monomer: "methyltetradecylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A comb silicone between the dodecyl and octadecyl grades, at the point where the side chains first crystallise near room temperature.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C20H42OSi, repeat mass 326.6.
+    name: "Poly(didecylsiloxane)", aka: [], monomer: "decyl cyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "The C10 symmetric dialkylsiloxane, at the upper end of the series that still forms a mesophase rather than an ordinary side-chain crystal.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 3, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C5H12OSi, repeat mass 116.2.
+    name: "Poly(methylisobutylsiloxane)", aka: [], monomer: "methylisobutylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "Branching the alkyl group keeps the chains from packing, so this stays a fluid where the linear butyl analogue begins to order.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 6, b: 8, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C5H12O2Si, repeat mass 132.2.
+    name: "Poly(methyl(3-methoxypropyl)siloxane)", aka: [], monomer: "methoxypropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "An ether-functional silicone. One oxygen in the tether is enough to make the fluid wet polar substrates that PDMS beads up on.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C7H14OSi, repeat mass 142.3.
+    name: "Poly(methylcyclohexylsiloxane)", aka: [], monomer: "methylcyclohexylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A cycloaliphatic silicone. The ring stiffens the chain like a phenyl group without the UV absorbance, which matters in optical silicones exposed to short wavelengths.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 5, order: 1 }, { a: 3, b: 5, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C12H22OSi, repeat mass 210.4.
+    name: "Poly(dicyclohexylsiloxane)", aka: [], monomer: "dicyclohexylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","high-temperature","specialty"],
+    note: "Two rings on every silicon give one of the highest glass transitions in the siloxane family - the backbone is still Si-O, but almost none of its flexibility survives.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 4, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 10, order: 1 }, { a: 3, b: 10, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H8OSi, repeat mass 100.2.
+    name: "Poly(ethylvinylsiloxane)", aka: [], monomer: "ethylvinylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","crosslinker","specialty"],
+    note: "A vinyl-functional fluid with an ethyl rather than a methyl co-substituent, used where the cured network has to stay soluble in hydrocarbons.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 3, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H10OSi, repeat mass 150.3.
+    name: "Poly(methyl(4-methylphenyl)siloxane)", aka: ["poly(methyl-p-tolylsiloxane)"], monomer: "methyltolylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","optical","specialty"],
+    note: "A methylated aryl siloxane; the extra methyl lowers the melting point of the fluid relative to poly(methylphenylsiloxane) while keeping most of the refractive index gain.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 5, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 8, b: 11, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H15NOSi, repeat mass 145.3.
+    name: "Poly(methyl(3-(dimethylamino)propyl)siloxane)", aka: [], monomer: "dimethylaminopropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","polyelectrolyte","specialty"],
+    note: "A tertiary-amine silicone. Unlike the primary aminopropyl fluid it cannot condense with itself on ageing, and it is quaternised after polymerisation to give cationic silicone surfactants.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C9H12O2Si, repeat mass 180.3.
+    name: "Poly(methyl(2-(4-hydroxyphenyl)ethyl)siloxane)", aka: [], monomer: "hydroxyphenethylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A phenol-functional silicone, used to build silicone segments into epoxy and phenolic networks through the hydroxyl rather than through a silicon-bound group.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 10, b: 13, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C5H9NO2Si, repeat mass 143.2.
+    name: "Poly(methyl(3-isocyanatopropyl)siloxane)", aka: [], monomer: "isocyanatopropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "An isocyanate-functional silicone that reacts directly with polyols and amines. It has to be kept dry: water converts the pendant NCO to an amine and then to a urea crosslink.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 2 }]
   }
 ];
 
