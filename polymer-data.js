@@ -8604,6 +8604,687 @@ window.POLYMER_DB = [
     queryTerms: ["poly(ethylene glycol) diglycidyl ether","PEGDGE crosslinker amine"],
     noScheme: "the chain is ethylene oxide grown on a difunctional initiator, but both end groups are put on by derivatising the PEG diol afterwards - closing this repeat unit would name ethylene oxide and imply the end groups came straight out of the oxirane",
     note: "Crosslinks amines and hydroxyls without a catalyst or a radical source, which is why it is used to gel proteins, polysaccharides and amine-functional surfaces where a photoinitiator would not be tolerated. The oxirane opens to a secondary alcohol, so the link it forms is a stable ether rather than an ester."
+  },
+
+  // ---- acrylics, second pass: aryl ethers, acid-labile and silyl-protected
+  // esters, isocyanate and inimer monomers, the quaternary ammonium salts,
+  // and the amide ring systems ----
+  {
+    // Structure built from the shared acrylic backbone template; formula C12H14O3, repeat mass 206.2.
+    name: "Poly(2-phenoxyethyl methacrylate)", aka: ["poly(PhOEMA)"], monomer: "2-phenoxyethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","coating","specialty"],
+    note: "An aromatic ether ester with a high refractive index and good adhesion to polar substrates. The ether oxygen between the ring and the backbone gives it far more chain mobility than poly(phenyl methacrylate) at a similar aromatic content.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 15, b: 10, order: 1 }, { a: 9, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H12O3, repeat mass 192.2.
+    name: "Poly(2-phenoxyethyl acrylate)", aka: ["PPEA"], monomer: "2-phenoxyethyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","optical","coating","specialty"],
+    note: "A high-refractive-index reactive diluent for UV-curable coatings and optical adhesives, where its low viscosity and slow evaporation are as useful as the aromatic ring.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 9, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H10O3, repeat mass 178.2.
+    name: "Poly(4-hydroxyphenyl methacrylate)", aka: [], monomer: "4-hydroxyphenyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "A phenol-bearing methacrylate. The hydroxyl is both a hydrogen-bond donor and a site for post-polymerisation esterification, and it makes the polymer soluble in aqueous base.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 10, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H9FO2, repeat mass 180.2.
+    name: "Poly(4-fluorophenyl methacrylate)", aka: [], monomer: "4-fluorophenyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","fluoropolymer","specialty"],
+    note: "A singly fluorinated aryl ester. One fluorine is enough to make the ring an activated leaving group towards strong nucleophiles while leaving the polymer far less costly than the pentafluorophenyl version.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 10, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C12H14O2, repeat mass 190.2.
+    name: "Poly(2,6-dimethylphenyl methacrylate)", aka: [], monomer: "2,6-dimethylphenyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "Both ortho positions are blocked, so the ring is held nearly perpendicular to the ester. That fixed twist gives one of the highest glass transitions among the alkyl-substituted aryl methacrylates.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 8, b: 13, order: 1 }, { a: 12, b: 14, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C14H18O2, repeat mass 218.3.
+    name: "Poly(2-tert-butylphenyl methacrylate)", aka: [], monomer: "2-tert-butylphenyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "A bulky ortho substituent that hinders ester rotation and slows the hydrolysis that limits the aryl methacrylates, at the cost of a much lower propagation rate.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 8, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 13, b: 15, order: 1 }, { a: 13, b: 16, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H7F5O2, repeat mass 266.2.
+    name: "Poly(pentafluorobenzyl methacrylate)", aka: [], monomer: "pentafluorobenzyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","fluoropolymer","optical","specialty"],
+    note: "The methylene spacer makes this a stable ester rather than the activated one that pentafluorophenyl methacrylate is, so the fluorinated ring stays on the chain instead of being displaced by amines.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "F" }, { id: 15, el: "F" }, { id: 16, el: "F" }, { id: 17, el: "F" }, { id: 18, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 8, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 9, b: 14, order: 1 }, { a: 10, b: 15, order: 1 }, { a: 11, b: 16, order: 1 }, { a: 12, b: 17, order: 1 }, { a: 13, b: 18, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H8O3, repeat mass 152.1.
+    name: "Poly(furfuryl acrylate)", aka: [], monomer: "furfuryl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","biobased","specialty"],
+    note: "A bio-based acrylate from furfuryl alcohol. The furan ring is also a diene: it undergoes reversible Diels-Alder addition to maleimides, which is the basis of the self-healing and reworkable networks these polymers are studied for.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 7, order: 2 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H14O3, repeat mass 170.2.
+    name: "Poly(2-tetrahydropyranyl methacrylate)", aka: ["PTHPMA"], monomer: "2-tetrahydropyranyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","coating","specialty"],
+    note: "An acid-labile protected methacrylic acid. A trace of photogenerated acid cleaves the tetrahydropyranyl ether and the polymer switches from base-insoluble to base-soluble - the chemically amplified resist mechanism that made deep-UV lithography practical.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H18O3Si, repeat mass 202.3.
+    name: "Poly(2-(trimethylsilyloxy)ethyl methacrylate)", aka: ["HEMA-TMS polymer"], monomer: "2-(trimethylsilyloxy)ethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "Protected 2-hydroxyethyl methacrylate. The silyl ether keeps the hydroxyl out of the way during anionic or controlled radical polymerisation, then comes off with fluoride or dilute acid to give clean pHEMA.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "Si" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 10, b: 12, order: 1 }, { a: 10, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H14O5, repeat mass 214.2.
+    name: "Poly(2-(acetoacetoxy)ethyl methacrylate)", aka: ["PAAEM"], monomer: "2-(acetoacetoxy)ethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","coating","crosslinker","specialty"],
+    note: "The beta-ketoester side group chelates metal ions and condenses with amines to enamines at room temperature, which is how ambient-cure latex coatings crosslink without an oven or an isocyanate.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 10, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: 15, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H15BrO4, repeat mass 279.1.
+    name: "Poly(2-(2-bromoisobutyryloxy)ethyl methacrylate)", aka: ["PBIEM"], monomer: "2-(2-bromoisobutyryloxy)ethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "An inimer: every repeat unit carries an ATRP initiating site. Polymerised first and then grown from, it gives molecular bottlebrushes with one side chain per backbone unit.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "Br" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 10, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 12, b: 14, order: 1 }, { a: 12, b: 15, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H9NO3, repeat mass 155.2.
+    name: "Poly(2-isocyanatoethyl methacrylate)", aka: ["PIEM"], monomer: "2-isocyanatoethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","coating","crosslinker","specialty"],
+    note: "Carries an isocyanate through a radical polymerisation, giving a polymer that couples to alcohols, amines and thiols without a coupling agent. It has to be kept rigorously dry - water converts the pendant NCO to an amine, which then crosslinks the chain it came from.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 2 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H7NO3, repeat mass 141.1.
+    name: "Poly(2-isocyanatoethyl acrylate)", aka: [], monomer: "2-isocyanatoethyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","coating","crosslinker","specialty"],
+    note: "The acrylate isocyanate, used to graft acrylic backbones onto hydroxyl-functional polymers and surfaces in one step.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 2 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H9NO2, repeat mass 139.2.
+    name: "Poly(2-cyanoethyl methacrylate)", aka: [], monomer: "2-cyanoethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "A high-dielectric methacrylate. The nitrile dipole raises permittivity sharply, which puts these polymers in capacitor films and in electrolyte binders.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "N" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 3 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H11ClO3, repeat mass 178.6.
+    name: "Poly(3-chloro-2-hydroxypropyl methacrylate)", aka: [], monomer: "3-chloro-2-hydroxypropyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The ring-opened form of glycidyl methacrylate. It carries both a hydroxyl and a displaceable chloride, and closes back to the epoxide on treatment with base.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "Cl" }, { id: 11, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H12O2S, repeat mass 160.2.
+    name: "Poly(2-(methylthio)ethyl methacrylate)", aka: [], monomer: "2-(methylthio)ethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "A thioether methacrylate. Sulfur raises the refractive index more per atom than oxygen does, and the thioether oxidises to a sulfoxide, which turns a hydrophobic polymer hydrophilic - the basis of oxidation-responsive carriers.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "S" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H8O2, repeat mass 112.1.
+    name: "Poly(vinyl methacrylate)", aka: [], monomer: "vinyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","crosslinker","specialty"],
+    note: "Two double bonds of very different reactivity on one small monomer: the methacrylate consumes first, leaving pendant vinyl esters that crosslink in a second, slower stage.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H18NO2, repeat mass 172.2 (the cation; the counter-ion is not drawn).
+    name: "Poly(2-(methacryloyloxy)ethyl trimethylammonium chloride)", aka: ["PMETAC","poly(METAC)"], monomer: "2-(methacryloyloxy)ethyl trimethylammonium chloride",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","polyelectrolyte","water-soluble","specialty"],
+    note: "A permanently charged polycation - the quaternary ammonium does not titrate, so the charge density is the same at any pH. Used in antimicrobial coatings, in flocculants and as the grafted brush that gives surfaces a strong, pH-independent surface charge. The chloride counter-ion is not drawn.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N", charge: 1 }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }, { a: 9, b: 12, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H16NO2, repeat mass 158.2 (the cation; the counter-ion is not drawn).
+    name: "Poly(2-(acryloyloxy)ethyl trimethylammonium chloride)", aka: ["PAETAC"], monomer: "2-(acryloyloxy)ethyl trimethylammonium chloride",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","polyelectrolyte","water-soluble","specialty"],
+    note: "The acrylate cationic monomer of water treatment. Its ester link hydrolyses far faster than the methacrylate at high pH, which limits the shelf life of the flocculant solutions made from it.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N", charge: 1 }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H21N2O, repeat mass 185.3 (the cation; the counter-ion is not drawn).
+    name: "Poly(3-(methacryloylamino)propyl trimethylammonium chloride)", aka: ["PMAPTAC"], monomer: "3-(methacryloylamino)propyl trimethylammonium chloride",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","polyelectrolyte","water-soluble","specialty"],
+    note: "The amide-linked cationic monomer. Because there is no ester to hydrolyse, it holds its charge in strongly alkaline conditions where the ester quaternaries lose theirs - which is why it dominates in high-pH flocculation and in hair care.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N", charge: 1 }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }, { a: 9, b: 12, order: 1 }, { a: 2, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C5H8N2O2, repeat mass 128.1.
+    name: "Poly(N-acryloylglycinamide)", aka: ["PNAGA"], monomer: "N-acryloylglycinamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","thermoresponsive","hydrogel","specialty"],
+    note: "One of the few synthetic polymers with an upper critical solution temperature in plain water: the two amides per repeat unit hydrogen-bond to each other below the transition and to water above it, so it dissolves on heating rather than precipitating. Ionic impurities destroy the effect, which is why the early literature on it disagreed.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "N" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H21NO, repeat mass 183.3.
+    name: "Poly(N,N-dibutylacrylamide)", aka: [], monomer: "N,N-dibutylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "A tertiary acrylamide too hydrophobic to dissolve in water at any temperature; it is used as the hydrophobic block in amphiphilic acrylamide copolymers.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 5, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H11NO, repeat mass 113.2.
+    name: "Poly(N-ethyl-N-methylacrylamide)", aka: [], monomer: "N-ethyl-N-methylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","water-soluble","specialty"],
+    note: "An unsymmetrical tertiary acrylamide with an LCST between those of the dimethyl and diethyl polymers - the cleanest way to place a cloud point at an arbitrary temperature without copolymerising.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H13NO, repeat mass 127.2.
+    name: "Poly(N-methyl-N-propylacrylamide)", aka: [], monomer: "N-methyl-N-propylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "Another unsymmetrical tertiary acrylamide, more hydrophobic than the ethyl-methyl polymer and correspondingly lower in cloud point.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H13NO, repeat mass 127.2.
+    name: "Poly(N-isopropyl-N-methylacrylamide)", aka: [], monomer: "N-isopropyl-N-methylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "Methylating the nitrogen of poly(N-isopropylacrylamide) removes the amide N-H entirely. The polymer still has an LCST, which is the standard evidence that the transition does not require inter-chain hydrogen bonding.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 7, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H11NOS, repeat mass 157.2.
+    name: "Poly(N-acryloylthiomorpholine)", aka: [], monomer: "N-acryloylthiomorpholine",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "The sulfur analogue of poly(N-acryloylmorpholine). Replacing the ring oxygen with sulfur removes most of the hydration that keeps the morpholine polymer soluble at every temperature.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "S" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 5, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H15NO, repeat mass 153.2.
+    name: "Poly(N-acryloylazepane)", aka: [], monomer: "N-acryloylazepane",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "The seven-membered cyclic tertiary acrylamide, the most hydrophobic of the acryloyl-ring series and the one with the lowest cloud point.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 5, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H15NO2, repeat mass 157.2.
+    name: "Poly(N-(butoxymethyl)acrylamide)", aka: [], monomer: "N-(butoxymethyl)acrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","coating","crosslinker","specialty"],
+    note: "A blocked self-crosslinking amide: on baking it liberates butanol and reverts to the N-methylol, which then condenses. Blocking it this way gives the storage stability that N-methylolacrylamide lacks.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C5H9NO2, repeat mass 115.1.
+    name: "Poly(N-(methoxymethyl)acrylamide)", aka: [], monomer: "N-(methoxymethyl)acrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","coating","crosslinker","specialty"],
+    note: "The methyl-blocked methylol amide. It deblocks at a lower bake temperature than the butoxy version but releases methanol rather than butanol.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H21NO, repeat mass 183.3.
+    name: "Poly(N-tert-octylacrylamide)", aka: [], monomer: "N-tert-octylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "A hindered, highly hydrophobic acrylamide with a high glass transition, used as the hard comonomer in hair fixative resins where the amide supplies substantivity and the bulky alkyl supplies stiffness.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 6, b: 9, order: 1 }, { a: 6, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 8, b: 12, order: 1 }, { a: 8, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C5H9NO2, repeat mass 115.1.
+    name: "Poly(N-(hydroxymethyl)methacrylamide)", aka: [], monomer: "N-(hydroxymethyl)methacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","coating","crosslinker","specialty"],
+    note: "The methacrylamide version of the self-crosslinking methylol monomer; the stiffer backbone raises the temperature at which the cured film softens.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 2, b: 8, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H17NO, repeat mass 167.3.
+    name: "Poly(N-cyclohexylmethacrylamide)", aka: [], monomer: "N-cyclohexylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "A rigid, hydrophobic methacrylamide. The combination of a cyclohexyl group and an amide N-H puts its glass transition well above that of the corresponding acrylamide.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 6, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 12, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H15NO, repeat mass 141.2.
+    name: "Poly(N-butylmethacrylamide)", aka: [], monomer: "N-butylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "The C4 N-alkyl methacrylamide, at the point in the series where the polymer stops being water-soluble.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 2, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H13NO, repeat mass 127.2.
+    name: "Poly(N-propylmethacrylamide)", aka: [], monomer: "N-propylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","specialty"],
+    note: "The linear C3 methacrylamide, the counterpart to poly(N-propylacrylamide) with its cloud point shifted upwards by the alpha-methyl.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 2, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H8F6O2, repeat mass 250.1.
+    name: "Poly(2,2,3,4,4,4-hexafluorobutyl methacrylate)", aka: [], monomer: "2,2,3,4,4,4-hexafluorobutyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","fluoropolymer","optical","specialty"],
+    note: "A partially fluorinated methacrylate with a low refractive index and low surface energy, used in optical fibre cladding and in fluorinated block copolymers where a fully perfluorinated side chain would crystallise.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "F" }, { id: 12, el: "F" }, { id: 13, el: "F" }, { id: 14, el: "F" }, { id: 15, el: "F" }, { id: 16, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 8, b: 12, order: 1 }, { a: 9, b: 13, order: 1 }, { a: 10, b: 14, order: 1 }, { a: 10, b: 15, order: 1 }, { a: 10, b: 16, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H8F8O2, repeat mass 300.1.
+    name: "Poly(1H,1H,5H-octafluoropentyl methacrylate)", aka: [], monomer: "1H,1H,5H-octafluoropentyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","fluoropolymer","specialty"],
+    note: "The terminal C-H distinguishes this from a fully perfluorinated ester: it keeps the side chains from packing into the crystalline bilayers that make the long perfluoroalkyl acrylates waxy.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "F" }, { id: 13, el: "F" }, { id: 14, el: "F" }, { id: 15, el: "F" }, { id: 16, el: "F" }, { id: 17, el: "F" }, { id: 18, el: "F" }, { id: 19, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 8, b: 12, order: 1 }, { a: 8, b: 13, order: 1 }, { a: 9, b: 14, order: 1 }, { a: 9, b: 15, order: 1 }, { a: 10, b: 16, order: 1 }, { a: 10, b: 17, order: 1 }, { a: 11, b: 18, order: 1 }, { a: 11, b: 19, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C14H9F17O2, repeat mass 532.2.
+    name: "Poly(perfluorooctylethyl methacrylate)", aka: [], monomer: "2-(perfluorooctyl)ethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","fluoropolymer","coating","specialty"],
+    note: "The methacrylate counterpart of the acrylate already in this library. Side chains this long crystallise into a smectic bilayer that presents only CF3 groups at the surface, which is what gives these polymers their very low surface energy - and what makes the effect disappear above the side-chain melting point.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "F" }, { id: 18, el: "F" }, { id: 19, el: "F" }, { id: 20, el: "F" }, { id: 21, el: "F" }, { id: 22, el: "F" }, { id: 23, el: "F" }, { id: 24, el: "F" }, { id: 25, el: "F" }, { id: 26, el: "F" }, { id: 27, el: "F" }, { id: 28, el: "F" }, { id: 29, el: "F" }, { id: 30, el: "F" }, { id: 31, el: "F" }, { id: 32, el: "F" }, { id: 33, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 9, b: 17, order: 1 }, { a: 9, b: 18, order: 1 }, { a: 10, b: 19, order: 1 }, { a: 10, b: 20, order: 1 }, { a: 11, b: 21, order: 1 }, { a: 11, b: 22, order: 1 }, { a: 12, b: 23, order: 1 }, { a: 12, b: 24, order: 1 }, { a: 13, b: 25, order: 1 }, { a: 13, b: 26, order: 1 }, { a: 14, b: 27, order: 1 }, { a: 14, b: 28, order: 1 }, { a: 15, b: 29, order: 1 }, { a: 15, b: 30, order: 1 }, { a: 16, b: 31, order: 1 }, { a: 16, b: 32, order: 1 }, { a: 16, b: 33, order: 1 }]
+  },
+
+  // ---- silicones, second pass: the rest of the alkyl series, the aryl and
+  // hydride co-substituted fluids, and further tethered functional groups ----
+,
+
+  // ---- silicones, second pass: the rest of the alkyl series, the aryl and
+  // hydride co-substituted fluids, and further tethered functional groups ----
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H14OSi, repeat mass 130.3.
+    name: "Poly(methylpentylsiloxane)", aka: [], monomer: "methylpentylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "The C5 alkylmethyl siloxane, between the butyl and hexyl fluids in the smooth progression from silicone-like to hydrocarbon-like behaviour.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H18OSi, repeat mass 158.3.
+    name: "Poly(methylheptylsiloxane)", aka: [], monomer: "methylheptylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A C7 alkyl silicone. By this length the fluid is fully miscible with mineral oil and has lost most of the surface activity that shorter silicones show.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H22OSi, repeat mass 186.4.
+    name: "Poly(methylnonylsiloxane)", aka: [], monomer: "methylnonylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A C9 comb silicone, at the length where the side chains begin to interact with each other rather than simply with the solvent.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C11H24OSi, repeat mass 200.4.
+    name: "Poly(methyldecylsiloxane)", aka: [], monomer: "methyldecylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "The C10 alkylmethyl fluid, widely used as an emollient where a silicone feel is wanted with hydrocarbon solubility.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C17H36OSi, repeat mass 284.6.
+    name: "Poly(methylhexadecylsiloxane)", aka: ["poly(cetylmethylsiloxane)"], monomer: "methylhexadecylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A C16 comb silicone whose side chains melt near room temperature, so the material changes from waxy to fluid over a narrow range - the property used in phase-change and thermally switchable coatings.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H22OSi, repeat mass 186.4.
+    name: "Poly(dipentylsiloxane)", aka: [], monomer: "dipentylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","liquid crystalline","specialty"],
+    note: "A symmetric dialkylsiloxane in the range that forms a columnar mesophase; the transition temperatures rise steadily with alkyl length across the series.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 3, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C14H30OSi, repeat mass 242.5.
+    name: "Poly(diheptylsiloxane)", aka: [], monomer: "diheptylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","liquid crystalline","specialty"],
+    note: "The C7 symmetric dialkylsiloxane. Both substituents order together, giving a wider mesophase window than the asymmetric alkylmethyl fluids ever show.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 3, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C18H38OSi, repeat mass 298.6.
+    name: "Poly(dinonylsiloxane)", aka: [], monomer: "dinonylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "At C9 the side-chain crystal begins to displace the mesophase, and the material behaves more like a tethered paraffin than a silicone.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 3, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C24H50OSi, repeat mass 382.7.
+    name: "Poly(didodecylsiloxane)", aka: [], monomer: "didodecylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "The C12 symmetric dialkylsiloxane, a waxy solid in which almost the whole mass of the polymer is side chain.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "C" }, { id: 27, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 3, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 1 }, { a: 24, b: 25, order: 1 }, { a: 25, b: 26, order: 1 }, { a: 26, b: 27, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H10OSi, repeat mass 150.3.
+    name: "Poly(ethylphenylsiloxane)", aka: [], monomer: "ethylphenylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","optical","specialty"],
+    note: "An aryl silicone with an ethyl rather than a methyl co-substituent, which lowers the melting point of the fluid while keeping the refractive index of the phenyl group.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 6, order: 1 }, { a: 3, b: 6, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C9H12OSi, repeat mass 164.3.
+    name: "Poly(propylphenylsiloxane)", aka: [], monomer: "propylphenylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","optical","specialty"],
+    note: "A higher-alkyl aryl siloxane; the longer chain suppresses crystallisation, which is why these fluids stay pourable at temperatures where poly(methylphenylsiloxane) has set.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 3, b: 7, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C14H14OSi, repeat mass 226.3.
+    name: "Poly(dibenzylsiloxane)", aka: [], monomer: "dibenzylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","optical","specialty"],
+    note: "Two benzyl groups per silicon. The methylene spacers let both rings rotate, so the polymer reaches a high refractive index without the chain stiffness of poly(diphenylsiloxane).",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 5, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 3, b: 11, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 17, b: 12, order: 1 }, { a: 11, b: 12, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C2H6OSi, repeat mass 74.2.
+    name: "Poly(ethylhydrosiloxane)", aka: [], monomer: "ethylhydrocyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","crosslinker","specialty"],
+    note: "A hydride crosslinker with an ethyl co-substituent, used where the cured network has to remain compatible with hydrocarbon media.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H18OSi, repeat mass 158.3.
+    name: "Poly(octylhydrosiloxane)", aka: [], monomer: "octylhydrocyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","crosslinker","specialty"],
+    note: "A long-chain hydride fluid. The octyl group keeps it soluble in oils and waxes, so it can hydrosilylate substrates that a methylhydrosiloxane would not wet.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H12OSi, repeat mass 128.2.
+    name: "Poly(butylvinylsiloxane)", aka: [], monomer: "butylvinylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","crosslinker","specialty"],
+    note: "A vinyl-functional fluid whose butyl co-substituent gives the cured elastomer better swelling resistance in hydrocarbons than a methylvinyl network.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 3, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H16OSi, repeat mass 156.3.
+    name: "Poly(hexylvinylsiloxane)", aka: [], monomer: "hexylvinylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","crosslinker","specialty"],
+    note: "The longer-alkyl vinyl fluid, used where the network has to be built in an oil-rich formulation.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 3, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H10OSi, repeat mass 126.2.
+    name: "Poly(diallylsiloxane)", aka: [], monomer: "diallylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","crosslinker","specialty"],
+    note: "Two allyl groups per silicon. The extra methylene relative to a vinyl makes the addition slower but leaves the silicon-carbon bond further from the crosslink, which reduces strain in the cured network.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 3, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H12OSi, repeat mass 128.2.
+    name: "Poly(methylcyclopentylsiloxane)", aka: [], monomer: "methylcyclopentylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A cycloaliphatic silicone with a five-membered ring, which stiffens the chain less than the cyclohexyl analogue because the ring itself is more flexible.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 5, order: 1 }, { a: 3, b: 5, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H18OSi, repeat mass 182.3.
+    name: "Poly(dicyclopentylsiloxane)", aka: [], monomer: "dicyclopentylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","high-temperature","specialty"],
+    note: "Two cycloaliphatic rings on every silicon; a rigid, transparent silicone with no aromatic absorbance, which matters where short-wavelength light would degrade a phenyl siloxane.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 4, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 9, order: 1 }, { a: 3, b: 9, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H9BrOSi, repeat mass 181.1.
+    name: "Poly(methyl(3-bromopropyl)siloxane)", aka: [], monomer: "bromopropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A more reactive precursor than the chloropropyl fluid: the primary bromide is displaced under milder conditions, which matters when the nucleophile is a base that would attack the siloxane backbone at higher temperature.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "Br" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H12O3Si, repeat mass 160.2.
+    name: "Poly(methyl(3-acetoxypropyl)siloxane)", aka: [], monomer: "acetoxypropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A protected carbinol silicone. The acetate is carried through the polymerisation and then hydrolysed to the hydroxypropyl fluid, avoiding the side reactions a free hydroxyl causes during ring opening.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H14O3Si, repeat mass 162.3.
+    name: "Poly(methyl(3-(2-hydroxyethoxy)propyl)siloxane)", aka: [], monomer: "hydroxyethoxypropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "A silicone polyether in miniature: one oxyethylene unit and a terminal hydroxyl on each silicon, enough to make the fluid water-dispersible and to give it the wetting behaviour that pure silicones lack.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H10O4SSi, repeat mass 182.3.
+    name: "Poly(methyl(3-sulfopropyl)siloxane)", aka: [], monomer: "sulfopropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","polyelectrolyte","specialty"],
+    note: "An anionic silicone. The strong acid is fully dissociated at any pH, which makes the fluid a silicone polyelectrolyte rather than the weak-acid behaviour the carboxypropyl version shows.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "S" }, { id: 9, el: "O" }, { id: 10, el: "O" }, { id: 11, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 8, b: 10, order: 2 }, { a: 8, b: 11, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H8O3Si, repeat mass 132.2.
+    name: "Poly(methyl(2-carboxyethyl)siloxane)", aka: [], monomer: "carboxyethylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","polyelectrolyte","specialty"],
+    note: "A shorter-tether carboxy silicone. With only two carbons between silicon and the acid, the carboxyl is close enough to catalyse cleavage of its own siloxane backbone under heat.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C9H10OSi, repeat mass 162.3.
+    name: "Poly(methyl(4-vinylphenyl)siloxane)", aka: [], monomer: "vinylphenylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","crosslinker","specialty"],
+    note: "A styrenic silicone: the pendant vinylbenzene copolymerises with styrene and acrylics by free radicals, which is how silicone segments are built into otherwise all-organic chains.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 5, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H14O2Si, repeat mass 194.3.
+    name: "Poly(methyl(2-(4-methoxyphenyl)ethyl)siloxane)", aka: [], monomer: "methoxyphenethylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","optical","specialty"],
+    note: "An electron-rich aralkyl silicone with a higher refractive index than the plain phenethyl fluid, used in optical couplants and index-matching gels.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: 14, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 10, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H24O4Si2, repeat mass 264.5.
+    name: "Poly(methyl(3-(triethoxysilyl)propyl)siloxane)", aka: [], monomer: "triethoxysilylpropylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","coating","specialty"],
+    note: "A silicone that carries its own moisture-cure crosslinker: the pendant triethoxysilane hydrolyses and condenses on exposure to air, turning the fluid into a network without any second component.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "Si" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "O" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 8, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 8, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C9H7F13OSi, repeat mass 406.2.
+    name: "Poly(methyl(tridecafluorooctyl)siloxane)", aka: [], monomer: "tridecafluorooctylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","fluoropolymer","specialty"],
+    note: "A long perfluoroalkyl silicone. The tails crystallise into a bilayer that presents only CF3 groups at the surface, giving the lowest surface energies of any silicone - and losing them above the side-chain melting point.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "F" }, { id: 9, el: "F" }, { id: 10, el: "C" }, { id: 11, el: "F" }, { id: 12, el: "F" }, { id: 13, el: "C" }, { id: 14, el: "F" }, { id: 15, el: "F" }, { id: 16, el: "C" }, { id: 17, el: "F" }, { id: 18, el: "F" }, { id: 19, el: "C" }, { id: 20, el: "F" }, { id: 21, el: "F" }, { id: 22, el: "C" }, { id: 23, el: "F" }, { id: 24, el: "F" }, { id: 25, el: "F" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 7, b: 9, order: 1 }, { a: 7, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 10, b: 12, order: 1 }, { a: 10, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 13, b: 15, order: 1 }, { a: 13, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 16, b: 18, order: 1 }, { a: 16, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 19, b: 21, order: 1 }, { a: 19, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 22, b: 24, order: 1 }, { a: 22, b: 25, order: 1 }]
+  },
+  {
+    // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C3H8O2Si, repeat mass 104.2.
+    name: "Poly(methyl(2-hydroxyethyl)siloxane)", aka: [], monomer: "hydroxyethylmethylcyclosiloxane",
+    cls: "Ring-opening (silicone)", cas: null,
+    tags: ["silicone","specialty"],
+    note: "The shortest carbinol tether that is still stable. With only two carbons the hydroxyl can reach back to the silicon, so these fluids are markedly less robust than the hydroxypropyl grades.",
+    verified: false,
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }]
   }
 ];
 

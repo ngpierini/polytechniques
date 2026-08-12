@@ -4496,7 +4496,14 @@
           // structure search - which needs exactly two - cannot match it, and
           // running it would answer "no match" about a polymer we already know.
           // Identify it directly instead, which is what the button promised.
-          smilesNote('Loaded ' + p.name + ' — the whole molecule, core and all, with a bracket on each arm. ' +
+          // The "core and all, a bracket per arm" wording was written when every
+          // depiction was a star. Linear telechelics have one bracketed run and
+          // no core at all, and describing those as arms off a core is simply
+          // wrong on the 27 alpha,omega-difunctional PEGs.
+          var depArms = (p.depiction && p.depiction.repeats || []).length;
+          smilesNote('Loaded ' + p.name + ' — the whole molecule, ' +
+            (depArms > 1 ? 'core and all, with a bracket on each arm. '
+                         : 'end groups and all, with a bracket on the repeating run. ') +
             'It has no open chain ends, so “Search this structure” does not apply to it; the identification is below.');
           renderResults([p], null);
           renderPublications(p);
