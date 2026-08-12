@@ -6468,6 +6468,1149 @@ window.POLYMER_DB = [
     },
     noScheme: "the arms are ethylene oxide on a polyol core, but this end group is made by derivatising the hydroxyl star afterwards - deriving a monomer from the repeat unit would show ethylene oxide and claim the end group came straight out of the oxirane",
     note: "Sold as the acetic acid derivative, so the acid sits on a CH2 hung off the terminal ether oxygen rather than directly on the chain end. Activated in situ with a carbodiimide it couples to amines, which makes it the partner for a PEG-amine star, and the 95% substitution specification earns its keep here: every unconverted arm is a junction that never forms."
+  },
+
+  // ---- acrylic expansion: n-alkyl and branched esters, aryl esters,
+  // reactive and clickable side groups, and the N-substituted amides ----
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H12O2, repeat mass 128.2.
+    name: "Poly(propyl methacrylate)", aka: ["PPMA"], monomer: "propyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The C3 member of the n-alkyl methacrylate series, between poly(ethyl methacrylate) and poly(butyl methacrylate). Each added methylene in the ester group pushes the side chains apart and drops Tg - the standard demonstration of internal plasticisation.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H12O2, repeat mass 128.2.
+    name: "Poly(isopropyl methacrylate)", aka: ["PiPMA"], monomer: "isopropyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "Branching the same three carbons raises Tg well above the n-propyl isomer: a compact branched ester cannot pack into the chain the way a flexible n-propyl one can, so it stiffens rather than plasticises.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 7, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H14O2, repeat mass 142.2.
+    name: "Poly(sec-butyl methacrylate)", aka: [], monomer: "sec-butyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The branch sits on the carbon next to the ester oxygen, which is the position that most restricts ester rotation - so this sits above the n-butyl and isobutyl isomers in Tg.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 7, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H16O2, repeat mass 156.2.
+    name: "Poly(neopentyl methacrylate)", aka: [], monomer: "neopentyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "A quaternary carbon two bonds from the ester oxygen. The tert-butyl cap cannot rotate its way out of the chain's path, so the polymer is stiffer than any linear C5 ester.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H16O2, repeat mass 156.2.
+    name: "Poly(isoamyl methacrylate)", aka: ["poly(isopentyl methacrylate)"], monomer: "isoamyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The C5 branched ester, used where a slightly softer film than poly(butyl methacrylate) is wanted without going to the long-chain grades.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C12H22O2, repeat mass 198.3.
+    name: "Poly(octyl methacrylate)", aka: ["POMA"], monomer: "octyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "Deep into the soft end of the n-alkyl methacrylate series - a tacky, low-Tg polymer used as a comonomer to soften harder methacrylate films.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C13H24O2, repeat mass 212.3.
+    name: "Poly(nonyl methacrylate)", aka: [], monomer: "nonyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "Near the minimum of the Tg-versus-side-chain-length curve for n-alkyl methacrylates, where the side chains are long enough to plasticise fully but still too short to crystallise.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C15H28O2, repeat mass 240.4.
+    name: "Poly(undecyl methacrylate)", aka: [], monomer: "undecyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "Long enough that the side chains begin to order among themselves; the C12 lauryl and longer members show a genuine side-chain melting transition rather than a simple Tg.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C17H32O2, repeat mass 268.4.
+    name: "Poly(tridecyl methacrylate)", aka: [], monomer: "tridecyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "Side-chain crystallisation is established by this length, so the useful transition is the side-chain Tm rather than the backbone Tg - the basis of the comb-like polymers used as pour-point depressants.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C18H34O2, repeat mass 282.5.
+    name: "Poly(myristyl methacrylate)", aka: ["poly(tetradecyl methacrylate)"], monomer: "myristyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "A comb polymer whose C14 side chains crystallise like a paraffin wax. Grades in this range are used to modify the wax crystal habit in fuels and lubricating oils.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C20H38O2, repeat mass 310.5.
+    name: "Poly(cetyl methacrylate)", aka: ["poly(hexadecyl methacrylate)"], monomer: "cetyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The C16 comb methacrylate. Side-chain crystallinity dominates its thermal behaviour, and the melting point tracks the alkyl length far more closely than anything about the backbone.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H14O2, repeat mass 154.2.
+    name: "Poly(cyclopentyl methacrylate)", aka: [], monomer: "cyclopentyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "A cycloaliphatic ester that raises Tg over the open-chain C5 isomers without the aromatic absorbance of the phenyl esters - useful in optical formulations.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C12H20O2, repeat mass 196.3.
+    name: "Poly(cyclooctyl methacrylate)", aka: [], monomer: "cyclooctyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The larger cycloaliphatic ester; the eight-membered ring is conformationally loose enough that it stiffens the polymer less than the compact cyclohexyl ester does.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C14H24O2, repeat mass 224.3.
+    name: "Poly(4-tert-butylcyclohexyl methacrylate)", aka: [], monomer: "4-tert-butylcyclohexyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The tert-butyl group locks the cyclohexane ring into one chair, so the ester presents a fixed bulky face. Sold as cis/trans mixtures whose ratio shifts Tg by several degrees.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 10, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 13, b: 15, order: 1 }, { a: 13, b: 16, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C14H20O2, repeat mass 220.3.
+    name: "Poly(1-adamantyl methacrylate)", aka: ["PAdMA"], monomer: "1-adamantyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "The adamantyl cage is rigid, transparent and unusually resistant to plasma etching, which is why adamantyl methacrylates are a standard component of 193 nm photoresist terpolymers.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 7, b: 14, order: 1 }, { a: 7, b: 15, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 16, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 11, b: 15, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 13, b: 16, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H14O2Si, repeat mass 158.3.
+    name: "Poly(trimethylsilyl methacrylate)", aka: [], monomer: "trimethylsilyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "A protected form of poly(methacrylic acid): the silyl ester hydrolyses readily, so the polymer is made in a form that dissolves in hydrocarbons and is converted to the acid afterwards.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "Si" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 7, b: 9, order: 1 }, { a: 7, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H12O2, repeat mass 128.2.
+    name: "Poly(isobutyl acrylate)", aka: [], monomer: "isobutyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "The branched C4 acrylate. Branching one carbon out from the ester oxygen costs less mobility than branching at it, so this sits between n-butyl and sec-butyl acrylate in Tg.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 7, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H12O2, repeat mass 128.2.
+    name: "Poly(sec-butyl acrylate)", aka: [], monomer: "sec-butyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "Branched at the carbon bearing the ester oxygen, which restricts ester rotation directly and gives the highest Tg of the three butyl acrylate isomers.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 6, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H14O2, repeat mass 142.2.
+    name: "Poly(pentyl acrylate)", aka: ["poly(amyl acrylate)"], monomer: "pentyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","adhesive","specialty"],
+    note: "One methylene past poly(butyl acrylate), the workhorse of pressure-sensitive adhesives; the extra carbon softens the polymer and lowers its Tg further.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H16O2, repeat mass 156.2.
+    name: "Poly(hexyl acrylate)", aka: [], monomer: "hexyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","adhesive","specialty"],
+    note: "A soft, tacky acrylate used to lower the Tg of adhesive copolymers without the branched structure of 2-ethylhexyl acrylate.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H18O2, repeat mass 170.3.
+    name: "Poly(heptyl acrylate)", aka: [], monomer: "heptyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "A member of the n-alkyl acrylate series rarely used alone; its value is in mapping the side-chain-length dependence of Tg between hexyl and octyl.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H20O2, repeat mass 184.3.
+    name: "Poly(octyl acrylate)", aka: [], monomer: "octyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","adhesive","specialty"],
+    note: "The linear isomer of the far more common 2-ethylhexyl acrylate. The straight chain packs better, so the linear polymer has the higher Tg of the two despite identical composition.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C12H22O2, repeat mass 198.3.
+    name: "Poly(nonyl acrylate)", aka: [], monomer: "nonyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "Around the Tg minimum for n-alkyl acrylates; beyond this length side-chain association begins to stiffen the material again.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C13H24O2, repeat mass 212.3.
+    name: "Poly(decyl acrylate)", aka: [], monomer: "decyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "Long-chain acrylate used as a comonomer where oil compatibility matters more than adhesion.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C16H30O2, repeat mass 254.4.
+    name: "Poly(tridecyl acrylate)", aka: [], monomer: "tridecyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "A comb acrylate whose side chains are long enough to order; branched isotridecyl grades are used where that ordering is unwanted.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C17H32O2, repeat mass 268.4.
+    name: "Poly(tetradecyl acrylate)", aka: ["poly(myristyl acrylate)"], monomer: "tetradecyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "Side-chain crystallisation gives this polymer a melting transition well above the backbone Tg - the property exploited in wax-crystal modifiers.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C19H36O2, repeat mass 296.5.
+    name: "Poly(hexadecyl acrylate)", aka: ["poly(cetyl acrylate)"], monomer: "hexadecyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "The C16 comb acrylate. Its side-chain melting point sits near room temperature, which is why these polymers are used as phase-change and shape-memory components.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C25H48O2, repeat mass 380.7.
+    name: "Poly(behenyl acrylate)", aka: ["poly(docosyl acrylate)"], monomer: "behenyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "The C22 comb acrylate, the longest side chain in common commercial use. Its behaviour is essentially that of crystalline paraffin tethered to a flexible backbone.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "C" }, { id: 27, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 1 }, { a: 24, b: 25, order: 1 }, { a: 25, b: 26, order: 1 }, { a: 26, b: 27, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H12O2, repeat mass 140.2.
+    name: "Poly(cyclopentyl acrylate)", aka: [], monomer: "cyclopentyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "A cycloaliphatic acrylate; the ring raises Tg over the linear C5 ester while keeping the polymer aliphatic and optically clear.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 6, order: 1 }, { a: 5, b: 6, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C13H22O2, repeat mass 210.3.
+    name: "Poly(4-tert-butylcyclohexyl acrylate)", aka: [], monomer: "4-tert-butylcyclohexyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","coating","specialty"],
+    note: "A bulky cycloaliphatic acrylate used in radiation-curable coatings where a high Tg is wanted without an aromatic ring.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 6, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 9, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 12, b: 14, order: 1 }, { a: 12, b: 15, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H14O2, repeat mass 142.2.
+    name: "Poly(isoamyl acrylate)", aka: [], monomer: "isoamyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "The branched C5 acrylate; branching keeps Tg above the n-pentyl isomer while retaining most of its softness.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H14O2, repeat mass 142.2.
+    name: "Poly(neopentyl acrylate)", aka: [], monomer: "neopentyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "The quaternary carbon in the ester blocks side-chain motion, so this is the stiffest of the C5 acrylate isomers.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 7, b: 9, order: 1 }, { a: 7, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H14O2, repeat mass 142.2.
+    name: "Poly(2-methylbutyl acrylate)", aka: [], monomer: "2-methylbutyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "A branched C5 acrylate whose stereocentre in the ester makes it a common substrate for studies of side-chain chirality in acrylic polymers.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 7, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C12H22O2, repeat mass 198.3.
+    name: "Poly(3,5,5-trimethylhexyl acrylate)", aka: [], monomer: "3,5,5-trimethylhexyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","adhesive","specialty"],
+    note: "A heavily branched C9 ester. The branches prevent any side-chain ordering, so the polymer stays amorphous and tacky where a linear C9 acrylate would begin to stiffen.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 8, b: 12, order: 1 }, { a: 10, b: 13, order: 1 }, { a: 10, b: 14, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C13H24O2, repeat mass 212.3.
+    name: "Poly(2-propylheptyl acrylate)", aka: [], monomer: "2-propylheptyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","adhesive","specialty"],
+    note: "A branched C10 acrylate developed as a lower-volatility replacement for 2-ethylhexyl acrylate in adhesive formulations.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 7, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H16O2, repeat mass 168.2.
+    name: "Poly(cyclohexylmethyl acrylate)", aka: [], monomer: "cyclohexylmethyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "The methylene spacer decouples the cyclohexane ring from the backbone, so this is softer than poly(cyclohexyl acrylate) despite the same ring.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H12O3, repeat mass 192.2.
+    name: "Poly(4-methoxyphenyl methacrylate)", aka: [], monomer: "4-methoxyphenyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "An electron-rich aryl ester. The methoxy group raises the refractive index and shifts the absorption edge, which is what these substituted phenyl methacrylates are made for.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: 14, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 10, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H9ClO2, repeat mass 196.6.
+    name: "Poly(4-chlorophenyl methacrylate)", aka: [], monomer: "4-chlorophenyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "Ring chlorination raises both refractive index and Tg over poly(phenyl methacrylate); the halogen also makes the ester more susceptible to hydrolysis.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "Cl" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 10, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H9BrO2, repeat mass 241.1.
+    name: "Poly(4-bromophenyl methacrylate)", aka: [], monomer: "4-bromophenyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "The bromine gives a high refractive index and strong X-ray contrast, which is why brominated aryl methacrylates appear in optical and radiopaque formulations.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "Br" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 10, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H12O2, repeat mass 176.2.
+    name: "Poly(p-tolyl methacrylate)", aka: ["poly(4-methylphenyl methacrylate)"], monomer: "p-tolyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The para methyl adds bulk without breaking ring symmetry, so this packs more regularly than the ortho and meta isomers and has the highest Tg of the three.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 10, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H12O2, repeat mass 176.2.
+    name: "Poly(o-tolyl methacrylate)", aka: ["poly(2-methylphenyl methacrylate)"], monomer: "o-tolyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The ortho methyl twists the ring out of plane with the ester, hindering rotation - the classic demonstration that substituent position, not just size, sets Tg in aryl methacrylates.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 8, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H12O2, repeat mass 176.2.
+    name: "Poly(m-tolyl methacrylate)", aka: ["poly(3-methylphenyl methacrylate)"], monomer: "m-tolyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The meta isomer sits between the ortho and para members: enough asymmetry to disrupt packing, not enough steric crowding to lock the ring.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 9, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H5F5O2, repeat mass 252.1.
+    name: "Poly(pentafluorophenyl methacrylate)", aka: ["PPFPMA"], monomer: "pentafluorophenyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","fluoropolymer","biomedical","specialty"],
+    note: "An activated ester polymer. The pentafluorophenoxide is a good leaving group, so the whole chain can be converted to amides by simply stirring it with an amine - the standard route to a library of methacrylamides from one parent polymer.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "F" }, { id: 14, el: "F" }, { id: 15, el: "F" }, { id: 16, el: "F" }, { id: 17, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 8, b: 13, order: 1 }, { a: 9, b: 14, order: 1 }, { a: 10, b: 15, order: 1 }, { a: 11, b: 16, order: 1 }, { a: 12, b: 17, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H3F5O2, repeat mass 238.1.
+    name: "Poly(pentafluorophenyl acrylate)", aka: ["PPFPA"], monomer: "pentafluorophenyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","fluoropolymer","biomedical","specialty"],
+    note: "The acrylate analogue of the activated-ester workhorse, more reactive towards amines than the methacrylate because the backbone is less hindered.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "F" }, { id: 13, el: "F" }, { id: 14, el: "F" }, { id: 15, el: "F" }, { id: 16, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 6, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 7, b: 12, order: 1 }, { a: 8, b: 13, order: 1 }, { a: 9, b: 14, order: 1 }, { a: 10, b: 15, order: 1 }, { a: 11, b: 16, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C14H12O2, repeat mass 212.2.
+    name: "Poly(1-naphthyl methacrylate)", aka: [], monomer: "1-naphthyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "The 1-substituted naphthyl ester is more crowded than the 2-isomer already in this library, which raises Tg and changes the excimer emission the naphthyl polymers are studied for.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 16, order: 2 }, { a: 16, b: 7, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 15, b: 16, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C13H10O2, repeat mass 198.2.
+    name: "Poly(2-naphthyl acrylate)", aka: [], monomer: "2-naphthyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","optical","specialty"],
+    note: "A fluorescent aryl acrylate; naphthyl side groups on a flexible backbone form intramolecular excimers, making these polymers standard probes for chain conformation.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 7, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 15, order: 2 }, { a: 15, b: 6, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H8O2, repeat mass 148.2.
+    name: "Poly(phenyl acrylate)", aka: [], monomer: "phenyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "The acrylate analogue of poly(phenyl methacrylate). Without the alpha-methyl the backbone is far more mobile, so Tg falls by roughly a hundred degrees.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 6, order: 1 }, { a: 5, b: 6, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H10O2, repeat mass 162.2.
+    name: "Poly(benzyl acrylate)", aka: [], monomer: "benzyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "The methylene spacer lets the ring rotate freely, so this is much softer than poly(phenyl acrylate) despite carrying the same aromatic group.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C12H14O2, repeat mass 190.2.
+    name: "Poly(2-phenylethyl methacrylate)", aka: [], monomer: "2-phenylethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","optical","specialty"],
+    note: "A two-carbon spacer between backbone and ring gives a high refractive index with more chain mobility than benzyl or phenyl methacrylate.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 9, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H12O3, repeat mass 144.2.
+    name: "Poly(4-hydroxybutyl acrylate)", aka: ["P4HBA"], monomer: "4-hydroxybutyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","coating","specialty"],
+    note: "A hydroxy-functional acrylate with a four-carbon spacer, which keeps the hydroxyl far enough from the ester to resist the transesterification that shortens the shelf life of 2-hydroxyethyl acrylate.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H14O3, repeat mass 158.2.
+    name: "Poly(4-hydroxybutyl methacrylate)", aka: [], monomer: "4-hydroxybutyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","coating","specialty"],
+    note: "The methacrylate version of the long-spacer hydroxy monomer, used to introduce crosslinkable hydroxyls into acrylic resins for isocyanate cure.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H14O3, repeat mass 158.2.
+    name: "Poly(2-ethoxyethyl methacrylate)", aka: [], monomer: "2-ethoxyethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "An ether-containing methacrylate whose flexible side chain gives low Tg and good adhesion to polar substrates.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H12O3, repeat mass 144.2.
+    name: "Poly(2-ethoxyethyl acrylate)", aka: [], monomer: "2-ethoxyethyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "A soft, polar acrylate used where a low Tg has to come with solvent resistance that a plain alkyl ester cannot give.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H16O3, repeat mass 172.2.
+    name: "Poly(2-butoxyethyl acrylate)", aka: [], monomer: "2-butoxyethyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","adhesive","specialty"],
+    note: "The ether oxygen keeps the polymer polar while the butyl tail keeps it soft - a combination used in adhesives that must wet low-energy surfaces.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H16O4, repeat mass 188.2.
+    name: "Poly(2-(2-ethoxyethoxy)ethyl acrylate)", aka: ["PEOEOEA"], monomer: "2-(2-ethoxyethoxy)ethyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","coating","specialty"],
+    note: "A diethylene glycol monoether acrylate. Two ether oxygens make it a reactive diluent that lowers viscosity in UV-curable formulations without the skin irritation of the short-chain esters.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H16O4, repeat mass 188.2.
+    name: "Poly(2-(2-methoxyethoxy)ethyl methacrylate)", aka: ["PMEO2MA"], monomer: "2-(2-methoxyethoxy)ethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","thermoresponsive","specialty"],
+    note: "The two-unit oligoethylene glycol methacrylate. Its aqueous LCST sits near 26 C, and copolymerising it with longer OEG methacrylates tunes the cloud point continuously - the non-acrylamide alternative to poly(N-isopropylacrylamide).",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "O" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H14O3, repeat mass 170.2.
+    name: "Poly(tetrahydrofurfuryl methacrylate)", aka: ["PTHFMA"], monomer: "tetrahydrofurfuryl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","biomedical","specialty"],
+    note: "A cyclic ether ester used in dental and bone-cement formulations, where its polarity improves wetting of the mineral phase over plain alkyl methacrylates.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 8, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H12O3, repeat mass 156.2.
+    name: "Poly(tetrahydrofurfuryl acrylate)", aka: ["PTHFA"], monomer: "tetrahydrofurfuryl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","coating","specialty"],
+    note: "A low-viscosity reactive diluent for UV-curable coatings; the tetrahydrofuran ring gives polarity and adhesion without an aromatic group.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H12O3, repeat mass 144.2.
+    name: "Poly(2-hydroxybutyl acrylate)", aka: [], monomer: "2-hydroxybutyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","coating","specialty"],
+    note: "A hydroxy acrylate with a secondary hydroxyl, which reacts more slowly with isocyanates than the primary-hydroxyl monomers and so gives a longer pot life.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 7, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H8O3, repeat mass 128.1.
+    name: "Poly(glycidyl acrylate)", aka: [], monomer: "glycidyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","crosslinker","specialty"],
+    note: "The acrylate analogue of poly(glycidyl methacrylate). The pendant epoxide is the reactive handle - it opens with amines, thiols and acids - but the more mobile acrylate backbone makes the ring more prone to premature reaction during storage.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H10O2, repeat mass 126.2.
+    name: "Poly(allyl methacrylate)", aka: ["PAMA"], monomer: "allyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","crosslinker","specialty"],
+    note: "A monomer with two very different double bonds: the methacrylate polymerises far faster than the allyl group, so the first stage gives a soluble polymer with pendant allyls that can be crosslinked afterwards.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H8O2, repeat mass 124.1.
+    name: "Poly(propargyl methacrylate)", aka: [], monomer: "propargyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","biomedical","specialty"],
+    note: "A clickable methacrylate. The pendant terminal alkyne survives radical polymerisation and is then available for copper-catalysed azide-alkyne cycloaddition.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 3 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H6O2, repeat mass 110.1.
+    name: "Poly(propargyl acrylate)", aka: [], monomer: "propargyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","biomedical","specialty"],
+    note: "The acrylate clickable partner; used to functionalise surfaces and particles after polymerisation rather than before.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 3 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H9N3O2, repeat mass 155.2.
+    name: "Poly(2-azidoethyl methacrylate)", aka: [], monomer: "2-azidoethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","biomedical","specialty"],
+    note: "Carries the other half of the click pair. The azide is stable to radical polymerisation but decomposes on heating, so these polymers are handled and stored cold.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "N", charge: 1 }, { id: 11, el: "N", charge: -1 }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 2 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H9BrO2, repeat mass 193.0.
+    name: "Poly(2-bromoethyl methacrylate)", aka: [], monomer: "2-bromoethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "A precursor polymer: the pendant primary bromide is displaced by azide, amine or thiolate to give side groups that could not survive the polymerisation directly.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "Br" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H9ClO2, repeat mass 148.6.
+    name: "Poly(2-chloroethyl methacrylate)", aka: [], monomer: "2-chloroethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","specialty"],
+    note: "The chloride is a slower leaving group than the bromide, which makes this the more storage-stable of the two haloethyl methacrylates.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "Cl" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C5H7ClO2, repeat mass 134.6.
+    name: "Poly(2-chloroethyl acrylate)", aka: [], monomer: "2-chloroethyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "A polar, reactive acrylate; the chloroethyl group also raises the refractive index over the plain alkyl esters.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "Cl" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H7NO2, repeat mass 125.1.
+    name: "Poly(2-cyanoethyl acrylate)", aka: [], monomer: "2-cyanoethyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "The nitrile gives a high dielectric constant, which is what cyanoethyl-substituted polymers are made for - dielectric layers and electrolyte binders.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 3 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H9NO4, repeat mass 183.2.
+    name: "Poly(N-succinimidyl methacrylate)", aka: ["poly(NHS methacrylate)"], monomer: "N-hydroxysuccinimidyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","biomedical","specialty"],
+    note: "An activated-ester polymer whose side groups react cleanly with primary amines. Together with the pentafluorophenyl esters it is the standard way to make a set of methacrylamides from a single well-characterised parent chain.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 8, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H7NO4, repeat mass 169.1.
+    name: "Poly(N-succinimidyl acrylate)", aka: ["poly(NHS acrylate)"], monomer: "N-hydroxysuccinimidyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","biomedical","specialty"],
+    note: "The acrylate activated ester, more reactive and correspondingly more moisture-sensitive than the methacrylate.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "N" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 11, b: 6, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H20O5Si, repeat mass 248.3.
+    name: "Poly(3-(trimethoxysilyl)propyl methacrylate)", aka: ["PTMSPMA"], monomer: "3-(trimethoxysilyl)propyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","coating","specialty"],
+    note: "The adhesion promoter used to bond acrylic resins to glass and silica: the methacrylate copolymerises into the organic phase while the trimethoxysilane hydrolyses and condenses onto the mineral surface.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "Si" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: 16, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 10, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 10, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H18O5Si, repeat mass 234.3.
+    name: "Poly(3-(trimethoxysilyl)propyl acrylate)", aka: [], monomer: "3-(trimethoxysilyl)propyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","coating","specialty"],
+    note: "The acrylate coupling agent; the more flexible backbone gives a tougher interphase than the methacrylate where the bond line must absorb strain.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "Si" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "O" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 9, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 9, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C13H26O5Si, repeat mass 290.4.
+    name: "Poly(3-(triethoxysilyl)propyl methacrylate)", aka: [], monomer: "3-(triethoxysilyl)propyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","coating","specialty"],
+    note: "The triethoxy silane hydrolyses more slowly than the trimethoxy version and releases ethanol rather than methanol, which is why it is preferred where the cure has to be controlled or the by-product matters.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "Si" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "O" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 10, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 10, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H19NO2, repeat mass 185.3.
+    name: "Poly(2-(tert-butylamino)ethyl methacrylate)", aka: ["PTBAEMA"], monomer: "2-(tert-butylamino)ethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","polyelectrolyte","specialty"],
+    note: "A hindered secondary amine methacrylate. The bulk around the nitrogen lowers its basicity relative to the dialkylamino esters and makes the polymer antimicrobial rather than simply cationic.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 10, b: 12, order: 1 }, { a: 10, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C12H23NO2, repeat mass 213.3.
+    name: "Poly(2-(diisopropylamino)ethyl methacrylate)", aka: ["PDPAEMA"], monomer: "2-(diisopropylamino)ethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","polyelectrolyte","biomedical","specialty"],
+    note: "Its side-chain pKa near 6.2 sits just below physiological pH, so the polymer switches from soluble to insoluble across the endosomal pH range - the basis of a large family of pH-responsive drug carriers.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 10, b: 12, order: 1 }, { a: 9, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 13, b: 15, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H11NO2, repeat mass 129.2.
+    name: "Poly(2-aminoethyl methacrylate)", aka: ["PAEMA"], monomer: "2-aminoethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","water-soluble","polyelectrolyte","specialty"],
+    note: "A primary-amine methacrylate, usually handled as the hydrochloride salt because the free base attacks its own ester. The pendant primary amines make it strongly cationic and readily conjugatable.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H17NO2, repeat mass 171.2.
+    name: "Poly(3-(dimethylamino)propyl methacrylate)", aka: [], monomer: "3-(dimethylamino)propyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","polyelectrolyte","specialty"],
+    note: "One methylene longer than the far more common 2-(dimethylamino)ethyl methacrylate, which puts the amine further from the ester and slows the base-catalysed hydrolysis that limits DMAEMA storage.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "N" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 10, b: 12, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H15NO2, repeat mass 157.2.
+    name: "Poly(3-(dimethylamino)propyl acrylate)", aka: ["PDMAPA"], monomer: "3-(dimethylamino)propyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","polyelectrolyte","specialty"],
+    note: "A cationic acrylate used in flocculants and hair-care polymers, where the tertiary amine is quaternised after polymerisation.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H8F4O2, repeat mass 200.1.
+    name: "Poly(2,2,3,3-tetrafluoropropyl methacrylate)", aka: [], monomer: "2,2,3,3-tetrafluoropropyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","fluoropolymer","specialty"],
+    note: "A partially fluorinated methacrylate. The low refractive index and surface energy come with a C-H bond at the end of the chain, so it is less inert than the fully fluorinated esters.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "F" }, { id: 11, el: "F" }, { id: 12, el: "F" }, { id: 13, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 9, b: 12, order: 1 }, { a: 9, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H7F5O2, repeat mass 218.1.
+    name: "Poly(2,2,3,3,3-pentafluoropropyl methacrylate)", aka: [], monomer: "2,2,3,3,3-pentafluoropropyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","fluoropolymer","optical","specialty"],
+    note: "A low-surface-energy methacrylate used in optical cladding and release coatings; the fluorine content drops the refractive index well below that of PMMA.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "F" }, { id: 11, el: "F" }, { id: 12, el: "F" }, { id: 13, el: "F" }, { id: 14, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 8, b: 10, order: 1 }, { a: 8, b: 11, order: 1 }, { a: 9, b: 12, order: 1 }, { a: 9, b: 13, order: 1 }, { a: 9, b: 14, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H4F6O2, repeat mass 222.1.
+    name: "Poly(hexafluoroisopropyl acrylate)", aka: [], monomer: "hexafluoroisopropyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","fluoropolymer","optical","specialty"],
+    note: "Two trifluoromethyl groups on the ester carbon give a very low refractive index and a strongly acidic alpha C-H, the feature exploited in fluorinated photoresists.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "F" }, { id: 10, el: "F" }, { id: 11, el: "F" }, { id: 12, el: "F" }, { id: 13, el: "F" }, { id: 14, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 6, b: 8, order: 1 }, { a: 7, b: 9, order: 1 }, { a: 7, b: 10, order: 1 }, { a: 7, b: 11, order: 1 }, { a: 8, b: 12, order: 1 }, { a: 8, b: 13, order: 1 }, { a: 8, b: 14, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H10O5S, repeat mass 194.2.
+    name: "Poly(2-sulfoethyl methacrylate)", aka: [], monomer: "2-sulfoethyl methacrylate",
+    cls: "Addition (methacrylate)", cas: null,
+    tags: ["acrylic","methacrylate","water-soluble","polyelectrolyte","specialty"],
+    note: "A strong-acid methacrylate. Unlike the carboxylic acid monomers it stays fully ionised at any pH, so the polyelectrolyte behaviour does not change with the buffer.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "S" }, { id: 10, el: "O" }, { id: 11, el: "O" }, { id: 12, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 2 }, { a: 9, b: 12, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H10O5S, repeat mass 194.2.
+    name: "Poly(3-sulfopropyl acrylate)", aka: [], monomer: "3-sulfopropyl acrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","water-soluble","polyelectrolyte","specialty"],
+    note: "The acrylate partner of the sulfopropyl methacrylate already in this library; used in ion-exchange membranes and as the anionic block in polyelectrolyte complexes.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "S" }, { id: 10, el: "O" }, { id: 11, el: "O" }, { id: 12, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 2 }, { a: 9, b: 12, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H9NO2, repeat mass 139.2.
+    name: "Poly(isopropyl cyanoacrylate)", aka: [], monomer: "isopropyl 2-cyanoacrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","adhesive","specialty"],
+    note: "A cyanoacrylate adhesive polymer. The two electron-withdrawing groups on the same carbon make the monomer polymerise anionically on contact with trace surface water - no initiator needed.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "N" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 6, b: 8, order: 1 }, { a: 2, b: 9, order: 1 }, { a: 9, b: 10, order: 3 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C4H5FO2, repeat mass 104.1.
+    name: "Poly(methyl 2-fluoroacrylate)", aka: [], monomer: "methyl 2-fluoroacrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","fluoropolymer","optical","specialty"],
+    note: "Replacing the alpha-methyl of PMMA with fluorine raises Tg and lowers the refractive index; the polymer is used as optical fibre cladding.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C5H7ClO2, repeat mass 134.6.
+    name: "Poly(ethyl alpha-chloroacrylate)", aka: [], monomer: "ethyl alpha-chloroacrylate",
+    cls: "Addition (acrylate)", cas: null,
+    tags: ["acrylic","acrylate","specialty"],
+    note: "The alpha-chloro acrylates are far more sensitive to the electron beam than their methacrylate analogues, which is what put poly(alpha-chloroacrylate) esters into electron-beam resists.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "Cl" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 2, b: 8, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C4H7NO, repeat mass 85.1.
+    name: "Poly(N-methylacrylamide)", aka: ["PNMA"], monomer: "N-methylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","specialty"],
+    note: "The smallest N-alkyl acrylamide. It is water-soluble at all temperatures - the LCST behaviour of the acrylamide family only appears once the N-alkyl group is large enough to be genuinely hydrophobic.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C5H9NO, repeat mass 99.1.
+    name: "Poly(N-ethylacrylamide)", aka: [], monomer: "N-ethylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","specialty"],
+    note: "One methylene short of the thermoresponsive window; it stays soluble in water where poly(N-isopropylacrylamide) phase-separates at 32 C.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H11NO, repeat mass 113.2.
+    name: "Poly(N-propylacrylamide)", aka: ["PNPAM"], monomer: "N-propylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "The linear C3 isomer of poly(N-isopropylacrylamide), with an LCST near 22 C - about ten degrees below the branched isomer, showing that the transition responds to side-chain shape as well as size.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H13NO, repeat mass 127.2.
+    name: "Poly(N-butylacrylamide)", aka: [], monomer: "N-butylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "Hydrophobic enough that the homopolymer is no longer water-soluble; it is used as the hydrophobic comonomer that pulls the LCST of acrylamide copolymers downwards.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H21NO, repeat mass 183.3.
+    name: "Poly(N-octylacrylamide)", aka: [], monomer: "N-octylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "A hydrophobic acrylamide used as the associating comonomer in hydrophobically modified water-soluble polymers, where the octyl groups form micellar junctions that thicken the solution.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C15H29NO, repeat mass 239.4.
+    name: "Poly(N-dodecylacrylamide)", aka: [], monomer: "N-dodecylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "The C12 associating acrylamide. A few mole percent in a polyacrylamide backbone raises solution viscosity by orders of magnitude through hydrophobic association.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H9NO, repeat mass 111.1.
+    name: "Poly(N-cyclopropylacrylamide)", aka: ["PNCPAM"], monomer: "N-cyclopropylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "The cyclopropyl ring is close in volume to an isopropyl group but far more rigid, and the polymer's LCST sits near 45 C - well above that of poly(N-isopropylacrylamide).",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 6, order: 1 }, { a: 5, b: 6, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H15NO, repeat mass 153.2.
+    name: "Poly(N-cyclohexylacrylamide)", aka: [], monomer: "N-cyclohexylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "A rigid, hydrophobic acrylamide; the ring raises Tg substantially over the linear N-alkyl members of the series.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 6, order: 1 }, { a: 5, b: 6, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H9NO, repeat mass 147.2.
+    name: "Poly(N-phenylacrylamide)", aka: [], monomer: "N-phenylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "An aromatic acrylamide. Conjugation between the ring and the amide reduces the nitrogen's hydrogen-bond donation, so it behaves less like an amide than its structure suggests.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 6, order: 1 }, { a: 5, b: 6, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H11NO, repeat mass 161.2.
+    name: "Poly(N-benzylacrylamide)", aka: [], monomer: "N-benzylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "The methylene spacer restores normal amide hydrogen bonding that the N-phenyl compound loses, while keeping the aromatic ring for pi-stacking.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C4H7NO2, repeat mass 101.1.
+    name: "Poly(N-hydroxymethylacrylamide)", aka: ["PNMA-OH","poly(N-methylolacrylamide)"], monomer: "N-hydroxymethylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","coating","specialty"],
+    note: "The self-crosslinking acrylamide of the coatings industry: on baking, the N-methylol groups condense with each other and with amide N-H to form methylene and ether bridges, releasing formaldehyde and water.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H11NO2, repeat mass 129.2.
+    name: "Poly(N-(2-methoxyethyl)acrylamide)", aka: [], monomer: "N-(2-methoxyethyl)acrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","specialty"],
+    note: "A water-soluble acrylamide with an ether oxygen in place of a hydroxyl, so it hydrates strongly without offering a reactive site.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H16N2O, repeat mass 156.2.
+    name: "Poly(N-(3-(dimethylamino)propyl)acrylamide)", aka: [], monomer: "N-(3-(dimethylamino)propyl)acrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","polyelectrolyte","specialty"],
+    note: "A cationic acrylamide. Unlike the aminoalkyl esters, the amide linkage does not hydrolyse in use, which is why these monomers dominate water-treatment flocculants.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 9, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C9H17NO, repeat mass 155.2.
+    name: "Poly(N,N-dipropylacrylamide)", aka: [], monomer: "N,N-dipropylacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "A disubstituted acrylamide with no N-H at all, so it cannot hydrogen-bond to itself. Its LCST near 20 C comes purely from the hydrophobicity of the two propyl groups.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 5, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H13NO, repeat mass 139.2.
+    name: "Poly(N-acryloylpiperidine)", aka: [], monomer: "N-acryloylpiperidine",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "The all-carbon relative of poly(N-acryloylmorpholine). Removing the ring oxygen removes the hydration that keeps that polymer soluble, and this one phase-separates near 5 C.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 5, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H11NO, repeat mass 125.2.
+    name: "Poly(N-acryloylpyrrolidine)", aka: [], monomer: "N-acryloylpyrrolidine",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "A cyclic tertiary acrylamide with an LCST near 56 C, at the top of the useful range for this family.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 5, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H13NO2, repeat mass 143.2.
+    name: "Poly(N-(2-hydroxypropyl)methacrylamide)", aka: ["PHPMAm"], monomer: "N-(2-hydroxypropyl)methacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","biomedical","specialty"],
+    note: "The backbone of the HPMA copolymer drug conjugates - the first synthetic polymer-drug conjugates taken into clinical trials. It is water-soluble, non-immunogenic and, unlike the polyesters, not degraded in circulation.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 7, b: 9, order: 1 }, { a: 2, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H11NO2, repeat mass 129.2.
+    name: "Poly(N-(2-hydroxyethyl)methacrylamide)", aka: [], monomer: "N-(2-hydroxyethyl)methacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","biomedical","specialty"],
+    note: "The amide analogue of poly(2-hydroxyethyl methacrylate). Replacing the ester with an amide removes the hydrolysis pathway that slowly releases ethylene glycol from pHEMA hydrogels.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 2, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H13NO, repeat mass 127.2.
+    name: "Poly(N-isopropylmethacrylamide)", aka: ["PNIPMAM"], monomer: "N-isopropylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "The alpha-methyl raises the LCST to about 44 C, roughly twelve degrees above poly(N-isopropylacrylamide) - the cleanest illustration that backbone hydrophilicity, not just the side group, sets the transition.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 6, b: 8, order: 1 }, { a: 2, b: 9, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H11NO, repeat mass 113.2.
+    name: "Poly(N,N-dimethylmethacrylamide)", aka: [], monomer: "N,N-dimethylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","specialty"],
+    note: "A water-soluble tertiary methacrylamide with no LCST; the methacrylate backbone makes it stiffer and more hydrolysis-resistant than poly(N,N-dimethylacrylamide).",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 5, b: 7, order: 1 }, { a: 2, b: 8, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H15NO, repeat mass 141.2.
+    name: "Poly(N,N-diethylmethacrylamide)", aka: [], monomer: "N,N-diethylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","thermoresponsive","specialty"],
+    note: "The methacrylamide counterpart of poly(N,N-diethylacrylamide), whose LCST sits near 32 C. Adding the alpha-methyl stiffens the backbone rather than making it more hydrophobic, which is why the methacrylamides of this family generally cloud at higher temperatures than their acrylamides.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 5, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 2, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H15NO, repeat mass 141.2.
+    name: "Poly(N-tert-butylmethacrylamide)", aka: [], monomer: "N-tert-butylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "A hindered, hydrophobic methacrylamide with a high Tg, used as the rigid comonomer in hair fixatives and in thermoresponsive copolymers.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 6, b: 8, order: 1 }, { a: 6, b: 9, order: 1 }, { a: 2, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C5H9NO, repeat mass 99.1.
+    name: "Poly(N-methylmethacrylamide)", aka: [], monomer: "N-methylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","specialty"],
+    note: "The simplest N-substituted methacrylamide; the amide N-H and the alpha-methyl together give a Tg well above poly(methyl methacrylate).",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 7, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C6H11NO, repeat mass 113.2.
+    name: "Poly(N-ethylmethacrylamide)", aka: [], monomer: "N-ethylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","specialty"],
+    note: "A water-soluble methacrylamide close to the boundary of thermoresponsive behaviour; copolymers with the isopropyl monomer tune the LCST across body temperature.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 2, b: 8, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C10H11NO, repeat mass 161.2.
+    name: "Poly(N-phenylmethacrylamide)", aka: [], monomer: "N-phenylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "A rigid aromatic methacrylamide. The combination of amide hydrogen bonding and an aryl group on nitrogen gives one of the highest Tg values in the acrylic family.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 2 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 6, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 2, b: 12, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C11H13NO, repeat mass 175.2.
+    name: "Poly(N-benzylmethacrylamide)", aka: [], monomer: "N-benzylmethacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","specialty"],
+    note: "The benzyl spacer restores the amide N-H hydrogen bonding lost in the N-phenyl polymer, giving a high-Tg but still hydrogen-bonded material.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 7, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 2, b: 13, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C7H14N2O, repeat mass 142.2.
+    name: "Poly(N-(3-aminopropyl)methacrylamide)", aka: ["PAPMA"], monomer: "N-(3-aminopropyl)methacrylamide",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","polyelectrolyte","biomedical","specialty"],
+    note: "A primary-amine methacrylamide, handled as the hydrochloride. Because the linkage is an amide rather than an ester, the pendant amine cannot attack the backbone the way it does in poly(2-aminoethyl methacrylate).",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 2, b: 10, order: 1 }]
+  },
+  {
+    // Structure built from the shared acrylic backbone template; formula C8H13NO2, repeat mass 155.2.
+    name: "Poly(N-methacryloylmorpholine)", aka: [], monomer: "N-methacryloylmorpholine",
+    cls: "Addition (vinyl)", cas: null,
+    tags: ["acrylic","water-soluble","specialty"],
+    note: "The methacrylamide version of the non-thermoresponsive hydrophilic standard; the stiffer backbone raises Tg without affecting its solubility at any temperature.",
+    verified: false,
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "N" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 5, order: 1 }, { a: 2, b: 11, order: 1 }]
   }
 ];
 
