@@ -5742,6 +5742,13 @@
     // Keyed on the plain-molecule hash of the DERIVED monomer, so a match means
     // the same verified round trip that put the scheme on screen; nothing new
     // is claimed here.
+    // Indexed one MOLECULE at a time, not one derivation at a time. A
+    // step-growth derivation returns two molecules, and hashing them together
+    // indexes a disconnected pair that nobody will ever draw: terephthalic acid
+    // on its own matched nothing, while the index held "terephthalic acid and
+    // ethylene glycol, side by side". Split into parts it answers the question
+    // a chemist actually asks - here is a diacid, what does it make? - and
+    // terephthalic acid returns PET, PBT, PTT, PCT and Kevlar.
     var monomerIdx = null;
     function monomerIndex() {
       if (monomerIdx) return monomerIdx;
@@ -5750,8 +5757,11 @@
         if (!Array.isArray(p.atoms) || !p.atoms.length || p.noScheme) return;
         var m = PG.deriveMonomer(p.atoms, p.bonds, p.cls);
         if (!m) return;
-        var h = wlHash(m.atoms, m.bonds);
-        (monomerIdx[h] || (monomerIdx[h] = [])).push({ p: p, m: m });
+        var parts = (m.parts && m.parts.length) ? m.parts : [{ atoms: m.atoms, bonds: m.bonds }];
+        parts.forEach(function (part) {
+          var h = wlHash(part.atoms, part.bonds);
+          (monomerIdx[h] || (monomerIdx[h] = [])).push({ p: p, m: m, ofPair: parts.length > 1 });
+        });
       });
       return monomerIdx;
     }
@@ -5766,15 +5776,26 @@
       // Dienes are the interesting case: one monomer, two polymers, and the
       // catalyst decides which. Say so rather than listing them silently.
       var isDiene = hits.every(function (x) { return x.m.kind === 'diene'; });
+      // A step-growth monomer is only half the story, and saying so matters:
+      // terephthalic acid does not polymerise on its own. The scheme drawn
+      // below shows the partner, so the message only has to point at it.
+      var allPaired = hits.every(function (x) { return x.ofPair; });
+      var lead = allPaired ? 'That is one of two monomers. With its co-monomer it gives '
+                           : 'That is a monomer. It polymerises to ';
       statusEl.textContent = hits.length === 1
-        ? 'That is a monomer. It polymerises to ' + names[0] + ':'
-        : 'That is a monomer. It polymerises to ' + hits.length + ' polymers in this library' +
-          (isDiene ? ' — same monomer, and the catalyst decides which geometry you get' : '') + ':';
+        ? lead + names[0] + (allPaired ? ' — the scheme below shows the pair:' : ':')
+        : lead + hits.length + ' polymers in this library' +
+          (isDiene ? ' — same monomer, and the catalyst decides which geometry you get' : '') +
+          (allPaired ? ', each with a different partner:' : ':');
       // Several hits from one monomer usually means one polymer with declared
       // variants (polystyrene and its foam) or the diene pair, and those share a
       // repeat unit - so the scheme still belongs to the set.
       var hitPolymers = hits.map(function (x) { return x.p; });
-      renderResults(hitPolymers, schemeCandidate(hitPolymers));
+      // One hit gets its scheme drawn. Several do not: they are different
+      // polymers from different partners, and picking one to illustrate would
+      // put a single diol on screen as though it were the answer for all of
+      // them. The cards carry their own schemes when opened.
+      renderResults(hitPolymers, hits.length === 1 ? schemeCandidate(hitPolymers) : null);
       renderPublications(hits[0].p);
       return true;
     }
