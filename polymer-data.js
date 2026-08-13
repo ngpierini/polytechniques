@@ -310,6 +310,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §7-2b-7"
     },
     name: "Polyoxymethylene", aka: ["POM", "acetal", "Delrin"], monomer: "Trioxane (or formaldehyde)", cls: "Ring-opening",
+    noScheme: "polymerised from trioxane, which is three of these repeat units in one ring, so closing a single unit would draw a two-membered ring rather than the six-membered monomer that was actually charged",
     cas: "9002-81-7", tg: "-60 °C", tm: "175 °C", tags: ["engineering"],
     note: "Made two ways: cationic ring-opening copolymerization of trioxane (the tougher acetal copolymer) or anionic chain polymerization of formaldehyde (the Delrin homopolymer). Standard tables (Brandrup/Odian) list Tg near -83 °C and Tm near 181 °C.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -323,6 +324,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §7-11a"
     },
     name: "Poly(dimethylsiloxane)", aka: ["PDMS", "silicone rubber"], monomer: "Dimethylsiloxane / D4 or D3 cyclics",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: "9016-00-6", tg: "-125 °C", tm: "-40 °C", tags: ["silicone", "elastomer"],
     note: "Crystallizes only well below room temperature, so its melting point (Odian's Table 1-3) is far sub-ambient.",
     atoms: [{ id: 1, el: "Si" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -643,6 +645,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §2-8e"
     },
     name: "Polycarbonate (bisphenol A)", aka: ["PC", "BPA-PC", "Lexan", "Makrolon"],
+    noScheme: "the diol half is recoverable but the carbonyl half is not - a polycarbonate is made from phosgene, diphenyl carbonate or dimethyl carbonate, and all three leave the same -O-CO-O- behind, so the repeat unit cannot say which was used",
     monomer: "Bisphenol A + phosgene (or diphenyl carbonate)", cls: "Step-growth (polyester)",
     cas: "25037-45-0", tg: "145 °C", tags: ["engineering"],
     note: "Amorphous; the carbonate linkage makes it a polyester of carbonic acid.",
@@ -689,6 +692,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(p-phenylene sulfide)", aka: ["PPS", "Ryton"], monomer: "p-Dichlorobenzene + sodium sulfide",
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     cas: "25212-74-2", tg: "88 °C", tm: "285 °C", tags: ["engineering", "specialty"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "S" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 2 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 1, order: 1 }, { a: 4, b: 7, order: 1 }, { a: 7, b: "S1", order: 1 }]
@@ -740,6 +744,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §2-14b"
     },
     name: "Poly(2,6-dimethyl-1,4-phenylene oxide)", aka: ["PPO", "PPE", "poly(phenylene oxide)"], monomer: "2,6-Dimethylphenol",
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     cas: "25134-01-4", tg: "210 °C", tags: ["engineering", "polyether"],
     note: "Oxidative-coupling polymer; usually blended with polystyrene (Noryl).",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -765,6 +770,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §2-14c"
     },
     name: "Poly(ether ether ketone)", aka: ["PEEK"], monomer: "4,4'-Difluorobenzophenone + hydroquinone",
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     cas: "31694-16-3", tg: "143 °C", tm: "343 °C", tags: ["engineering"],
     note: "High-performance semicrystalline thermoplastic; three aryl rings per repeat.",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
@@ -830,6 +836,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §2-14c"
     },
     name: "Poly(ether sulfone)", aka: ["PES", "PESU"], monomer: "4,4'-Dichlorodiphenyl sulfone + hydroquinone",
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     cas: "25608-63-3", tg: "225 °C", tags: ["engineering"],
     note: "Amorphous, transparent high-temperature thermoplastic; the sulfone group stiffens the chain.",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
@@ -892,6 +899,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(ethylene disulfide)", aka: ["ethylene polysulfide", "polyethylene disulfide", "Thiokol"],
+    noScheme: "made by displacing halide from a dihalide with a polysulfide salt, so both leaving groups are gone from the repeat unit and the sulfur rank in the chain is set by the salt rather than by anything the drawing shows",
     monomer: "1,2-Dichloroethane + sodium disulfide", tg: "-27 °C", tags: ["specialty", "elastomer"],
     note: "A Thiokol-type polysulfide rubber; the S-S linkages give the solvent and weathering resistance used in sealants. The repeat unit is drawn disulfide-centered (-CH2-S-S-CH2-).",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "S" }, { id: 3, el: "S" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -1193,6 +1201,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(norbornene)-graft-poly(ethylene glycol)", aka: ["PNB-g-PEG", "polynorbornene-g-PEG", "PEG bottlebrush", "bottlebrush PEG"],
+    noScheme: "a bottlebrush is made from a macromonomer or by growing side chains off a finished backbone, so there is no small-molecule monomer that closes to this repeat unit - the backbone and the side chain come from different polymerisations",
     type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(ethylene oxide)"],
     monomer: "PEG-functional norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "polyether", "water-soluble", "drug delivery", "biomedical", "specialty"],
@@ -1207,6 +1216,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(norbornene)-graft-poly(lactide)", aka: ["PNB-g-PLA", "polynorbornene-g-PLA", "PLA bottlebrush"],
+    noScheme: "a bottlebrush is made from a macromonomer or by growing side chains off a finished backbone, so there is no small-molecule monomer that closes to this repeat unit - the backbone and the side chain come from different polymerisations",
     type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(lactide)"],
     monomer: "polylactide-functional norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "polyester", "biodegradable", "self-assembly", "specialty"],
@@ -1221,6 +1231,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Molecular bottlebrush by ATRP grafting-from", aka: ["molecular brush", "PBiBEM-g-PMMA", "grafting-from bottlebrush", "polymer brush (molecular)"],
+    noScheme: "a bottlebrush is made from a macromonomer or by growing side chains off a finished backbone, so there is no small-molecule monomer that closes to this repeat unit - the backbone and the side chain come from different polymerisations",
     type: "copolymer", arch: "bottlebrush", components: ["Poly(2-hydroxyethyl methacrylate)", "Poly(methyl methacrylate)"],
     monomer: "poly(2-(2-bromoisobutyryloxy)ethyl methacrylate) macroinitiator, then grafted monomer", cls: "Bottlebrush copolymer (ATRP grafting-from)", cas: null,
     tags: ["copolymer", "bottlebrush", "acrylic", "methacrylate", "specialty"],
@@ -1235,6 +1246,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Bottlebrush poly(dimethylsiloxane) elastomer", aka: ["PDMS bottlebrush elastomer", "supersoft elastomer", "solvent-free gel"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     type: "copolymer", arch: "bottlebrush", components: ["Poly(dimethylsiloxane)", "Poly(methyl methacrylate)"],
     monomer: "PDMS methacrylate macromonomer, crosslinked", cls: "Bottlebrush network (elastomer)", cas: null,
     tags: ["copolymer", "bottlebrush", "elastomer", "silicone", "biomedical", "specialty"],
@@ -1270,6 +1282,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(norbornene)-graft-poly(2-ethyl-2-oxazoline)", aka: ["PNB-g-PEtOx", "polyoxazoline bottlebrush", "POx bottlebrush", "PEtOx bottlebrush"],
+    noScheme: "a 2-oxazoline rearranges as it polymerises: the five-membered ring becomes an amide-linked backbone, so closing this repeat unit gives a three-membered acetylaziridine with the right molecular formula and the wrong structure entirely",
     type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(2-ethyl-2-oxazoline)"],
     monomer: "norbornene-terminated poly(2-ethyl-2-oxazoline) macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "water-soluble", "biomedical", "specialty"],
@@ -1312,6 +1325,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(norbornene)-graft-polystyrene", aka: ["PNB-g-PS", "polystyrene bottlebrush", "PS bottlebrush", "polynorbornene-g-PS"],
+    noScheme: "a bottlebrush is made from a macromonomer or by growing side chains off a finished backbone, so there is no small-molecule monomer that closes to this repeat unit - the backbone and the side chain come from different polymerisations",
     type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Polystyrene"],
     monomer: "polystyrene-functional norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "styrenic", "self-assembly", "specialty"],
@@ -1348,6 +1362,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Cationic bottlebrush polymer", aka: ["pDMAEMA bottlebrush", "bottleplex", "cationic brush vector", "gene delivery bottlebrush"],
+    noScheme: "a bottlebrush is made from a macromonomer or by growing side chains off a finished backbone, so there is no small-molecule monomer that closes to this repeat unit - the backbone and the side chain come from different polymerisations",
     type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(2-(dimethylamino)ethyl methacrylate)"],
     monomer: "pDMAEMA macromonomer with a norbornene end", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "methacrylate", "water-soluble", "drug delivery", "biomedical", "specialty"],
@@ -1391,6 +1406,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinyl alcohol)-graft-poly(ethylene oxide)", aka: ["PVA-g-PEO", "PVA-g-PEO bottlebrush", "polyvinyl alcohol bottlebrush"],
+    noScheme: "a bottlebrush is made from a macromonomer or by growing side chains off a finished backbone, so there is no small-molecule monomer that closes to this repeat unit - the backbone and the side chain come from different polymerisations",
     type: "copolymer", arch: "bottlebrush", components: ["Poly(vinyl alcohol)", "Poly(ethylene oxide)"],
     monomer: "poly(vinyl alcohol) backbone grafted with poly(ethylene oxide)", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "polyether", "water-soluble", "specialty"],
@@ -1498,6 +1514,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Bottlebrush polyelectrolyte", aka: ["polyelectrolyte brush", "charged bottlebrush", "molecular polyelectrolyte brush"],
+    noScheme: "a bottlebrush is made from a macromonomer or by growing side chains off a finished backbone, so there is no small-molecule monomer that closes to this repeat unit - the backbone and the side chain come from different polymerisations",
     type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(acrylic acid)"],
     monomer: "macromonomer with an ionisable side chain", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "water-soluble", "specialty"],
@@ -1511,6 +1528,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(norbornene)-graft-poly(caprolactone)", aka: ["PNB-g-PCL", "polycaprolactone bottlebrush", "PCL bottlebrush"],
+    noScheme: "a bottlebrush is made from a macromonomer or by growing side chains off a finished backbone, so there is no small-molecule monomer that closes to this repeat unit - the backbone and the side chain come from different polymerisations",
     type: "copolymer", arch: "bottlebrush", components: ["Polynorbornene", "Poly(caprolactone)"],
     monomer: "polycaprolactone-functional norbornene macromonomer", cls: "Bottlebrush copolymer (ROMP grafting-through)", cas: null,
     tags: ["copolymer", "bottlebrush", "polyester", "biodegradable", "biomedical", "specialty"],
@@ -1641,6 +1659,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(diallyldimethylammonium chloride)", aka: ["PDADMAC", "polyDADMAC", "poly(dimethyldiallylammonium chloride)"],
+    noScheme: "a cyclopolymerisation: the five-membered ring in this repeat unit is formed during propagation, when the growing radical adds to the second allyl group of the same monomer. The monomer itself is acyclic, so closing the unit would not return it",
     monomer: "diallyldimethylammonium chloride", cls: "Addition (vinyl)", cas: null,
     tags: ["water-soluble", "polyelectrolyte", "specialty"],
     verified: false,
@@ -1678,6 +1697,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2-methyl-2-oxazoline)", aka: ["PMeOx", "PMOXA", "poly(2-methyl oxazoline)"],
+    noScheme: "a 2-oxazoline rearranges as it polymerises: the five-membered ring becomes an amide-linked backbone, so closing this repeat unit gives a three-membered acetylaziridine with the right molecular formula and the wrong structure entirely",
     monomer: "2-methyl-2-oxazoline", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["water-soluble", "biomedical", "specialty"],
     verified: false,
@@ -1687,6 +1707,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2-isopropyl-2-oxazoline)", aka: ["PiPrOx", "PIPOZ", "poly(2-isopropyl oxazoline)"],
+    noScheme: "a 2-oxazoline rearranges as it polymerises: the five-membered ring becomes an amide-linked backbone, so closing this repeat unit gives a three-membered acetylaziridine with the right molecular formula and the wrong structure entirely",
     monomer: "2-isopropyl-2-oxazoline", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["water-soluble", "thermoresponsive", "biomedical", "specialty"],
     verified: false,
@@ -1732,6 +1753,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Cellulose", aka: ["cellulose", "alpha-cellulose", "cotton linters"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "D-glucose (beta-1,4 linked)", cls: "Step-growth (polyester)", cas: "9004-34-6",
     tags: ["biopolymer", "biobased", "biodegradable", "specialty"],
     verified: false,
@@ -1741,6 +1763,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Chitin", aka: ["chitin", "poly(N-acetylglucosamine)"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "N-acetyl-D-glucosamine (beta-1,4 linked)", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "biodegradable", "specialty"],
     verified: false,
@@ -1750,6 +1773,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Chitosan", aka: ["chitosan", "deacetylated chitin", "poly(D-glucosamine)"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "D-glucosamine (beta-1,4 linked)", cls: "Step-growth (polyester)", cas: "9012-76-4",
     tags: ["biopolymer", "biobased", "biodegradable", "water-soluble", "polyelectrolyte", "biomedical", "specialty"],
     verified: false,
@@ -1768,6 +1792,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Hyaluronan", aka: ["hyaluronic acid", "HA", "hyaluronate", "sodium hyaluronate"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "glucuronic acid + N-acetylglucosamine disaccharide", cls: "Step-growth (polyester)", cas: "9004-61-9",
     tags: ["biopolymer", "water-soluble", "polyelectrolyte", "biomedical", "specialty"],
     verified: false,
@@ -1777,6 +1802,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Alginate", aka: ["alginic acid", "sodium alginate", "algin"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "mannuronic and guluronic acid", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "polyelectrolyte", "biomedical", "specialty"],
     verified: false,
@@ -1786,6 +1812,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Dextran", aka: ["dextran", "alpha-1,6-glucan"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "D-glucose (alpha-1,6 linked)", cls: "Step-growth (polyester)", cas: "9004-54-0",
     tags: ["biopolymer", "water-soluble", "biomedical", "specialty"],
     verified: false,
@@ -1804,6 +1831,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(L-lysine)", aka: ["PLL", "poly-L-lysine", "polylysine"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "L-lysine N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: "25104-18-1",
     tags: ["biopolymer", "water-soluble", "polyelectrolyte", "drug delivery", "biomedical", "specialty"],
     verified: false,
@@ -1813,6 +1841,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(L-glutamic acid)", aka: ["PGlu", "poly-L-glutamate", "polyglutamic acid", "poly(glutamic acid)"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "L-glutamic acid N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "water-soluble", "polyelectrolyte", "drug delivery", "biomedical", "specialty"],
     verified: false,
@@ -1822,6 +1851,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(gamma-benzyl-L-glutamate)", aka: ["PBLG", "poly(benzyl glutamate)"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "gamma-benzyl-L-glutamate N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "liquid crystalline", "specialty"],
     verified: false,
@@ -1831,6 +1861,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyglycine", aka: ["poly(glycine)", "PGly"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "glycine N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "specialty"],
     verified: false,
@@ -1846,6 +1877,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §2-14c"
     },
     name: "Polysulfone", aka: ["PSU", "polysulfone (bisphenol A)", "Udel"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "bisphenol A + 4,4'-dichlorodiphenyl sulfone", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
@@ -1864,6 +1896,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polybenzimidazole", aka: ["PBI", "poly(2,2'-m-phenylene-5,5'-bibenzimidazole)", "Celazole"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "3,3'-diaminobenzidine + isophthalic acid", cls: "Step-growth (polyamide)", cas: "32075-68-6",
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
@@ -1879,6 +1912,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §2-14c"
     },
     name: "Poly(phenylene ether ketone)", aka: ["PEK", "poly(ether ketone)", "polyetherketone"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "4,4'-difluorobenzophenone + hydroquinone", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
@@ -1912,6 +1946,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyurea", aka: ["polyurea", "poly(urea)", "MDI-diamine polyurea"],
+    noScheme: "a urea linkage is symmetric in its two nitrogens, so nothing in the repeat unit says which of them came from the diamine and which from the diisocyanate; both readings fit the structure and choosing one would be a guess",
     monomer: "diisocyanate + diamine", cls: "Step-growth (polyamide)", cas: null,
     tags: ["elastomer", "engineering", "specialty"],
     verified: false,
@@ -1939,6 +1974,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Perfluoroalkoxy alkane", aka: ["PFA", "perfluoroalkoxy", "Teflon PFA"],
+    noScheme: "an alternating copolymer: the repeat unit spans one of each monomer, so cutting it in half is the whole question and the drawing does not say where the join was",
     monomer: "tetrafluoroethylene + perfluoropropyl vinyl ether", cls: "Addition (vinyl)", cas: "80701-91-3",
     tags: ["fluoropolymer", "high-temperature", "specialty"],
     verified: false,
@@ -1948,6 +1984,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(methylphenylsiloxane)", aka: ["PMPS", "poly(methyl phenyl siloxane)", "phenyl silicone"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     monomer: "methylphenyldichlorosilane or its cyclic trimer", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "high-temperature", "specialty"],
     verified: false,
@@ -1957,6 +1994,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polydimethylsilane", aka: ["PDMS (silane)", "poly(dimethylsilane)", "polysilane"],
+    noScheme: "made by hydrolysing and condensing a dichlorosilane rather than by opening a ring, so the species that polymerises is a silanediol formed in situ and the repeat unit cannot show the chloride that left",
     monomer: "dichlorodimethylsilane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["specialty"],
     verified: false,
@@ -1966,6 +2004,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(dichlorophosphazene)", aka: ["polyphosphazene", "poly(dichlorophosphazene)", "inorganic rubber"],
+    noScheme: "made by ring-opening hexachlorocyclotriphosphazene, which is three of these repeat units in one ring, so a single unit closes to a two-membered ring that does not exist",
     monomer: "hexachlorocyclotriphosphazene", cls: "Ring-opening", cas: "26085-02-9",
     tags: ["elastomer", "specialty"],
     verified: false,
@@ -2065,6 +2104,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(sebacic anhydride)", aka: ["PSA", "polysebacic anhydride", "poly(sebacic acid)"],
+    noScheme: "an anhydride is a diacid that has lost water to itself rather than a pair of different monomers, so cutting the two acyl-oxygen bonds would strand the bridging oxygen instead of returning two reagents",
     monomer: "sebacic acid", cls: "Step-growth (polyester)", cas: null,
     tags: ["biodegradable", "drug delivery", "biomedical", "specialty"],
     verified: false,
@@ -2247,6 +2287,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(ether ketone ketone)", aka: ["PEKK", "poly(ether ketone ketone)"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "diphenyl ether + terephthaloyl/isophthaloyl chloride", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
@@ -2265,6 +2306,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(benzoxazole)", aka: ["PBO", "Zylon", "poly(p-phenylene benzobisoxazole)"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "diaminoresorcinol + terephthalic acid", cls: "Step-growth (polyamide)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
@@ -2274,6 +2316,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polycarbosilane", aka: ["PCS", "poly(dimethylsilylene methylene)", "SiC precursor"],
+    noScheme: "made by hydrolysing and condensing a dichlorosilane rather than by opening a ring, so the species that polymerises is a silanediol formed in situ and the repeat unit cannot show the chloride that left",
     monomer: "polydimethylsilane (thermal rearrangement)", cls: "Ring-opening (silicone)", cas: null,
     tags: ["high-temperature", "specialty"],
     verified: false,
@@ -2283,6 +2326,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(bis(trifluoroethoxy)phosphazene)", aka: ["PTFEP", "fluorophosphazene", "poly(bis(trifluoroethoxy)phosphazene)"],
+    noScheme: "made by substituting poly(dichlorophosphazene) after it is formed, so the side groups on this repeat unit were never part of a monomer - the chain existed before they were attached",
     monomer: "poly(dichlorophosphazene) + trifluoroethoxide", cls: "Ring-opening", cas: null,
     tags: ["fluoropolymer", "elastomer", "biomedical", "specialty"],
     verified: false,
@@ -2292,6 +2336,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Cellulose acetate", aka: ["CA", "acetylated cellulose", "cellulose triacetate"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "cellulose + acetic anhydride", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "specialty"],
     verified: false,
@@ -2373,6 +2418,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(ethylene-alt-tetrafluoroethylene)", aka: ["ETFE", "Tefzel", "ethylene tetrafluoroethylene"],
+    noScheme: "an alternating copolymer: the repeat unit spans one of each monomer, so cutting it in half is the whole question and the drawing does not say where the join was",
     monomer: "ethylene + tetrafluoroethylene", cls: "Addition (vinyl)", cas: null,
     tags: ["fluoropolymer", "engineering", "specialty"],
     verified: false,
@@ -2382,6 +2428,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(ethylene-alt-chlorotrifluoroethylene)", aka: ["ECTFE", "Halar"],
+    noScheme: "an alternating copolymer: the repeat unit spans one of each monomer, so cutting it in half is the whole question and the drawing does not say where the join was",
     monomer: "ethylene + chlorotrifluoroethylene", cls: "Addition (vinyl)", cas: null,
     tags: ["fluoropolymer", "engineering", "specialty"],
     verified: false,
@@ -2427,6 +2474,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(trifluoropropylmethylsiloxane)", aka: ["FVMQ", "fluorosilicone", "poly(3,3,3-trifluoropropylmethylsiloxane)"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     monomer: "trifluoropropylmethylcyclotrisiloxane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "fluoropolymer", "elastomer", "specialty"],
     verified: false,
@@ -2436,6 +2484,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(diphenylsiloxane)", aka: ["PDPS", "poly(diphenyl siloxane)"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     monomer: "diphenyldichlorosilane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "high-temperature", "specialty"],
     verified: false,
@@ -2445,6 +2494,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(methylhydrosiloxane)", aka: ["PMHS", "poly(methylhydrosiloxane)", "polymethylhydrosiloxane"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     monomer: "methyldichlorosilane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "specialty"],
     verified: false,
@@ -2454,6 +2504,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(methylvinylsiloxane)", aka: ["PMVS", "vinyl silicone", "poly(methylvinylsiloxane)"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     queryTerms: ["methylvinylsiloxane silicone vinyl crosslink"],
     monomer: "methylvinylcyclosiloxane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "elastomer", "specialty"],
@@ -2673,6 +2724,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinylene carbonate)", aka: ["PVC (carbonate)", "poly(1,3-dioxol-2-one)"],
+    noScheme: "the two backbone carbons are also the two carbons of the cyclic carbonate, so nothing distinguishes the ring bond from the double bond that polymerised - reversing it would have to guess which of the two opened",
     monomer: "vinylene carbonate", cls: "Addition (vinyl)", cas: null,
     tags: ["specialty"],
     verified: false,
@@ -2854,6 +2906,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyphenylsulfone", aka: ["PPSU", "Radel", "poly(phenyl sulfone)"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "4,4'-biphenol + 4,4'-dichlorodiphenyl sulfone", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
@@ -2863,6 +2916,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(aryl ether nitrile)", aka: ["PEN (nitrile)", "poly(phthalazinone ether nitrile)", "PAEN"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "bisphenol + 2,6-dichlorobenzonitrile", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
@@ -2872,6 +2926,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(1,3,4-oxadiazole)", aka: ["POD", "polyoxadiazole", "poly(aryl oxadiazole)"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "terephthalic acid + hydrazine sulfate", cls: "Step-growth (polyamide)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
@@ -2881,6 +2936,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(phenylene sulfide sulfone)", aka: ["PPSS", "poly(phenylene sulfide sulfone)"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "4,4'-dichlorodiphenyl sulfone + sodium sulfide", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
@@ -2920,9 +2976,9 @@ window.POLYMER_DB = [
     monomer: "1,4-cyclohexanedimethanol + terephthalic acid", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "specialty"],
     verified: false,
-    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: "S1", el: "*" }, { id: 11, el: "C" }, { id: 12, el: "C" }],
-    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: "S1", order: 1 }, { a: 7, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 4, b: 12, order: 1 }],
-    note: "PET with a cycloaliphatic diol instead of ethylene glycol, which pushes the melting point to about 290 C - high enough for a polyester to survive lead-free solder reflow, which PET and PBT do not. The drawn unit is the diol segment; the full repeat also contains the terephthalate shown under PET."
+    atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "O" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 4, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 20, b: 15, order: 1 }, { a: 18, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 21, b: "S1", order: 1 }],
+    note: "PET with a cycloaliphatic diol instead of ethylene glycol, which pushes the melting point to about 290 C - high enough for a polyester to survive lead-free solder reflow, which PET and PBT do not."
   },
   {
     name: "Poly(ethylene terephthalate-co-cyclohexylenedimethylene terephthalate)", aka: ["PETG", "glycol-modified PET", "PET-G"],
@@ -2944,6 +3000,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(styrene-alt-maleic anhydride)", aka: ["SMA", "poly(styrene-maleic anhydride)", "SMA copolymer"],
+    noScheme: "an alternating copolymer: the repeat unit spans one of each monomer, so cutting it in half is the whole question and the drawing does not say where the join was",
     monomer: "styrene + maleic anhydride", cls: "Addition (vinyl)", cas: null,
     tags: ["copolymer", "styrenic", "specialty"],
     verified: false,
@@ -2980,6 +3037,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(butadiene) (1,2-vinyl)", aka: ["1,2-polybutadiene", "vinyl polybutadiene", "syndiotactic 1,2-PBd"],
+    noScheme: "the 1,2 addition mode: butadiene adds through one double bond and leaves the other hanging as a pendant vinyl, so the backbone bond that formed is not the one a 1,4-addition rule looks for",
     monomer: "1,3-butadiene (1,2-addition)", cls: "Addition (diene)", cas: null,
     tags: ["elastomer", "specialty"],
     verified: false,
@@ -3033,6 +3091,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Curdlan", aka: ["curdlan", "beta-1,3-glucan"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "D-glucose (beta-1,3 linked)", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "specialty"],
     verified: false,
@@ -3051,6 +3110,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Pectin", aka: ["pectin", "polygalacturonic acid", "E440"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "D-galacturonic acid, partly methyl-esterified", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "polyelectrolyte", "specialty"],
     verified: false,
@@ -3087,6 +3147,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Inulin", aka: ["inulin", "chicory fibre", "fructan", "chicory inulin", "polyfructose"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "D-fructose (beta-2,1 linked) with a terminal glucose", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "specialty"],
     verified: false,
@@ -3286,6 +3347,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinyl methyl ether-alt-maleic anhydride)", aka: ["PVM/MA", "Gantrez", "poly(methyl vinyl ether-alt-maleic anhydride)"],
+    noScheme: "an alternating copolymer: the repeat unit spans one of each monomer, so cutting it in half is the whole question and the drawing does not say where the join was",
     monomer: "methyl vinyl ether + maleic anhydride", cls: "Addition (vinyl)", cas: null,
     tags: ["copolymer", "water-soluble", "specialty"],
     verified: false,
@@ -3304,6 +3366,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Cellulose nanocrystal", aka: ["CNC", "nanocrystalline cellulose", "cellulose nanowhisker"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     form: "acid-hydrolysed nanocrystal",
     monomer: "cellulose (acid-hydrolysed to the crystalline domains)", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "specialty"],
@@ -3322,6 +3385,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Methylcellulose", aka: ["MC", "methyl cellulose", "E461"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "cellulose + methyl chloride", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "specialty"],
     verified: false,
@@ -3331,6 +3395,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Carboxymethylcellulose", aka: ["CMC", "cellulose gum", "sodium carboxymethylcellulose", "E466"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "cellulose + sodium chloroacetate", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "polyelectrolyte", "specialty"],
     verified: false,
@@ -3340,6 +3405,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Hydroxyethylcellulose", aka: ["HEC", "hydroxyethyl cellulose"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "cellulose + ethylene oxide", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "specialty"],
     verified: false,
@@ -3358,6 +3424,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Ethylcellulose", aka: ["EC", "ethyl cellulose"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "cellulose + ethyl chloride", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "specialty"],
     verified: false,
@@ -3394,6 +3461,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Xylan", aka: ["xylan", "arabinoxylan", "hemicellulose"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "D-xylose (beta-1,4 linked)", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "specialty"],
     verified: false,
@@ -3448,6 +3516,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(N-substituted glycine)", aka: ["peptoid", "polypeptoid", "poly-N-substituted glycine"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "N-substituted glycine (submonomer solid-phase synthesis)", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "biomedical", "specialty"],
     verified: false,
@@ -3502,6 +3571,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Hydroxypropylcellulose", aka: ["HPC", "hydroxypropyl cellulose", "E463"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "cellulose + propylene oxide", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "specialty"],
     verified: false,
@@ -3511,6 +3581,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Cellulose sulfate", aka: ["cellulose sulphate", "sodium cellulose sulfate"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "cellulose + sulfating agent", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "polyelectrolyte", "biomedical", "specialty"],
     verified: false,
@@ -3547,6 +3618,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Chitosan oligosaccharide", aka: ["COS", "chitooligosaccharide", "oligochitosan"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     form: "oligosaccharide",
     monomer: "D-glucosamine (short chains)", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "water-soluble", "biomedical", "specialty"],
@@ -3565,6 +3637,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Bacterial cellulose", aka: ["nata de coco", "microbial cellulose", "Acetobacter cellulose"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     form: "bacterially synthesised",
     monomer: "D-glucose (beta-1,4 linked, bacterially synthesised)", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "biobased", "biomedical", "specialty"],
@@ -3653,6 +3726,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polysulfide rubber", aka: ["Thiokol", "polysulfide sealant", "poly(alkylene sulfide)"],
+    noScheme: "made by displacing halide from a dihalide with a polysulfide salt, so both leaving groups are gone from the repeat unit and the sulfur rank in the chain is set by the salt rather than by anything the drawing shows",
     monomer: "bis(2-chloroethyl) formal + sodium polysulfide", cls: "Step-growth (polyester)", cas: null,
     tags: ["elastomer", "specialty"],
     verified: false,
@@ -3707,6 +3781,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Aliphatic polyketone", aka: ["POK", "Carilon", "poly(ethylene-alt-carbon monoxide)"],
+    noScheme: "an alternating copolymer: the repeat unit spans one of each monomer, so cutting it in half is the whole question and the drawing does not say where the join was",
     monomer: "carbon monoxide + ethylene", cls: "Addition (vinyl)", cas: null,
     tags: ["engineering", "specialty"],
     verified: false,
@@ -4125,6 +4200,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinylene fluoride)", aka: ["poly(1,2-difluoroethylene)", "PVneF"],
+    noScheme: "reversing this repeat unit calls for an alkyne, because the backbone carries a double bond in every unit - which does not match the 1,2-difluoroethylene named as its monomer, so no scheme is drawn until that is resolved",
     monomer: "1,2-difluoroethylene", cls: "Addition (vinyl)", cas: null,
     tags: ["fluoropolymer", "specialty"],
     verified: false,
@@ -4152,6 +4228,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(cyanopropylmethylsiloxane)", aka: ["OV-275", "cyanopropyl silicone", "poly(3-cyanopropylmethylsiloxane)"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     monomer: "cyanopropylmethyl cyclosiloxane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "specialty"],
     verified: false,
@@ -4161,6 +4238,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(methyloctylsiloxane)", aka: ["OV-7 type", "octyl silicone", "poly(methyloctylsiloxane)"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     monomer: "methyloctyl cyclosiloxane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "specialty"],
     verified: false,
@@ -4390,6 +4468,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Cyclic olefin polymer", aka: ["COP", "Zeonex", "Zeonor"],
+    noScheme: "made by ring-opening metathesis, where the catalyst cuts the alkene and re-forms it in the chain - so the bond that opened is still a double bond in the polymer, and there is no saturated linkage to reverse",
     monomer: "norbornene derivative by ROMP, then hydrogenation", cls: "Ring-opening", cas: null,
     tags: ["engineering", "optical", "specialty"],
     verified: false,
@@ -4542,6 +4621,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(sarcosine)", aka: ["polysarcosine", "PSar", "poly(N-methylglycine)"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "sarcosine N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "water-soluble", "biomedical", "specialty"],
     verified: false,
@@ -4551,6 +4631,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(L-leucine)", aka: ["polyleucine", "PLeu", "poly(L-leucine)"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "L-leucine N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "specialty"],
     verified: false,
@@ -4560,6 +4641,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(L-tyrosine)", aka: ["polytyrosine", "PTyr", "poly(L-tyrosine)"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "L-tyrosine N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "biomedical", "specialty"],
     verified: false,
@@ -4569,6 +4651,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(L-cysteine)", aka: ["polycysteine", "PCys", "poly(L-cysteine)"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "L-cysteine N-carboxyanhydride (S-protected)", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "biomedical", "specialty"],
     verified: false,
@@ -4578,6 +4661,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(L-histidine)", aka: ["polyhistidine", "PHis", "poly(L-histidine)"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "L-histidine N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "water-soluble", "polyelectrolyte", "drug delivery", "biomedical", "specialty"],
     verified: false,
@@ -4587,6 +4671,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(L-arginine)", aka: ["polyarginine", "PArg", "poly(L-arginine)"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "L-arginine N-carboxyanhydride (protected)", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "water-soluble", "polyelectrolyte", "drug delivery", "biomedical", "specialty"],
     verified: false,
@@ -4596,6 +4681,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(L-proline)", aka: ["polyproline", "PPro", "poly(L-proline)"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "L-proline N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "specialty"],
     verified: false,
@@ -4605,6 +4691,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2-butyl-2-oxazoline)", aka: ["PBuOx", "poly(2-n-butyl-2-oxazoline)"],
+    noScheme: "a 2-oxazoline rearranges as it polymerises: the five-membered ring becomes an amide-linked backbone, so closing this repeat unit gives a three-membered acetylaziridine with the right molecular formula and the wrong structure entirely",
     monomer: "2-butyl-2-oxazoline", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["water-soluble", "biomedical", "specialty"],
     verified: false,
@@ -4614,6 +4701,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2-phenyl-2-oxazoline)", aka: ["PPhOx", "poly(2-phenyl-2-oxazoline)"],
+    noScheme: "a 2-oxazoline rearranges as it polymerises: the five-membered ring becomes an amide-linked backbone, so closing this repeat unit gives a three-membered acetylaziridine with the right molecular formula and the wrong structure entirely",
     monomer: "2-phenyl-2-oxazoline", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["specialty"],
     verified: false,
@@ -4623,6 +4711,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2-nonyl-2-oxazoline)", aka: ["PNonOx", "poly(2-nonyl-2-oxazoline)"],
+    noScheme: "a 2-oxazoline rearranges as it polymerises: the five-membered ring becomes an amide-linked backbone, so closing this repeat unit gives a three-membered acetylaziridine with the right molecular formula and the wrong structure entirely",
     monomer: "2-nonyl-2-oxazoline", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["specialty"],
     verified: false,
@@ -4632,6 +4721,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2-oxazine)", aka: ["poly(2-methyl-2-oxazine)", "PMeOzi", "polyoxazine"],
+    noScheme: "a cyclic imino ether that rearranges as it polymerises, exactly as the 2-oxazolines do: the ring becomes an amide-linked backbone, so closing this repeat unit gives a small ring with the right formula and the wrong structure",
     monomer: "2-methyl-2-oxazine", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["water-soluble", "biomedical", "specialty"],
     verified: false,
@@ -4641,6 +4731,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(hydroxyproline)", aka: ["polyhydroxyproline", "PHyp", "poly(4-hydroxy-L-proline)"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "4-hydroxy-L-proline N-carboxyanhydride", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "water-soluble", "biomedical", "specialty"],
     verified: false,
@@ -4650,6 +4741,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polysilazane", aka: ["perhydropolysilazane", "PHPS", "polysilazane"],
+    noScheme: "made by hydrolysing and condensing a dichlorosilane rather than by opening a ring, so the species that polymerises is a silanediol formed in situ and the repeat unit cannot show the chloride that left",
     monomer: "dichlorosilane + ammonia", cls: "Ring-opening (silicone)", cas: null,
     tags: ["high-temperature", "specialty"],
     verified: false,
@@ -4677,6 +4769,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polygermane", aka: ["poly(dialkylgermane)", "polygermanes"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     monomer: "dichlorodialkylgermane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
@@ -4703,6 +4796,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(aryloxyphosphazene)", aka: ["poly(diphenoxyphosphazene)", "aryloxy polyphosphazene"],
+    noScheme: "made by substituting poly(dichlorophosphazene) after it is formed, so the side groups on this repeat unit were never part of a monomer - the chain existed before they were attached",
     monomer: "poly(dichlorophosphazene) + sodium phenoxide", cls: "Ring-opening", cas: null,
     tags: ["elastomer", "high-temperature", "specialty"],
     verified: false,
@@ -4730,6 +4824,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(disulfide)", aka: ["polydisulfide", "poly(disulphide)", "dynamic disulfide polymer"],
+    noScheme: "made by displacing halide from a dihalide with a polysulfide salt, so both leaving groups are gone from the repeat unit and the sulfur rank in the chain is set by the salt rather than by anything the drawing shows",
     monomer: "dithiol, oxidatively coupled", cls: "Step-growth (polyester)", cas: null,
     tags: ["biodegradable", "specialty"],
     verified: false,
@@ -4867,6 +4962,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(maleic anhydride)", aka: ["PMAn", "poly(maleic anhydride)", "homopolymaleic anhydride"],
+    noScheme: "the two backbone carbons are also part of the anhydride ring, so the bond that was the alkene cannot be told apart from the ring bond beside it",
     monomer: "maleic anhydride", cls: "Addition (vinyl)", cas: null,
     tags: ["specialty", "water-soluble"],
     verified: false,
@@ -4912,6 +5008,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(furfuryl alcohol)", aka: ["PFA resin", "polyfurfuryl alcohol", "furan resin"],
+    noScheme: "formed by acid-catalysed condensation of furfuryl alcohol with itself, which loses water and then keeps going - the linear methylene-bridged chain drawn here is only the first stage before it crosslinks, so no single monomer closure describes the material",
     monomer: "furfuryl alcohol", cls: "Step-growth (polyester)", cas: null,
     tags: ["bio-based", "high-temperature", "coating", "specialty"],
     verified: false,
@@ -4921,6 +5018,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(1,2,3-triazole)", aka: ["click polytriazole", "CuAAC polymer", "polytriazole"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "diazide + dialkyne", cls: "Step-growth (polyamide)", cas: null,
     tags: ["specialty"],
     verified: false,
@@ -4940,6 +5038,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Levan", aka: ["beta-2,6-fructan", "levan polysaccharide"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "D-fructose", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "water-soluble", "bio-based", "specialty"],
     verified: false,
@@ -5102,6 +5201,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Cyanophycin", aka: ["multi-L-arginyl-poly(L-aspartic acid)", "CGP", "cyanophycin granule polypeptide"],
+    noScheme: "made by polymerising an N-carboxyanhydride, which expels carbon dioxide as it opens, so the repeat unit is a whole CO2 lighter than the monomer and closing it would draw an alpha-lactam that was never in the flask",
     monomer: "L-aspartic acid + L-arginine", cls: "Ring-opening (polyamide)", cas: null,
     tags: ["biopolymer", "water-soluble", "specialty"],
     verified: false,
@@ -5299,6 +5399,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(butylene carbonate)", aka: ["PBC", "poly(butylene carbonate)", "poly(tetramethylene carbonate)"],
+    noScheme: "the diol half is recoverable but the carbonyl half is not - a polycarbonate is made from phosgene, diphenyl carbonate or dimethyl carbonate, and all three leave the same -O-CO-O- behind, so the repeat unit cannot say which was used",
     monomer: "1,4-butanediol + dimethyl carbonate", cls: "Step-growth (polyester)", cas: null,
     tags: ["biodegradable", "specialty"],
     verified: false,
@@ -5308,6 +5409,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(hexamethylene carbonate)", aka: ["PHMC", "poly(hexamethylene carbonate)", "polycarbonate diol"],
+    noScheme: "the diol half is recoverable but the carbonyl half is not - a polycarbonate is made from phosgene, diphenyl carbonate or dimethyl carbonate, and all three leave the same -O-CO-O- behind, so the repeat unit cannot say which was used",
     monomer: "1,6-hexanediol + dimethyl carbonate", cls: "Step-growth (polyester)", cas: null,
     tags: ["biodegradable", "coating", "specialty"],
     verified: false,
@@ -5345,6 +5447,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(ether ether ketone ketone)", aka: ["PEEKK", "poly(ether ether ketone ketone)"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "hydroquinone + terephthaloyl chloride derivatives", cls: "Step-growth (polyester)", cas: null,
     tags: ["high-temperature", "engineering", "specialty"],
     verified: false,
@@ -5354,6 +5457,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(phenylene sulfide ketone)", aka: ["PPSK", "poly(phenylene sulfide ketone)"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "sodium sulfide + dichlorobenzophenone", cls: "Step-growth (polyester)", cas: null,
     tags: ["high-temperature", "engineering", "specialty"],
     verified: false,
@@ -5363,6 +5467,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(thioether ketone)", aka: ["PTK", "poly(thioether ketone)", "PEKS"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "4-mercaptobenzoic acid derivative", cls: "Step-growth (polyester)", cas: null,
     tags: ["high-temperature", "engineering", "specialty"],
     verified: false,
@@ -5435,6 +5540,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(isoindigo)", aka: ["PII", "poly(isoindigo)", "isoindigo polymer"],
+    noScheme: "built by palladium cross-coupling between a dibrominated isoindigo and a distannyl or diboryl partner, so both leaving groups are gone from the repeat unit and it cannot say which half carried which",
     monomer: "isoindigo", cls: "Step-growth (polyamide)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
@@ -5453,6 +5559,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(azomethine)", aka: ["polyazomethine", "poly(Schiff base)", "polyimine"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "dialdehyde + diamine", cls: "Step-growth (polyamide)", cas: null,
     tags: ["high-temperature", "specialty"],
     verified: false,
@@ -5525,6 +5632,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(diethylsiloxane)", aka: ["PDES", "poly(diethylsiloxane)"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     monomer: "diethyldichlorosilane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "liquid crystalline", "specialty"],
     verified: false,
@@ -5534,6 +5642,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(phenylsilsesquioxane)", aka: ["PPSQ", "polysilsesquioxane", "poly(phenylsilsesquioxane)"],
+    noScheme: "made by hydrolysing and condensing a dichlorosilane rather than by opening a ring, so the species that polymerises is a silanediol formed in situ and the repeat unit cannot show the chloride that left",
     monomer: "phenyltrichlorosilane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "high-temperature", "coating", "specialty"],
     verified: false,
@@ -5543,6 +5652,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polystannane", aka: ["poly(dibutylstannane)", "polystannane", "tin chain polymer"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     monomer: "dibutyltin dihydride", cls: "Ring-opening (silicone)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
@@ -5552,6 +5662,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polypentenamer", aka: ["trans-polypentenamer", "poly(1-pentenylene)", "TPR"],
+    noScheme: "made by ring-opening metathesis, where the catalyst cuts the alkene and re-forms it in the chain - so the bond that opened is still a double bond in the polymer, and there is no saturated linkage to reverse",
     monomer: "cyclopentene", cls: "Addition (diene)", cas: null,
     tags: ["elastomer", "tire", "specialty"],
     verified: false,
@@ -5561,6 +5672,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(norbornene dicarboximide)", aka: ["PNDI (imide)", "poly(N-methylnorbornene dicarboximide)", "ROMP polyimide"],
+    noScheme: "made by ring-opening metathesis, where the catalyst cuts the alkene and re-forms it in the chain - so the bond that opened is still a double bond in the polymer, and there is no saturated linkage to reverse",
     monomer: "N-methyl norbornene dicarboximide", cls: "Addition (diene)", cas: null,
     tags: ["specialty"],
     verified: false,
@@ -5588,6 +5700,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(semicarbazide)", aka: ["polysemicarbazide", "poly(semicarbazide)"],
+    noScheme: "a urea linkage is symmetric in its two nitrogens, so nothing in the repeat unit says which of them came from the diamine and which from the diisocyanate; both readings fit the structure and choosing one would be a guess",
     monomer: "diisocyanate + hydrazine", cls: "Step-growth (polyamide)", cas: null,
     tags: ["polyamide", "specialty"],
     verified: false,
@@ -5597,6 +5710,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(thiosemicarbazide)", aka: ["polythiosemicarbazide", "poly(thiosemicarbazide)"],
+    noScheme: "a urea linkage is symmetric in its two nitrogens, so nothing in the repeat unit says which of them came from the diamine and which from the diisocyanate; both readings fit the structure and choosing one would be a guess",
     monomer: "diisothiocyanate + hydrazine", cls: "Step-growth (polyamide)", cas: null,
     tags: ["specialty"],
     verified: false,
@@ -5644,6 +5758,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(ketal)", aka: ["polyketal", "PK (ketal)", "acid-degradable polyketal"],
+    noScheme: "made from a diol and 2,2-dimethoxypropane, which contributes only its ketal carbon and leaves both methoxy groups behind as methanol - so one of the two reagents is largely absent from the repeat unit",
     monomer: "diol + 2,2-dimethoxypropane", cls: "Step-growth (polyester)", cas: null,
     tags: ["biodegradable", "drug delivery", "biomedical", "specialty"],
     verified: false,
@@ -5653,6 +5768,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(tetrafluoroethylene-alt-propylene)", aka: ["FEPM", "TFE/P", "Aflas", "tetrafluoroethylene propylene"],
+    noScheme: "an alternating copolymer: the repeat unit spans one of each monomer, so cutting it in half is the whole question and the drawing does not say where the join was",
     monomer: "tetrafluoroethylene + propylene", cls: "Addition (vinyl)", cas: null,
     tags: ["fluoropolymer", "elastomer", "oil-resistant", "specialty"],
     verified: false,
@@ -5662,6 +5778,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(ether sulfone ketone)", aka: ["PESK", "poly(ether sulfone ketone)"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "bisphenol + dihalodiphenyl sulfone and ketone", cls: "Step-growth (polyester)", cas: null,
     tags: ["high-temperature", "engineering", "specialty"],
     verified: false,
@@ -5671,6 +5788,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Salicylate polyanhydride", aka: ["PolyAspirin", "salicylic acid polyanhydride", "poly(anhydride ester)"],
+    noScheme: "an anhydride is a diacid that has lost water to itself rather than a pair of different monomers, so cutting the two acyl-oxygen bonds would strand the bridging oxygen instead of returning two reagents",
     monomer: "salicylic acid + sebacic acid", cls: "Step-growth (polyester)", cas: null,
     tags: ["biodegradable", "biomedical", "drug delivery", "specialty"],
     verified: false,
@@ -5842,6 +5960,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Teichoic acid", aka: ["teichoic acid", "lipoteichoic acid", "poly(glycerol phosphate)"],
+    noScheme: "the backbone is a glycosidic linkage built by enzymes from an activated sugar nucleotide, not by condensing the free sugar, so a monomer derived by cutting the linkage would name a reagent no organism uses",
     monomer: "glycerol or ribitol phosphate", cls: "Step-growth (polyester)", cas: null,
     tags: ["biopolymer", "polyelectrolyte", "specialty"],
     verified: false,
@@ -5877,6 +5996,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyphosphate", aka: ["inorganic polyphosphate", "polyP", "sodium hexametaphosphate"],
+    noScheme: "a chain of phosphate anhydride bonds condensed from orthophosphate at high temperature, not a pair of organic monomers, so the derivation this tool performs does not describe it",
     monomer: "orthophosphate", cls: "Step-growth (polyester)", cas: null,
     tags: ["water-soluble", "polyelectrolyte", "biopolymer", "specialty"],
     verified: false,
@@ -5966,6 +6086,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2,6-diphenyl-1,4-phenylene oxide)", aka: ["Tenax TA", "PPPO", "poly(2,6-diphenylphenylene oxide)"],
+    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "2,6-diphenylphenol", cls: "Step-growth (polyester)", cas: null,
     tags: ["high-temperature", "specialty"],
     verified: false,
@@ -6246,6 +6367,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Silanol-terminated poly(dimethylsiloxane), 1000 cSt", aka: ["DMS-S31","silanol-terminated PDMS","hydroxy-terminated PDMS","silanol terminated polydimethylsiloxane","OH-terminated silicone"],
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     monomer: "octamethylcyclotetrasiloxane (ring-opening), water-terminated", cls: "Ring-opening (silicone)", cas: "70131-67-8",
     tags: ["telechelic","prepolymer","silicone","sealant","elastomer"],
     atoms: [{"id":1,"el":"Si"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":"S0","el":"*"},{"id":"S1","el":"*"}],
@@ -7618,6 +7740,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C3H8OSi, repeat mass 88.2.
     name: "Poly(methylethylsiloxane)", aka: [], monomer: "methylethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","elastomer","specialty"],
     note: "One methylene beyond PDMS. The asymmetric substitution frustrates the crystallisation that gives PDMS its -40 C melting transition, so this stays amorphous to lower temperatures.",
@@ -7628,6 +7751,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H10OSi, repeat mass 102.2.
     name: "Poly(methylpropylsiloxane)", aka: [], monomer: "methylpropylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","elastomer","specialty"],
     note: "A siloxane fluid whose propyl group raises compatibility with hydrocarbon oils while keeping the low-temperature flexibility of the Si-O backbone.",
@@ -7638,6 +7762,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C5H12OSi, repeat mass 116.2.
     name: "Poly(methylbutylsiloxane)", aka: [], monomer: "methylbutylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "Alkyl-modified silicone fluid. Each added carbon raises the solubility parameter towards that of a hydrocarbon and lowers the surface activity that pure PDMS is used for.",
@@ -7648,6 +7773,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C7H16OSi, repeat mass 144.3.
     name: "Poly(methylhexylsiloxane)", aka: [], monomer: "methylhexylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "The hexyl substituent makes this miscible with mineral oil, which is why alkylmethyl siloxanes of this length are used as antifoams in systems where PDMS itself would be rejected.",
@@ -7658,6 +7784,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C13H28OSi, repeat mass 228.5.
     name: "Poly(methyldodecylsiloxane)", aka: [], monomer: "methyldodecylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A comb silicone. The C12 side chains associate with each other and with hydrocarbon waxes, which is the property used in personal-care emollients and in wax-crystal modification.",
@@ -7668,6 +7795,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C19H40OSi, repeat mass 312.6.
     name: "Poly(methyloctadecylsiloxane)", aka: ["poly(stearylmethylsiloxane)"], monomer: "methyloctadecylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "The C18 alkyl silicone. The side chains crystallise well above room temperature, so this is a waxy solid rather than a fluid despite a backbone that is among the most flexible known.",
@@ -7678,6 +7806,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H14OSi, repeat mass 130.3.
     name: "Poly(dipropylsiloxane)", aka: [], monomer: "hexapropylcyclotrisiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "Symmetrically substituted like PDMS but with three-carbon groups, which is enough to shift the mesophase behaviour that the dialkylsiloxanes are studied for.",
@@ -7688,6 +7817,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H18OSi, repeat mass 158.3.
     name: "Poly(dibutylsiloxane)", aka: [], monomer: "octabutylcyclotetrasiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A symmetric dialkylsiloxane. Members of this series from dipropyl upwards form columnar mesophases between their glass transition and melting point - liquid crystallinity from side chains alone.",
@@ -7698,6 +7828,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C12H26OSi, repeat mass 214.4.
     name: "Poly(dihexylsiloxane)", aka: [], monomer: "hexahexylcyclotrisiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","liquid crystalline","specialty"],
     note: "One of the dialkylsiloxane mesophase formers; the hexyl chains pack into a two-dimensional lattice while the backbone stays disordered.",
@@ -7708,6 +7839,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C16H34OSi, repeat mass 270.5.
     name: "Poly(dioctylsiloxane)", aka: [], monomer: "octyl cyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","liquid crystalline","specialty"],
     note: "The longer symmetric dialkylsiloxane, where side-chain crystallisation begins to override the mesophase.",
@@ -7718,6 +7850,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H11NOSi, repeat mass 117.2.
     name: "Poly(aminopropylmethylsiloxane)", aka: ["poly(3-aminopropylmethylsiloxane)"], monomer: "aminopropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","coating","specialty"],
     note: "The amine-functional silicone fluid. Pendant primary amines give it substantivity to hair, textiles and cellulose - the chemistry behind almost every silicone fabric and hair conditioner - and a site for cure with epoxies and isocyanates.",
@@ -7728,6 +7861,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H16N2OSi, repeat mass 160.3.
     name: "Poly(N-(2-aminoethyl)aminopropylmethylsiloxane)", aka: [], monomer: "aminoethylaminopropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","coating","specialty"],
     note: "The diamine-functional fluid. The secondary amine next to a primary one chelates and adsorbs far more strongly than a plain aminopropyl group, at the cost of yellowing on heat ageing.",
@@ -7738,6 +7872,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H10OSSi, repeat mass 134.3.
     name: "Poly(mercaptopropylmethylsiloxane)", aka: [], monomer: "mercaptopropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A thiol-functional silicone. The pendant SH adds across vinyl groups under UV in a thiol-ene cure and binds gold and other soft metals, which puts it in both adhesives and particle surface chemistry.",
@@ -7748,6 +7883,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C7H14O3Si, repeat mass 174.3.
     name: "Poly(glycidoxypropylmethylsiloxane)", aka: [], monomer: "glycidoxypropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","coating","specialty"],
     note: "An epoxy-functional silicone fluid, cured cationically or with amines. Used to toughen epoxy resins, where the silicone phase-separates into rubbery domains that arrest cracks.",
@@ -7758,6 +7894,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H14O3Si, repeat mass 186.3.
     name: "Poly(methacryloxypropylmethylsiloxane)", aka: [], monomer: "methacryloxypropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","coating","specialty"],
     note: "A UV-curable silicone: the pendant methacrylate polymerises by free radicals while the siloxane backbone supplies the release and flexibility. The basis of radiation-cured release liners.",
@@ -7768,6 +7905,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C7H12O3Si, repeat mass 172.3.
     name: "Poly(acryloxypropylmethylsiloxane)", aka: [], monomer: "acryloxypropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","coating","specialty"],
     note: "The acrylate analogue, appreciably faster under UV than the methacrylate and correspondingly more prone to premature gelation in storage.",
@@ -7778,6 +7916,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H9ClOSi, repeat mass 136.7.
     name: "Poly(chloropropylmethylsiloxane)", aka: [], monomer: "chloropropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A precursor fluid rather than an end product: the pendant chloride is displaced by amines, azide or thiolate to reach functional silicones that cannot survive the polymerisation directly.",
@@ -7788,6 +7927,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H10O2Si, repeat mass 118.2.
     name: "Poly(hydroxypropylmethylsiloxane)", aka: ["poly(carbinol-functional methylsiloxane)"], monomer: "hydroxypropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A carbinol-functional silicone. The pendant primary hydroxyls react with isocyanates, which is how silicone segments are built into polyurethane coatings and foams.",
@@ -7798,6 +7938,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C5H10O3Si, repeat mass 146.2.
     name: "Poly(carboxypropylmethylsiloxane)", aka: [], monomer: "carboxypropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","polyelectrolyte","specialty"],
     note: "A carboxy-functional silicone fluid, used where an anionic or salt-forming group is needed on an otherwise strongly hydrophobic chain.",
@@ -7808,6 +7949,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C9H12OSi, repeat mass 164.3.
     name: "Poly(phenethylmethylsiloxane)", aka: [], monomer: "phenethylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","optical","specialty"],
     note: "The two-carbon spacer keeps the phenyl ring off silicon, so this raises the refractive index like poly(methylphenylsiloxane) without the same loss of chain flexibility.",
@@ -7818,6 +7960,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C7H7F9OSi, repeat mass 306.2.
     name: "Poly(nonafluorohexylmethylsiloxane)", aka: [], monomer: "nonafluorohexylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","fluoropolymer","specialty"],
     note: "A longer-tail fluorosilicone than the trifluoropropyl standard. More fluorine means better fuel and solvent resistance, but the tails crystallise and the fluid stiffens.",
@@ -7828,6 +7971,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H8OSi, repeat mass 148.2.
     name: "Poly(phenylvinylsiloxane)", aka: [], monomer: "phenylvinylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","optical","specialty"],
     note: "Carries both the refractive-index-raising phenyl and the vinyl group that hydrosilylation cure needs, so it appears as the resin component of high-index LED encapsulants.",
@@ -7838,6 +7982,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H6OSi, repeat mass 122.2.
     name: "Poly(phenylhydrosiloxane)", aka: ["poly(phenyl-H-siloxane)"], monomer: "phenylhydrocyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","high-temperature","specialty"],
     note: "A hydride-functional aryl siloxane used as the crosslinker in high-refractive-index addition-cure silicones, where a methylhydrosiloxane would drag the index back down.",
@@ -7848,6 +7993,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H6OSi, repeat mass 98.2.
     name: "Poly(divinylsiloxane)", aka: [], monomer: "tetravinylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","crosslinker","specialty"],
     note: "Two vinyl groups per silicon makes every repeat unit a crosslink site, so this is a curing resin rather than a fluid.",
@@ -7858,6 +8004,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C3H8O2Si, repeat mass 104.2.
     name: "Poly(methylethoxysiloxane)", aka: [], monomer: "methyltriethoxysilane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","coating","specialty"],
     note: "An alkoxy-functional siloxane that keeps condensing on exposure to moisture. Used as a masonry water repellent and as a silica precursor, where the ethoxy groups hydrolyse in place.",
@@ -7868,6 +8015,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H8OSi, repeat mass 100.2.
     name: "Poly(methylallylsiloxane)", aka: [], monomer: "methylallylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","crosslinker","specialty"],
     note: "The allyl group is one carbon further from silicon than a vinyl, which makes it react more slowly in hydrosilylation but leaves the resulting Si-C link less strained.",
@@ -7878,6 +8026,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C12H24OSi, repeat mass 212.4.
     name: "Poly(methylundecenylsiloxane)", aka: [], monomer: "methylundecenylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A long tether ending in a terminal alkene. The distance between silicon and the reactive end lets a graft be attached without the siloxane backbone crowding it - the usual way silicones are grafted onto surfaces and particles.",
@@ -7888,6 +8037,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H7NOSi, repeat mass 113.2.
     name: "Poly(cyanoethylmethylsiloxane)", aka: [], monomer: "cyanoethylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A shorter-tether relative of the cyanopropyl fluid. The nitrile raises the dielectric constant sharply, which is what these polar silicones are used for.",
@@ -7898,6 +8048,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H9N3OSi, repeat mass 143.2.
     name: "Poly(azidopropylmethylsiloxane)", aka: [], monomer: "azidopropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A clickable silicone. The pendant azide survives the cationic ring-opening used to make it and then couples to alkynes, which is how silicones are joined to blocks that will not tolerate hydrosilylation catalysts.",
@@ -7908,6 +8059,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H14OSi, repeat mass 178.3.
     name: "Poly(methyl(2-phenylpropyl)siloxane)", aka: [], monomer: "methyl(2-phenylpropyl)cyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","optical","specialty"],
     note: "A branched aralkyl silicone fluid sold as a high-refractive-index, non-volatile alternative to poly(methylphenylsiloxane) for optical couplants.",
@@ -7918,6 +8070,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H10OSi, repeat mass 150.3.
     name: "Poly(methylbenzylsiloxane)", aka: [], monomer: "methylbenzylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","optical","specialty"],
     note: "The benzyl group raises the refractive index while the methylene spacer keeps the ring from conjugating with silicon, so the fluid stays colourless on heat ageing better than the phenyl siloxanes.",
@@ -7928,6 +8081,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C15H32OSi, repeat mass 256.5.
     name: "Poly(methyltetradecylsiloxane)", aka: [], monomer: "methyltetradecylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A comb silicone between the dodecyl and octadecyl grades, at the point where the side chains first crystallise near room temperature.",
@@ -7938,6 +8092,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C20H42OSi, repeat mass 326.6.
     name: "Poly(didecylsiloxane)", aka: [], monomer: "decyl cyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "The C10 symmetric dialkylsiloxane, at the upper end of the series that still forms a mesophase rather than an ordinary side-chain crystal.",
@@ -7948,6 +8103,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C5H12OSi, repeat mass 116.2.
     name: "Poly(methylisobutylsiloxane)", aka: [], monomer: "methylisobutylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "Branching the alkyl group keeps the chains from packing, so this stays a fluid where the linear butyl analogue begins to order.",
@@ -7958,6 +8114,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C5H12O2Si, repeat mass 132.2.
     name: "Poly(methyl(3-methoxypropyl)siloxane)", aka: [], monomer: "methoxypropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "An ether-functional silicone. One oxygen in the tether is enough to make the fluid wet polar substrates that PDMS beads up on.",
@@ -7968,6 +8125,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C7H14OSi, repeat mass 142.3.
     name: "Poly(methylcyclohexylsiloxane)", aka: [], monomer: "methylcyclohexylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A cycloaliphatic silicone. The ring stiffens the chain like a phenyl group without the UV absorbance, which matters in optical silicones exposed to short wavelengths.",
@@ -7978,6 +8136,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C12H22OSi, repeat mass 210.4.
     name: "Poly(dicyclohexylsiloxane)", aka: [], monomer: "dicyclohexylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","high-temperature","specialty"],
     note: "Two rings on every silicon give one of the highest glass transitions in the siloxane family - the backbone is still Si-O, but almost none of its flexibility survives.",
@@ -7988,6 +8147,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H8OSi, repeat mass 100.2.
     name: "Poly(ethylvinylsiloxane)", aka: [], monomer: "ethylvinylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","crosslinker","specialty"],
     note: "A vinyl-functional fluid with an ethyl rather than a methyl co-substituent, used where the cured network has to stay soluble in hydrocarbons.",
@@ -7998,6 +8158,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H10OSi, repeat mass 150.3.
     name: "Poly(methyl(4-methylphenyl)siloxane)", aka: ["poly(methyl-p-tolylsiloxane)"], monomer: "methyltolylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","optical","specialty"],
     note: "A methylated aryl siloxane; the extra methyl lowers the melting point of the fluid relative to poly(methylphenylsiloxane) while keeping most of the refractive index gain.",
@@ -8008,6 +8169,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H15NOSi, repeat mass 145.3.
     name: "Poly(methyl(3-(dimethylamino)propyl)siloxane)", aka: [], monomer: "dimethylaminopropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","polyelectrolyte","specialty"],
     note: "A tertiary-amine silicone. Unlike the primary aminopropyl fluid it cannot condense with itself on ageing, and it is quaternised after polymerisation to give cationic silicone surfactants.",
@@ -8018,6 +8180,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C9H12O2Si, repeat mass 180.3.
     name: "Poly(methyl(2-(4-hydroxyphenyl)ethyl)siloxane)", aka: [], monomer: "hydroxyphenethylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A phenol-functional silicone, used to build silicone segments into epoxy and phenolic networks through the hydroxyl rather than through a silicon-bound group.",
@@ -8028,6 +8191,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C5H9NO2Si, repeat mass 143.2.
     name: "Poly(methyl(3-isocyanatopropyl)siloxane)", aka: [], monomer: "isocyanatopropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "An isocyanate-functional silicone that reacts directly with polyols and amines. It has to be kept dry: water converts the pendant NCO to an amine and then to a urea crosslink.",
@@ -8999,6 +9163,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H14OSi, repeat mass 130.3.
     name: "Poly(methylpentylsiloxane)", aka: [], monomer: "methylpentylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "The C5 alkylmethyl siloxane, between the butyl and hexyl fluids in the smooth progression from silicone-like to hydrocarbon-like behaviour.",
@@ -9009,6 +9174,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H18OSi, repeat mass 158.3.
     name: "Poly(methylheptylsiloxane)", aka: [], monomer: "methylheptylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A C7 alkyl silicone. By this length the fluid is fully miscible with mineral oil and has lost most of the surface activity that shorter silicones show.",
@@ -9019,6 +9185,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H22OSi, repeat mass 186.4.
     name: "Poly(methylnonylsiloxane)", aka: [], monomer: "methylnonylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A C9 comb silicone, at the length where the side chains begin to interact with each other rather than simply with the solvent.",
@@ -9029,6 +9196,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C11H24OSi, repeat mass 200.4.
     name: "Poly(methyldecylsiloxane)", aka: [], monomer: "methyldecylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "The C10 alkylmethyl fluid, widely used as an emollient where a silicone feel is wanted with hydrocarbon solubility.",
@@ -9039,6 +9207,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C17H36OSi, repeat mass 284.6.
     name: "Poly(methylhexadecylsiloxane)", aka: ["poly(cetylmethylsiloxane)"], monomer: "methylhexadecylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A C16 comb silicone whose side chains melt near room temperature, so the material changes from waxy to fluid over a narrow range - the property used in phase-change and thermally switchable coatings.",
@@ -9049,6 +9218,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H22OSi, repeat mass 186.4.
     name: "Poly(dipentylsiloxane)", aka: [], monomer: "dipentylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","liquid crystalline","specialty"],
     note: "A symmetric dialkylsiloxane in the range that forms a columnar mesophase; the transition temperatures rise steadily with alkyl length across the series.",
@@ -9059,6 +9229,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C14H30OSi, repeat mass 242.5.
     name: "Poly(diheptylsiloxane)", aka: [], monomer: "diheptylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","liquid crystalline","specialty"],
     note: "The C7 symmetric dialkylsiloxane. Both substituents order together, giving a wider mesophase window than the asymmetric alkylmethyl fluids ever show.",
@@ -9069,6 +9240,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C18H38OSi, repeat mass 298.6.
     name: "Poly(dinonylsiloxane)", aka: [], monomer: "dinonylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "At C9 the side-chain crystal begins to displace the mesophase, and the material behaves more like a tethered paraffin than a silicone.",
@@ -9079,6 +9251,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C24H50OSi, repeat mass 382.7.
     name: "Poly(didodecylsiloxane)", aka: [], monomer: "didodecylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "The C12 symmetric dialkylsiloxane, a waxy solid in which almost the whole mass of the polymer is side chain.",
@@ -9089,6 +9262,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H10OSi, repeat mass 150.3.
     name: "Poly(ethylphenylsiloxane)", aka: [], monomer: "ethylphenylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","optical","specialty"],
     note: "An aryl silicone with an ethyl rather than a methyl co-substituent, which lowers the melting point of the fluid while keeping the refractive index of the phenyl group.",
@@ -9099,6 +9273,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C9H12OSi, repeat mass 164.3.
     name: "Poly(propylphenylsiloxane)", aka: [], monomer: "propylphenylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","optical","specialty"],
     note: "A higher-alkyl aryl siloxane; the longer chain suppresses crystallisation, which is why these fluids stay pourable at temperatures where poly(methylphenylsiloxane) has set.",
@@ -9109,6 +9284,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C14H14OSi, repeat mass 226.3.
     name: "Poly(dibenzylsiloxane)", aka: [], monomer: "dibenzylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","optical","specialty"],
     note: "Two benzyl groups per silicon. The methylene spacers let both rings rotate, so the polymer reaches a high refractive index without the chain stiffness of poly(diphenylsiloxane).",
@@ -9119,6 +9295,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C2H6OSi, repeat mass 74.2.
     name: "Poly(ethylhydrosiloxane)", aka: [], monomer: "ethylhydrocyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","crosslinker","specialty"],
     note: "A hydride crosslinker with an ethyl co-substituent, used where the cured network has to remain compatible with hydrocarbon media.",
@@ -9129,6 +9306,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H18OSi, repeat mass 158.3.
     name: "Poly(octylhydrosiloxane)", aka: [], monomer: "octylhydrocyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","crosslinker","specialty"],
     note: "A long-chain hydride fluid. The octyl group keeps it soluble in oils and waxes, so it can hydrosilylate substrates that a methylhydrosiloxane would not wet.",
@@ -9139,6 +9317,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H12OSi, repeat mass 128.2.
     name: "Poly(butylvinylsiloxane)", aka: [], monomer: "butylvinylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","crosslinker","specialty"],
     note: "A vinyl-functional fluid whose butyl co-substituent gives the cured elastomer better swelling resistance in hydrocarbons than a methylvinyl network.",
@@ -9149,6 +9328,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C8H16OSi, repeat mass 156.3.
     name: "Poly(hexylvinylsiloxane)", aka: [], monomer: "hexylvinylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","crosslinker","specialty"],
     note: "The longer-alkyl vinyl fluid, used where the network has to be built in an oil-rich formulation.",
@@ -9159,6 +9339,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H10OSi, repeat mass 126.2.
     name: "Poly(diallylsiloxane)", aka: [], monomer: "diallylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","crosslinker","specialty"],
     note: "Two allyl groups per silicon. The extra methylene relative to a vinyl makes the addition slower but leaves the silicon-carbon bond further from the crosslink, which reduces strain in the cured network.",
@@ -9169,6 +9350,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H12OSi, repeat mass 128.2.
     name: "Poly(methylcyclopentylsiloxane)", aka: [], monomer: "methylcyclopentylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A cycloaliphatic silicone with a five-membered ring, which stiffens the chain less than the cyclohexyl analogue because the ring itself is more flexible.",
@@ -9179,6 +9361,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H18OSi, repeat mass 182.3.
     name: "Poly(dicyclopentylsiloxane)", aka: [], monomer: "dicyclopentylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","high-temperature","specialty"],
     note: "Two cycloaliphatic rings on every silicon; a rigid, transparent silicone with no aromatic absorbance, which matters where short-wavelength light would degrade a phenyl siloxane.",
@@ -9189,6 +9372,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H9BrOSi, repeat mass 181.1.
     name: "Poly(methyl(3-bromopropyl)siloxane)", aka: [], monomer: "bromopropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A more reactive precursor than the chloropropyl fluid: the primary bromide is displaced under milder conditions, which matters when the nucleophile is a base that would attack the siloxane backbone at higher temperature.",
@@ -9199,6 +9383,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H12O3Si, repeat mass 160.2.
     name: "Poly(methyl(3-acetoxypropyl)siloxane)", aka: [], monomer: "acetoxypropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A protected carbinol silicone. The acetate is carried through the polymerisation and then hydrolysed to the hydroxypropyl fluid, avoiding the side reactions a free hydroxyl causes during ring opening.",
@@ -9209,6 +9394,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C6H14O3Si, repeat mass 162.3.
     name: "Poly(methyl(3-(2-hydroxyethoxy)propyl)siloxane)", aka: [], monomer: "hydroxyethoxypropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "A silicone polyether in miniature: one oxyethylene unit and a terminal hydroxyl on each silicon, enough to make the fluid water-dispersible and to give it the wetting behaviour that pure silicones lack.",
@@ -9219,6 +9405,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H10O4SSi, repeat mass 182.3.
     name: "Poly(methyl(3-sulfopropyl)siloxane)", aka: [], monomer: "sulfopropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","polyelectrolyte","specialty"],
     note: "An anionic silicone. The strong acid is fully dissociated at any pH, which makes the fluid a silicone polyelectrolyte rather than the weak-acid behaviour the carboxypropyl version shows.",
@@ -9229,6 +9416,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C4H8O3Si, repeat mass 132.2.
     name: "Poly(methyl(2-carboxyethyl)siloxane)", aka: [], monomer: "carboxyethylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","polyelectrolyte","specialty"],
     note: "A shorter-tether carboxy silicone. With only two carbons between silicon and the acid, the carboxyl is close enough to catalyse cleavage of its own siloxane backbone under heat.",
@@ -9239,6 +9427,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C9H10OSi, repeat mass 162.3.
     name: "Poly(methyl(4-vinylphenyl)siloxane)", aka: [], monomer: "vinylphenylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","crosslinker","specialty"],
     note: "A styrenic silicone: the pendant vinylbenzene copolymerises with styrene and acrylics by free radicals, which is how silicone segments are built into otherwise all-organic chains.",
@@ -9249,6 +9438,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H14O2Si, repeat mass 194.3.
     name: "Poly(methyl(2-(4-methoxyphenyl)ethyl)siloxane)", aka: [], monomer: "methoxyphenethylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","optical","specialty"],
     note: "An electron-rich aralkyl silicone with a higher refractive index than the plain phenethyl fluid, used in optical couplants and index-matching gels.",
@@ -9259,6 +9449,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C10H24O4Si2, repeat mass 264.5.
     name: "Poly(methyl(3-(triethoxysilyl)propyl)siloxane)", aka: [], monomer: "triethoxysilylpropylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","coating","specialty"],
     note: "A silicone that carries its own moisture-cure crosslinker: the pendant triethoxysilane hydrolyses and condenses on exposure to air, turning the fluid into a network without any second component.",
@@ -9269,6 +9460,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C9H7F13OSi, repeat mass 406.2.
     name: "Poly(methyl(tridecafluorooctyl)siloxane)", aka: [], monomer: "tridecafluorooctylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","fluoropolymer","specialty"],
     note: "A long perfluoroalkyl silicone. The tails crystallise into a bilayer that presents only CF3 groups at the surface, giving the lowest surface energies of any silicone - and losing them above the side-chain melting point.",
@@ -9279,6 +9471,7 @@ window.POLYMER_DB = [
   {
     // *-O-Si(R)(R')-*, the library's siloxane repeat unit; formula C3H8O2Si, repeat mass 104.2.
     name: "Poly(methyl(2-hydroxyethyl)siloxane)", aka: [], monomer: "hydroxyethylmethylcyclosiloxane",
+    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
     cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone","specialty"],
     note: "The shortest carbinol tether that is still stable. With only two carbons the hydroxyl can reach back to the silicon, so these fluids are markedly less robust than the hydroxypropyl grades.",

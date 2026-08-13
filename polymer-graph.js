@@ -738,6 +738,204 @@
     return { atoms: m.atoms, bonds: m.bonds, centre: [[p.at, q.at]] };
   }
 
+  // --- step-growth condensation -------------------------------------------
+  // A polyester repeat unit did come from a diol and a diacid, and until now
+  // the card said exactly that and then stopped: "one repeat unit cannot say
+  // which pair of monomers it came from". That is true of the OPEN unit and
+  // false of the closed one. Join the two chain ends and the backbone becomes a
+  // ring whose ester linkages are precisely the bonds that formed during
+  // polymerisation. Cut them, cap the pieces, and the pair comes back.
+  //
+  //   PET       -O-CH2CH2-O-CO-C6H4-CO-      -> HOCH2CH2OH + HOOC-C6H4-COOH
+  //   nylon 6,6 -NH-(CH2)6-NH-CO-(CH2)4-CO-  -> H2N(CH2)6NH2 + HOOC(CH2)4COOH
+  //   an AB polyester, one linkage in the ring, gives one hydroxy acid.
+  //
+  // A urethane is included because reversing it is the same cut with different
+  // caps and no condensate: break the C-O bond, the alcohol gets its hydrogen
+  // back and the acyl C=O plus its nitrogen becomes an isocyanate. Poly(ester)
+  // loses water; poly(urethane) loses nothing, which the byproduct field says.
+  //
+  // A urea is deliberately NOT included. -NH-R-NH-CO-NH-R'-NH-CO- is symmetric
+  // in its two nitrogens, so nothing in the repeat unit says which of them came
+  // from the diamine and which from the diisocyanate. Both answers fit and the
+  // rule would be picking one.
+  //
+  // Three guards keep the rest honest:
+  //   - only bonds on the BACKBONE count. A pendant carboxylic acid matches the
+  //     ester pattern exactly (poly(aspartic acid) has one), and cutting it
+  //     would hand back a fragment that was never a monomer.
+  //   - every linkage on that backbone must be the same kind. A unit carrying
+  //     both an ester and an amide in the chain has more than one plausible
+  //     monomer pair, and choosing between them is a guess.
+  //   - the cut has to leave at most two distinct species. More than that means
+  //     the unit was not the true period and the "monomers" would be fragments.
+  var CONDENSATION_WATER = { ester: 1, amide: 1, urethane: 0 };
+
+  // The set of bonds lying on the chain itself: the shortest route between the
+  // two attachment atoms, plus the bond that closes the ring between them.
+  function backboneBondSet(atoms, bonds) {
+    var info = starAttachments(atoms, bonds);
+    if (!info) return null;
+    var core = coreOf(atoms, bonds);
+    var path = pathBetween(core, info.attach[0].at, info.attach[1].at);
+    if (!path) return null;
+    var set = {};
+    var key = function (x, y) { return [String(x), String(y)].sort().join(" "); };
+    for (var i = 0; i + 1 < path.length; i++) set[key(path[i], path[i + 1])] = 1;
+    set[key(info.attach[0].at, info.attach[1].at)] = 1;
+    return { set: set, key: key };
+  }
+
+  function condensationLinkages(closed) {
+    var byId = {}, adj = {};
+    closed.atoms.forEach(function (a) { byId[a.id] = a; adj[a.id] = []; });
+    closed.bonds.forEach(function (b) {
+      if (!adj[b.a] || !adj[b.b]) return;
+      adj[b.a].push(b); adj[b.b].push(b);
+    });
+    function other(b, id) { return b.a === id ? b.b : b.a; }
+    var links = [];
+    closed.atoms.forEach(function (a) {
+      if (a.el !== "C") return;
+      var nb = adj[a.id];
+      var dbl = nb.filter(function (b) { return b.order === 2 && byId[other(b, a.id)].el === "O"; });
+      if (dbl.length !== 1) return;                       // not a carbonyl
+      var het = nb.filter(function (b) {
+        var e = byId[other(b, a.id)].el;
+        return b.order === 1 && (e === "O" || e === "N");
+      });
+      var els = het.map(function (b) { return byId[other(b, a.id)].el; }).sort().join("");
+      var pick = null;
+      if (els === "O") pick = { kind: "ester", bond: het[0] };
+      else if (els === "N") pick = { kind: "amide", bond: het[0] };
+      else if (els === "NO") {
+        var ob = null, nbd = null;
+        het.forEach(function (b) { if (byId[other(b, a.id)].el === "O") ob = b; else nbd = b; });
+        pick = { kind: "urethane", bond: ob, nBond: nbd };
+      }
+      // "OO" is a carbonate and "NN" a urea; both are left alone above.
+      if (!pick || !pick.bond) return;
+      pick.acyl = a.id;
+      pick.hetero = other(pick.bond, a.id);
+      if (pick.nBond) pick.nitrogen = other(pick.nBond, a.id);
+      links.push(pick);
+    });
+    return links;
+  }
+
+  function componentsOf(graph) {
+    var adj = {};
+    graph.atoms.forEach(function (a) { adj[a.id] = []; });
+    graph.bonds.forEach(function (b) { if (adj[b.a] && adj[b.b]) { adj[b.a].push(b.b); adj[b.b].push(b.a); } });
+    var seen = {}, out = [];
+    graph.atoms.forEach(function (a) {
+      if (seen[a.id]) return;
+      var ids = {}, stack = [a.id];
+      seen[a.id] = 1; ids[a.id] = 1;
+      while (stack.length) {
+        var c = stack.pop();
+        (adj[c] || []).forEach(function (n) { if (!seen[n]) { seen[n] = 1; ids[n] = 1; stack.push(n); } });
+      }
+      out.push({
+        atoms: graph.atoms.filter(function (x) { return ids[x.id]; }),
+        bonds: graph.bonds.filter(function (b) { return ids[b.a] && ids[b.b]; })
+      });
+    });
+    return out;
+  }
+
+  function monomerCondensation(atoms, bonds) {
+    var closed = closeRepeatUnit(atoms, bonds);
+    if (!closed) return null;
+    var bb = backboneBondSet(atoms, bonds);
+    if (!bb) return null;
+    var links = condensationLinkages(closed).filter(function (l) {
+      return bb.set[bb.key(l.bond.a, l.bond.b)];
+    });
+    if (!links.length) return null;
+    var kind = links[0].kind;
+    for (var i = 1; i < links.length; i++) if (links[i].kind !== kind) return null;
+
+    // Work on a copy: drop each linkage bond and cap what it leaves behind.
+    var outAtoms = closed.atoms.map(function (a) { return { id: a.id, el: a.el, charge: a.charge }; });
+    var cutKeys = {};
+    links.forEach(function (l) { cutKeys[bb.key(l.bond.a, l.bond.b)] = 1; });
+    var outBonds = closed.bonds.filter(function (b) { return !cutKeys[bb.key(b.a, b.b)]; })
+                               .map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo }; });
+    var capId = 0, cuts = [];
+    links.forEach(function (l) {
+      if (kind === "urethane") {
+        // The acyl carbon keeps its =O; its C-N becomes C=N and the whole group
+        // is an isocyanate. The alcohol oxygen simply regains its hydrogen.
+        var nb = findBond(outBonds, l.acyl, l.nitrogen);
+        if (nb) nb.order = 2;
+        cuts.push({ acyl: l.acyl, hetero: l.hetero, nitrogen: l.nitrogen, cap: null });
+      } else {
+        // Ester and amide both give a carboxylic acid on the acyl side; the
+        // oxygen or nitrogen on the other side regains a hydrogen implicitly.
+        var oid = "__cap" + (capId++);
+        outAtoms.push({ id: oid, el: "O" });
+        outBonds.push({ a: l.acyl, b: oid, order: 1 });
+        cuts.push({ acyl: l.acyl, hetero: l.hetero, cap: oid });
+      }
+    });
+
+    var parts = componentsOf({ atoms: outAtoms, bonds: outBonds });
+    if (!parts.length) return null;
+    // Collapse duplicates - a unit written as two periods yields each monomer
+    // twice - and refuse anything that leaves more than a pair behind.
+    var seenHash = {}, distinct = [];
+    for (i = 0; i < parts.length; i++) {
+      if (parts[i].atoms.length < 2) return null;         // a lone capping atom
+      var h = wlHash(parts[i].atoms, parts[i].bonds);
+      if (seenHash[h]) continue;
+      seenHash[h] = 1; distinct.push(parts[i]);
+    }
+    if (distinct.length > 2) return null;
+
+    var merged = { atoms: [], bonds: [] };
+    distinct.forEach(function (p) {
+      merged.atoms = merged.atoms.concat(p.atoms);
+      merged.bonds = merged.bonds.concat(p.bonds);
+    });
+    merged.parts = distinct;
+    merged.linkage = kind;
+    merged.byproduct = CONDENSATION_WATER[kind] ? "H2O" : null;
+    merged.cuts = cuts;
+    merged.centre = [];              // the bonds that form do not exist yet
+    return merged;
+  }
+
+  // Reverse the cut: take the caps back off, restore each linkage, then reopen
+  // the ring where the original was cut. This is what makes the derivation a
+  // round trip rather than an assertion - a mis-capped fragment cannot be put
+  // back into the unit it came from.
+  function forwardCondensation(m, info) {
+    if (!m.cuts) return null;
+    var capIds = {};
+    m.cuts.forEach(function (c) { if (c.cap) capIds[c.cap] = 1; });
+    var atoms = m.atoms.filter(function (a) { return !capIds[a.id]; })
+                       .map(function (a) { return { id: a.id, el: a.el, charge: a.charge }; });
+    var bonds = m.bonds.filter(function (b) { return !capIds[b.a] && !capIds[b.b]; })
+                       .map(function (b) { return { a: b.a, b: b.b, order: b.order, stereo: b.stereo }; });
+    m.cuts.forEach(function (c) {
+      if (c.nitrogen != null) {
+        var nb = findBond(bonds, c.acyl, c.nitrogen);
+        if (nb) nb.order = 1;                            // isocyanate back to amide
+      }
+      bonds.push({ a: c.acyl, b: c.hetero, order: 1 });
+    });
+    // Reopen at the same two atoms the stored unit was cut between.
+    var p = info.attach[0], q = info.attach[1];
+    var link = findBond(bonds, p.at, q.at);
+    if (!link) return null;
+    bonds = bonds.filter(function (b) { return b !== link; });
+    atoms.push({ id: "__m0", el: "*" }, { id: "__m1", el: "*" });
+    bonds.push({ a: "__m0", b: p.at, order: p.order });
+    bonds.push({ a: q.at, b: "__m1", order: q.order });
+    return { atoms: atoms, bonds: bonds };
+  }
+
   var MONOMER_RULES = {
     "Addition (vinyl)": { back: monomerVinyl, kind: "vinyl" },
     "Addition (acrylate)": { back: monomerVinyl, kind: "vinyl" },
@@ -747,6 +945,8 @@
     "Ring-opening (polyamide)": { back: monomerLactam, kind: "ring" },
     "Ring-opening (silicone)": { back: monomerRingOpen, kind: "ring" },
     "Step-growth (coupling)": { back: monomerCoupling, kind: "coupling" },
+    "Step-growth (polyester)": { back: monomerCondensation, kind: "condensation" },
+    "Step-growth (polyamide)": { back: monomerCondensation, kind: "condensation" },
     "Addition (alkyne)": { back: monomerAlkyne, kind: "alkyne" }
   };
 
@@ -803,7 +1003,7 @@
     out.bonds.push({ a: "__m0", b: p.at, order: p.order }, { a: q.at, b: "__m1", order: q.order });
     return out;
   }
-  var MONOMER_FORWARD = { vinyl: forwardVinyl, diene: forwardDiene, ring: forwardRingOpen, coupling: forwardCoupling, alkyne: forwardAlkyne };
+  var MONOMER_FORWARD = { vinyl: forwardVinyl, diene: forwardDiene, ring: forwardRingOpen, coupling: forwardCoupling, alkyne: forwardAlkyne, condensation: forwardCondensation };
 
   // Returns { atoms, bonds, kind } for the monomer, or null when the class has
   // no defined reverse, the pattern does not match, or the round trip fails.
@@ -825,7 +1025,12 @@
     var h1 = blind ? blindHash(atoms, bonds) : closedHash(atoms, bonds);
     var h2 = blind ? blindHash(rebuilt.atoms, rebuilt.bonds) : closedHash(rebuilt.atoms, rebuilt.bonds);
     if (h1 == null || h1 !== h2) return null;
-    return { atoms: m.atoms, bonds: m.bonds, kind: rule.kind, centre: m.centre || [] };
+    // A condensation returns two molecules rather than one, plus what was lost
+    // between them. Those have to travel with the result or the card can only
+    // draw two shapes and leave the reader to work out which reaction it is.
+    return { atoms: m.atoms, bonds: m.bonds, kind: rule.kind, centre: m.centre || [],
+             parts: m.parts || null, linkage: m.linkage || null, byproduct: m.byproduct || null,
+             bondsFormed: m.cuts ? m.cuts.length : 0 };
   }
 
   function elementProfile(atoms) {

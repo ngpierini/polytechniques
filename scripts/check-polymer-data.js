@@ -725,6 +725,24 @@ function main() {
         errors.push("entry #" + idx + " (" + entry.name + "): a drawn bottlebrush must declare its side chain in \"repeats\", or the pendant chain is drawn as a single group");
       }
     }
+
+    // Every drawn entry must either derive its monomer or say why it cannot.
+    //
+    // A card with a structure and no reaction used to render nothing at all in
+    // that panel, which reads as "nothing is known about how this is made"
+    // when the truth is "this particular derivation does not apply, and here
+    // is why". 246 of the 701 drawn entries were silent that way. They are not
+    // now, and this is what stops the next batch from putting them back:
+    // adding a structure whose class has no rule is fine, but it has to come
+    // with the sentence that explains it.
+    if (entry.atoms && entry.atoms.length && entry.bonds && !entry.noScheme) {
+      var derived = null;
+      try { derived = deriveMonomer(entry.atoms, entry.bonds, entry.cls); } catch (e) { derived = null; }
+      if (!derived) {
+        errors.push("entry #" + idx + " (" + entry.name + "): has a structure but derives no monomer and carries no \"noScheme\" - " +
+          "the reaction panel would render nothing at all. Either the class is wrong, or it needs a sentence saying why the monomer cannot be recovered.");
+      }
+    }
   });
 
   if (errors.length) {

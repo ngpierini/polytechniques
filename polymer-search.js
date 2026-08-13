@@ -5282,9 +5282,15 @@
     //
     // Shown for an exact match whose monomer can be RECOVERED from the repeat
     // unit and verified by round trip (polymer-graph.js deriveMonomer). About
-    // 230 of the library's drawn entries qualify; the rest render nothing
-    // rather than a guess. Step-growth never qualifies - a polyester unit came
-    // from a diol and a diacid, and one unit cannot say which pair.
+    // 500 of the library's drawn entries qualify; the rest say why they cannot
+    // rather than render a guess.
+    //
+    // Step-growth used to be excluded wholesale, on the reasoning that a
+    // polyester unit came from a diol and a diacid and one unit cannot say
+    // which pair. That is true of the OPEN unit only. Closing it turns the
+    // backbone into a ring whose ester or amide linkages are exactly the bonds
+    // that formed, so the pair is recoverable after all - and comes back with
+    // the byproduct, which is what separates a polyester from a polyurethane.
     //
     // What sits over the arrow is the entry's own mechanism class and nothing
     // else. THERE IS NO REAGENT DATA IN THIS LIBRARY: no initiator, catalyst,
@@ -5296,6 +5302,56 @@
       diene: '1,4-addition',
       ring: 'ring-opening'
     };
+    // A condensation and a polyaddition are both step-growth and are not the
+    // same reaction: a polyester expels water at every bond it forms, a
+    // polyurethane expels nothing. The byproduct is what tells them apart, so
+    // the arrow is labelled from that rather than from the class.
+    function schemeLabelFor(m) {
+      if (m.kind === 'condensation') {
+        if (!m.byproduct) return 'step-growth addition';
+        var n = m.bondsFormed > 1 ? m.bondsFormed + ' ' : '';
+        return 'step-growth condensation, − ' + n + 'H₂O';
+      }
+      return SCHEME_LABEL[m.kind] || 'polymerisation';
+    }
+
+    // Where the "+" goes when a laid-out half holds more than one molecule.
+    // A condensation puts two monomers left of the arrow and RDKit sets them
+    // side by side with nothing between them, which reads as one molecule drawn
+    // oddly rather than as two reagents. Positions are found from the laid-out
+    // coordinates rather than assumed, so the sign lands in the real gap
+    // whatever order RDKit chose to place the fragments in.
+    function plusPositions(part) {
+      if (!part || !part.atoms || !part.atoms.length) return [];
+      var adj = {}, byId = {};
+      part.atoms.forEach(function (a) { adj[a.id] = []; byId[a.id] = a; });
+      part.bonds.forEach(function (b) {
+        if (adj[b.a] && adj[b.b]) { adj[b.a].push(b.b); adj[b.b].push(b.a); }
+      });
+      var seen = {}, comps = [];
+      part.atoms.forEach(function (a) {
+        if (seen[a.id]) return;
+        var stack = [a.id], ids = [];
+        seen[a.id] = 1;
+        while (stack.length) {
+          var c = stack.pop(); ids.push(c);
+          (adj[c] || []).forEach(function (nb) { if (!seen[nb]) { seen[nb] = 1; stack.push(nb); } });
+        }
+        var xs = ids.map(function (i) { return byId[i].x; });
+        var ys = ids.map(function (i) { return byId[i].y; });
+        comps.push({
+          min: Math.min.apply(null, xs), max: Math.max.apply(null, xs),
+          cy: (Math.min.apply(null, ys) + Math.max.apply(null, ys)) / 2
+        });
+      });
+      if (comps.length < 2) return [];
+      comps.sort(function (p, q) { return p.min - q.min; });
+      var out = [];
+      for (var i = 1; i < comps.length; i++) {
+        out.push({ x: (comps[i - 1].max + comps[i].min) / 2, y: (comps[i - 1].cy + comps[i].cy) / 2 });
+      }
+      return out;
+    }
     function reactionSchemeHtml(p) {
       if (!p) return '';
       // No stored repeat unit used to return '' here, before anything looked at
@@ -5311,12 +5367,19 @@
       // with the reason, rather than being caught by a rule that does not exist.
       if (p.noScheme) return conditionsOnlyHtml(p, p.noScheme);
       var m = PG.deriveMonomer(p.atoms, p.bonds, p.cls);
-      // No derivable monomer does not mean nothing is known. Nylon 6,6 and PET
-      // are step-growth, so no scheme can ever be drawn for them - and those are
-      // exactly the entries where a sourced procedure is the ONLY way the tool
-      // can say how the polymer is made. Gating the conditions behind the
-      // drawing hid them on the polymers that needed them most.
-      if (!m) return conditionsOnlyHtml(p, 'this is a step-growth polymerisation, and one repeat unit cannot say which pair of monomers it came from');
+      // No derivable monomer does not mean nothing is known: where a sourced
+      // procedure exists it is the only way the tool can say how the polymer is
+      // made, and gating the conditions behind the drawing hid them on exactly
+      // the entries that needed them most.
+      // Step-growth used to end here unconditionally. Most of it no longer
+      // does - closing the repeat unit turns the backbone into a ring whose
+      // ester or amide linkages are the bonds that formed, and cutting them
+      // gives the pair back. What still lands here is the step-growth the
+      // repeat unit genuinely cannot resolve: a carbonate (the diol is
+      // recoverable, the phosgene or diaryl carbonate is not), a urea
+      // (symmetric in its two nitrogens, so nothing says which came from the
+      // diamine), an anhydride, or a glycosidic backbone.
+      if (!m) return conditionsOnlyHtml(p, 'the backbone of this one cannot be resolved into a monomer pair - either the linkage is symmetric, so the repeat unit does not say which side came from which reagent, or one of the two reagents leaves nothing of itself behind');
       pendingScheme = { polymer: p, monomer: m };
       return '<div class="mol-scheme" id="mol-scheme">' +
         '<h4>How it is made</h4>' +
@@ -5402,10 +5465,15 @@
           x1: placed.third + 24, y1: midY,
           x2: canvas.width - placed.third - 24, y2: midY,
           above: (job.polymer.conditions && job.polymer.conditions.summary) || '',
-          below: SCHEME_LABEL[job.monomer.kind] || 'polymerisation',
+          below: schemeLabelFor(job.monomer),
           kind: 'arrow'
         });
         labels.push({ x: (canvas.width) / 2, y: midY + 24, text: 'n' });
+        // The "+" has to come across to the editing canvas too, or a scheme
+        // exported from here shows two reagents with nothing between them.
+        plusPositions(placed.left).forEach(function (p) {
+          labels.push({ x: p.x, y: p.y, text: '+' });
+        });
         syncAnnotationPanel();
         draw();
         scrollEditorIntoView();
@@ -5496,6 +5564,15 @@
           drawStructure(textColor, bgColor);
           atoms = right.atoms; bonds = right.bonds;
           drawStructure(textColor, bgColor);
+          plusPositions(left).forEach(function (p) {
+            pctx.save();
+            pctx.fillStyle = dim;
+            pctx.font = '600 18px system-ui, sans-serif';
+            pctx.textAlign = 'center';
+            pctx.textBaseline = 'middle';
+            pctx.fillText('+', p.x, p.y);
+            pctx.restore();
+          });
         } finally {
           ctx = savedCtx;
           atoms = savedAtoms; bonds = savedBonds; brackets = savedBrackets;
@@ -5529,11 +5606,11 @@
           pctx.fillText(cond.summary, (ax + bx) / 2, ay - 8);
           pctx.font = '11px system-ui, sans-serif';
           pctx.textBaseline = 'top';
-          pctx.fillText(SCHEME_LABEL[job.monomer.kind] || 'polymerisation', (ax + bx) / 2, ay + 7);
+          pctx.fillText(schemeLabelFor(job.monomer), (ax + bx) / 2, ay + 7);
         } else {
           pctx.font = '600 12px system-ui, sans-serif';
           pctx.textBaseline = 'bottom';
-          pctx.fillText(SCHEME_LABEL[job.monomer.kind] || 'polymerisation', (ax + bx) / 2, ay - 7);
+          pctx.fillText(schemeLabelFor(job.monomer), (ax + bx) / 2, ay - 7);
           pctx.font = '11px system-ui, sans-serif';
           pctx.textBaseline = 'top';
           pctx.fillText('n', (ax + bx) / 2, ay + 6);
@@ -5548,8 +5625,12 @@
             ? ' <span class="mol-cond"><strong>How it is run (' + escapeHtml(cond.process) + ').</strong> ' +
               escapeHtml(cond.detail) + ' <em>' + escapeHtml(cond.source) + '</em></span>'
             : '';
+          var plural = job.monomer.kind === 'condensation' && (job.monomer.parts || []).length > 1;
           note.innerHTML = escapeHtml(job.polymer.monomer || 'The monomer') +
-            ' polymerises to this repeat unit. The structure on the left is derived from the one on the right and checked by rebuilding the polymer from it.' +
+            ' polymerises to this repeat unit. ' +
+            (plural
+              ? 'Both structures on the left are derived from the one on the right, by closing the repeat unit into a ring and cutting the linkages that formed when it polymerised, then checked by putting the polymer back together from them.'
+              : 'The structure on the left is derived from the one on the right and checked by rebuilding the polymer from it.') +
             extra +
             (cond ? '' : ' <strong>No conditions are recorded for this polymer.</strong> Only a handful of entries carry a sourced procedure; the arrow names the mechanism and nothing more for the rest. ') +
             '<a href="mechanisms.html">Mechanisms</a> covers how these polymerisations are actually run.' + condHtml;
