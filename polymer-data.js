@@ -9154,9 +9154,6 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 9, b: 17, order: 1 }, { a: 9, b: 18, order: 1 }, { a: 10, b: 19, order: 1 }, { a: 10, b: 20, order: 1 }, { a: 11, b: 21, order: 1 }, { a: 11, b: 22, order: 1 }, { a: 12, b: 23, order: 1 }, { a: 12, b: 24, order: 1 }, { a: 13, b: 25, order: 1 }, { a: 13, b: 26, order: 1 }, { a: 14, b: 27, order: 1 }, { a: 14, b: 28, order: 1 }, { a: 15, b: 29, order: 1 }, { a: 15, b: 30, order: 1 }, { a: 16, b: 31, order: 1 }, { a: 16, b: 32, order: 1 }, { a: 16, b: 33, order: 1 }]
   },
 
-  // ---- silicones, second pass: the rest of the alkyl series, the aryl and
-  // hydride co-substituted fluids, and further tethered functional groups ----
-,
 
   // ---- silicones, second pass: the rest of the alkyl series, the aryl and
   // hydride co-substituted fluids, and further tethered functional groups ----

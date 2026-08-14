@@ -575,6 +575,22 @@ function checkEntry(entry, idx, errors) {
   });
 }
 
+// A hole in the array - an elision from a stray comma - is invisible to every
+// other check in this file, because Array.prototype.forEach SKIPS elisions
+// rather than visiting them as undefined. One got in behind an emit script
+// that wrote a section header and then an empty list of entries, leaving a
+// lone comma; the file parsed, `db.length` counted 926, the per-entry loop
+// visited 925 and reported no issues, and the library quietly had a gap in it.
+// Checked with an index loop, which does see them.
+function checkNoHoles(db, errors) {
+  for (let i = 0; i < db.length; i++) {
+    if (db[i] === undefined || db[i] === null) {
+      errors.push("entry #" + i + ": empty array slot - a stray comma has left a hole in POLYMER_DB. " +
+        "forEach skips these, so nothing else in this check would see it.");
+    }
+  }
+}
+
 function main() {
   let db;
   try {
@@ -589,6 +605,7 @@ function main() {
   }
 
   const errors = [];
+  checkNoHoles(db, errors);
   const namesSeen = new Map();
   const casSeen = new Map();
   const hashSeen = new Map();
