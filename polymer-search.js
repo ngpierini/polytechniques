@@ -882,8 +882,100 @@
       // Leave the context as we found it, so anything that draws to this canvas
       // without going through draw() is not silently zoomed.
       ctx.setTransform(1, 0, 0, 1, 0, 0);
+      drawScrollbars();
       updateMassReadout();
     }
+
+    // ---- scrollbars --------------------------------------------------------
+    //
+    // The sheet is unbounded and the window onto it is not, which is fine until
+    // the drawing grows past the edge - and then there is nothing on screen
+    // saying so, or saying which way to go. These are the usual answer: a bar
+    // per axis showing where the viewport sits inside everything drawn, and
+    // draggable to move it.
+    //
+    // They are painted onto the canvas rather than being real scrollbars on a
+    // wrapper, because the content has no layout size to scroll: atom positions
+    // are world coordinates under a zoom, so an element-based scrollbar would
+    // need a sized spacer kept in sync with the drawing and the zoom, and would
+    // fight the pan it duplicates.
+    var SCROLL_W = 8, SCROLL_PAD = 3;
+    // World-space box holding everything drawn, or null when the canvas is empty.
+    function contentBounds() {
+      var xs = [], ys = [];
+      atoms.forEach(function (a) { xs.push(a.x); ys.push(a.y); });
+      labels.forEach(function (l) { xs.push(l.x); ys.push(l.y); });
+      arrows.forEach(function (a) { xs.push(a.x1, a.x2); ys.push(a.y1, a.y2); });
+      brackets.forEach(function (b) { xs.push(b.x1, b.x2); ys.push(b.y1, b.y2); });
+      if (!xs.length) return null;
+      var pad = BOND_LEN;
+      return {
+        x1: Math.min.apply(null, xs) - pad, x2: Math.max.apply(null, xs) + pad,
+        y1: Math.min.apply(null, ys) - pad, y2: Math.max.apply(null, ys) + pad
+      };
+    }
+    // The scrollable extent: everything drawn, unioned with what is on screen,
+    // so the thumb never claims the view is somewhere the content is not.
+    function scrollExtent() {
+      var b = contentBounds();
+      var v1 = toWorld(0, 0), v2 = toWorld(canvas.width, canvas.height);
+      if (!b) b = { x1: v1.x, x2: v2.x, y1: v1.y, y2: v2.y };
+      return {
+        x1: Math.min(b.x1, v1.x), x2: Math.max(b.x2, v2.x),
+        y1: Math.min(b.y1, v1.y), y2: Math.max(b.y2, v2.y),
+        vx1: v1.x, vx2: v2.x, vy1: v1.y, vy2: v2.y
+      };
+    }
+    function scrollGeometry() {
+      var e = scrollExtent();
+      var totalW = e.x2 - e.x1, totalH = e.y2 - e.y1;
+      var viewW = e.vx2 - e.vx1, viewH = e.vy2 - e.vy1;
+      var trackW = canvas.width - 2 * SCROLL_PAD - SCROLL_W;
+      var trackH = canvas.height - 2 * SCROLL_PAD - SCROLL_W;
+      var g = { e: e, trackW: trackW, trackH: trackH, showH: viewW < totalW - 0.5, showV: viewH < totalH - 0.5 };
+      if (g.showH) {
+        g.hLen = Math.max(24, trackW * (viewW / totalW));
+        g.hPos = SCROLL_PAD + (trackW - g.hLen) * ((e.vx1 - e.x1) / (totalW - viewW));
+      }
+      if (g.showV) {
+        g.vLen = Math.max(24, trackH * (viewH / totalH));
+        g.vPos = SCROLL_PAD + (trackH - g.vLen) * ((e.vy1 - e.y1) / (totalH - viewH));
+      }
+      return g;
+    }
+    function drawScrollbars() {
+      var g = scrollGeometry();
+      if (!g.showH && !g.showV) return;
+      var styles = getComputedStyle(document.body);
+      var dim = (styles.getPropertyValue('--text-dim') || '#666').trim() || '#666';
+      ctx.save();
+      ctx.globalAlpha = draggingScroll ? 0.75 : 0.42;
+      ctx.fillStyle = dim;
+      if (g.showH) roundRect(ctx, g.hPos, canvas.height - SCROLL_PAD - SCROLL_W, g.hLen, SCROLL_W);
+      if (g.showV) roundRect(ctx, canvas.width - SCROLL_PAD - SCROLL_W, g.vPos, SCROLL_W, g.vLen);
+      ctx.restore();
+    }
+    function roundRect(c, x, y, w, h) {
+      var r = Math.min(w, h) / 2;
+      c.beginPath();
+      c.moveTo(x + r, y);
+      c.arcTo(x + w, y, x + w, y + h, r);
+      c.arcTo(x + w, y + h, x, y + h, r);
+      c.arcTo(x, y + h, x, y, r);
+      c.arcTo(x, y, x + w, y, r);
+      c.closePath();
+      c.fill();
+    }
+    // Which bar, if either, is under this canvas pixel.
+    function scrollbarAt(px, py) {
+      var g = scrollGeometry();
+      if (g.showH && py >= canvas.height - SCROLL_PAD - SCROLL_W - 3 &&
+          px >= g.hPos - 3 && px <= g.hPos + g.hLen + 3) return { axis: 'h', g: g };
+      if (g.showV && px >= canvas.width - SCROLL_PAD - SCROLL_W - 3 &&
+          py >= g.vPos - 3 && py <= g.vPos + g.vLen + 3) return { axis: 'v', g: g };
+      return null;
+    }
+    var draggingScroll = null;
 
     // ---- Molecular weight readout -----------------------------------------
     // Standard atomic weights (IUPAC 2021, abridged to 5 significant figures);
@@ -2370,9 +2462,46 @@
       draw();
     }
 
-    canvas.addEventListener('mousedown', function (evt) { shiftHeld = evt.shiftKey; handleDown(getPos(evt)); });
-    canvas.addEventListener('mousemove', function (evt) { handleMove(getPos(evt)); });
-    canvas.addEventListener('mouseup', function (evt) { shiftHeld = evt.shiftKey; handleUp(getPos(evt)); });
+    // The scrollbars sit on top of the drawing surface, so they get first
+    // refusal on a press - otherwise dragging one would draw a bond across the
+    // structure underneath it.
+    canvas.addEventListener('mousedown', function (evt) {
+      if (evt.button === 0) {
+        var p = canvasPixel(evt);
+        var bar = scrollbarAt(p.x, p.y);
+        if (bar) {
+          evt.preventDefault();
+          draggingScroll = { axis: bar.axis, from: p, viewX: viewX, viewY: viewY, g: bar.g };
+          draw();
+          return;
+        }
+      }
+      shiftHeld = evt.shiftKey; handleDown(getPos(evt));
+    });
+    canvas.addEventListener('mousemove', function (evt) {
+      if (draggingScroll) {
+        var p = canvasPixel(evt);
+        var g = draggingScroll.g, e = g.e;
+        // Thumb travel maps to view travel by the ratio of the two ranges.
+        if (draggingScroll.axis === 'h') {
+          var totalW = e.x2 - e.x1, viewW = e.vx2 - e.vx1;
+          var perPx = (totalW - viewW) / Math.max(1, g.trackW - g.hLen);
+          viewX = draggingScroll.viewX - (p.x - draggingScroll.from.x) * perPx * viewScale;
+        } else {
+          var totalH = e.y2 - e.y1, viewH = e.vy2 - e.vy1;
+          var perPy = (totalH - viewH) / Math.max(1, g.trackH - g.vLen);
+          viewY = draggingScroll.viewY - (p.y - draggingScroll.from.y) * perPy * viewScale;
+        }
+        draw();
+        return;
+      }
+      handleMove(getPos(evt));
+    });
+    canvas.addEventListener('mouseup', function (evt) {
+      if (draggingScroll) { draggingScroll = null; draw(); return; }
+      shiftHeld = evt.shiftKey; handleUp(getPos(evt));
+    });
+    window.addEventListener('mouseup', function () { if (draggingScroll) { draggingScroll = null; draw(); } });
     canvas.addEventListener('mouseleave', function () { if (hoverAtom) { hoverAtom = null; draw(); } });
     canvas.addEventListener('wheel', function (evt) {
       // The ring tool keeps the plain wheel, because it rotates the pending
@@ -2422,6 +2551,47 @@
       }
     });
     window.addEventListener('keyup', function (evt) { if (evt.code === 'Space') spaceHeld = false; });
+
+    // The arrow keys did nothing at all. In a drawing tool they have two
+    // obvious jobs and there was no reason to leave either unbound: nudge what
+    // is selected, or pan the view when nothing is. Shift takes a bigger step.
+    //
+    // Panning is the answer to a drawing that has grown past the window, and
+    // until now it needed the middle mouse button or a held space bar - both
+    // discoverable only by reading the tips.
+    var ARROW_DELTA = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    window.addEventListener('keydown', function (evt) {
+      var d = ARROW_DELTA[evt.key];
+      if (!d) return;
+      var t = document.activeElement;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      if (!editorInView()) return;
+      evt.preventDefault();
+      var step = evt.shiftKey ? BOND_LEN : Math.max(2, Math.round(BOND_LEN / 8));
+      if (selectedGroup.length || selectedArrow || selectedLabel) {
+        snapshot();
+        if (selectedGroup.length) {
+          selectedGroup.forEach(function (a) { a.x += d[0] * step; a.y += d[1] * step; });
+        }
+        if (selectedArrow) {
+          selectedArrow.x1 += d[0] * step; selectedArrow.x2 += d[0] * step;
+          selectedArrow.y1 += d[1] * step; selectedArrow.y2 += d[1] * step;
+        }
+        if (selectedLabel) { selectedLabel.x += d[0] * step; selectedLabel.y += d[1] * step; }
+        updateMassReadout();
+      } else {
+        // No selection: move the view instead, in screen pixels.
+        viewX -= d[0] * step * 3;
+        viewY -= d[1] * step * 3;
+      }
+      draw();
+    });
+    // Only steal the arrow keys when the editor is actually on screen -
+    // otherwise they would stop scrolling the page from everywhere else on it.
+    function editorInView() {
+      var r = canvas.getBoundingClientRect();
+      return r.bottom > 0 && r.top < (window.innerHeight || document.documentElement.clientHeight);
+    }
     canvas.addEventListener('touchstart', function (evt) { evt.preventDefault(); handleDown(getPos(evt)); }, { passive: false });
     canvas.addEventListener('touchmove', function (evt) { evt.preventDefault(); handleMove(getPos(evt)); }, { passive: false });
     canvas.addEventListener('touchend', function (evt) { evt.preventDefault(); handleUp(getPos(evt)); }, { passive: false });
@@ -6943,6 +7113,17 @@
       classTerms(p.cls).forEach(function (t) { if (terms.indexOf(t) === -1) terms.push(t); });
       if (p.arch) terms.push(facetNorm(p.arch));
       if (p.type) terms.push(facetNorm(p.type));
+      // What the CHAIN is made of, computed from the structure rather than
+      // declared. This is the distinction no tag can draw: polyacrylamide and
+      // nylon 6,6 both carry an amide, and in one it hangs off the chain while
+      // in the other it is the chain. Filed as its own term so it reads as
+      // "Backbone amide" on a chip and cannot be confused with the polyamide
+      // tag, which is a family name rather than a statement about the backbone.
+      if (p.atoms && p.atoms.length && p.bonds) {
+        var bb = null;
+        try { bb = PG.backboneLinkages(p.atoms, p.bonds); } catch (e0) { bb = null; }
+        (bb || []).forEach(function (k) { terms.push('backbone ' + k); });
+      }
       try { Object.defineProperty(p, '_facets', { value: terms, enumerable: false }); } catch (e) { p._facets = terms; }
       return terms;
     }
@@ -6952,19 +7133,22 @@
     function facetIndex() {
       if (facetIndexCache) return facetIndexCache;
       var db = window.POLYMER_DB || [];
-      var tagCount = {}, clsCount = {};
+      var tagCount = {}, clsCount = {}, bbCount = {};
       db.forEach(function (p) {
         (p.tags || []).forEach(function (t) {
           var k = facetNorm(t);
           if (k) tagCount[k] = (tagCount[k] || 0) + 1;
         });
         classTerms(p.cls).forEach(function (t) { clsCount[t] = (clsCount[t] || 0) + 1; });
+        facetTermsOf(p).forEach(function (t) {
+          if (t.indexOf('backbone ') === 0) bbCount[t] = (bbCount[t] || 0) + 1;
+        });
       });
       function toList(obj) {
         return Object.keys(obj).map(function (k) { return { term: k, n: obj[k] }; })
           .sort(function (a, b) { return b.n - a.n || (a.term < b.term ? -1 : 1); });
       }
-      facetIndexCache = { tags: toList(tagCount), classes: toList(clsCount) };
+      facetIndexCache = { tags: toList(tagCount), classes: toList(clsCount), backbone: toList(bbCount) };
       return facetIndexCache;
     }
 
@@ -7113,6 +7297,28 @@
         if (!shown.some(function (f) { return f.term === t; })) row.appendChild(chipButton(t, null, true));
       });
       wrap.appendChild(row);
+
+      // The backbone is a different axis from a tag, so it gets its own row
+      // rather than being mixed in. A tag says what a polymer is FOR; this
+      // says what its chain is made of, and it is computed from the structure
+      // rather than declared - which is the only way to separate the amide in
+      // nylon from the amide hanging off polyacrylamide.
+      var bbList = (idx.backbone || []).filter(function (b) { return b.n >= 5; });
+      if (bbList.length) {
+        var bbRow = document.createElement("div");
+        bbRow.className = "mol-facet-row";
+        var bbLab = document.createElement("span");
+        bbLab.className = "mol-recent-label";
+        bbLab.textContent = "What the chain is made of:";
+        bbRow.appendChild(bbLab);
+        bbList.forEach(function (f) {
+          var chip = chipButton(f.term, f.n, activeFacets.indexOf(f.term) !== -1);
+          chip.textContent = facetLabel(f.term.replace(/^backbone /, "")) + " " + f.n;
+          chip.title = f.n + " polymers have this in the backbone itself, not hanging off it";
+          bbRow.appendChild(chip);
+        });
+        wrap.appendChild(bbRow);
+      }
 
       var more = document.createElement('button');
       more.type = 'button';

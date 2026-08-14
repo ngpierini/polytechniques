@@ -1161,5 +1161,103 @@
     }), 4, blind);
   }
 
-  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, deriveMonomer: deriveMonomer, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance, aromaticRingBonds: aromaticRingBonds, aromaticBlindHash: aromaticBlindHash };
+
+  // ---- what the backbone is made of --------------------------------------
+  //
+  // The distinction a tag cannot make: polyacrylamide and nylon 6,6 both carry
+  // an amide, and in one of them it hangs off the chain while in the other it
+  // IS the chain. "Polymers with an amide in the backbone" is a question the
+  // tag list is structurally unable to answer, and it is the question a
+  // polymer chemist actually asks.
+  //
+  // The backbone is the shortest route between the two attachment atoms in the
+  // OPEN unit, plus the bond that closes it. Walking the CLOSED unit instead
+  // looks equivalent and is not: the closure bond joins the two attachment
+  // atoms directly, so the shortest path becomes that single bond and the
+  // whole chain between them is skipped. Poly(ethylene oxide) came out
+  // "all-carbon" that way.
+  function backboneLinkages(atoms, bonds) {
+    var info = starAttachments(atoms, bonds);
+    if (!info) return null;
+    var core = coreOf(atoms, bonds);
+    var path = pathBetween(core, info.attach[0].at, info.attach[1].at);
+    if (!path) return null;
+    var onPath = {};
+    path.forEach(function (id) { onPath[id] = 1; });
+    onPath[info.attach[0].at] = 1;
+    onPath[info.attach[1].at] = 1;
+
+    // Adjacency comes from the CLOSED unit, membership from the open one.
+    // A repeat unit is cut somewhere, and whatever is cut loses a neighbour:
+    // PET's second ester carbonyl sits at the cut with its oxygen on the far
+    // side, so on the open unit it looks like a carbonyl with no heteroatom -
+    // a ketone - and PET classified as an aromatic polyester AND a polyketone.
+    // Poly(ethylene oxide) had the mirror problem: its only oxygen is an
+    // attachment atom, with one neighbour instead of two, so the ether went
+    // unseen and PEO read as all-carbon. Closing the ring restores both.
+    var closed = closeRepeatUnit(atoms, bonds);
+    if (!closed) return null;
+    var byId = {}, adj = {};
+    closed.atoms.forEach(function (a) { byId[a.id] = a.el; adj[a.id] = []; });
+    closed.bonds.forEach(function (b) {
+      if (!adj[b.a] || !adj[b.b]) return;
+      adj[b.a].push(b); adj[b.b].push(b);
+    });
+    var other = function (b, id) { return b.a === id ? b.b : b.a; };
+    var found = {};
+
+    // Carbonyl-based linkages, counted only where the carbonyl carbon itself
+    // sits on the chain and its heteroatom does too.
+    // Iterate the path ARRAY, not Object.keys(onPath): keys come back as
+    // strings, and other() compares with === against numeric bond endpoints,
+    // so every lookup silently returned the wrong end of the bond. Nylon 6,6
+    // classified as "amine" and PET as "ether" - the amide and the ester were
+    // never seen at all.
+    var pathIds = path.concat([info.attach[0].at, info.attach[1].at])
+      .filter(function (v, i, arr) { return arr.indexOf(v) === i; });
+    pathIds.forEach(function (id) {
+      if (byId[id] !== "C") return;
+      var nb = adj[id] || [];
+      if (nb.filter(function (b) { return b.order === 2 && byId[other(b, id)] === "O"; }).length !== 1) return;
+      var het = nb.filter(function (b) {
+        var e = byId[other(b, id)];
+        return b.order === 1 && onPath[other(b, id)] && (e === "O" || e === "N");
+      });
+      var k = het.map(function (b) { return byId[other(b, id)]; }).sort().join("");
+      if (k === "O") found.ester = 1;
+      else if (k === "N") found.amide = 1;
+      else if (k === "NO") found.urethane = 1;
+      else if (k === "NN") found.urea = 1;
+      else if (k === "OO") found.carbonate = 1;
+      else if (k === "") found.ketone = 1;
+    });
+
+    // Heteroatoms sitting in the chain, and rings welded into it.
+    pathIds.forEach(function (id) {
+      var el = byId[id];
+      var nb = (adj[id] || []).filter(function (b) { return onPath[other(b, id)]; });
+      if (el === "Si") found.siloxane = 1;
+      if (el === "P") found.phosphorus = 1;
+      if (el === "S" && nb.length === 2 && nb.every(function (b) { return b.order === 1; })) found.sulfide = 1;
+      var nextToCarbonyl = function () {
+        return nb.some(function (b) {
+          var o = other(b, id);
+          return (adj[o] || []).some(function (x) { return x.order === 2 && byId[other(x, o)] === "O"; });
+        });
+      };
+      // A siloxane oxygen is not an ether, whatever its connectivity looks
+      // like - PDMS was coming back as both.
+      if (el === "O" && nb.length === 2 && nb.every(function (b) { return b.order === 1 && byId[other(b, id)] === "C"; }) && !nextToCarbonyl()) found.ether = 1;
+      if (el === "N" && nb.length >= 2 && !nextToCarbonyl()) found.amine = 1;
+    });
+    var aromatic = pathIds.filter(function (id) {
+      return byId[id] === "C" && (adj[id] || []).some(function (b) { return b.order === 2 && byId[other(b, id)] === "C"; });
+    });
+    if (aromatic.length >= 2) found.aromatic = 1;
+
+    var out = Object.keys(found).sort();
+    return out.length ? out : ["all-carbon"];
+  }
+
+  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, deriveMonomer: deriveMonomer, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance, aromaticRingBonds: aromaticRingBonds, aromaticBlindHash: aromaticBlindHash, backboneLinkages: backboneLinkages };
 });
