@@ -1147,6 +1147,25 @@
         massReadout.hidden = true;
         return;
       }
+      // Separate molecules get separate formulas. Summing them silently is how
+      // a canvas holding two pieces reported an impossible one.
+      if (label === 'Structure') {
+        var pieces = connectedPieces(target);
+        if (pieces.length > 1) {
+          var parts = pieces.map(fragmentMass);
+          if (!parts.some(function (r) { return r.unknown; })) {
+            var total = parts.reduce(function (t, r) { return t + r.mass; }, 0);
+            massReadout.hidden = false;
+            massReadout.innerHTML = pieces.length + ' separate molecules: ' +
+              parts.map(function (r) {
+                return formatFormula(r.counts) + ' &middot; <strong>' + r.mass.toFixed(2) + '</strong>';
+              }).join(' <span' + dim + '>+</span> ') +
+              ' <span' + dim + '>&middot; ' + total.toFixed(2) + ' g/mol between them. This is not one structure, ' +
+              'so it has no single formula &mdash; join the pieces, or delete all but one.</span>';
+            return;
+          }
+        }
+      }
       var res = fragmentMass(target);
       massReadout.hidden = false;
       if (res.unknown) {
@@ -4002,6 +4021,25 @@
       return n;
     }
 
+    // Split a list of atoms into its connected pieces.
+    //
+    // Needed because adding the formulas of separate molecules together yields
+    // something that is not a molecule. A drawn propane beside a drawn propanol
+    // was reported as one structure, C6H16O at 104.19 g/mol - a hydrogen pair
+    // past the saturated limit for six carbons, with a degree of unsaturation
+    // of -1. The number was right for the atoms on the canvas and wrong about
+    // what they were, and nothing on screen said there were two of them.
+    function connectedPieces(list) {
+      var seen = {}, out = [];
+      list.forEach(function (a) {
+        if (seen[a.id]) return;
+        var f = fragmentOf(a.id);
+        Object.keys(f).forEach(function (k) { seen[k] = true; });
+        out.push(list.filter(function (x) { return f[x.id]; }));
+      });
+      return out;
+    }
+
     function repeatUnitBracket() {
       var stars = atoms.filter(function (a) { return a.el === '*'; });
       var core = atoms.filter(function (a) { return a.el !== '*'; });
@@ -5263,6 +5301,51 @@
         renderPublications(null);
       });
     }
+    // Name a plain drawn molecule through PubChem. Same lookup the repeat-unit
+    // path uses, pointed at the drawing itself rather than at a reconstructed
+    // monomer, and it says plainly that the library has no polymer from it -
+    // which is a fact about this library, not about the molecule.
+    function identifyDrawnMolecule(statusEl) {
+      var el = document.getElementById('mol-identify');
+      var myToken = ++identifyToken;
+      statusEl.textContent = 'Not a repeat unit, and not a monomer of any polymer in this library. Identifying the molecule…';
+      renderResults([]);
+      if (!el) return;
+      el.hidden = false;
+      el.innerHTML = '<div class="mol-id-body guide-note">Identifying this structure in PubChem&hellip;</div>';
+      var HEAD = '<div class="mol-id-head">Identified by structure</div>';
+      var TAIL = ' No polymer in this library is made from it.';
+      ensureRDKit().then(function (RDKit) {
+        if (myToken !== identifyToken) return;
+        var ex = expandSuperatoms(atoms, bonds);
+        var smiles = smilesOf(RDKit, ex.atoms, ex.bonds);
+        if (!smiles) { showNoId(el, ''); renderPublications(null); return; }
+        return pcLookupSmiles(smiles).then(function (hit) {
+          if (myToken !== identifyToken) return;
+          if (!hit) { showNoId(el, smiles); renderPublications(null); return; }
+          return pcSynonyms(hit.cid).then(function (syn) {
+            if (myToken !== identifyToken) return;
+            var common = pcPickCommonName(syn, hit.title) || pcPrettyCase(hit.title);
+            var cas = pcExtractCAS(syn);
+            liftPublications(el);
+            el.innerHTML = HEAD + '<div class="mol-id-body">That is ' + pcLink(hit.cid, common) +
+              (cas ? ' (CAS ' + escapeHtml(cas) + ')' : ' (CID ' + hit.cid + ')') + '.' + TAIL + '</div>';
+            renderPublications({ name: common, aka: [], queryTerms: [common] });
+          }).catch(function () {
+            if (myToken !== identifyToken) return;
+            liftPublications(el);
+            el.innerHTML = HEAD + '<div class="mol-id-body">That is ' + pcLink(hit.cid, pcPrettyCase(hit.title)) +
+              ' (CID ' + hit.cid + ').' + TAIL + '</div>';
+            renderPublications({ name: pcPrettyCase(hit.title), aka: [] });
+          });
+        });
+      }).catch(function () {
+        if (myToken !== identifyToken) return;
+        showNoId(el, '');
+        renderPublications(null);
+      });
+    }
+
     function showNoId(el, smiles) {
       el.hidden = false;
       el.innerHTML = '<div class="mol-id-head">Not in the reference library</div>' +
@@ -5291,6 +5374,25 @@
       if (!sub) {
         // Before refusing, ask the other question: is this a monomer?
         if (searchAsMonomer(statusEl)) return;
+        // Two separate molecules on the canvas is the commonest reason a
+        // drawing identifies as nothing, and the least obvious - the drawing
+        // looks fine and the mass readout used to add the pieces together.
+        var pieceCount = fragmentCount();
+        if (pieceCount > 1) {
+          statusEl.textContent = 'This drawing is ' + pieceCount + ' separate molecules, so there is nothing single to identify. ' +
+            'Join them into one structure, or delete all but the one you want.';
+          renderResults([]);
+          return;
+        }
+        // One connected molecule that is not a repeat unit and not a monomer of
+        // anything here is still a molecule, and this tool already knows how to
+        // name one - it does it for unrecognised repeat units. Answering "draw a
+        // monomer" to someone who has just drawn one is the least useful reply
+        // available.
+        if (atoms.some(function (a) { return a.el !== '*'; })) {
+          identifyDrawnMolecule(statusEl);
+          return;
+        }
         statusEl.textContent = 'Draw a repeat unit and mark it with the Bracket tool — or draw a monomer, and this will tell you what it polymerises to.';
         renderResults([]);
         return;
