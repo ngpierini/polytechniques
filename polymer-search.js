@@ -599,19 +599,32 @@
       var txtWrap = document.getElementById('mol-label-edit');
       var txt = document.getElementById('mol-label-text');
       if (!wrap) return;
-      wrap.hidden = !selectedArrow && !selectedLabel;
+      // The shape buttons have to be reachable BEFORE the first arrow exists.
+      // They set pendingArrowKind, which is what a newly placed arrow is built
+      // from - but this whole panel was hidden until an arrow was already
+      // selected, so the only route to an equilibrium was to draw a plain
+      // arrow and convert it afterwards. Picking the shape first, then
+      // clicking where it goes, was not possible at all.
+      var armed = (mode === 'arrow');
+      wrap.hidden = !selectedArrow && !selectedLabel && !armed;
       var arrowBits = wrap.querySelectorAll('[data-for="arrow"]');
-      for (var i = 0; i < arrowBits.length; i++) arrowBits[i].hidden = !selectedArrow;
+      for (var i = 0; i < arrowBits.length; i++) {
+        // The shape row shows whenever the tool is armed. The two text fields
+        // stay tied to an arrow that actually exists - there is nothing to
+        // type reagents onto until one is placed.
+        arrowBits[i].hidden = (arrowBits[i] === kindWrap) ? !(selectedArrow || armed) : !selectedArrow;
+      }
       if (txtWrap) txtWrap.hidden = !selectedLabel;
+      if (kindWrap && (selectedArrow || armed)) {
+        var shownKind = selectedArrow ? (selectedArrow.kind || 'arrow') : pendingArrowKind;
+        var btns = kindWrap.querySelectorAll('button');
+        for (var k = 0; k < btns.length; k++) {
+          btns[k].classList.toggle('active', btns[k].getAttribute('data-kind') === shownKind);
+        }
+      }
       if (selectedArrow) {
         if (ab) ab.value = selectedArrow.above || '';
         if (bl) bl.value = selectedArrow.below || '';
-        if (kindWrap) {
-          var btns = kindWrap.querySelectorAll('button');
-          for (var k = 0; k < btns.length; k++) {
-            btns[k].classList.toggle('active', btns[k].getAttribute('data-kind') === (selectedArrow.kind || 'arrow'));
-          }
-        }
       }
       if (selectedLabel && txt) txt.value = selectedLabel.text || '';
     }
@@ -2737,6 +2750,13 @@
         selectedAtom = null;
         document.querySelectorAll('.mol-mode-btn').forEach(function (x) { x.classList.remove('active'); });
         btn.classList.add('active');
+        // Arming the arrow tool brings up its shape row, so the order is the
+        // one you would expect: choose the arrow you want, then click where it
+        // goes. Nothing else in the toolbar needs the panel.
+        syncAnnotationPanel();
+        if (newMode === 'arrow' && !selectedArrow) {
+          setStatus('Pick an arrow shape, then click the canvas to drop one there — or drag to aim it.');
+        }
         draw();
       });
     });
