@@ -9458,6 +9458,461 @@ window.POLYMER_DB = [
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "Si" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }, { a: 3, b: 4, order: 1 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }]
+  },
+
+  // ---- step-growth expansion: the rest of the aliphatic and semi-aromatic
+  // nylon series, more diol/diacid polyesters including the furanoates, and
+  // polyurethane hard segments. Every one derives the monomer pair its own
+  // name claims, checked by molecular formula before it was written here ----
+  {
+    // Built on the shared step-growth template; formula C8H15NO, repeat mass 141.2. Derives C8H17NO2, which is the pair named below.
+    name: "Nylon 8", aka: ["PA8","polyamide 8"], monomer: "8-aminooctanoic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "An even nylon between 6 and 10 in amide density, and therefore in water uptake and melting point. Every methylene added dilutes the hydrogen bonding that makes nylon 6 stiff and wet.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C13H25NO, repeat mass 211.3. Derives C13H27NO2, which is the pair named below.
+    name: "Nylon 13", aka: ["PA13","polyamide 13"], monomer: "13-aminotridecanoic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "A long-chain nylon whose amide groups are far enough apart that it behaves more like a polyethylene with occasional hydrogen bonds - low moisture uptake, good dimensional stability, and a melting point well under nylon 6.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 14, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C14H26N2O2, repeat mass 254.4. Derives C10H18O4 + C4H12N2, which is the pair named below.
+    name: "Nylon 4,10", aka: ["PA410","polyamide 4,10"], monomer: "1,4-diaminobutane + sebacic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "A bio-based engineering nylon: the diamine comes from castor oil and so does the sebacic acid, making it one of the few high-performance polyamides that is almost entirely from plants.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "N" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C11H20N2O2, repeat mass 212.3. Derives C5H14N2 + C6H10O4, which is the pair named below.
+    name: "Nylon 5,6", aka: ["PA56","polyamide 5,6"], monomer: "1,5-diaminopentane + adipic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "The pentamethylenediamine is made by decarboxylating lysine, which is why this nylon became the practical bio-based answer to nylon 6,6 rather than a curiosity.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 8, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 14, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C15H28N2O2, repeat mass 268.4. Derives C10H18O4 + C5H14N2, which is the pair named below.
+    name: "Nylon 5,10", aka: ["PA510","polyamide 5,10"], monomer: "1,5-diaminopentane + sebacic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "Both halves bio-based - lysine-derived diamine, castor-derived diacid - with a lower melting point and better toughness than nylon 5,6.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 8, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 2 }, { a: 18, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C24H46N2O2, repeat mass 394.6. Derives C18H34O4 + C6H16N2, which is the pair named below.
+    name: "Nylon 6,18", aka: ["PA618","polyamide 6,18"], monomer: "hexamethylenediamine + octadecanedioic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "A long-chain nylon: eighteen carbons between amides dilutes the hydrogen bonding to roughly a third of nylon 6,6, which is what gives it the low moisture uptake these grades are bought for.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "C" }, { id: 27, el: "C" }, { id: 28, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 1 }, { a: 24, b: 25, order: 1 }, { a: 25, b: 26, order: 1 }, { a: 26, b: 27, order: 1 }, { a: 27, b: 28, order: 2 }, { a: 27, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C22H42N2O2, repeat mass 366.6. Derives C10H24N2 + C12H22O4, which is the pair named below.
+    name: "Nylon 10,12", aka: ["PA1012","polyamide 10,12"], monomer: "1,10-diaminodecane + dodecanedioic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "A long-chain bio-based nylon used where dimensional stability in humid service matters more than stiffness.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "N" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 1 }, { a: 24, b: 25, order: 1 }, { a: 25, b: 26, order: 2 }, { a: 25, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C42H82N2O2, repeat mass 647.1. Derives C36H70O4 + C6H16N2, which is the pair named below.
+    name: "Nylon 6,36", aka: ["PA636","polyamide 6,36"], monomer: "hexamethylenediamine + dimer fatty acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "Made with dimer fatty acid, a C36 diacid from oleic acid, which puts a long branched flexible segment between amides and gives a nylon that behaves as a thermoplastic elastomer.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "C" }, { id: 27, el: "C" }, { id: 28, el: "C" }, { id: 29, el: "C" }, { id: 30, el: "C" }, { id: 31, el: "C" }, { id: 32, el: "C" }, { id: 33, el: "C" }, { id: 34, el: "C" }, { id: 35, el: "C" }, { id: 36, el: "C" }, { id: 37, el: "C" }, { id: 38, el: "C" }, { id: 39, el: "C" }, { id: 40, el: "C" }, { id: 41, el: "C" }, { id: 42, el: "C" }, { id: 43, el: "C" }, { id: 44, el: "C" }, { id: 45, el: "C" }, { id: 46, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 1 }, { a: 24, b: 25, order: 1 }, { a: 25, b: 26, order: 1 }, { a: 26, b: 27, order: 1 }, { a: 27, b: 28, order: 1 }, { a: 28, b: 29, order: 1 }, { a: 29, b: 30, order: 1 }, { a: 30, b: 31, order: 1 }, { a: 31, b: 32, order: 1 }, { a: 32, b: 33, order: 1 }, { a: 33, b: 34, order: 1 }, { a: 34, b: 35, order: 1 }, { a: 35, b: 36, order: 1 }, { a: 36, b: 37, order: 1 }, { a: 37, b: 38, order: 1 }, { a: 38, b: 39, order: 1 }, { a: 39, b: 40, order: 1 }, { a: 40, b: 41, order: 1 }, { a: 41, b: 42, order: 1 }, { a: 42, b: 43, order: 1 }, { a: 43, b: 44, order: 1 }, { a: 44, b: 45, order: 1 }, { a: 45, b: 46, order: 2 }, { a: 45, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C17H24N2O2, repeat mass 288.4. Derives C8H6O4 + C9H22N2, which is the pair named below.
+    name: "Nylon 9T", aka: ["PA9T"], monomer: "1,9-diaminononane + terephthalic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","high-temperature","specialty"],
+    note: "The nine-carbon diamine drops the melting point into a processable window while keeping the low moisture uptake and high heat resistance the aromatic ring gives - the combination that puts these in engine bays and connectors.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "N" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 2 }, { a: 19, b: 14, order: 1 }, { a: 17, b: 20, order: 1 }, { a: 20, b: 21, order: 2 }, { a: 20, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C18H26N2O2, repeat mass 302.4. Derives C10H24N2 + C8H6O4, which is the pair named below.
+    name: "Nylon 10T", aka: ["PA10T"], monomer: "1,10-diaminodecane + terephthalic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","high-temperature","specialty"],
+    note: "A bio-based semi-aromatic nylon, its diamine from castor oil, with the lowest moisture uptake of the aliphatic-aromatic family.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "N" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 20, b: 15, order: 1 }, { a: 18, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 21, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C14H18N2O2, repeat mass 246.3. Derives C6H16N2 + C8H6O4, which is the pair named below.
+    name: "Nylon 6I", aka: ["PA6I"], monomer: "hexamethylenediamine + isophthalic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","high-temperature","specialty"],
+    note: "The meta ring cannot pack into a crystal the way the para one does, so this is an amorphous, transparent polyamide - used as the barrier and clarity component in nylon blends.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 11, order: 1 }, { a: 13, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C9H14O4, repeat mass 186.2. Derives C3H8O2 + C6H10O4, which is the pair named below.
+    name: "Poly(propylene adipate)", aka: [], monomer: "1,3-propanediol + adipic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biodegradable","specialty"],
+    note: "The odd-carbon diol suppresses crystallinity, giving a polyester diol that stays liquid at room temperature - convenient for handling, at the cost of the strength a crystalline soft segment would add.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C7H10O4, repeat mass 158.2. Derives C2H6O2 + C5H8O4, which is the pair named below.
+    name: "Poly(ethylene glutarate)", aka: [], monomer: "ethylene glycol + glutaric acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biodegradable","specialty"],
+    note: "The odd five-carbon diacid disrupts crystallisation, so this stays amorphous where the adipate and succinate crystallise.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 10, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C9H14O4, repeat mass 186.2. Derives C4H10O2 + C5H8O4, which is the pair named below.
+    name: "Poly(butylene glutarate)", aka: [], monomer: "1,4-butanediol + glutaric acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biodegradable","specialty"],
+    note: "An amorphous aliphatic polyester used as a plasticising soft segment.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C7H10O4, repeat mass 158.2. Derives C3H8O2 + C4H6O4, which is the pair named below.
+    name: "Poly(propylene succinate)", aka: [], monomer: "1,3-propanediol + succinic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biodegradable","specialty"],
+    note: "A biodegradable polyester whose odd diol leaves it largely amorphous, degrading faster than poly(butylene succinate) for that reason.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 10, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C12H12O4, repeat mass 220.2. Derives C4H10O2 + C8H6O4, which is the pair named below.
+    name: "Poly(butylene isophthalate)", aka: [], monomer: "1,4-butanediol + isophthalic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","engineering","specialty"],
+    note: "An amorphous aromatic polyester, used to suppress crystallinity when blended into PBT.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 9, order: 1 }, { a: 11, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 15, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C14H16O4, repeat mass 248.3. Derives C6H14O2 + C8H6O4, which is the pair named below.
+    name: "Poly(hexamethylene terephthalate)", aka: [], monomer: "1,6-hexanediol + terephthalic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","engineering","specialty"],
+    note: "One step further along the terephthalate series than PBT, with a lower melting point and more flexible chain.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 11, order: 1 }, { a: 14, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C12H22N2O4, repeat mass 258.3. Derives C4H10O2 + C8H12N2O2, which is the pair named below.
+    name: "Poly(hexamethylene butylene urethane)", aka: ["HDI-BDO hard segment"], monomer: "1,4-butanediol + hexamethylene diisocyanate",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyurethane","elastomer","specialty"],
+    note: "An aliphatic polyurethane hard segment. Aliphatic isocyanates do not yellow in sunlight the way the aromatic ones do, which is the whole reason they cost more.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "N" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C10H18N2O4, repeat mass 230.3. Derives C2H6O2 + C8H12N2O2, which is the pair named below.
+    name: "Poly(hexamethylene ethylene urethane)", aka: ["HDI-EG hard segment"], monomer: "ethylene glycol + hexamethylene diisocyanate",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyurethane","elastomer","specialty"],
+    note: "The shortest common aliphatic urethane hard segment, with the highest urethane density and the strongest hydrogen bonding of the aliphatic family.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "N" }, { id: 15, el: "C" }, { id: 16, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 15, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C13H16N2O4, repeat mass 264.3. Derives C4H10O2 + C9H6N2O2, which is the pair named below.
+    name: "Poly(tolylene butylene urethane)", aka: ["TDI-BDO hard segment"], monomer: "1,4-butanediol + toluene diisocyanate",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyurethane","elastomer","specialty"],
+    note: "The flexible-foam workhorse. Toluene diisocyanate is cheaper than MDI and more volatile, which is why its handling is the more hazardous of the two.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "N" }, { id: 18, el: "C" }, { id: 19, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 15, b: 10, order: 1 }, { a: 11, b: 16, order: 1 }, { a: 13, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 2 }, { a: 18, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C17H16N2O4, repeat mass 312.3. Derives C15H10N2O2 + C2H6O2, which is the pair named below.
+    name: "Poly(methylenediphenylene ethylene urethane)", aka: ["MDI-EG hard segment"], monomer: "ethylene glycol + 4,4'-methylenediphenyl diisocyanate",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyurethane","elastomer","specialty"],
+    note: "A short, densely hydrogen-bonded aromatic hard segment; the ethylene glycol chain extender packs the urethane groups closer than butanediol does, raising the hard-segment melting point.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "N" }, { id: 22, el: "C" }, { id: 23, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 8, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 20, b: 15, order: 1 }, { a: 11, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 18, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 2 }, { a: 22, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C19H32N2O4, repeat mass 352.5. Derives C15H22N2O2 + C4H10O2, which is the pair named below.
+    name: "Poly(methylenedicyclohexylene butylene urethane)", aka: ["H12MDI-BDO hard segment"], monomer: "1,4-butanediol + 4,4'-methylenebis(cyclohexyl isocyanate)",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyurethane","elastomer","specialty"],
+    note: "The hydrogenated MDI: same geometry, no aromatic ring, so it keeps the stiffness while losing the ultraviolet yellowing - the basis of light-stable elastomers and coatings.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "N" }, { id: 24, el: "C" }, { id: 25, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 10, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 17, order: 1 }, { a: 13, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 20, b: 23, order: 1 }, { a: 23, b: 24, order: 1 }, { a: 24, b: 25, order: 2 }, { a: 24, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C12H14N2O4, repeat mass 250.3. Derives C4H10O2 + C8H4N2O2, which is the pair named below.
+    name: "Poly(phenylene butylene urethane)", aka: ["PPDI-BDO hard segment"], monomer: "1,4-butanediol + p-phenylene diisocyanate",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyurethane","elastomer","specialty"],
+    note: "A rigid, symmetric aromatic hard segment that crystallises far better than MDI, giving elastomers with unusually good high-temperature performance and rebound.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "N" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 15, b: 10, order: 1 }, { a: 13, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C12H22N2O2, repeat mass 226.3. Derives C4H12N2 + C8H14O4, which is the pair named below.
+    name: "Nylon 4,8", aka: ["PA48","polyamide 4,8"], monomer: "1,4-diaminobutane + suberic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "A short-diamine, medium-diacid nylon; the even-even pairing lets the chains hydrogen-bond antiparallel, which is what gives the even nylons their higher melting points.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "N" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 15, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C16H30N2O2, repeat mass 282.4. Derives C12H22O4 + C4H12N2, which is the pair named below.
+    name: "Nylon 4,12", aka: ["PA412","polyamide 4,12"], monomer: "1,4-diaminobutane + dodecanedioic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "A bio-based nylon combining the shortest practical diamine with a long diacid, giving high strength at low moisture uptake.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "N" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 19, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C20H38N2O2, repeat mass 338.5. Derives C14H26O4 + C6H16N2, which is the pair named below.
+    name: "Nylon 6,14", aka: ["PA614","polyamide 6,14"], monomer: "hexamethylenediamine + tetradecanedioic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "A long-chain nylon in the range where amide density has fallen far enough that the material machines and absorbs water more like a polyolefin.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 2 }, { a: 23, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C22H42N2O2, repeat mass 366.6. Derives C16H30O4 + C6H16N2, which is the pair named below.
+    name: "Nylon 6,16", aka: ["PA616","polyamide 6,16"], monomer: "hexamethylenediamine + hexadecanedioic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "Among the most dilute of the hydrogen-bonded nylons, and correspondingly the most dimensionally stable in humid service.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 1 }, { a: 24, b: 25, order: 1 }, { a: 25, b: 26, order: 2 }, { a: 25, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C14H26N2O2, repeat mass 254.4. Derives C6H10O4 + C8H20N2, which is the pair named below.
+    name: "Nylon 8,6", aka: ["PA86","polyamide 8,6"], monomer: "1,8-diaminooctane + adipic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "The mirror of nylon 6,8 - same atoms, diamine and diacid swapped - and a reminder that the two numbers are not interchangeable: which half carries the amide hydrogens changes how the sheets stack.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "N" }, { id: 11, el: "C" }, { id: 12, el: "O" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 11, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C15H28N2O2, repeat mass 268.4. Derives C6H10O4 + C9H22N2, which is the pair named below.
+    name: "Nylon 9,6", aka: ["PA96","polyamide 9,6"], monomer: "1,9-diaminononane + adipic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "An odd-diamine nylon whose chains cannot register antiparallel, so it melts lower than either even neighbour.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "N" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 12, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 2 }, { a: 18, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C16H30N2O2, repeat mass 282.4. Derives C10H24N2 + C6H10O4, which is the pair named below.
+    name: "Nylon 10,6", aka: ["PA106","polyamide 10,6"], monomer: "1,10-diaminodecane + adipic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "Castor-derived diamine with petrochemical adipic acid, a common half-bio-based engineering grade.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "N" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 19, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C18H34N2O2, repeat mass 310.5. Derives C12H28N2 + C6H10O4, which is the pair named below.
+    name: "Nylon 12,6", aka: ["PA126","polyamide 12,6"], monomer: "1,12-diaminododecane + adipic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "A long diamine with a short diacid, giving a nylon with low water uptake and good impact at low temperature.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "N" }, { id: 15, el: "C" }, { id: 16, el: "O" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 2 }, { a: 15, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 21, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C21H40N2O2, repeat mass 352.6. Derives C10H18O4 + C11H26N2, which is the pair named below.
+    name: "Nylon 11,10", aka: ["PA1110","polyamide 11,10"], monomer: "1,11-diaminoundecane + sebacic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "Both halves from castor oil, making this one of the few fully bio-based engineering polyamides.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "N" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 14, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 1 }, { a: 24, b: 25, order: 2 }, { a: 24, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C24H46N2O2, repeat mass 394.6. Derives C10H24N2 + C14H26O4, which is the pair named below.
+    name: "Nylon 10,14", aka: ["PA1014","polyamide 10,14"], monomer: "1,10-diaminodecane + tetradecanedioic acid",
+    cls: "Step-growth (polyamide)", cas: null,
+    tags: ["polyamide","engineering","specialty"],
+    note: "A long-chain bio-based nylon at the flexible end of the family, used where a polyamide has to survive repeated flexing.",
+    verified: false,
+    atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "N" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "C" }, { id: 26, el: "C" }, { id: 27, el: "C" }, { id: 28, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 1 }, { a: 24, b: 25, order: 1 }, { a: 25, b: 26, order: 1 }, { a: 26, b: 27, order: 1 }, { a: 27, b: 28, order: 2 }, { a: 27, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C9H8O5, repeat mass 196.2. Derives C3H8O2 + C6H4O5, which is the pair named below.
+    name: "Poly(propylene furanoate)", aka: [], monomer: "1,3-propanediol + 2,5-furandicarboxylic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biobased","packaging","specialty"],
+    note: "A furanoate polyester: the furan ring replaces terephthalic acid, and it comes from sugar rather than from xylene. The ring is kinked where a benzene ring is straight, which is why these pack differently and give the barrier properties that make poly(ethylene furanoate) interesting for bottles.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 9, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 2 }, { a: 12, b: 8, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C10H10O5, repeat mass 210.2. Derives C4H10O2 + C6H4O5, which is the pair named below.
+    name: "Poly(butylene furanoate)", aka: [], monomer: "1,4-butanediol + 2,5-furandicarboxylic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biobased","packaging","specialty"],
+    note: "A furanoate polyester: the furan ring replaces terephthalic acid, and it comes from sugar rather than from xylene. The ring is kinked where a benzene ring is straight, which is why these pack differently and give the barrier properties that make poly(ethylene furanoate) interesting for bottles.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 10, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 9, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 14, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C12H14O5, repeat mass 238.2. Derives C6H14O2 + C6H4O5, which is the pair named below.
+    name: "Poly(hexamethylene furanoate)", aka: [], monomer: "1,6-hexanediol + 2,5-furandicarboxylic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biobased","packaging","specialty"],
+    note: "A furanoate polyester: the furan ring replaces terephthalic acid, and it comes from sugar rather than from xylene. The ring is kinked where a benzene ring is straight, which is why these pack differently and give the barrier properties that make poly(ethylene furanoate) interesting for bottles.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "O" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 12, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 15, b: 11, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 16, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C20H36O4, repeat mass 340.5. Derives C10H18O4 + C10H22O2, which is the pair named below.
+    name: "Poly(decamethylene sebacate)", aka: [], monomer: "1,10-decanediol + sebacic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biodegradable","specialty"],
+    note: "Both halves ten carbons long, giving the lowest ester density and slowest hydrolysis of the common aliphatic polyesters.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "O" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 1 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 2 }, { a: 23, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C10H16O4, repeat mass 200.2. Derives C4H6O4 + C6H14O2, which is the pair named below.
+    name: "Poly(hexamethylene succinate)", aka: [], monomer: "1,6-hexanediol + succinic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biodegradable","specialty"],
+    note: "A biodegradable polyester with a long diol and the shortest practical diacid.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 2 }, { a: 13, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C13H22O4, repeat mass 242.3. Derives C10H18O4 + C3H8O2, which is the pair named below.
+    name: "Poly(propylene sebacate)", aka: [], monomer: "1,3-propanediol + sebacic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biodegradable","specialty"],
+    note: "The odd diol keeps this amorphous while the long diacid keeps it soft - a liquid polyester diol at room temperature.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 16, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C13H22O4, repeat mass 242.3. Derives C4H10O2 + C9H16O4, which is the pair named below.
+    name: "Poly(butylene azelate)", aka: [], monomer: "1,4-butanediol + azelaic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biodegradable","specialty"],
+    note: "Azelaic acid from oleic acid ozonolysis, giving an odd-carbon bio-based polyester that resists crystallising.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 16, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C14H24O4, repeat mass 256.3. Derives C12H22O4 + C2H6O2, which is the pair named below.
+    name: "Poly(ethylene dodecanedioate)", aka: [], monomer: "ethylene glycol + dodecanedioic acid",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyester","biodegradable","specialty"],
+    note: "A long-diacid polyester approaching polyethylene in its aliphatic run length, with esters only every fourteen atoms.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 2 }, { a: 17, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C16H28N2O4, repeat mass 312.4. Derives C12H18N2O2 + C4H10O2, which is the pair named below.
+    name: "Poly(isophoronylene butylene urethane)", aka: ["IPDI-BDO hard segment"], monomer: "1,4-butanediol + isophorone diisocyanate",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyurethane","elastomer","specialty"],
+    note: "A cycloaliphatic diisocyanate with two very different NCO groups - one on the ring, one on a methylene - which react at different rates and give the staged cure that coatings formulators exploit.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "N" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "N" }, { id: 21, el: "C" }, { id: 22, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 10, order: 1 }, { a: 11, b: 16, order: 1 }, { a: 11, b: 17, order: 1 }, { a: 15, b: 18, order: 1 }, { a: 13, b: 19, order: 1 }, { a: 19, b: 20, order: 1 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 21, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C14H26N2O4, repeat mass 286.4. Derives C6H14O2 + C8H12N2O2, which is the pair named below.
+    name: "Poly(hexamethylene hexamethylene urethane)", aka: ["HDI-HDO hard segment"], monomer: "1,6-hexanediol + hexamethylene diisocyanate",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyurethane","elastomer","specialty"],
+    note: "Both halves six carbons: the most symmetric of the aliphatic urethanes, and the most crystalline hard segment the family offers.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "N" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "N" }, { id: 19, el: "C" }, { id: 20, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 1 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 1 }, { a: 17, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 19, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C11H12N2O4, repeat mass 236.2. Derives C2H6O2 + C9H6N2O2, which is the pair named below.
+    name: "Poly(tolylene ethylene urethane)", aka: ["TDI-EG hard segment"], monomer: "ethylene glycol + toluene diisocyanate",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyurethane","elastomer","specialty"],
+    note: "The shortest chain extender on the cheapest aromatic isocyanate, giving the highest urethane density and the hardest segment of the TDI family.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "O" }, { id: 7, el: "N" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "N" }, { id: 16, el: "C" }, { id: 17, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 5, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 2 }, { a: 9, b: 10, order: 1 }, { a: 10, b: 11, order: 2 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 8, order: 1 }, { a: 9, b: 14, order: 1 }, { a: 11, b: 15, order: 1 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 16, b: "S1", order: 1 }]
+  },
+  {
+    // Built on the shared step-growth template; formula C21H24N2O4, repeat mass 368.4. Derives C15H10N2O2 + C6H14O2, which is the pair named below.
+    name: "Poly(methylenediphenylene hexamethylene urethane)", aka: ["MDI-HDO hard segment"], monomer: "1,6-hexanediol + 4,4'-methylenediphenyl diisocyanate",
+    cls: "Step-growth (polyester)", cas: null,
+    tags: ["polyurethane","elastomer","specialty"],
+    note: "A longer chain extender softens the MDI hard segment and drops its melting point, which is how a formulator tunes processing temperature without changing isocyanate.",
+    verified: false,
+    atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "N" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "N" }, { id: 26, el: "C" }, { id: 27, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 1 }, { a: 8, b: 9, order: 1 }, { a: 9, b: 10, order: 2 }, { a: 9, b: 11, order: 1 }, { a: 11, b: 12, order: 1 }, { a: 12, b: 13, order: 2 }, { a: 13, b: 14, order: 1 }, { a: 14, b: 15, order: 2 }, { a: 15, b: 16, order: 1 }, { a: 16, b: 17, order: 2 }, { a: 17, b: 12, order: 1 }, { a: 19, b: 20, order: 2 }, { a: 20, b: 21, order: 1 }, { a: 21, b: 22, order: 2 }, { a: 22, b: 23, order: 1 }, { a: 23, b: 24, order: 2 }, { a: 24, b: 19, order: 1 }, { a: 15, b: 18, order: 1 }, { a: 18, b: 19, order: 1 }, { a: 22, b: 25, order: 1 }, { a: 25, b: 26, order: 1 }, { a: 26, b: 27, order: 2 }, { a: 26, b: "S1", order: 1 }]
   }
 ];
 

@@ -64,8 +64,26 @@
     return (blind || !b.stereo) ? String(b.order) : b.order + "/" + b.stereo;
   }
 
+  // Iterations default to ADAPTIVE, not to a fixed small number.
+  //
+  // Four was too few, and the failure is the classic one for colour refinement:
+  // a label only travels one bond per round, so after four rounds every atom
+  // more than four bonds from a nitrogen or a carbonyl looks like every other.
+  // Nylon 10,14 and nylon 12,12 are different polymers - a C10 diamine with a
+  // C14 diacid against a C12 with a C12 - and they hashed IDENTICALLY, because
+  // their long methylene runs are indistinguishable at that range. The exact
+  // structure search would have called one the other, and the duplicate check
+  // rejected 10,14 as already present.
+  //
+  // Running to convergence removes the magic number instead of raising it. WL
+  // is finished when a round produces no new distinctions, which happens after
+  // a handful of rounds for a small unit and later for a long one; the cap is
+  // the atom count, which is the standard bound. Repeat units are tens of atoms,
+  // so this is cheap - and it can only ever SPLIT groups that a shorter run
+  // merged, never merge ones it separated.
   function wlHash(atoms, bonds, iterations, blind) {
-    iterations = iterations || 4;
+    var adaptive = (iterations == null);
+    iterations = adaptive ? Math.max(4, atoms.length) : iterations;
     var adj = {};
     atoms.forEach(function (a) { adj[a.id] = []; });
     bonds.forEach(function (b) {
@@ -82,6 +100,18 @@
         var parts = adj[a.id].map(function (e) { return e.key + ":" + labels[e.nb]; }).sort();
         newLabels[a.id] = fnv1a(labels[a.id] + "|" + parts.join(","));
       });
+      // Stop as soon as a round draws no new distinctions. Running on past
+      // that point cannot change the answer, only the time taken.
+      if (adaptive) {
+        var before = {}, after = {}, nb = 0, na = 0;
+        atoms.forEach(function (a) {
+          if (!before[labels[a.id]]) { before[labels[a.id]] = 1; nb++; }
+          if (!after[newLabels[a.id]]) { after[newLabels[a.id]] = 1; na++; }
+        });
+        labels = newLabels;
+        if (na === nb && it > 0) break;
+        continue;
+      }
       labels = newLabels;
     }
     var finalLabels = atoms.map(function (a) { return labels[a.id]; }).sort();
@@ -1158,7 +1188,7 @@
       if (!ar[key(b.a, b.b)]) return b;
       // one shared label for every bond of an aromatic ring
       return { a: b.a, b: b.b, order: 4, stereo: undefined };
-    }), 4, blind);
+    }), null, blind);   // null = run colour refinement to convergence
   }
 
 
