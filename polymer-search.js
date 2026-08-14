@@ -3216,6 +3216,28 @@
         }
         if (smiles && fp) rdkitLib.push({ p: p, smiles: smiles, fp: fp, mol: mol });
         else mol.delete();
+
+        // The 46 entries that carry a depiction get a SECOND searchable form:
+        // the whole molecule, end groups and all.
+        //
+        // Their identity is the repeat unit, and that is right for exact match -
+        // every PEG grade shares one oxyethylene unit and what separates them is
+        // the telechelic signature, not the graph. But it left the end group,
+        // which is the entire reason those entries exist, unreachable by
+        // structure. Drawing a maleimide and asking "contains fragment" found
+        // nothing, while the library held five maleimide-terminated PEGs.
+        //
+        // Fragment search is the one question that IS well posed against a
+        // finished molecule: does this contain that? So depictions join the
+        // fragment path only, flagged, and never the exact-match path.
+        if (p.depiction && p.depiction.atoms && p.depiction.atoms.length) {
+          var dmol = molFrom(RDKit, molblockFrom(p.depiction.atoms, p.depiction.bonds));
+          if (dmol) {
+            var dfp = null;
+            try { dfp = dmol.get_morgan_fp(FP_OPTS); } catch (e3) {}
+            rdkitLib.push({ p: p, smiles: null, fp: dfp, mol: dmol, viaDepiction: true });
+          }
+        }
       });
       return rdkitLib;
     }
@@ -6558,7 +6580,7 @@
         var hits = matchQmol(lib, qmol, frag.atoms.length, qfp);
         qmol.delete();
         statusEl.textContent = hits.length
-          ? (hits.length + ' of ' + lib.length + ' library polymers contain this fragment' +
+          ? (hits.length + ' of ' + libPolymerCount(lib) + ' library polymers contain this fragment' +
             (disconnected ? ' (the drawing has disconnected pieces; each matched independently)' : '') + ':')
           : ('No library polymer contains this fragment.' + (disconnected ? ' Note: the drawing has disconnected pieces.' : ''));
         renderSubstructHits(hits);
@@ -6575,6 +6597,15 @@
     // qHeavy is the query's heavy-atom count, used only for the coverage
     // figure; a SMARTS pattern's "size" is approximate, so coverage is a
     // ranking hint rather than a measurement.
+    // Distinct polymers in the RDKit library. Entries carrying a depiction
+    // appear twice - once as their repeat unit, once as the whole molecule -
+    // so lib.length stopped being a number of polymers.
+    function libPolymerCount(lib) {
+      var seen = new Set();
+      lib.forEach(function (e) { seen.add(e.p); });
+      return seen.size;
+    }
+
     function matchQmol(lib, qmol, qHeavy, qfp) {
       var hits = [];
       lib.forEach(function (e) {
@@ -6584,7 +6615,8 @@
         // RDKit returns '{}' (not '[]') on no match - only an array is a hit
         var arr = Array.isArray(parsed) ? parsed : [];
         if (!arr.length) return;
-        var tHeavy = e.p.atoms.filter(function (a) { return a.el !== '*'; }).length;
+        var src = e.viaDepiction ? e.p.depiction : e.p;
+        var tHeavy = src.atoms.filter(function (a) { return a.el !== '*'; }).length;
         // Keep the first match's atom indices. They were being computed and
         // thrown away - only their COUNT survived - so a fragment search could
         // say "appears 3 times" and never show you where. The indices are into
@@ -6595,9 +6627,20 @@
         // the plain array still works.
         var first = arr[0];
         var matchAtoms = Array.isArray(first) ? first : ((first && Array.isArray(first.atoms)) ? first.atoms : []);
-        hits.push({ p: e.p, count: arr.length, match: matchAtoms,
+        hits.push({ p: e.p, count: arr.length, match: matchAtoms, viaDepiction: !!e.viaDepiction,
           cov: tHeavy ? Math.min(1, qHeavy / tHeavy) : 0, sim: (qfp && e.fp) ? tanimoto(qfp, e.fp) : 0 });
       });
+      // An entry can match in both its forms - an oxyethylene fragment is in
+      // the repeat unit AND in the whole molecule. Keep one hit per polymer,
+      // preferring the repeat-unit match: "this fragment is part of what
+      // repeats" is the stronger statement, and the depiction match is only
+      // interesting when it is the ONLY one, which is exactly the end group.
+      var best = new Map();
+      hits.forEach(function (h) {
+        var prev = best.get(h.p);
+        if (!prev || (prev.viaDepiction && !h.viaDepiction)) best.set(h.p, h);
+      });
+      hits = Array.from(best.values());
       // Coverage first (the fragment is most OF these polymers), similarity
       // breaks ties. All hits render - a fragment search legitimately returns
       // dozens, and truncating would misreport the set.
@@ -6650,7 +6693,7 @@
         var hits = matchQmol(lib, qmol, estimateSmartsSize(pattern), null);
         qmol.delete();
         statusEl.textContent = hits.length
-          ? hits.length + ' of ' + lib.length + ' library polymers match ' + pattern +
+          ? hits.length + ' of ' + libPolymerCount(lib) + ' library polymers match ' + pattern +
             (hits.length === lib.length ? ' — which is all of them, so the pattern is not narrowing anything.' : ':')
           : 'No library polymer matches ' + pattern + '. A pattern that matches nothing and a typo look the same here, so check it against a structure you know first.';
         renderSubstructHits(hits);
@@ -6674,7 +6717,8 @@
           var cv = canvases[i];
           var hit = hits[parseInt(cv.getAttribute('data-hit'), 10)];
           if (!hit) continue;
-          var part = layoutGraph(RDKit, { atoms: hit.p.atoms, bonds: hit.p.bonds }, cv.width - 12, cv.height - 12);
+          var src = hit.viaDepiction ? hit.p.depiction : hit.p;
+          var part = layoutGraph(RDKit, { atoms: src.atoms, bonds: src.bonds }, cv.width - 12, cv.height - 12);
           if (!part) { cv.hidden = true; continue; }
           part.atoms.forEach(function (a) { a.x += 6; a.y += 6; });
           var pctx = cv.getContext('2d');
@@ -6716,7 +6760,9 @@
       resultsEl.innerHTML = hits.map(function (h, i) {
         return '<div class="mol-sim-item">' +
           '<div style="font-size:0.8rem;color:var(--text-dim);margin:10px 0 2px;">appears ' + h.count +
-          (h.count === 1 ? ' time' : ' times') + ' &middot; fragment is ' + Math.round(h.cov * 100) + '% of the repeat unit' +
+          (h.count === 1 ? ' time' : ' times') + ' &middot; fragment is ' + Math.round(h.cov * 100) + '% of ' +
+          (h.viaDepiction ? 'the whole molecule &mdash; <strong>matched in the end group, not the repeat unit</strong>'
+                          : 'the repeat unit') +
           (h.match && h.match.length ? ' &middot; shaded below' : '') + '</div>' +
           '<canvas class="mol-hit-canvas" data-hit="' + i + '" width="320" height="150" ' +
           'style="max-width:100%;display:block;margin:2px 0 4px;"></canvas>' +
