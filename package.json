@@ -12,7 +12,9 @@
     "check-chain": "node scripts/check-chain-data.js",
     "backfill": "node scripts/backfill-structures.js",
     "check-brackets": "node scripts/check-bracket-geometry.js",
-    "check-trivia": "node scripts/check-trivia.js"
+    "check-trivia": "node scripts/check-trivia.js",
+    "build-monomers": "node scripts/build-monomer-library.js",
+    "check-monomers": "node scripts/build-monomer-library.js --check"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"

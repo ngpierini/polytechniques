@@ -54,6 +54,12 @@ jobs:
       - name: Cross-reference between the polymer, thermal and chain datasets is current
         run: node scripts/build-xref.js --check
 
+      # monomer-data.js is a projection of polymer-data.js, so it goes stale the
+      # moment a polymer is added, edited or reclassified. Stale here means a
+      # monomer whose structure no longer matches the polymer it claims to make.
+      - name: Monomer library is current with the polymer library
+        run: node scripts/build-monomer-library.js --check
+
       # Fails if an indexable page is missing from sitemap.xml, which is
       # hand-maintained and had silently dropped one of the main tools.
       - run: node scripts/check-sitemap.js

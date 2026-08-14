@@ -4567,6 +4567,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(vinylcyclohexane)", aka: ["PVCH", "poly(vinyl cyclohexane)"],
+    noScheme: "made by hydrogenating the ring of a finished polystyrene chain, because vinylcyclohexane itself polymerises poorly - so the monomer this repeat unit closes to is a compound the material was never made from",
     monomer: "styrene, then ring hydrogenation", cls: "Addition (vinyl)", cas: null,
     tags: ["specialty"],
     verified: false,

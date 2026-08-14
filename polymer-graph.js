@@ -1048,5 +1048,104 @@
     return d;
   }
 
-  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, deriveMonomer: deriveMonomer, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance };
+
+  // ---- aromatic rings, and why the hash has to know about them ------------
+  //
+  // A Kekule structure is a choice, not a fact. 2,6-naphthalenedicarboxylic
+  // acid drawn for poly(ethylene naphthalate) and the same acid drawn for
+  // poly(butylene naphthalate) are the same compound with the alternation
+  // started at a different bond - identical formula, identical mass, identical
+  // bond-order counts, and two different hashes. They did not match each other,
+  // and neither would match a chemist who drew the ring the third way.
+  //
+  // Benzene hides this: its two Kekule forms are related by a symmetry of the
+  // ring, so they hash alike by luck. Anything less symmetric - naphthalene,
+  // a substituted ring, a fused system - does not.
+  //
+  // The fix is to find the rings that are genuinely aromatic and hash their
+  // bonds without their alternation. "Genuinely" is doing real work here: a
+  // rule that flattened any ring double bond would make cyclohexene equal to
+  // cyclohexane. A ring qualifies only when EVERY one of its atoms carries
+  // exactly one double bond and that bond lies inside the same ring, which is
+  // true of benzene and naphthalene and false of cyclohexene, where four of the
+  // six carbons carry none.
+
+  // The smallest ring through a given bond, or null if the bond is not cyclic.
+  function smallestRingThrough(atoms, bonds, bond) {
+    var adj = {};
+    atoms.forEach(function (a) { adj[a.id] = []; });
+    bonds.forEach(function (b) {
+      if (b === bond || !adj[b.a] || !adj[b.b]) return;
+      adj[b.a].push(b.b); adj[b.b].push(b.a);
+    });
+    // shortest path from one end back to the other, without using this bond
+    var prev = {}, seen = {}, queue = [bond.a];
+    seen[bond.a] = 1;
+    while (queue.length) {
+      var cur = queue.shift();
+      if (cur === bond.b) break;
+      for (var i = 0; i < adj[cur].length; i++) {
+        var nb = adj[cur][i];
+        if (seen[nb]) continue;
+        seen[nb] = 1; prev[nb] = cur; queue.push(nb);
+      }
+    }
+    if (!seen[bond.b]) return null;
+    var ring = [bond.b], w = bond.b;
+    while (w !== bond.a) { w = prev[w]; ring.push(w); }
+    return ring;
+  }
+
+  // Every bond belonging to a ring in which all atoms are part of the
+  // alternation. Returned as a Set-like map keyed by "a|b".
+  function aromaticRingBonds(atoms, bonds) {
+    var key = function (x, y) { return [String(x), String(y)].sort().join("|"); };
+    var byId = {}, adj = {};
+    atoms.forEach(function (a) { byId[a.id] = a; adj[a.id] = []; });
+    bonds.forEach(function (b) { if (adj[b.a] && adj[b.b]) { adj[b.a].push(b); adj[b.b].push(b); } });
+    var ringBondMemo = {};
+    function isRingBond(b) {
+      var k = key(b.a, b.b) + "#" + b.order;
+      if (!(k in ringBondMemo)) ringBondMemo[k] = inSameRing(atoms, bonds, b);
+      return ringBondMemo[k];
+    }
+    var out = {};
+    for (var i = 0; i < bonds.length; i++) {
+      var b = bonds[i];
+      if (b.order !== 2) continue;
+      var ring = smallestRingThrough(atoms, bonds, b);
+      if (!ring || ring.length < 5 || ring.length > 7) continue;
+      // Every atom of the ring must carry exactly one double bond, and that
+      // bond must itself be cyclic - but NOT necessarily a bond of this ring.
+      // In naphthalene drawn with the central bond single, the two fusion
+      // carbons take their double bonds from the ring next door, so requiring
+      // the partner to be in this ring left half of naphthalene unrecognised
+      // and the two Kekule drawings still did not match.
+      var ok = ring.every(function (id) {
+        var dbl = adj[id].filter(function (x) { return x.order === 2; });
+        if (dbl.length !== 1) return false;
+        return isRingBond(dbl[0]);
+      });
+      if (!ok) continue;
+      for (var j = 0; j < ring.length; j++) {
+        var p = ring[j], q = ring[(j + 1) % ring.length];
+        out[key(p, q)] = 1;
+      }
+    }
+    return out;
+  }
+
+  // wlHash with aromatic alternation removed, so one compound has one hash
+  // however its Kekule structure was drawn.
+  function aromaticBlindHash(atoms, bonds, blind) {
+    var ar = aromaticRingBonds(atoms, bonds);
+    var key = function (x, y) { return [String(x), String(y)].sort().join("|"); };
+    return wlHash(atoms, bonds.map(function (b) {
+      if (!ar[key(b.a, b.b)]) return b;
+      // one shared label for every bond of an aromatic ring
+      return { a: b.a, b: b.b, order: 4, stereo: undefined };
+    }), 4, blind);
+  }
+
+  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, deriveMonomer: deriveMonomer, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance, aromaticRingBonds: aromaticRingBonds, aromaticBlindHash: aromaticBlindHash };
 });

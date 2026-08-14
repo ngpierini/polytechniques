@@ -5871,6 +5871,26 @@
     // ethylene glycol, side by side". Split into parts it answers the question
     // a chemist actually asks - here is a diacid, what does it make? - and
     // terephthalic acid returns PET, PBT, PTT, PCT and Kevlar.
+    // monomer-data.js: the same monomers, but named. Generated from this very
+    // library by scripts/build-monomer-library.js, so a monomer's structure
+    // cannot drift from the polymer it was derived out of - and CI fails if the
+    // file is stale. Keyed Kekule-blind, because the drawn ring may alternate
+    // the other way round from the stored one.
+    var monomerByHash = null;
+    function monomerRecordFor(atomList, bondList) {
+      var mdb = window.MONOMER_DB;
+      if (!mdb || !mdb.length) return null;
+      if (!monomerByHash) {
+        monomerByHash = {};
+        mdb.forEach(function (m) {
+          if (!m.atoms || !m.atoms.length) return;
+          try { monomerByHash[PG.aromaticBlindHash(m.atoms, m.bonds)] = m; } catch (e) {}
+        });
+      }
+      try { return monomerByHash[PG.aromaticBlindHash(atomList, bondList)] || null; }
+      catch (e) { return null; }
+    }
+
     var monomerIdx = null;
     function monomerIndex() {
       if (monomerIdx) return monomerIdx;
@@ -5898,12 +5918,17 @@
       // Dienes are the interesting case: one monomer, two polymers, and the
       // catalyst decides which. Say so rather than listing them silently.
       var isDiene = hits.every(function (x) { return x.m.kind === 'diene'; });
+      // monomer-data.js knows what this molecule is CALLED. The index above
+      // only knows that some polymer derives it, so without this the answer
+      // was "that is a monomer" about a compound the library can name.
+      var known = monomerRecordFor(ex.atoms, ex.bonds);
       // A step-growth monomer is only half the story, and saying so matters:
       // terephthalic acid does not polymerise on its own. The scheme drawn
       // below shows the partner, so the message only has to point at it.
       var allPaired = hits.every(function (x) { return x.ofPair; });
-      var lead = allPaired ? 'That is one of two monomers. With its co-monomer it gives '
-                           : 'That is a monomer. It polymerises to ';
+      var what = (known && known.name) ? 'That is ' + known.name + '.' : 'That is a monomer.';
+      var lead = allPaired ? what + ' With its co-monomer it gives '
+                           : what + ' It polymerises to ';
       statusEl.textContent = hits.length === 1
         ? lead + names[0] + (allPaired ? ' — the scheme below shows the pair:' : ':')
         : lead + hits.length + ' polymers in this library' +
