@@ -638,7 +638,10 @@
     // structure-search path stay exactly as they were - they all work in world
     // space and never had a view to begin with.
     var viewScale = 1, viewX = 0, viewY = 0;
-    var VIEW_MIN = 0.25, VIEW_MAX = 6;
+    // Floor lowered from 0.25 so zooming out actually buys room: at 0.15 a
+    // 590-pixel canvas shows nearly four thousand world units across, which is
+    // enough to lay a whole reaction scheme out end to end.
+    var VIEW_MIN = 0.15, VIEW_MAX = 6;
     function resetView() { viewScale = 1; viewX = 0; viewY = 0; }
     // canvas pixel -> world
     function toWorld(px, py) { return { x: (px - viewX) / viewScale, y: (py - viewY) / viewScale }; }
@@ -2372,20 +2375,24 @@
     canvas.addEventListener('mouseup', function (evt) { shiftHeld = evt.shiftKey; handleUp(getPos(evt)); });
     canvas.addEventListener('mouseleave', function () { if (hoverAtom) { hoverAtom = null; draw(); } });
     canvas.addEventListener('wheel', function (evt) {
-      // Ctrl/Cmd+wheel zooms. The PLAIN wheel is already the ring tool's
-      // rotation and stays that way; taking it for zoom would break a control
-      // that has a live preview attached to it.
-      if (evt.ctrlKey || evt.metaKey) {
-        evt.preventDefault();
-        var p = canvasPixel(evt);
-        zoomAbout(p.x, p.y, evt.deltaY > 0 ? 1 / 1.12 : 1.12);
-        return;
-      }
-      if (mode === 'ring' && pendingRing) {
+      // The ring tool keeps the plain wheel, because it rotates the pending
+      // ring and has a live preview attached to it - a control you can watch
+      // responding is not one to quietly repurpose. Ctrl/Cmd still zooms there.
+      if (mode === 'ring' && pendingRing && !evt.ctrlKey && !evt.metaKey) {
         evt.preventDefault();
         ringRotationSteps += evt.deltaY > 0 ? 1 : -1;
         draw();
+        return;
       }
+      // Everywhere else the wheel zooms about the cursor. This is how you make
+      // room to draw: atom positions are WORLD coordinates and never move when
+      // the view does, so zooming out enlarges the sheet you are drawing on
+      // rather than just shrinking the picture on a fixed one. Zoom was already
+      // here and reachable only through Ctrl+wheel and two small buttons, which
+      // is why the canvas felt like a fixed-size box.
+      evt.preventDefault();
+      var p = canvasPixel(evt);
+      zoomAbout(p.x, p.y, evt.deltaY > 0 ? 1 / 1.12 : 1.12);
     }, { passive: false });
 
     // Panning is on the middle button and on space-drag, so it works in every
@@ -5537,24 +5544,29 @@
     // Lay the monomer in the left third and the polymer in the right third of
     // a box, in that box's coordinates. Shared by the preview panel and by
     // "Edit as a drawing", so the figure you edit is the figure you were shown.
-    function schemeLayout(RDKit, job, boxW, boxH) {
-      function layout(graph, w, h) {
-        var ex = expandSuperatoms(graph.atoms, graph.bonds);
-        var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
-        var mb = null;
-        if (mol) {
-          try { mb = mol.get_new_coords(); } catch (e) {}
-          if (!mb) { try { mb = mol.get_molblock(); } catch (e2) {} }
-          mol.delete();
-        }
-        var parsed = mb && parseMolblockToEditor(mb);
-        if (!parsed || !parsed.atoms.length) return null;
-        var pos = fitParsedCoords(parsed, { width: w, height: h });
-        return {
-          atoms: parsed.atoms.map(function (ra, i) { return { id: i + 1, el: ra.el || 'C', x: pos[i].x, y: pos[i].y }; }),
-          bonds: parsed.bonds.map(function (rb) { return { id: rb.a * 1000 + rb.b, a: rb.a, b: rb.b, order: rb.order }; })
-        };
+    // Lay a graph out with RDKit coordinates, fitted to a box. Atom ORDER is
+    // preserved end to end, which is what lets a substructure match's atom
+    // indices be used against the result.
+    function layoutGraph(RDKit, graph, w, h) {
+      var ex = expandSuperatoms(graph.atoms, graph.bonds);
+      var mol = molFrom(RDKit, molblockFrom(ex.atoms, ex.bonds));
+      var mb = null;
+      if (mol) {
+        try { mb = mol.get_new_coords(); } catch (e) {}
+        if (!mb) { try { mb = mol.get_molblock(); } catch (e2) {} }
+        mol.delete();
       }
+      var parsed = mb && parseMolblockToEditor(mb);
+      if (!parsed || !parsed.atoms.length) return null;
+      var pos = fitParsedCoords(parsed, { width: w, height: h });
+      return {
+        atoms: parsed.atoms.map(function (ra, i) { return { id: i + 1, el: ra.el || 'C', x: pos[i].x, y: pos[i].y }; }),
+        bonds: parsed.bonds.map(function (rb) { return { id: rb.a * 1000 + rb.b, a: rb.a, b: rb.b, order: rb.order }; })
+      };
+    }
+
+    function schemeLayout(RDKit, job, boxW, boxH) {
+      function layout(graph, w, h) { return layoutGraph(RDKit, graph, w, h); }
       var third = Math.round(boxW * 0.36);
       var left = layout(job.monomer, third, boxH);
       var right = layout({ atoms: job.polymer.atoms, bonds: job.polymer.bonds }, third, boxH);
@@ -6573,7 +6585,18 @@
         var arr = Array.isArray(parsed) ? parsed : [];
         if (!arr.length) return;
         var tHeavy = e.p.atoms.filter(function (a) { return a.el !== '*'; }).length;
-        hits.push({ p: e.p, count: arr.length, cov: tHeavy ? Math.min(1, qHeavy / tHeavy) : 0, sim: (qfp && e.fp) ? tanimoto(qfp, e.fp) : 0 });
+        // Keep the first match's atom indices. They were being computed and
+        // thrown away - only their COUNT survived - so a fragment search could
+        // say "appears 3 times" and never show you where. The indices are into
+        // the mol built from p.atoms, and no library entry uses a superatom, so
+        // they line up with the drawn atoms one for one.
+        // RDKit hands back {atoms:[...], bonds:[...]} per match, not a bare
+        // list of indices - both shapes are accepted so a build that returns
+        // the plain array still works.
+        var first = arr[0];
+        var matchAtoms = Array.isArray(first) ? first : ((first && Array.isArray(first.atoms)) ? first.atoms : []);
+        hits.push({ p: e.p, count: arr.length, match: matchAtoms,
+          cov: tHeavy ? Math.min(1, qHeavy / tHeavy) : 0, sim: (qfp && e.fp) ? tanimoto(qfp, e.fp) : 0 });
       });
       // Coverage first (the fragment is most OF these polymers), similarity
       // breaks ties. All hits render - a fragment search legitimately returns
@@ -6636,6 +6659,52 @@
         renderResults([]);
       });
     }
+    // Draw each substructure hit with the matched atoms lit up. Without this a
+    // fragment search reports a count and a percentage about a structure it
+    // never shows you, which is most of the question unanswered: WHERE did my
+    // fragment land, and is it the part I meant?
+    function paintSubstructHits(hits) {
+      var canvases = document.querySelectorAll('canvas.mol-hit-canvas');
+      if (!canvases.length) return;
+      ensureRDKit().then(function (RDKit) {
+        var styles = getComputedStyle(document.body);
+        var textColor = (styles.getPropertyValue('--text') || '#111').trim() || '#111';
+        var bgColor = (styles.getPropertyValue('--card-bg') || '#fff').trim() || '#fff';
+        for (var i = 0; i < canvases.length; i++) {
+          var cv = canvases[i];
+          var hit = hits[parseInt(cv.getAttribute('data-hit'), 10)];
+          if (!hit) continue;
+          var part = layoutGraph(RDKit, { atoms: hit.p.atoms, bonds: hit.p.bonds }, cv.width - 12, cv.height - 12);
+          if (!part) { cv.hidden = true; continue; }
+          part.atoms.forEach(function (a) { a.x += 6; a.y += 6; });
+          var pctx = cv.getContext('2d');
+          pctx.clearRect(0, 0, cv.width, cv.height);
+          // The highlight goes UNDER the structure, so the atom labels stay
+          // legible instead of being painted over.
+          pctx.save();
+          pctx.fillStyle = CENTRE_COLOR;
+          (hit.match || []).forEach(function (idx) {
+            var a = part.atoms[idx];
+            if (!a) return;
+            pctx.beginPath();
+            pctx.arc(a.x, a.y, 11, 0, Math.PI * 2);
+            pctx.fill();
+          });
+          pctx.restore();
+          var sa = atoms, sb = bonds, sbr = brackets, sc = ctx;
+          var sh = hoverAtom, ss = selectedAtom, sg = selectedGroup;
+          ctx = pctx; brackets = []; hoverAtom = null; selectedAtom = null; selectedGroup = [];
+          try {
+            atoms = part.atoms; bonds = part.bonds;
+            drawStructure(textColor, bgColor);
+          } finally {
+            ctx = sc; atoms = sa; bonds = sb; brackets = sbr;
+            hoverAtom = sh; selectedAtom = ss; selectedGroup = sg;
+          }
+        }
+      }).catch(function () {});
+    }
+
     function renderSubstructHits(hits) {
       var resultsEl = document.getElementById('mol-results');
       if (!resultsEl) return;
@@ -6644,12 +6713,16 @@
       var pubEl = document.getElementById('mol-publications');
       if (pubEl && resultsEl.nextSibling !== pubEl) resultsEl.parentNode.insertBefore(pubEl, resultsEl.nextSibling);
       renderPublications(null);
-      resultsEl.innerHTML = hits.map(function (h) {
+      resultsEl.innerHTML = hits.map(function (h, i) {
         return '<div class="mol-sim-item">' +
           '<div style="font-size:0.8rem;color:var(--text-dim);margin:10px 0 2px;">appears ' + h.count +
-          (h.count === 1 ? ' time' : ' times') + ' &middot; fragment is ' + Math.round(h.cov * 100) + '% of the repeat unit</div>' +
+          (h.count === 1 ? ' time' : ' times') + ' &middot; fragment is ' + Math.round(h.cov * 100) + '% of the repeat unit' +
+          (h.match && h.match.length ? ' &middot; shaded below' : '') + '</div>' +
+          '<canvas class="mol-hit-canvas" data-hit="' + i + '" width="320" height="150" ' +
+          'style="max-width:100%;display:block;margin:2px 0 4px;"></canvas>' +
           polymerCard(h.p) + '</div>';
       }).join('');
+      paintSubstructHits(hits);
     }
     var subBtn = document.getElementById('mol-search-substruct');
     if (subBtn) subBtn.addEventListener('click', function () {
@@ -7017,6 +7090,74 @@
     // line runs, so calling it any earlier threw and left an empty bar.
     renderFacetBar();
 
+    // --- formula and repeat-mass queries ------------------------------------
+    var EL_MASS = { H: 1.008, B: 10.81, C: 12.011, N: 14.007, O: 15.999, F: 18.998,
+      Si: 28.085, P: 30.974, S: 32.06, Cl: 35.45, Br: 79.904, I: 126.904, Sn: 118.71 };
+    // Sulfur is 2 here, not its maximum of 6: a thioether has earned no
+    // hydrogens, and the maximum handed four to every -S- in the library.
+    const EL_VALENCE = { C: 4, N: 3, O: 2, S: 2, Si: 4, P: 5, F: 1, Cl: 1, Br: 1, I: 1, B: 3, Sn: 4 };
+    function formulaKey(counts) {
+      var rest = Object.keys(counts).filter(function (k) { return k !== 'C' && k !== 'H'; }).sort();
+      return ['C', 'H'].concat(rest).filter(function (k) { return counts[k]; })
+        .map(function (k) { return k + counts[k]; }).join('');
+    }
+    var formulaCache = new WeakMap();
+    function entryFormula(p) {
+      if (formulaCache.has(p)) return formulaCache.get(p);
+      var res = null;
+      if (p && p.atoms && p.atoms.length && p.bonds) {
+        var used = {}, counts = {}, h = 0;
+        p.atoms.forEach(function (a) { used[a.id] = 0; });
+        p.bonds.forEach(function (b) {
+          if (used[b.a] === undefined || used[b.b] === undefined) return;
+          used[b.a] += b.order; used[b.b] += b.order;
+        });
+        p.atoms.forEach(function (a) {
+          if (a.el === '*') return;
+          counts[a.el] = (counts[a.el] || 0) + 1;
+          var n = EL_VALENCE[a.el];
+          if (n !== undefined) h += Math.max(0, n + (a.charge || 0) - used[a.id]);
+        });
+        if (h) counts.H = h;
+        var mass = 0;
+        Object.keys(counts).forEach(function (k) { mass += (EL_MASS[k] || 0) * counts[k]; });
+        res = { counts: counts, mass: mass, key: formulaKey(counts) };
+      }
+      formulaCache.set(p, res);
+      return res;
+    }
+    function parseFormula(s) {
+      // A digit is required somewhere. Without it "PS" parses as phosphorus
+      // plus sulfur and polystyrene stops being findable by its own
+      // abbreviation - which is a worse trade than missing "CO".
+      if (!/\d/.test(s)) return null;
+      var re = /([A-Z][a-z]?)(\d*)/g, m, counts = {}, at = 0, seen = 0;
+      while ((m = re.exec(s))) {
+        if (m.index !== at) return null;
+        at = re.lastIndex;
+        if (!(m[1] in EL_MASS)) return null;
+        counts[m[1]] = (counts[m[1]] || 0) + (m[2] ? parseInt(m[2], 10) : 1);
+        seen++;
+      }
+      return (seen && at === s.length) ? counts : null;
+    }
+    function specialQuery(raw) {
+      var s = String(raw || '').replace(/\s*g\s*\/\s*mol\s*$/i, '').trim();
+      var mm = s.match(/^(\d+(?:\.\d+)?)(?:\s*(?:±|\+\/-|~)\s*(\d+(?:\.\d+)?))?$/);
+      if (mm) {
+        var target = parseFloat(mm[1]);
+        // Below about 20 nothing is a repeat unit, and a bare small number is
+        // far more likely to be part of a name - nylon 6, nylon 66.
+        if (target >= 20) {
+          return { kind: 'mass', target: target,
+                   tol: mm[2] ? parseFloat(mm[2]) : Math.max(0.5, target * 0.01) };
+        }
+        return null;
+      }
+      var counts = parseFormula(s);
+      return counts ? { kind: 'formula', key: formulaKey(counts), pretty: formulaKey(counts) } : null;
+    }
+
     var nameInput = document.getElementById('mol-name-search');
     if (nameInput) {
       nameInput.addEventListener('input', function () {
@@ -7026,6 +7167,40 @@
         clearTimeout(recentTimer);
         if (!q) { renderResults([]); if (statusEl) statusEl.textContent = ''; return; }
         var db = window.POLYMER_DB || [];
+
+        // A formula or a repeat mass is the question you have after an
+        // elemental analysis or a mass spectrum, and it was the one question
+        // this box could not take - even though every card already prints both.
+        // Tried first and, if it finds nothing, allowed to fall through to the
+        // name search, so typing something ambiguous still behaves.
+        var special = specialQuery(nameInput.value.trim());
+        if (special) {
+          var found = db.filter(function (p) {
+            var f = entryFormula(p);
+            if (!f) return false;
+            return special.kind === 'formula'
+              ? f.key === special.key
+              : Math.abs(f.mass - special.target) <= special.tol;
+          });
+          if (found.length) {
+            // Nearest first for a mass query - the whole point is "what weighs
+            // about this?" - and by mass for a formula query, where every hit
+            // is an exact tie and only the ordering has to be stable.
+            found.sort(special.kind === 'mass'
+              ? function (a, b) { return Math.abs(entryFormula(a).mass - special.target) - Math.abs(entryFormula(b).mass - special.target); }
+              : function (a, b) { return entryFormula(a).mass - entryFormula(b).mass; });
+            if (statusEl) {
+              statusEl.textContent = special.kind === 'formula'
+                ? found.length + (found.length === 1 ? ' polymer has' : ' polymers have') +
+                  ' the repeat unit ' + special.pretty + ':'
+                : found.length + (found.length === 1 ? ' polymer has' : ' polymers have') +
+                  ' a repeat unit within ' + special.tol.toFixed(1) + ' of ' + special.target + ' g/mol:';
+            }
+            renderResults(found.slice(0, 60), schemeCandidate(found.slice(0, 1)));
+            renderPublications(found[0]);
+            return;
+          }
+        }
         // How well an entry answers the query. Substring alone is not enough to
         // order by: an abbreviation typed exactly should beat one that merely
         // occurs inside a longer alias, or "PSS" lands on PEDOT (whose alias

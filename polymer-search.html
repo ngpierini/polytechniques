@@ -170,10 +170,10 @@
         <button type="button" id="mol-redo" class="mol-icon-btn" title="Redo (Ctrl+Shift+Z or Ctrl+Y)" aria-label="Redo">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4l4 4-4 4"/><path d="M17 8H8a5 5 0 0 0 0 10h2"/></svg>
         </button>
-        <button type="button" id="mol-zoom-out" class="mol-icon-btn" title="Zoom out (Ctrl + scroll wheel)" aria-label="Zoom out">
+        <button type="button" id="mol-zoom-out" class="mol-icon-btn" title="Zoom out (or scroll the wheel over the canvas)" aria-label="Zoom out">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><line x1="13" y1="13" x2="17.5" y2="17.5"/><line x1="6.5" y1="9" x2="11.5" y2="9"/></svg>
         </button>
-        <button type="button" id="mol-zoom-in" class="mol-icon-btn" title="Zoom in (Ctrl + scroll wheel). Pan with the middle mouse button, or hold Space and drag." aria-label="Zoom in">
+        <button type="button" id="mol-zoom-in" class="mol-icon-btn" title="Zoom in (or scroll the wheel over the canvas). Pan with the middle mouse button, or hold Space and drag." aria-label="Zoom in">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><line x1="13" y1="13" x2="17.5" y2="17.5"/><line x1="6.5" y1="9" x2="11.5" y2="9"/><line x1="9" y1="6.5" x2="9" y2="11.5"/></svg>
         </button>
         <button type="button" id="mol-zoom-reset" class="mol-icon-btn" title="Reset zoom and position" aria-label="Reset the view">
@@ -248,7 +248,7 @@
             <div class="mol-tip"><dt>Ctrl+Z / Ctrl+Shift+Z</dt><dd>Undo and redo. Ctrl+Y redoes as well. Both buttons grey out when there is nothing left in that direction.</dd></div>
             <div class="mol-tip"><dt>Delete / Backspace</dt><dd>Removes the selection, or the atom under the cursor. Faster than switching to Erase and clicking each one.</dd></div>
             <div class="mol-tip"><dt>Ctrl+D</dt><dd>Duplicates the selection just clear of the original, ready to drag into place &ndash; useful when a repeat unit is nearly symmetric. Bonds to atoms outside the selection are not copied.</dd></div>
-            <div class="mol-tip"><dt>Zoom &amp; pan</dt><dd>Ctrl and the scroll wheel zooms about the cursor, or use the magnifier buttons. Pan with the middle mouse button, or hold Space and drag. The framed button resets both. Zooming changes nothing about the structure &ndash; the search and every export see the same drawing either way.</dd></div>
+            <div class="mol-tip"><dt>Zoom &amp; pan</dt><dd>The scroll wheel zooms about the cursor, or use the magnifier buttons. Zooming out is how you make room: the sheet you are drawing on is unbounded, so a big scheme does not have to fit the box you started with. Pan with the middle mouse button, or hold Space and drag. The framed button resets both. Zooming changes nothing about the structure &ndash; the search and every export see the same drawing either way. With the ring tool armed the wheel rotates the pending ring instead; hold Ctrl to zoom there.</dd></div>
             <div class="mol-tip"><dt>Show 3 units</dt><dd>Draws three of your repeat unit joined end to end. The quickest way to catch a bracket that cuts the wrong bond, or that holds two units where you meant one.</dd></div>
             <div class="mol-tip"><dt>Reaction arrow</dt><dd>Drag to draw one, or click for a default horizontal arrow; near-horizontal drags snap flat. Drag either end dot to re-aim or resize it, or the shaft to move it. The three shape buttons give a plain arrow, an equilibrium (RAFT, ATRP and ROMP are all equilibria) or a fishhook for one-electron radical steps &ndash; and set the shape for the next arrow you draw.</dd></div>
             <div class="mol-tip"><dt>Curly arrows</dt><dd>Two of the five arrow shapes are curved electron pushes &ndash; a full head for a two-electron move, a single barb for one. Drag the middle handle to bend one. They carry no reagent text, because a curly arrow says where electrons go, not what was added.</dd></div>
@@ -423,7 +423,7 @@
 <script src="bracket-geometry.js?v=1"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=186"></script>
+<script src="polymer-search.js?v=190"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
