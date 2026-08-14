@@ -591,6 +591,70 @@ function checkNoHoles(db, errors) {
   }
 }
 
+// One entry's NAME must not be another entry's alias.
+//
+// Deliberately narrow. Abbreviations genuinely collide in the literature - PEA
+// is both poly(ethyl acrylate) and poly(ethylene adipate), PPO is both a
+// propylene oxide polymer and a phenylene oxide one - and flagging every shared
+// alias would be flagging real chemistry. But when one entry's full NAME turns
+// up as another's alias, one material has almost always been entered twice.
+//
+// It found three: Pebax under both "Polyether block amide" and "Poly(ether
+// block amide)", where only one carried the CAS and the real monomers; SIS
+// under both its block name and "Styrene-isoprene-styrene", where its SBS
+// sibling exists exactly once; and "lignosulfonate" listed as an alias of
+// lignin while also being its own entry, which it should be - it is a
+// sulfonated derivative with different solubility and different uses.
+function checkNameNotAlias(db, errors) {
+  const aliasOwners = new Map();
+  db.forEach(function (p) {
+    if (!p || !Array.isArray(p.aka)) return;
+    p.aka.forEach(function (a) {
+      const k = String(a).toLowerCase().trim();
+      if (!k) return;
+      if (!aliasOwners.has(k)) aliasOwners.set(k, []);
+      aliasOwners.get(k).push(p.name);
+    });
+  });
+  db.forEach(function (p, idx) {
+    if (!p || !p.name) return;
+    const owners = (aliasOwners.get(p.name.toLowerCase().trim()) || [])
+      .filter(function (n) { return n !== p.name; });
+    if (owners.length) {
+      errors.push("entry #" + idx + " (" + p.name + "): its name is also listed as an alias of " +
+        owners.join(", ") + " - either they are the same material entered twice, or the alias names the wrong polymer.");
+    }
+  });
+}
+
+// A CAS registry number ends in a check digit, so a transcription slip is
+// arithmetically detectable. Two were wrong here and neither looked it:
+// poly(trimethylene terephthalate) carried 25009-14-3 and poly(dioxanone)
+// 25656-01-1.
+//
+// Worth saying what this check does NOT do: repairing the check digit is not
+// the fix. Both of those "repair" to valid numbers - 25009-14-7 and
+// 25656-01-3 - which are valid registry numbers for something else entirely.
+// The real numbers turned out to be 26590-75-0 and 31621-87-1, nowhere near.
+// A failure here means look the substance up, not adjust the last digit.
+function checkCasChecksum(db, errors) {
+  db.forEach(function (p, idx) {
+    if (!p || typeof p.cas !== "string") return;
+    const m = p.cas.match(/^(\d{2,7})-(\d{2})-(\d)$/);
+    if (!m) {
+      errors.push("entry #" + idx + " (" + p.name + "): \"" + p.cas + "\" is not shaped like a CAS registry number");
+      return;
+    }
+    const digits = (m[1] + m[2]).split("").reverse();
+    let sum = 0;
+    digits.forEach(function (d, i) { sum += (i + 1) * parseInt(d, 10); });
+    if (sum % 10 !== parseInt(m[3], 10)) {
+      errors.push("entry #" + idx + " (" + p.name + "): CAS \"" + p.cas + "\" fails its own check digit. " +
+        "Look the substance up rather than correcting the last digit - the corrected number will be valid and will belong to something else.");
+    }
+  });
+}
+
 function main() {
   let db;
   try {
@@ -606,6 +670,8 @@ function main() {
 
   const errors = [];
   checkNoHoles(db, errors);
+  checkNameNotAlias(db, errors);
+  checkCasChecksum(db, errors);
   const namesSeen = new Map();
   const casSeen = new Map();
   const hashSeen = new Map();

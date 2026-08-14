@@ -803,7 +803,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(trimethylene terephthalate)", aka: ["PTT", "3GT"], monomer: "1,3-Propanediol + terephthalic acid",
-    cls: "Step-growth (polyester)", cas: "25009-14-3", tg: "45 °C", tm: "228 °C", tags: ["polyester", "fiber"],
+    cls: "Step-growth (polyester)", cas: "26590-75-0", tg: "45 °C", tm: "228 °C", tags: ["polyester", "fiber"],
     note: "The 'odd' methylene count gives a kinked chain and good elastic recovery in fibers.",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "O" },
       { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -867,7 +867,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(dioxanone)", aka: ["PDO", "PDS", "poly(p-dioxanone)"], monomer: "p-Dioxanone (1,4-dioxan-2-one)",
-    cls: "Ring-opening", cas: "25656-01-1", tg: "-10 °C", tm: "110 °C", tags: ["biodegradable", "biomedical"],
+    cls: "Ring-opening", cas: "31621-87-1", tg: "-10 °C", tm: "110 °C", tags: ["biodegradable", "biomedical"],
     note: "The ether oxygen in the backbone gives the flexibility used in monofilament absorbable sutures.",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 2 }, { a: 6, b: "S1", order: 1 }]
@@ -970,7 +970,7 @@ window.POLYMER_DB = [
     note: "Vinyl acetate content softens polyethylene into a flexible, rubbery material used in foams, hot-melt adhesives, and film."
   },
   {
-    name: "Ethylene-propylene rubber", aka: ["EPR", "EPM", "EPDM", "poly(ethylene-co-propylene)"],
+    name: "Ethylene-propylene rubber", aka: ["EPR","EPM","poly(ethylene-co-propylene)"],
     type: "copolymer", arch: "random", components: ["Polyethylene", "Polypropylene"],
     monomer: "Ethylene + propylene (+ a diene for EPDM)", cls: "Copolymer (addition)", cas: "9010-79-1",
     tags: ["copolymer", "elastomer", "weather-resistant"],
@@ -998,7 +998,7 @@ window.POLYMER_DB = [
     note: "Glassy polystyrene end-blocks phase-separate into domains that act as physical, thermally reversible crosslinks, tying both ends of the rubbery polybutadiene mid-block into a network: rubber elasticity without vulcanisation, and melt processability above the PS Tg. Reinforcement fades from about 60-70 C, well below the PS domain Tg, which sets the service ceiling near 80 C. Commercial grades run 25-40 wt% styrene; the base polymer for hot-melt adhesives, bitumen modification and footwear."
   },
   {
-    name: "Polystyrene-b-polyisoprene-b-polystyrene", aka: ["SIS", "styrene-isoprene-styrene"],
+    name: "Polystyrene-b-polyisoprene-b-polystyrene", aka: ["SIS","styrene-isoprene-styrene","Kraton D","styrene-isoprene-styrene block copolymer"],
     type: "copolymer", arch: "block", components: ["Polystyrene", "Polyisoprene (cis-1,4)"],
     monomer: "Styrene + isoprene", cls: "Block copolymer (thermoplastic elastomer)", cas: null,
     tags: ["copolymer", "block", "elastomer", "thermoplastic elastomer", "adhesive"],
@@ -1131,7 +1131,7 @@ window.POLYMER_DB = [
     note: "The same silicon-versus-organic etch contrast as PS-b-PDMS with a polar organic block, which changes the surface-energy balance and the selective solvents available. The two blocks are about as far apart in glass transition as any pair here - PDMS near -125 C against PMMA near 105 C - so the material is a rubbery phase and a glassy phase side by side at room temperature."
   },
   {
-    name: "Polyether block amide", aka: ["PEBA", "Pebax", "polyether-block-amide", "poly(nylon 12-b-tetramethylene oxide)", "TPE-A"],
+    name: "Polyether block amide", aka: ["PEBA","Pebax","polyether-block-amide","poly(nylon 12-b-tetramethylene oxide)","TPE-A","poly(ether block amide)"],
     type: "copolymer", arch: "block", components: ["Nylon 12", "Poly(tetrahydrofuran)"],
     monomer: "Laurolactam + tetrahydrofuran", cls: "Segmented block copolymer (thermoplastic elastomer)", cas: "77402-38-1",
     tags: ["copolymer", "block", "elastomer", "thermoplastic elastomer", "polyamide", "polyether", "engineering", "biomedical"],
@@ -1821,7 +1821,7 @@ window.POLYMER_DB = [
     note: "Glucose joined 1,6 instead of 1,4, which puts a free-rotating CH2 in every linkage and makes the chain unusually flexible and very soluble. Made by bacteria rather than extracted, in tightly controlled molar masses, so it has long served as the calibration standard for aqueous size-exclusion chromatography and as a plasma volume expander. Its clean hydroxyl chemistry makes it a common carrier for drugs and contrast agents."
   },
   {
-    name: "Lignin", aka: ["lignin", "kraft lignin", "lignosulfonate"],
+    name: "Lignin", aka: ["lignin","kraft lignin"],
     monomer: "coniferyl, sinapyl and p-coumaryl alcohol", cls: "Step-growth (polyester)", cas: "9005-53-2",
     tags: ["biopolymer", "biobased", "specialty"],
     verified: false,
@@ -1994,8 +1994,8 @@ window.POLYMER_DB = [
   },
   {
     name: "Polydimethylsilane", aka: ["PDMS (silane)", "poly(dimethylsilane)", "polysilane"],
-    noScheme: "made by hydrolysing and condensing a dichlorosilane rather than by opening a ring, so the species that polymerises is a silanediol formed in situ and the repeat unit cannot show the chloride that left",
-    monomer: "dichlorodimethylsilane", cls: "Ring-opening (silicone)", cas: null,
+    noScheme: "made by Wurtz-type reductive coupling of a dichloride with sodium, so both chlorides are gone from the repeat unit and what polymerises is a transient species on the metal surface rather than anything this unit closes to",
+    monomer: "dichlorodimethylsilane", cls: "Step-growth (coupling)", cas: null,
     tags: ["specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "Si" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S1", el: "*" }],
@@ -2316,7 +2316,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polycarbosilane", aka: ["PCS", "poly(dimethylsilylene methylene)", "SiC precursor"],
-    noScheme: "made by hydrolysing and condensing a dichlorosilane rather than by opening a ring, so the species that polymerises is a silanediol formed in situ and the repeat unit cannot show the chloride that left",
+    noScheme: "not made from a monomer at all: a finished polysilane is heated until its backbone rearranges, inserting carbon between the silicons, so the species this repeat unit would close to never existed",
     monomer: "polydimethylsilane (thermal rearrangement)", cls: "Ring-opening (silicone)", cas: null,
     tags: ["high-temperature", "specialty"],
     verified: false,
@@ -2484,7 +2484,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(diphenylsiloxane)", aka: ["PDPS", "poly(diphenyl siloxane)"],
-    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
+    noScheme: "made by hydrolysing a chlorosilane and condensing the silanol it forms, so the species that polymerises is generated in situ and the repeat unit keeps no trace of the chloride that left",
     monomer: "diphenyldichlorosilane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "high-temperature", "specialty"],
     verified: false,
@@ -2494,7 +2494,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(methylhydrosiloxane)", aka: ["PMHS", "poly(methylhydrosiloxane)", "polymethylhydrosiloxane"],
-    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
+    noScheme: "made by hydrolysing a chlorosilane and condensing the silanol it forms, so the species that polymerises is generated in situ and the repeat unit keeps no trace of the chloride that left",
     monomer: "methyldichlorosilane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "specialty"],
     verified: false,
@@ -3916,15 +3916,6 @@ window.POLYMER_DB = [
     note: "A polyurethane extended with a diamine rather than a diol, so the hard segments are urea rather than urethane - two hydrogen bond donors instead of one, which makes the hard domains far more cohesive. That is what allows the extraordinary recoverable extension of spandex, several hundred percent returning almost completely, and why the fibre keeps its shape where a urethane-extended elastomer would creep. Not drawn: a segmented block copolymer."
   },
   {
-    name: "Poly(ether block amide)", aka: ["PEBA", "Pebax", "polyether block amide"],
-    monomer: "polyamide blocks + polyether blocks", cls: "Step-growth (polyamide)", cas: null,
-    tags: ["copolymer", "elastomer", "engineering", "specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "Nylon hard blocks joined to polyether soft blocks, giving a thermoplastic elastomer that spans an unusually wide hardness range from one chemistry - the ratio alone takes it from a soft rubber to a stiff plastic. Low density and excellent flex fatigue put it in running shoe midsoles and ski boots, and the polyether makes the softer grades breathable to water vapour, which is why they appear in waterproof membranes. Not drawn: a block copolymer whose block lengths are the design."
-  },
-  {
     name: "Poly(ester amide)", aka: ["PEA (ester amide)", "polyesteramide"],
     monomer: "diol + diamine + diacid, or amino acid + hydroxy acid", cls: "Step-growth (polyamide)", cas: null,
     tags: ["copolymer", "biodegradable", "biomedical", "specialty"],
@@ -3959,15 +3950,6 @@ window.POLYMER_DB = [
     atoms: [], bonds: [],
     needsStructure: true,
     note: "SBS with the butadiene block hydrogenated to an ethylene-butylene rubber, removing every double bond and with it the ozone and UV sensitivity that limits SBS to indoor use. The polystyrene domains still act as thermally reversible crosslinks, so it stays a thermoplastic elastomer - and being fully saturated it takes oil extension well, which is how the very soft grades used for overmoulded grips are made. Not drawn: a block copolymer."
-  },
-  {
-    name: "Styrene-isoprene-styrene", aka: ["SIS", "styrene-isoprene-styrene block copolymer", "Kraton D"],
-    monomer: "styrene + isoprene", cls: "Addition (diene)", cas: null,
-    tags: ["copolymer", "elastomer", "specialty"],
-    verified: false,
-    atoms: [], bonds: [],
-    needsStructure: true,
-    note: "SBS's isoprene analogue, and softer and tackier for it - the extra methyl lowers the rubber block's glass transition and reduces its cohesive strength. That tack is the point: SIS compounded with tackifying resin is the adhesive on nearly every pressure-sensitive tape and label, where SBS would be too firm to wet a surface under thumb pressure. Not drawn: a block copolymer."
   },
   {
     name: "Maleic anhydride grafted polypropylene", aka: ["PP-g-MA", "maleated polypropylene", "MAPP"],
@@ -4742,7 +4724,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polysilazane", aka: ["perhydropolysilazane", "PHPS", "polysilazane"],
-    noScheme: "made by hydrolysing and condensing a dichlorosilane rather than by opening a ring, so the species that polymerises is a silanediol formed in situ and the repeat unit cannot show the chloride that left",
+    noScheme: "made by ammonolysis of a chlorosilane - ammonia rather than water - so the nitrogen in the backbone comes from the reagent and the chlorides are gone, neither of which this repeat unit records",
     monomer: "dichlorosilane + ammonia", cls: "Ring-opening (silicone)", cas: null,
     tags: ["high-temperature", "specialty"],
     verified: false,
@@ -4770,8 +4752,8 @@ window.POLYMER_DB = [
   },
   {
     name: "Polygermane", aka: ["poly(dialkylgermane)", "polygermanes"],
-    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
-    monomer: "dichlorodialkylgermane", cls: "Ring-opening (silicone)", cas: null,
+    noScheme: "made by Wurtz-type reductive coupling of a dichloride with sodium, so both chlorides are gone from the repeat unit and what polymerises is a transient species on the metal surface rather than anything this unit closes to",
+    monomer: "dichlorodialkylgermane", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "optical", "specialty"],
     verified: false,
     atoms: [{"id":"S0","el":"*"},{"id":2,"el":"Ge"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":"S1","el":"*"}], bonds: [{"a":"S0","b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":2,"b":"S1","order":1}],
@@ -5542,7 +5524,7 @@ window.POLYMER_DB = [
   {
     name: "Poly(isoindigo)", aka: ["PII", "poly(isoindigo)", "isoindigo polymer"],
     noScheme: "built by palladium cross-coupling between a dibrominated isoindigo and a distannyl or diboryl partner, so both leaving groups are gone from the repeat unit and it cannot say which half carried which",
-    monomer: "isoindigo", cls: "Step-growth (polyamide)", cas: null,
+    monomer: "isoindigo", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: 15, el: "N" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: "S1", el: "*" }],
@@ -5633,7 +5615,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(diethylsiloxane)", aka: ["PDES", "poly(diethylsiloxane)"],
-    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
+    noScheme: "made by hydrolysing a chlorosilane and condensing the silanol it forms, so the species that polymerises is generated in situ and the repeat unit keeps no trace of the chloride that left",
     monomer: "diethyldichlorosilane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "liquid crystalline", "specialty"],
     verified: false,
@@ -5643,7 +5625,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(phenylsilsesquioxane)", aka: ["PPSQ", "polysilsesquioxane", "poly(phenylsilsesquioxane)"],
-    noScheme: "made by hydrolysing and condensing a dichlorosilane rather than by opening a ring, so the species that polymerises is a silanediol formed in situ and the repeat unit cannot show the chloride that left",
+    noScheme: "made by hydrolysing a chlorosilane and condensing the silanol it forms, so the species that polymerises is generated in situ and the repeat unit keeps no trace of the chloride that left",
     monomer: "phenyltrichlorosilane", cls: "Ring-opening (silicone)", cas: null,
     tags: ["silicone", "high-temperature", "coating", "specialty"],
     verified: false,
@@ -5653,8 +5635,8 @@ window.POLYMER_DB = [
   },
   {
     name: "Polystannane", aka: ["poly(dibutylstannane)", "polystannane", "tin chain polymer"],
-    noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
-    monomer: "dibutyltin dihydride", cls: "Ring-opening (silicone)", cas: null,
+    noScheme: "made by dehydrogenative coupling of a dihydride, which expels hydrogen as the chain forms, so the repeat unit cannot show the two hydrides that left",
+    monomer: "dibutyltin dihydride", cls: "Step-growth (coupling)", cas: null,
     tags: ["conductive", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "Sn" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: "S1", el: "*" }],
