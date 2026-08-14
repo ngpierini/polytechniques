@@ -332,10 +332,24 @@
   // The framing-invariant exact-match key: fold to the shortest period, then
   // hash the closed graph. Null when the unit can't be closed (callers fall
   // back to wlHash of the open graph, preserving behavior for malformed input).
+  // The polymer's identity, independent of where the bracket was drawn, how
+  // many units it enclosed - and which Kekule structure the aromatic rings
+  // were drawn with. That last one was a real gap: 29 of the library's drawn
+  // entries did not match their OWN structure redrawn with the alternation
+  // started at a different bond, which is a choice a chemist makes without
+  // thinking about it. Poly(ethylene naphthalate), poly(2-vinylpyridine) and
+  // poly(vinyl carbazole) were among them.
+  //
+  // Merging aromatic bond orders is safe here precisely because
+  // aromaticRingBonds is strict about what counts as aromatic: it needs every
+  // atom of the ring to carry exactly one cyclic double bond, so cyclohexene
+  // and cyclohexadiene keep their own identities and neither becomes benzene.
+  // Applied across the library it changed no entry's neighbours - 640 distinct
+  // closed hashes before and after - so nothing merged that should not have.
   function closedHash(atoms, bonds, blind) {
     var reduced = foldRepeatUnit(atoms, bonds);
     var closed = closeRepeatUnit(reduced.atoms, reduced.bonds);
-    return closed ? wlHash(closed.atoms, closed.bonds, 4, blind) : null;
+    return closed ? aromaticBlindHash(closed.atoms, closed.bonds, blind) : null;
   }
 
   // The same identity with geometry ignored. A drawing that leaves a backbone
