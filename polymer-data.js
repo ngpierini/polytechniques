@@ -744,7 +744,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §2-14b"
     },
     name: "Poly(2,6-dimethyl-1,4-phenylene oxide)", aka: ["PPO", "PPE", "poly(phenylene oxide)"], monomer: "2,6-Dimethylphenol",
-    noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
+    noScheme: "built by oxidative coupling of a single phenol, where a copper-amine catalyst and oxygen join the ring to the oxygen of its neighbour and the only by-product is water, so nothing in the repeat unit records which of the two coupling partners it came from",
     cas: "25134-01-4", tg: "210 °C", tags: ["engineering", "polyether"],
     note: "Oxidative-coupling polymer; usually blended with polystyrene (Noryl).",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],

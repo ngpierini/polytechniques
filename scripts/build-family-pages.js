@@ -98,6 +98,177 @@ const FAMILIES = [
       ["chain-dimensions.html", "Chain dimensions &ndash; PDMS is the textbook flexible chain"],
     ],
   },
+  {
+    slug: "vinyl-polymers",
+    title: "Vinyl polymers",
+    nav: "Vinyl",
+    lede: "One backbone, every property &ndash; what hangs off the chain decides whether you get a bag, a pipe, or a non-stick pan",
+    // "Copolymer (addition, diene)" also matches the loose prefix, and SBR and
+    // nitrile rubber are diene rubbers whatever else they contain, so the diene
+    // page claims them.
+    match: e => e.cls === "Addition (vinyl)" || e.cls === "Copolymer (addition)"
+      || e.cls === "Copolymer (addition, vinyl)" || e.cls === "Terpolymer (addition)"
+      || e.cls === "Addition (alkyne)",
+    intro: [
+      "Every polymer on this page is built the same way: a carbon&ndash;carbon double bond opens and adds to the growing chain, leaving a saturated &ndash;CH<sub>2</sub>&ndash;CHX&ndash; backbone behind. The backbone is therefore identical in all of them. Everything that distinguishes polyethylene from PVC from PTFE is the substituent X, and the span that one variable covers is the widest in polymer science &ndash; from a material that melts at 130&nbsp;&deg;C and is sold by the tonne as film, to one that survives 327&nbsp;&deg;C and nothing sticks to.",
+      "The commodity plastics cluster here because the chemistry is cheap and tolerant: free-radical initiation, no rigorous exclusion of water, monomers that come straight off a cracker. That is also why the family is where most controlled-polymerisation methods were developed and tested, and why so many of the entries below are specialty monomers made to give a familiar backbone one unfamiliar property.",
+    ],
+    design: [
+      "Three things about the substituent set the properties. Size and stiffness govern T<sub>g</sub>: hydrogen leaves the chain free to rotate and polyethylene sits at &minus;110&nbsp;&deg;C, a methyl group raises polypropylene to &minus;10&nbsp;&deg;C, and a phenyl ring raises polystyrene to 100&nbsp;&deg;C. Polarity adds interchain attraction on top &ndash; chlorine is not much larger than a methyl group, but poly(vinyl chloride) reaches 80&nbsp;&deg;C because the C&ndash;Cl dipoles pull neighbouring chains together. Hydrogen bonding does more again: poly(vinyl alcohol) reaches 85&nbsp;&deg;C and poly(N-vinylpyrrolidone) 175&nbsp;&deg;C dry.",
+      "Regularity decides whether the polymer can crystallise at all, and that is a question about stereochemistry rather than about the substituent. Any carbon carrying X is a stereocentre, so an ordinary radical polymerisation gives an atactic chain that cannot pack &ndash; which is why commercial polystyrene is a transparent glass with no melting point, while the isotactic form crystallises. Polypropylene is the commercial case that matters: atactic polypropylene is a tacky material of no structural use, and isotactic polypropylene, melting at 165&nbsp;&deg;C, is one of the most-produced plastics on earth. Nothing separates them but the arrangement of successive units.",
+      "Two entries here are made by a route the drawing does not reveal. Poly(vinyl alcohol) cannot be made from vinyl alcohol, which tautomerises to acetaldehyde faster than it could ever polymerise; it is made by polymerising vinyl acetate and then hydrolysing the ester, so the degree of hydrolysis is a formulation variable and commercial grades are really vinyl alcohol&ndash;vinyl acetate copolymers. Fluorinated members behave unusually for a different reason: fluorine is small enough not to disrupt the chain but forms a continuous sheath around it, which is why polytetrafluoroethylene melts at 327&nbsp;&deg;C, dissolves in nothing, and has the lowest surface energy of any bulk polymer.",
+    ],
+    related: [
+      ["radical-kinetics.html", "FRP kinetics &ndash; rate and chain length for these monomers"],
+      ["diene-elastomers.html", "Diene elastomers &ndash; the addition polymers that keep a double bond"],
+      ["mechanisms.html", "Mechanisms &ndash; how radical, ATRP and RAFT polymerisation of these monomers runs"],
+    ],
+  },
+  {
+    slug: "diene-elastomers",
+    title: "Diene elastomers",
+    nav: "Dienes",
+    lede: "The rubbers &ndash; and the reason natural rubber and gutta-percha, chemically identical, are a tyre and a golf ball shell",
+    match: e => e.cls === "Addition (diene)" || e.cls === "Copolymer (addition, diene)",
+    intro: [
+      "A 1,3-diene has two double bonds, and polymerisation consumes only one of them. Add across carbons 1 and 4 and the remaining double bond ends up in the backbone; add across 1 and 2 and it ends up as a pendant vinyl group. Every polymer on this page therefore keeps unsaturation that the vinyl polymers do not have, and that surviving double bond is the whole story of the family &ndash; it is what lets these materials be vulcanised into rubbers, and it is also what makes them age.",
+      "The double bond in the chain has a geometry, and the difference between the two options is startling. <em>cis</em>-1,4-polyisoprene has a glass transition of &minus;70&nbsp;&deg;C and melts at 28&nbsp;&deg;C: it is natural rubber, soft and highly elastic at room temperature. <em>trans</em>-1,4-polyisoprene is gutta-percha, a hard horn-like solid that melts at 74&nbsp;&deg;C. The molecular formula, the repeat unit, and the molecular weight can all be identical. The <em>cis</em> kink prevents the chain from packing; the <em>trans</em> chain is straight and crystallises readily.",
+    ],
+    design: [
+      "The same split runs through polybutadiene. The <em>cis</em>-1,4 polymer has a T<sub>g</sub> of &minus;100&nbsp;&deg;C, the lowest of the hydrocarbon rubbers and the reason it is blended into tyre treads for cold-weather grip; the <em>trans</em>-1,4 polymer sits at &minus;83&nbsp;&deg;C and melts at 145&nbsp;&deg;C, behaving like a semicrystalline plastic instead. Controlling that ratio &ndash; and the fraction of 1,2 addition alongside it &ndash; is the central problem of diene polymerisation, and is why the catalyst matters far more here than in an ordinary vinyl polymerisation. Substituting the diene shifts the whole set: the chlorine in polychloroprene raises T<sub>g</sub> to &minus;43&nbsp;&deg;C and buys the oil and weather resistance that makes it a sealant and wetsuit rubber.",
+      "Because the backbone double bonds survive, these polymers can be crosslinked through them, which is what vulcanisation does &ndash; sulfur bridges struck between chains at the alkene sites, converting a tacky flowing material into an elastic network. A rubber's useful properties are properties of that network rather than of the chain, so crosslink density, not molecular weight, is the design variable. The same reactivity is the family's weakness: an alkene is attacked by ozone and by oxygen, so diene rubbers crack and harden on exposure unless they are protected by antiozonants, and the saturated elastomers on other pages exist largely to sidestep that.",
+    ],
+    related: [
+      ["crosslink-density.html", "Crosslink density &ndash; the network calculations behind a vulcanisate"],
+      ["vinyl-polymers.html", "Vinyl polymers &ndash; the addition polymers with no double bond left over"],
+      ["block-copolymers.html", "Block copolymers &ndash; SBS and the thermoplastic elastomers built from these blocks"],
+    ],
+  },
+  {
+    slug: "polyesters",
+    title: "Polyesters",
+    nav: "Polyesters",
+    lede: "An ester in the backbone &ndash; rigid enough for a bottle, hydrolysable enough for a dissolving suture",
+    match: e => e.cls === "Step-growth (polyester)" || e.cls === "Copolymer (ring-opening, polyester)",
+    intro: [
+      "A polyester carries the ester group &ndash;C(=O)O&ndash; in the main chain rather than hanging off it, which is the distinction that separates this family from the acrylates. Put the linkage in the backbone and it stops being a side group that modifies the chain and becomes a structural member of it: every property below follows from what sits between successive esters, and from the fact that the linkage itself can be hydrolysed apart.",
+      "Most of these are made by step-growth &ndash; a diol and a diacid (or its ester) condensed with removal of water or a small alcohol. That mechanism has consequences the chain-growth families do not share. High molecular weight arrives only at very high conversion, so stoichiometry has to be near-exact and the condensate has to be stripped continuously; and because the reaction is an equilibrium, it also runs backwards. Wet poly(ethylene terephthalate) melt-processed without drying will hydrolyse in the extruder and come out with a lower molecular weight than it went in with, which is why drying is not an optional step.",
+    ],
+    design: [
+      "Backbone rigidity sets the thermal properties, and an aromatic ring is the stiffest thing you can put between two esters. Poly(ethylene terephthalate) has a T<sub>g</sub> of 75&nbsp;&deg;C and melts at 260&nbsp;&deg;C; replace the benzene with the larger fused naphthalene unit and poly(ethylene naphthalate) rises to 120&nbsp;&deg;C and 265&nbsp;&deg;C. Take the ring out entirely and everything collapses: poly(ethylene adipate), an all-aliphatic polyester of the same ester density, has a T<sub>g</sub> of &minus;50&nbsp;&deg;C and melts at 50&nbsp;&deg;C. That is the whole aromatic&ndash;aliphatic divide in the family, and it is why the aromatic polyesters are engineering plastics and fibres while the aliphatic ones are soft segments, adhesives and degradable materials.",
+      "Lengthening the diol softens the chain without changing the chemistry, and does something more useful besides. Poly(butylene terephthalate) sits at 40&nbsp;&deg;C and 225&nbsp;&deg;C against PET's 75 and 260 &ndash; but the extra flexibility also lets it crystallise far faster, which is why PBT is the injection-moulding grade and PET, which can be quenched to a clear amorphous solid, is the bottle and fibre grade. The same two polymers, differing by two methylene groups, end up in entirely different processes for reasons of crystallisation kinetics rather than of equilibrium properties.",
+      "The ester link is hydrolysable, and that is a feature as often as a liability. It is why the aliphatic polyesters dominate degradable medicine &ndash; polylactide, polyglycolide, poly(caprolactone) and their copolymers, whose degradation rate is tuned by the ratio &ndash; and why polyester-based polyurethane soft segments fail in humid service where a polyether would survive. Those lactone-derived polyesters are made by ring-opening rather than condensation and so live on the <a href=\"ring-opening-polymers.html\">ring-opening page</a>, even though the linkage is identical.",
+    ],
+    related: [
+      ["ring-opening-polymers.html", "Ring-opening polymers &ndash; the lactone route to the same ester linkage"],
+      ["polyamides.html", "Polyamides &ndash; the same step-growth with an amide in place of the ester"],
+      ["calculator.html#sg", "Step-growth calculator &ndash; conversion, stoichiometry and the gel point"],
+    ],
+  },
+  {
+    slug: "polyamides",
+    title: "Polyamides",
+    nav: "Polyamides",
+    lede: "Hydrogen bonds across every repeat unit &ndash; the nylons, and why they take up water",
+    match: e => e.cls === "Step-growth (polyamide)" || e.cls === "Ring-opening (polyamide)",
+    intro: [
+      "Swap the oxygen of a polyester's ester for an N&ndash;H and you have a polyamide, and the properties change out of all proportion to the size of the edit. An ester oxygen accepts hydrogen bonds; an amide N&ndash;H both accepts and donates. Every repeat unit can therefore tie itself to the chain alongside it, and a polyamide behaves as though it were lightly crosslinked in a way the corresponding polyester is not. Nylon 6,6 melts at 265&nbsp;&deg;C where poly(hexamethylene adipate), the polyester with the identical carbon skeleton, is a low-melting wax.",
+      "That interchain bonding is the source of everything the nylons are used for &ndash; the melting points, the toughness, the abrasion resistance that puts them in gears and bearings, and the tensile strength that made nylon a fibre before it was a plastic. It is also the source of the one property that has to be designed around, because water hydrogen-bonds too.",
+    ],
+    design: [
+      "The numbering encodes the synthesis. A single number &ndash; nylon 6, nylon 11, nylon 12 &ndash; means an AB monomer, one molecule carrying both an amine and an acid (or the lactam that ring-opens to it), so the chain is built from one feedstock and stoichiometry looks after itself. Two numbers &ndash; nylon 6,6, nylon 6,10 &ndash; mean an AABB pair, a diamine of the first count condensed with a diacid of the second, where the ratio has to be controlled precisely for the chain to grow. The digits are simply the carbon counts.",
+      "Amide density sets the thermal properties, and diluting it with hydrocarbon lowers everything together. Nylon 6 melts at 220&nbsp;&deg;C and nylon 6,6 at 265&nbsp;&deg;C; stretch the diacid and nylon 6,10 falls to 215&nbsp;&deg;C; go to the long single-monomer nylons and nylon 11 melts at 190&nbsp;&deg;C and nylon 12 at 178&nbsp;&deg;C. The glass transitions move far less &ndash; they sit in a narrow band from about 41&nbsp;&deg;C to 57&nbsp;&deg;C across that whole range &ndash; because T<sub>g</sub> reflects local backbone mobility while T<sub>m</sub> reflects how well the crystal packs.",
+      "The same hydrogen bonds absorb water from the air, and absorbed water sits between chains and plasticises them. A dry nylon 6,6 moulding and the same moulding conditioned to equilibrium in a humid room are measurably different materials: the conditioned one is tougher and less brittle but lower in modulus and dimensionally larger. Nylons are therefore specified conditioned rather than dry, and the long-chain nylons 11 and 12 are chosen where dimensional stability matters precisely because their lower amide density takes up much less water. The aromatic polyamides at the far end of the family &ndash; the aramids &ndash; hydrogen-bond so effectively between rigid rods that they do not melt at all and have to be spun from solution.",
+    ],
+    related: [
+      ["polyesters.html", "Polyesters &ndash; the same step-growth with an ester in place of the amide"],
+      ["calculator.html#sg", "Step-growth calculator &ndash; conversion, stoichiometry and the gel point"],
+      ["thermal-analysis.html", "Thermal analysis &ndash; measuring T<sub>m</sub> and crystallinity by DSC"],
+    ],
+  },
+  {
+    slug: "ring-opening-polymers",
+    title: "Polyethers, lactones and other ring-opening polymers",
+    nav: "Ring-opening",
+    lede: "Strain in a ring, spent to build a chain &ndash; and the route to almost every end-functional prepolymer",
+    match: e => e.cls === "Ring-opening",
+    intro: [
+      "Ring-opening polymerisation gets its driving force from somewhere the other families do not: the strain in a cyclic monomer. Open a three-membered epoxide or a four-membered lactone and the relief of bond-angle strain pays for the polymerisation, which is why these reactions run under mild conditions and why ring size predicts reactivity so well. Five- and six-membered rings are nearly strain-free and are correspondingly reluctant &ndash; six-membered lactones barely polymerise at all, while the strained three- and four-membered rings go readily.",
+      "The linkages produced are not new. A lactone opens to an ester, so poly(caprolactone) and polylactide are polyesters by a different route; an oxazoline opens to an amide. What ring-opening changes is the control you get on the way there, and that is the reason this family carries most of the library's prepolymers.",
+    ],
+    design: [
+      "Many of these polymerisations can be run as living systems, with every chain initiated at once and no inherent termination. That gives a narrow distribution and, more usefully, a chain end that is still active when the monomer runs out &ndash; so molecular weight is set by the monomer-to-initiator ratio, blocks can be added in sequence, and the ends can be capped with whatever functional group the next step needs. Nearly every telechelic and multi-arm prepolymer in this library comes from here for that reason: the poly(ethylene glycol) diols, thiols, azides, maleimides and 4- and 8-arm stars used to build hydrogels are all ring-opened ethylene oxide with a defined end group installed deliberately.",
+      "Backbone flexibility across the family is unusually high, because an ether oxygen in the chain has a low rotational barrier and no substituent at all. Poly(ethylene oxide) has a T<sub>g</sub> of &minus;60&nbsp;&deg;C and melts at 65&nbsp;&deg;C; poly(tetrahydrofuran), with three more methylenes between oxygens, falls to &minus;84&nbsp;&deg;C. Symmetry decides whether the chain crystallises: poly(ethylene oxide) is regular and crystalline, while poly(propylene oxide) &ndash; identical but for a methyl on every repeat, which also creates a stereocentre &ndash; is an amorphous liquid at the same T<sub>g</sub>. That pairing is why PEO is the water-soluble crystalline block and PPO the hydrophobic amorphous one in the Pluronic surfactants.",
+      "Poly(ethylene oxide) is also the family's naming trap. Above roughly 20,000&nbsp;g/mol it is conventionally called poly(ethylene oxide) and below it poly(ethylene glycol), for the same polymer &ndash; the older name simply reflects that short chains were made as glycols. Both names appear in this library against the entries the trade uses them for.",
+    ],
+    related: [
+      ["polyesters.html", "Polyesters &ndash; the condensation route to the same ester linkage"],
+      ["block-copolymers.html", "Block copolymers &ndash; what living ring-opening is usually used to build"],
+      ["crosslink-density.html", "Crosslink density &ndash; network calculations for PEG hydrogels"],
+    ],
+  },
+  {
+    slug: "conjugated-polymers",
+    title: "Conjugated and high-performance polymers",
+    nav: "Conjugated",
+    lede: "Aromatic rings linked ring-to-ring &ndash; conduct electricity if the conjugation is continuous, survive 300 &deg;C if it is not",
+    match: e => e.cls === "Step-growth (coupling)" || !e.cls,
+    intro: [
+      "The polymers here are built by joining aromatic rings to each other rather than by adding across a double bond, and the resulting backbone is a chain of rings instead of a chain of sp<sup>3</sup> carbons. That makes them stiff, and stiffness is what they have in common. What separates them into two very different technologies is whether the connection between rings preserves conjugation.",
+      "Link the rings directly, carbon to carbon, and the p-orbitals overlap continuously along the chain. The result is a delocalised &pi; system running the length of the backbone &ndash; a one-dimensional semiconductor, which on oxidation or reduction becomes a conductor. That discovery, on doped polyacetylene, took the 2000 Nobel Prize in Chemistry. Put an oxygen, a sulfur or a sulfone between the rings instead and the conjugation is broken at every linkage: the chain keeps the rigidity and the thermal stability but is an insulator. Those are the high-performance engineering thermoplastics, and they occupy the other half of this page.",
+    ],
+    design: [
+      "The conducting members share one practical problem: a rigid, planar, strongly interacting backbone is neither soluble nor fusible, and unsubstituted polythiophene or poly(<em>p</em>-phenylene) is an intractable powder. Nearly every processable conjugated polymer in this list is therefore a substituted one, where flexible side chains have been hung off the ring for no electronic reason at all &ndash; poly(3-hexylthiophene) is the canonical case, and the alkyl series from butyl to dodecyl here maps how much solubilising chain is needed against how much it dilutes the active material. Poly(3,4-ethylenedioxythiophene) solves the same problem differently, dispersed as a complex with a polyanion to give the transparent conductor used in displays and antistatic coatings. Polyaniline is the outlier: it is switched between insulating and conducting forms by protonation rather than by redox doping, so its conductivity depends on pH.",
+      "The non-conjugated half trades that electronic behaviour for temperature. Poly(ether ether ketone) melts at 343&nbsp;&deg;C with a T<sub>g</sub> of 143&nbsp;&deg;C, and is semicrystalline, so it keeps useful stiffness well above the glass transition &ndash; the reason it is machined into aerospace and implant components. Poly(<em>p</em>-phenylene sulfide) melts at 285&nbsp;&deg;C and crystallises readily. The amorphous members go higher in T<sub>g</sub> but have no crystal to fall back on: poly(ether sulfone) reaches 225&nbsp;&deg;C and poly(2,6-dimethyl-1,4-phenylene oxide) 210&nbsp;&deg;C, both transparent and both used up to but not beyond that transition. In each case the aryl rings supply the rigidity and the linking heteroatom supplies just enough rotational freedom to let the polymer be processed at all.",
+    ],
+    related: [
+      ["thermal-analysis.html", "Thermal analysis &ndash; measuring these transitions by DSC and DMA"],
+      ["polymer-search.html", "Structure search &ndash; draw a conjugated repeat unit to identify it"],
+      ["mechanisms.html", "Mechanisms &ndash; the coupling polymerisations that build these chains"],
+    ],
+  },
+  {
+    slug: "block-copolymers",
+    title: "Block copolymers",
+    nav: "Blocks",
+    lede: "Two incompatible polymers tied together, unable to separate &ndash; so they organise instead",
+    match: e => /^Block copolymer|^Segmented block/.test(e.cls || ""),
+    intro: [
+      "Almost all pairs of polymers are immiscible. Blend two of them and they separate into domains large enough to see, and the blend is weak at every interface. Join the same two chemistries end to end with a covalent bond and they still try to separate &ndash; but a junction point cannot travel, so the separation can only run as far as the length of a single chain. What would have been a macroscopic phase split becomes microphase separation, into domains of ten to a hundred nanometres.",
+      "That constraint is the whole subject. A block copolymer gives you both chemistries in one material, at a domain size set by molecular weight and a morphology set by composition, arranged periodically without anyone having to pattern it.",
+    ],
+    design: [
+      "Which morphology you get is governed by the volume fraction of the blocks: a small minority block forms spheres in a matrix of the major block, a larger one forms hexagonally packed cylinders, and a roughly equal split gives alternating lamellae, with the gyroid appearing in between. Whether the material orders at all is governed by the product of the interaction parameter and the degree of polymerisation &ndash; strongly incompatible blocks separate at low molecular weight, marginally incompatible ones need long chains or will simply mix.",
+      "The engineering payoff is clearest in the thermoplastic elastomers. In a glassy&ndash;rubbery&ndash;glassy triblock such as styrene&ndash;butadiene&ndash;styrene, the polystyrene end blocks collect into hard domains that anchor both ends of every rubbery midblock, so the material behaves as a crosslinked elastomer at room temperature. The difference from a vulcanised rubber is that these crosslinks are physical: heat the material above the polystyrene glass transition and the domains soften, the network dissolves, and it flows and can be moulded or recycled. Cool it and the network reassembles. The segmented polyurethanes reach the same end by a different architecture, with hard segments that hydrogen-bond rather than vitrify.",
+      "In solution the same immiscibility drives self-assembly. An amphiphilic block copolymer in water buries its insoluble block and forms micelles, worms or vesicles depending on the same volume-fraction argument, which is the basis of most polymeric drug carriers here. The Pluronic-type PEO&ndash;PPO&ndash;PEO triblocks add a temperature axis: the propylene oxide block becomes less soluble as it warms, so these solutions gel on heating and liquefy on cooling, the reverse of an ordinary gel.",
+    ],
+    related: [
+      ["ring-opening-polymers.html", "Ring-opening polymers &ndash; the living chemistry these are usually built with"],
+      ["calculator.html#block", "Block copolymer builder &ndash; design a two-block recipe"],
+      ["bottlebrush-polymers.html", "Bottlebrush polymers &ndash; the other architecture that changes properties without changing chemistry"],
+    ],
+  },
+  {
+    slug: "bottlebrush-polymers",
+    title: "Bottlebrush polymers",
+    nav: "Bottlebrush",
+    lede: "A side chain on every backbone unit, crowded enough that the molecule stops behaving like a chain",
+    match: e => /^Bottlebrush/.test(e.cls || ""),
+    intro: [
+      "A bottlebrush carries a polymeric side chain on every repeat unit of its backbone, and the consequence is steric rather than chemical. The side chains are anchored too densely to avoid one another, so they push the backbone straight simply to make room. A linear chain of the same molecular weight is a random coil; a bottlebrush is an extended cylinder whose persistence length is far larger, set by how long and how dense the side chains are rather than by anything about backbone bond angles.",
+      "Nothing about the chemistry has changed &ndash; a poly(lactide) bottlebrush is made of the same ester as a linear poly(lactide). The architecture alone changes the physics, which is what makes this family interesting: it is a way to reach properties that are not otherwise available from the monomers you already have.",
+    ],
+    design: [
+      "The most useful consequence is that bottlebrushes barely entangle. Entanglement requires chains to thread past one another, and a thick, stiff cylinder cannot easily thread through its neighbours, so the entanglement molecular weight rises by orders of magnitude. A melt or network of bottlebrushes is therefore far softer than the same chemistry linear and crosslinked &ndash; soft enough to reach the moduli of biological tissue without adding any solvent, where a conventional elastomer would have to be swollen with oil that can leach out. That is the basis of the supersoft and solvent-free elastomer entries here.",
+      "The other consequence is size. Because the molecule is a cylinder tens of nanometres across, bottlebrush block copolymers microphase-separate at a spacing comparable to the wavelength of visible light, and self-assemble into photonic materials that reflect colour structurally rather than by pigment. The same bulk means a single molecule can carry a large, defined payload, which is what the drug-delivery and nucleic-acid conjugates in this list use it for.",
+      "Three synthetic routes appear here and the distinction matters when you read the entries. Grafting-through polymerises a macromonomer that already carries the side chain, most often by ROMP, and so guarantees exactly one side chain per backbone unit &ndash; the reason it dominates when the architecture has to be well defined. Grafting-from grows the side chains out of a backbone carrying an initiator on every unit, usually by ATRP, which reaches higher backbone molecular weights but leaves the grafting density to be measured rather than assumed. Grafting-to attaches finished chains to a reactive backbone, and is limited by how crowded the surface becomes as the reaction proceeds.",
+    ],
+    related: [
+      ["block-copolymers.html", "Block copolymers &ndash; microphase separation in the linear case"],
+      ["chain-dimensions.html", "Chain dimensions &ndash; persistence length and coil size for linear chains"],
+      ["polymer-search.html", "Structure search &ndash; draw a bracketed side chain to search these"],
+    ],
+  },
 ];
 
 // --- helpers --------------------------------------------------------------
@@ -361,6 +532,52 @@ const CITED = [
   ["Poly(2-hydroxyethyl methacrylate)", "tg", "55 °C"],
   ["Poly(methacrylic acid)", "tg", "185 °C (dry)"],
   ["Poly(dimethylsiloxane)", "tg", "-125 °C"],
+  // vinyl
+  ["Polyethylene", "tg", "-110 °C"],
+  ["Polyethylene", "tm", "130 °C (HDPE)"],
+  ["Polypropylene", "tg", "-10 °C"],
+  ["Polypropylene", "tm", "165 °C (isotactic)"],
+  ["Polystyrene", "tg", "100 °C"],
+  ["Poly(vinyl chloride)", "tg", "80 °C"],
+  ["Poly(vinyl alcohol)", "tg", "85 °C"],
+  ["Poly(N-vinylpyrrolidone)", "tg", "175 °C (dry)"],
+  ["Polytetrafluoroethylene", "tm", "327 °C"],
+  // dienes
+  ["Polyisoprene (cis-1,4)", "tg", "-70 °C"],
+  ["Polyisoprene (cis-1,4)", "tm", "28 °C"],
+  ["Polyisoprene (trans-1,4)", "tm", "74 °C"],
+  ["Polybutadiene (cis-1,4)", "tg", "-100 °C"],
+  ["Polybutadiene (trans-1,4)", "tg", "-83 °C"],
+  ["Polybutadiene (trans-1,4)", "tm", "145 °C"],
+  ["Polychloroprene", "tg", "-43 °C"],
+  // polyesters
+  ["Poly(ethylene terephthalate)", "tg", "75 °C"],
+  ["Poly(ethylene terephthalate)", "tm", "260 °C"],
+  ["Poly(ethylene naphthalate)", "tg", "120 °C"],
+  ["Poly(ethylene naphthalate)", "tm", "265 °C"],
+  ["Poly(ethylene adipate)", "tg", "-50 °C"],
+  ["Poly(ethylene adipate)", "tm", "50 °C"],
+  ["Poly(butylene terephthalate)", "tg", "40 °C"],
+  ["Poly(butylene terephthalate)", "tm", "225 °C"],
+  // polyamides
+  ["Nylon 6", "tm", "220 °C"],
+  ["Nylon 6,6", "tm", "265 °C"],
+  ["Nylon 6,10", "tm", "215 °C"],
+  ["Nylon 11", "tm", "190 °C"],
+  ["Nylon 12", "tm", "178 °C"],
+  ["Nylon 12", "tg", "41 °C"],
+  ["Nylon 6,6", "tg", "57 °C"],
+  // ring-opening
+  ["Poly(ethylene oxide)", "tg", "-60 °C"],
+  ["Poly(ethylene oxide)", "tm", "65 °C"],
+  ["Poly(tetrahydrofuran)", "tg", "-84 °C"],
+  ["Poly(propylene oxide)", "tg", "-60 °C"],
+  // conjugated / high-performance
+  ["Poly(ether ether ketone)", "tg", "143 °C"],
+  ["Poly(ether ether ketone)", "tm", "343 °C"],
+  ["Poly(p-phenylene sulfide)", "tm", "285 °C"],
+  ["Poly(ether sulfone)", "tg", "225 °C"],
+  ["Poly(2,6-dimethyl-1,4-phenylene oxide)", "tg", "210 °C"],
 ];
 CITED.forEach(([name, field, expect]) => {
   const e = DB.find(x => x.name === name);
@@ -373,16 +590,12 @@ CITED.forEach(([name, field, expect]) => {
 let changed = 0;
 const written = [];
 const groups = [];
+const pending = [];
 
-function emit(slug, html) {
-  const file = path.join(ROOT, slug + ".html");
-  const old = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null;
-  if (old !== html) {
-    changed++;
-    if (!CHECK) fs.writeFileSync(file, html);
-  }
-}
-
+// Render everything first and write nothing until the whole set has been
+// validated. An earlier version wrote as it went and only then reported a
+// bad partition, which left the failing run's pages on disk - a build that
+// fails and still publishes is worse than one that simply fails.
 FAMILIES.forEach(fam => {
   const entries = DB.filter(fam.match).slice().sort((a, b) => {
     const ka = indexKey(a.name), kb = indexKey(b.name);
@@ -392,16 +605,24 @@ FAMILIES.forEach(fam => {
   if (!entries.length) { problems.push(fam.slug + " matched no entries"); return; }
   groups.push({ fam, entries });
   written.push([fam.slug, entries.length]);
-  emit(fam.slug, pageHtml(fam, entries));
+  pending.push([fam.slug, pageHtml(fam, entries)]);
 });
-
-emit("polymer-families", hubHtml(groups));
+pending.push(["polymer-families", hubHtml(groups)]);
 
 if (problems.length) {
-  console.error("build-family-pages: " + problems.length + " problem(s)");
+  console.error("build-family-pages: " + problems.length + " problem(s), nothing written");
   problems.forEach(p => console.error("  - " + p));
   process.exit(1);
 }
+
+pending.forEach(([slug, html]) => {
+  const file = path.join(ROOT, slug + ".html");
+  const old = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null;
+  if (old !== html) {
+    changed++;
+    if (!CHECK) fs.writeFileSync(file, html);
+  }
+});
 
 written.forEach(([slug, n]) => {
   console.log("  " + slug.padEnd(24) + String(n).padStart(4) + " entries");

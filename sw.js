@@ -8,7 +8,7 @@
 // Either way the calculators still work with no connection. Bump CACHE_NAME
 // whenever the pre-cache list below changes so old clients pick up the new
 // set instead of serving stale files.
-const CACHE_NAME = "polytechniques-v260";
+const CACHE_NAME = "polytechniques-v261";
 
 const PRECACHE_URLS = [
   "index.html",
@@ -32,6 +32,14 @@ const PRECACHE_URLS = [
   "acrylate-polymers.html",
   "methacrylate-polymers.html",
   "silicone-polymers.html",
+  "vinyl-polymers.html",
+  "diene-elastomers.html",
+  "polyesters.html",
+  "polyamides.html",
+  "ring-opening-polymers.html",
+  "conjugated-polymers.html",
+  "block-copolymers.html",
+  "bottlebrush-polymers.html",
   "polymer-chain-game.html",
   "founder.html",
   "whats-new.html",
@@ -83,7 +91,7 @@ self.addEventListener("install", function (event) {
         // answered from the browser's own year-long HTTP cache and a brand new
         // CACHE_NAME gets filled with old bytes. Bumping the version then does
         // nothing at all, which is exactly what it did: verified live with
-        // cache "polytechniques-v260" already installed and still serving a
+        // cache "polytechniques-v261" already installed and still serving a
         // polymer-data.js that predated the deploy. This forces the network.
         return fetch(new Request(u, { cache: "reload" })).then(function (res) {
           if (!res.ok) return; // skip rather than fail the whole install
