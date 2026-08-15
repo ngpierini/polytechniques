@@ -54,44 +54,14 @@
 <main id="guide">
 
   <div class="card mol-card-in">
-    <h3><span class="mol-card-icon mol-card-icon--1">&#128161;</span>How this works</h3>
-    <p class="guide-note">
-      Search a curated reference library of common polymers by name, or draw a repeat unit below and search by structure.
-    </p>
-    <details class="mol-details">
-      <summary>How structure search works, and its limits</summary>
-      <p class="guide-note">
-        This search is built around the repeat unit itself. The big registries (SciFinder, PubChem, Reaxys) are indexed for discrete small molecules, so a polymer usually lives there as a registry entry filed under its monomer, and their structure search struggles to interpret a drawn repeating backbone with open chain ends. Here the open chain ends are part of the query: matching runs on the graph of the repeat unit, drawn the way you'd sketch it in a paper, with near-misses ranked by chemical similarity. The trade-off is scope. This is a small curated library for identifying and exploring common polymers, not an exhaustive registry; once a match gives you the name, the links on each result hand off to those bigger databases.
-      </p>
-      <p class="guide-note">
-        Draw a little more than one repeat unit, the way you'd sketch a few units of a chain in a paper: a stub of the neighboring unit on each side, then your actual repeat unit in the middle, then drag the bracket tool over just the middle part. The bracket tool needs a real bond crossing each edge to know where the chain keeps going, so it won't work if the whole drawing is inside the bracket. Try the load example buttons below to see the pattern before drawing your own.
-      </p>
-      <p class="guide-note">
-        Matching is graph based: your drawing is compared by its atoms and bonds, not by how it is laid out on the canvas, so the same repeat unit drawn at a different angle or size still matches. When nothing in the library is identical, the search falls back to ranking the closest structures by chemical similarity (Morgan fingerprints, the same idea behind similarity search in the big chemistry databases) with a percentage on each suggestion. The matching engine (RDKit, about 7 MB) loads the first time you run a structure search and stays cached after that.
-      </p>
-      <p class="guide-note">
-        This is a small, hand curated reference set, not an exhaustive registry like SciFinder or PubChem: it currently covers common addition, step growth, and ring opening homopolymers. Branched and crosslinked repeat units, and copolymers, aren't matched yet. Tg and Tm values shown are typical literature figures for reference only.
-      </p>
-      <p class="guide-note">
-        <strong>Asking a generic question.</strong> "Contains fragment" matches exactly what you drew &mdash; those elements, those bond orders. Some questions can't be drawn at all: <em>any</em> halogen, <em>any</em> aromatic ring, an ester however it happens to be substituted. Type a <strong>SMARTS</strong> pattern for those, or press one of the examples under the box to see the notation next to its answer. <code>[F,Cl,Br,I]</code> finds every halogenated polymer in the library; <code>[CX3](=O)[OX2H0]</code> finds every ester, including formates, because SMARTS counts implicit hydrogens.
-      </p>
-      <p class="guide-note">
-        <strong>How it is made.</strong> Where a match's monomer can be recovered from its repeat unit, the result shows the polymerisation as a scheme: monomer, arrow, repeat unit. Addition and ring-opening are isomerisations &ndash; the repeat unit is the monomer with one bond moved &ndash; so the move can be reversed, and every derived monomer is checked by rebuilding the polymer from it before it is drawn. Around 230 entries qualify. Step-growth never does: a polyester repeat unit came from a diol <em>and</em> a diacid, and one unit cannot say which pair, so no scheme is drawn rather than a guessed one. <strong>Conditions are recorded for eight polymers only</strong>, each with the section of Odian it was read from printed beside it &ndash; low- and high-density polyethylene, polystyrene, PVC, PMMA, polyacrylonitrile, nylon 6,6 and PET. Where a source gives only the process and no numbers, that is all the entry says. For every other polymer the arrow names the mechanism and nothing more, because nothing more is known to this library. Conditions without a citation are rejected by the data check, so the set can only grow by someone reading a reference. <a href="mechanisms.html">Mechanisms</a> is where the actual chemistry of running these polymerisations lives.
-      </p>
-      <p class="guide-note">
-        <strong>Draw a monomer instead.</strong> The search runs both ways. Draw a repeat unit and it names the polymer; draw a <em>monomer</em> &ndash; styrene, caprolactam, methyl methacrylate &ndash; and it names what that monomer polymerises to, because the same verified derivation that draws the scheme is indexed in reverse. Butadiene returns both 1,4-polybutadienes, since one monomer gives either geometry and the catalyst decides. The bonds that actually change are shaded in the scheme, on both sides of the arrow: the alkene that opens, or the ring bond that breaks.
-      </p>
-      <p class="guide-note">
-        <strong>Stereochemistry.</strong> The geometry of a backbone double bond is part of the match, because it is part of the polymer: cis-1,4-polyisoprene is natural rubber and the trans isomer is gutta-percha, a hard resin, from the same atoms joined the same way. Use the cis/trans tool on a double bond to state it &mdash; "cis" meaning the chain continues on the same side, which is what a polymer name means by it, not the CIP priority rule. Leave it unset and the search matches every isomer of that skeleton and says which ones they are. <strong>Tacticity is different</strong>: it describes how one repeat unit follows the next, so no single repeat unit can carry it. The four polypropylenes are one drawing, and a structure search returns all four together and says why.
-      </p>
-    </details>
-  </div>
-
-  <div class="card mol-card-in">
     <h3><span class="mol-card-icon mol-card-icon--2">&#127991;&#65039;</span>Search by name or category</h3>
     <input type="text" id="mol-name-search" placeholder="A name, an abbreviation, or a category &mdash; &quot;PMMA&quot;, &quot;Teflon&quot;, &quot;biodegradable polyester&quot;&hellip;">
     <div id="mol-recent" class="mol-recent" hidden></div>
-    <div id="mol-facets" class="mol-facets" hidden></div>
+    <details class="mol-details mol-browse">
+      <summary>Browse by category</summary>
+      <div id="mol-facets" class="mol-facets" hidden></div>
+      <div id="mol-tag-filter" class="mol-tag-filter"></div>
+    </details>
   </div>
 
   <div class="card mol-card-in">
@@ -223,6 +193,33 @@
       </div>
     </div>
 
+    <details class="mol-details">
+      <summary>How structure search works, and its limits</summary>
+      <p class="guide-note">
+        This search is built around the repeat unit itself. The big registries (SciFinder, PubChem, Reaxys) are indexed for discrete small molecules, so a polymer usually lives there as a registry entry filed under its monomer, and their structure search struggles to interpret a drawn repeating backbone with open chain ends. Here the open chain ends are part of the query: matching runs on the graph of the repeat unit, drawn the way you'd sketch it in a paper, with near-misses ranked by chemical similarity. The trade-off is scope. This is a small curated library for identifying and exploring common polymers, not an exhaustive registry; once a match gives you the name, the links on each result hand off to those bigger databases.
+      </p>
+      <p class="guide-note">
+        Draw a little more than one repeat unit, the way you'd sketch a few units of a chain in a paper: a stub of the neighboring unit on each side, then your actual repeat unit in the middle, then drag the bracket tool over just the middle part. The bracket tool needs a real bond crossing each edge to know where the chain keeps going, so it won't work if the whole drawing is inside the bracket. Try the load example buttons below to see the pattern before drawing your own.
+      </p>
+      <p class="guide-note">
+        Matching is graph based: your drawing is compared by its atoms and bonds, not by how it is laid out on the canvas, so the same repeat unit drawn at a different angle or size still matches. When nothing in the library is identical, the search falls back to ranking the closest structures by chemical similarity (Morgan fingerprints, the same idea behind similarity search in the big chemistry databases) with a percentage on each suggestion. The matching engine (RDKit, about 7 MB) loads the first time you run a structure search and stays cached after that.
+      </p>
+      <p class="guide-note">
+        This is a small, hand curated reference set, not an exhaustive registry like SciFinder or PubChem: it currently covers common addition, step growth, and ring opening homopolymers. Branched and crosslinked repeat units, and copolymers, aren't matched yet. Tg and Tm values shown are typical literature figures for reference only.
+      </p>
+      <p class="guide-note">
+        <strong>Asking a generic question.</strong> "Contains fragment" matches exactly what you drew &mdash; those elements, those bond orders. Some questions can't be drawn at all: <em>any</em> halogen, <em>any</em> aromatic ring, an ester however it happens to be substituted. Type a <strong>SMARTS</strong> pattern for those, or press one of the examples under the box to see the notation next to its answer. <code>[F,Cl,Br,I]</code> finds every halogenated polymer in the library; <code>[CX3](=O)[OX2H0]</code> finds every ester, including formates, because SMARTS counts implicit hydrogens.
+      </p>
+      <p class="guide-note">
+        <strong>How it is made.</strong> Where a match's monomer can be recovered from its repeat unit, the result shows the polymerisation as a scheme: monomer, arrow, repeat unit. Addition and ring-opening are isomerisations &ndash; the repeat unit is the monomer with one bond moved &ndash; so the move can be reversed, and every derived monomer is checked by rebuilding the polymer from it before it is drawn. Around 230 entries qualify. Step-growth never does: a polyester repeat unit came from a diol <em>and</em> a diacid, and one unit cannot say which pair, so no scheme is drawn rather than a guessed one. <strong>Conditions are recorded for eight polymers only</strong>, each with the section of Odian it was read from printed beside it &ndash; low- and high-density polyethylene, polystyrene, PVC, PMMA, polyacrylonitrile, nylon 6,6 and PET. Where a source gives only the process and no numbers, that is all the entry says. For every other polymer the arrow names the mechanism and nothing more, because nothing more is known to this library. Conditions without a citation are rejected by the data check, so the set can only grow by someone reading a reference. <a href="mechanisms.html">Mechanisms</a> is where the actual chemistry of running these polymerisations lives.
+      </p>
+      <p class="guide-note">
+        <strong>Draw a monomer instead.</strong> The search runs both ways. Draw a repeat unit and it names the polymer; draw a <em>monomer</em> &ndash; styrene, caprolactam, methyl methacrylate &ndash; and it names what that monomer polymerises to, because the same verified derivation that draws the scheme is indexed in reverse. Butadiene returns both 1,4-polybutadienes, since one monomer gives either geometry and the catalyst decides. The bonds that actually change are shaded in the scheme, on both sides of the arrow: the alkene that opens, or the ring bond that breaks.
+      </p>
+      <p class="guide-note">
+        <strong>Stereochemistry.</strong> The geometry of a backbone double bond is part of the match, because it is part of the polymer: cis-1,4-polyisoprene is natural rubber and the trans isomer is gutta-percha, a hard resin, from the same atoms joined the same way. Use the cis/trans tool on a double bond to state it &mdash; "cis" meaning the chain continues on the same side, which is what a polymer name means by it, not the CIP priority rule. Leave it unset and the search matches every isomer of that skeleton and says which ones they are. <strong>Tacticity is different</strong>: it describes how one repeat unit follows the next, so no single repeat unit can carry it. The four polypropylenes are one drawing, and a structure search returns all four together and says why.
+      </p>
+    </details>
     <details class="mol-details">
       <summary>Tips &amp; keyboard shortcuts</summary>
       <div class="mol-tips">
@@ -391,9 +388,8 @@
   </div>
 
   <div class="card mol-card-in">
-    <h3><span class="mol-card-icon mol-card-icon--1">&#129517;</span>Explore</h3>
-    <p class="guide-note">Browse the library by tag, or upload a photo of a label, textbook page, or datasheet. Any printed polymer name or CAS number in the image gets matched automatically.</p>
-    <div id="mol-tag-filter" class="mol-tag-filter"></div>
+    <h3><span class="mol-card-icon mol-card-icon--1">&#129517;</span>Filter by property, or read from an image</h3>
+    <p class="guide-note">Narrow the library to a glass transition or melting range, or upload a photo of a label, textbook page, or datasheet &mdash; any printed polymer name or CAS number in the image gets matched automatically. To browse by category, use <strong>Browse by category</strong> under the search box.</p>
     <div class="mol-prop-filter" id="mol-prop-filter">
       <span class="mol-prop-group"><span class="mol-prop-label">T<sub>g</sub></span>
         <input type="number" id="mol-tg-min" class="mol-prop-input" placeholder="min" step="5" aria-label="Minimum Tg in Celsius"> &ndash;
