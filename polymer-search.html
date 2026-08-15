@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=79">
+<link rel="stylesheet" href="style.css?v=80">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -58,11 +58,11 @@
     <p class="guide-note">
       Search a curated reference library of common polymers by name, or draw a repeat unit below and search by structure.
     </p>
-    <p class="guide-note">
-      This search is built around the repeat unit itself. The big registries (SciFinder, PubChem, Reaxys) are indexed for discrete small molecules, so a polymer usually lives there as a registry entry filed under its monomer, and their structure search struggles to interpret a drawn repeating backbone with open chain ends. Here the open chain ends are part of the query: matching runs on the graph of the repeat unit, drawn the way you'd sketch it in a paper, with near-misses ranked by chemical similarity. The trade-off is scope. This is a small curated library for identifying and exploring common polymers, not an exhaustive registry; once a match gives you the name, the links on each result hand off to those bigger databases.
-    </p>
     <details class="mol-details">
       <summary>How structure search works, and its limits</summary>
+      <p class="guide-note">
+        This search is built around the repeat unit itself. The big registries (SciFinder, PubChem, Reaxys) are indexed for discrete small molecules, so a polymer usually lives there as a registry entry filed under its monomer, and their structure search struggles to interpret a drawn repeating backbone with open chain ends. Here the open chain ends are part of the query: matching runs on the graph of the repeat unit, drawn the way you'd sketch it in a paper, with near-misses ranked by chemical similarity. The trade-off is scope. This is a small curated library for identifying and exploring common polymers, not an exhaustive registry; once a match gives you the name, the links on each result hand off to those bigger databases.
+      </p>
       <p class="guide-note">
         Draw a little more than one repeat unit, the way you'd sketch a few units of a chain in a paper: a stub of the neighboring unit on each side, then your actual repeat unit in the middle, then drag the bracket tool over just the middle part. The bracket tool needs a real bond crossing each edge to know where the chain keeps going, so it won't work if the whole drawing is inside the bracket. Try the load example buttons below to see the pattern before drawing your own.
       </p>
@@ -94,14 +94,25 @@
     <div id="mol-facets" class="mol-facets" hidden></div>
   </div>
 
+  <div class="card mol-card-in">
+    <h3><span class="mol-card-icon mol-card-icon--2">&#127919;</span>Results</h3>
+    <p id="mol-status" class="guide-note">Type a name, an abbreviation or a category above &mdash; or draw a repeat unit below and search by structure.</p>
+    <div id="mol-identify" class="mol-identify" hidden></div>
+    <div id="mol-results" class="mol-results"></div>
+    <div id="mol-publications" class="mol-publications" hidden></div>
+    <p class="guide-note" style="margin-top:12px;">Can't find a polymer that should be here? <a href="https://github.com/ngpierini/polytechniques/issues/new?title=Suggest%20a%20polymer%3A%20&amp;labels=polymer-suggestion&amp;body=Polymer%20name%3A%20%0AMonomer(s)%3A%20%0ACAS%20number%20(if%20known)%3A%20%0ASMILES%20or%20structure%20source%20(if%20known)%3A%20%0A" target="_blank" rel="noopener noreferrer">Suggest it on GitHub</a> and it'll be considered for the reference library.</p>
+  </div>
+
   <div class="card mol-card-in" id="mol-editor-card">
     <div class="mol-editor-head">
       <h3><span class="mol-card-icon mol-card-icon--3">&#9999;&#65039;</span>Search by structure</h3>
+      <button type="button" class="mol-fold-btn" id="mol-editor-fold" aria-expanded="true" aria-controls="mol-editor-body">Hide the canvas</button>
       <button type="button" class="mol-fs-btn" id="mol-fs-btn" aria-label="Draw fullscreen">
         <span class="mol-fs-icon" aria-hidden="true">&#9974;</span>
         <span class="mol-fs-label">Fullscreen</span>
       </button>
     </div>
+    <div id="mol-editor-body">
 
     <div id="mol-onboarding" class="mol-onboarding" hidden>
       <div class="mol-onboarding-steps">
@@ -376,6 +387,7 @@
         <div id="mol-periodic-grid" class="mol-periodic-grid"></div>
       </div>
     </div>
+    </div>
   </div>
 
   <div class="card mol-card-in">
@@ -401,14 +413,6 @@
     <pre id="mol-ocr-text" class="mol-ocr-text" hidden></pre>
   </div>
 
-  <div class="card mol-card-in">
-    <h3><span class="mol-card-icon mol-card-icon--2">&#127919;</span>Results</h3>
-    <p id="mol-status" class="guide-note"></p>
-    <div id="mol-identify" class="mol-identify" hidden></div>
-    <div id="mol-results" class="mol-results"></div>
-    <div id="mol-publications" class="mol-publications" hidden></div>
-    <p class="guide-note" style="margin-top:12px;">Can't find a polymer that should be here? <a href="https://github.com/ngpierini/polytechniques/issues/new?title=Suggest%20a%20polymer%3A%20&amp;labels=polymer-suggestion&amp;body=Polymer%20name%3A%20%0AMonomer(s)%3A%20%0ACAS%20number%20(if%20known)%3A%20%0ASMILES%20or%20structure%20source%20(if%20known)%3A%20%0A" target="_blank" rel="noopener noreferrer">Suggest it on GitHub</a> and it'll be considered for the reference library.</p>
-  </div>
 
 </main>
 
@@ -423,7 +427,7 @@
 <script src="bracket-geometry.js?v=1"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=194"></script>
+<script src="polymer-search.js?v=195"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

@@ -8003,6 +8003,38 @@
 
     var firstElBtn = document.querySelector('.mol-el-btn[data-el="C"]');
     if (firstElBtn) firstElBtn.classList.add('active');
+    // ---------- folding the drawing editor away ----------
+    //
+    // It is the tallest thing on the page - 1156 pixels on a desktop - and it
+    // sits between the search box and the answer. Someone who came to type a
+    // name scrolls past all of it. On a phone the canvas is 275 pixels wide,
+    // too small to draw a repeat unit in, so there it is pure cost and starts
+    // folded. On a desktop it stays open: drawing is what this page is for.
+    (function () {
+      var card = document.getElementById('mol-editor-card');
+      var btn = document.getElementById('mol-editor-fold');
+      if (!card || !btn) return;
+      var KEY = 'pt-editor-folded';
+      function apply(folded, remember) {
+        card.classList.toggle('is-folded', folded);
+        btn.textContent = folded ? 'Draw a structure' : 'Hide the canvas';
+        btn.setAttribute('aria-expanded', folded ? 'false' : 'true');
+        if (remember) { try { localStorage.setItem(KEY, folded ? '1' : '0'); } catch (e) {} }
+      }
+      var stored = null;
+      try { stored = localStorage.getItem(KEY); } catch (e) {}
+      // A remembered choice wins; otherwise fold only where the canvas is too
+      // small to be worth its height.
+      apply(stored != null ? stored === '1' : window.innerWidth < 768, false);
+      btn.addEventListener('click', function () {
+        var nowFolded = !card.classList.contains('is-folded');
+        apply(nowFolded, true);
+        // Unfolding mid-page should bring the canvas into view rather than
+        // leaving the reader looking at whatever was below it.
+        if (!nowFolded) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    })();
+
     var firstModeBtn = document.querySelector('.mol-mode-btn[data-mode="draw"]');
     if (firstModeBtn) firstModeBtn.classList.add('active');
 
