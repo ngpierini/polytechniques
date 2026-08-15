@@ -7,6 +7,7 @@
   var LINKS = [
     ["calculator.html", "🧮 Calculator"],
     ["polymer-search.html", "🔍 Search"],
+    ["polymer-families.html", "🧪 Families"],
     ["copolymer-composition.html", "🧬 Copolymer"],
     ["dispersity-predictor.html", "🎯 Dispersity"],
     ["gpc-calibration.html", "📏 GPC Convert"],

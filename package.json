@@ -14,7 +14,9 @@
     "check-brackets": "node scripts/check-bracket-geometry.js",
     "check-trivia": "node scripts/check-trivia.js",
     "build-monomers": "node scripts/build-monomer-library.js",
-    "check-monomers": "node scripts/build-monomer-library.js --check"
+    "check-monomers": "node scripts/build-monomer-library.js --check",
+    "build-families": "node scripts/build-family-pages.js",
+    "check-families": "node scripts/build-family-pages.js --check"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"

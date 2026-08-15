@@ -81,6 +81,22 @@
     <priority>0.4</priority>
   </url>
   <url>
+    <loc>https://getpolytechniques.com/polymer-families.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://getpolytechniques.com/acrylate-polymers.html</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://getpolytechniques.com/methacrylate-polymers.html</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://getpolytechniques.com/silicone-polymers.html</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://getpolytechniques.com/privacy.html</loc>
     <priority>0.3</priority>
   </url>

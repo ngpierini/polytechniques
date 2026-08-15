@@ -60,6 +60,14 @@ jobs:
       - name: Monomer library is current with the polymer library
         run: node scripts/build-monomer-library.js --check
 
+      # The family reference pages are a projection of polymer-data.js, so they
+      # go stale the moment an entry is added or reclassified - and a stale one
+      # is a page publishing a CAS number or a note that the library has since
+      # corrected. This also re-checks every Tg the hand-written prose quotes
+      # against the entry it names.
+      - name: Family pages are current with the polymer library
+        run: node scripts/build-family-pages.js --check
+
       # Fails if an indexable page is missing from sitemap.xml, which is
       # hand-maintained and had silently dropped one of the main tools.
       - run: node scripts/check-sitemap.js

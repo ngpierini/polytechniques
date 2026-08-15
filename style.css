@@ -2969,3 +2969,39 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 .mol-fold-btn:hover { color: var(--text, #111); border-color: var(--text-dim, #888); }
 #mol-editor-card.is-folded #mol-editor-body { display: none; }
+
+/* Family reference pages (acrylate-polymers.html and friends). Each card holds
+   one letter's worth of entries, so the entries need to read as a list of
+   distinct items inside it rather than as running prose. */
+.fam-entry { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.fam-entry:first-of-type { padding-top: 0; }
+.fam-entry:last-child { padding-bottom: 0; border-bottom: none; }
+.fam-entry h4 {
+  margin: 0 0 3px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.fam-entry p { margin: 0 0 6px; font-size: 0.92rem; }
+.fam-entry p:last-child { margin-bottom: 0; }
+.fam-meta {
+  color: var(--text-dim);
+  font-size: 0.82rem !important;
+  overflow-wrap: break-word;
+}
+/* The A-Z jump strip. A family can run to two hundred entries, so landing
+   part-way down the page matters more here than on any other page. */
+.fam-index { margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.fam-index a {
+  display: inline-block;
+  min-width: 26px;
+  padding: 3px 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.fam-index a:hover { border-color: var(--primary); }
+/* Anchored headings must clear the sticky topbar when jumped to. */
+.fam-entry, #guide .card[id^="letter-"] { scroll-margin-top: 80px; }
