@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=81">
+<link rel="stylesheet" href="style.css?v=82">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -131,6 +131,42 @@
     </div>
 
     <div class="stat-grid" id="gpc-stats" style="margin-top:16px;"></div>
+  </div>
+
+  <div class="card">
+    <h3>A worked example, and how big the error is</h3>
+    <p class="guide-note">
+      Take the page's defaults: a PMMA sample run against polystyrene standards in THF, with K<sub>PS</sub>&nbsp;=&nbsp;1.14&nbsp;&times;&nbsp;10<sup>&minus;4</sup>&nbsp;dL/g, &alpha;<sub>PS</sub>&nbsp;=&nbsp;0.716, K<sub>PMMA</sub>&nbsp;=&nbsp;0.80&nbsp;&times;&nbsp;10<sup>&minus;4</sup>&nbsp;dL/g and &alpha;<sub>PMMA</sub>&nbsp;=&nbsp;0.70. Feeding a reported peak of 45,500&nbsp;g/mol through the expression above returns about 62,000&nbsp;g/mol. The GPC was under-reporting by a third.
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>PS-equivalent M</th><th>True M (PMMA)</th><th>Ratio</th></tr></thead>
+        <tbody>
+          <tr><td class="num">10,000</td><td class="num">13,400</td><td class="num">1.34</td></tr>
+          <tr><td class="num">25,000</td><td class="num">33,900</td><td class="num">1.36</td></tr>
+          <tr><td class="num">45,500</td><td class="num">62,000</td><td class="num">1.36</td></tr>
+          <tr><td class="num">100,000</td><td class="num">137,300</td><td class="num">1.37</td></tr>
+          <tr><td class="num">250,000</td><td class="num">346,100</td><td class="num">1.38</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      Two things are worth taking from that table. The correction is <strong>large</strong> &ndash; a third of the reported value, comfortably bigger than most of the effects people try to interpret from a GPC trace. And it is <strong>not a constant</strong>: because the two &alpha; values differ, the ratio drifts with molecular weight, from 1.34 at 10&nbsp;kg/mol to 1.38 at 250&nbsp;kg/mol. You cannot correct a distribution by scaling it with one factor; the low and high ends move by different amounts, which is also why the corrected dispersity is not the same as the reported one.
+    </p>
+    <p class="guide-note">
+      This is the usual explanation when a controlled polymerisation appears to miss its target. If you designed for 60&nbsp;kg/mol of PMMA and the instrument says 45&nbsp;kg/mol, nothing has gone wrong &ndash; you are comparing a real molecular weight against a polystyrene-equivalent one. Convert first, then judge the chemistry, and see the <a href="calculator.html">calculator</a> for how the target was set.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>When this conversion does not rescue the number</h3>
+    <ul class="guide-list">
+      <li><strong>Branching.</strong> A branched chain is more compact than a linear one of the same molecular weight, so it elutes late and reads low &ndash; and universal calibration cannot see the difference, because it only knows hydrodynamic volume. Mark&ndash;Houwink constants are measured on linear chains, so applying them to a branched sample corrects one error while leaving a larger one in place. Long-chain branching needs a light-scattering or viscometry detector, not a better calibration.</li>
+      <li><strong>Constants from the wrong conditions.</strong> K and &alpha; are specific to a polymer <em>in a solvent at a temperature</em>. Values measured in THF at 30&nbsp;&deg;C do not apply to a DMF run at 50&nbsp;&deg;C, and using them will introduce an error of its own. The two sets also have to come from the same solvent as each other, not merely from the same paper.</li>
+      <li><strong>Copolymers do not have Mark&ndash;Houwink constants.</strong> A statistical copolymer's hydrodynamic behaviour lies somewhere between its two homopolymers and shifts with composition, so there is no single pair of constants to look up. Treat any converted value for a copolymer as an estimate bracketed by the two homopolymer results.</li>
+      <li><strong>Interaction with the column is not a calibration problem.</strong> If your polymer adsorbs to the packing or is charged and unshielded, it is not eluting purely by size and universal calibration does not apply at all. Suspect this when a polar or ionic sample gives an implausibly low molecular weight or a tailing peak &ndash; the fix is salt in the eluent or a different column chemistry, covered on the <a href="gpc-peak-interpretation.html">peak interpretation page</a>.</li>
+      <li><strong>The peak has to be inside the calibrated range.</strong> A conversion applied to a peak sitting at the exclusion limit propagates a meaningless input into a precise-looking output.</li>
+    </ul>
   </div>
 
   <div class="card">

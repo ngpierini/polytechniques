@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=81">
+<link rel="stylesheet" href="style.css?v=82">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -88,6 +88,42 @@
         <tbody></tbody>
       </table>
     </div>
+  </div>
+
+  <div class="card">
+    <h3>A worked example</h3>
+    <p class="guide-note">
+      Take a 70:30 styrene / ethyl acrylate statistical copolymer. Polystyrene has a T<sub>g</sub> of 100&nbsp;&deg;C and poly(ethyl acrylate) &minus;24&nbsp;&deg;C, so in Kelvin the two homopolymer values are 373.15&nbsp;K and 249.15&nbsp;K.
+    </p>
+    <div class="guide-formula">
+      1 &divide; T<sub>g,mix</sub> = (0.70 &divide; 373.15) + (0.30 &divide; 249.15) = 0.001876 + 0.001204 = 0.003080<br>
+      T<sub>g,mix</sub> = 1 &divide; 0.003080 = 324.7&nbsp;K = <strong>51.5&nbsp;&deg;C</strong>
+    </div>
+    <p class="guide-note">
+      The number worth noticing is the one the Fox equation does <em>not</em> give you. A straight weight-average of the two glass transitions &ndash; the rule of mixtures, which is the intuitive thing to reach for &ndash; predicts 0.70&nbsp;&times;&nbsp;100 + 0.30&nbsp;&times;&nbsp;(&minus;24) = 62.8&nbsp;&deg;C. That is 11&nbsp;degrees higher than the Fox result, and the gap is not a rounding difference: because the reciprocals are averaged rather than the temperatures, the low-T<sub>g</sub> component always pulls harder than its weight fraction suggests. A small amount of a soft comonomer softens a copolymer more than you would guess, which is exactly why the Fox equation is the one used in practice.
+    </p>
+    <p class="guide-note">
+      The gap widens as the two components get further apart. Run the same 70:30 ratio with a soft acrylate at &minus;54&nbsp;&deg;C instead and Fox gives about 35&nbsp;&deg;C against a linear estimate of 54&nbsp;&deg;C &ndash; a 19-degree error, enough to put a coating on the wrong side of room temperature.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>When the prediction comes out wrong</h3>
+    <p class="guide-note">
+      A measured T<sub>g</sub> well below the calculated one almost always means something is plasticising the sample, and the usual culprits are things the calculation cannot know about:
+    </p>
+    <ul class="guide-list">
+      <li><strong>Residual monomer.</strong> A few percent of unreacted monomer is an efficient plasticiser &ndash; small molecules lower T<sub>g</sub> far more effectively per unit weight than a soft comonomer does. If conversion was incomplete, expect the measured value to undershoot.</li>
+      <li><strong>Retained solvent.</strong> A film cast from solution and dried at room temperature can hold solvent for a long time. Dry above the expected T<sub>g</sub>, or under vacuum, before you trust the number.</li>
+      <li><strong>Absorbed water.</strong> Anything with amide, hydroxyl, or acid groups picks up water from the air, and water is the most effective plasticiser of all. This is why the reference table above marks several values &ldquo;dry&rdquo;; a conditioned sample will read tens of degrees lower.</li>
+      <li><strong>Low molecular weight.</strong> Chain ends have more free volume than chain middles, so short chains have a lower T<sub>g</sub>. The effect is negligible above roughly 20,000&nbsp;g/mol but real below it &ndash; an oligomer will not match a value tabulated for a high polymer.</li>
+    </ul>
+    <p class="guide-note">
+      A measured T<sub>g</sub> <em>above</em> the calculation, or two transitions where you expected one, points the other way: the components are interacting or are not actually mixed. Strong hydrogen bonding between unlike repeat units raises T<sub>g</sub> above the Fox line, which is why acid- or amide-containing copolymers often read high. Two separate transitions at, or near, the two homopolymer values mean the blend has phase separated and the calculation does not apply at all &ndash; see <a href="thermal-analysis.html">thermal analysis</a> for reading that off a DSC trace.
+    </p>
+    <p class="guide-note">
+      One structural caveat the equation cannot capture: it takes composition as the only variable, so it cannot distinguish a statistical copolymer from a block copolymer of identical composition. Those are different materials &ndash; the first has one intermediate transition, the second has two &ndash; and only you know which one is in the flask.
+    </p>
   </div>
 
   <div class="card">

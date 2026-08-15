@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=81">
+<link rel="stylesheet" href="style.css?v=82">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -118,6 +118,48 @@
     <div class="actions">
       <button class="copy-btn" id="scale-copy-btn">Copy scaled recipe as text</button>
     </div>
+  </div>
+
+  <div class="card">
+    <h3>A worked example</h3>
+    <p class="guide-note">
+      A copper-mediated ATRP of methyl methacrylate targeting a degree of polymerisation of 200: 5.00&nbsp;g of MMA (49.9&nbsp;mmol) against 0.25&nbsp;mmol each of initiator, copper and ligand, in 5&nbsp;mL of anisole. Multiplying every line by 20 to reach a 100&nbsp;g batch gives:
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>Component</th><th>Original</th><th>&times;20</th><th>&times;0.02</th></tr></thead>
+        <tbody>
+          <tr><td>Methyl methacrylate</td><td class="num">5.00 g</td><td class="num">100.0 g</td><td class="num">100 mg</td></tr>
+          <tr><td>Ethyl &alpha;-bromoisobutyrate</td><td class="num">0.0488 g</td><td class="num">0.975 g</td><td class="num">0.98 mg</td></tr>
+          <tr><td>CuBr</td><td class="num">0.0359 g</td><td class="num">0.717 g</td><td class="num">0.72 mg</td></tr>
+          <tr><td>PMDETA</td><td class="num">0.0433 g</td><td class="num">0.867 g</td><td class="num">0.87 mg</td></tr>
+          <tr><td>Anisole</td><td class="num">5.0 mL</td><td class="num">100 mL</td><td class="num">0.10 mL</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      Every ratio is untouched, so the target degree of polymerisation is still 200 and the monomer concentration is still 50&nbsp;% v/v. That is all the arithmetic does &ndash; and the reason the two outer columns are worth putting side by side is that neither is simply &ldquo;the same reaction, bigger&rdquo;.
+    </p>
+    <p class="guide-note">
+      Scaling <em>down</em> fails first, and it fails on the balance rather than in the flask. At &times;0.02 the catalyst and ligand land under a milligram, which is below what an ordinary four-place balance can weigh with any accuracy &ndash; a &plusmn;0.1&nbsp;mg reading error on a 0.72&nbsp;mg charge is a 14&nbsp;% error in copper. The fix is not a better balance but a stock solution: make up the catalyst and ligand at a known concentration in the reaction solvent, weigh nothing below about 10&nbsp;mg, and deliver the small components by volume. The same logic applies to any recipe where one component is present at well under a mole percent.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>What does not scale with the factor</h3>
+    <p class="guide-note">
+      This tool multiplies quantities. Several things that determine whether the reaction works are not quantities, and they stay where they are or move the wrong way:
+    </p>
+    <ul class="guide-list">
+      <li><strong>Reaction time does not scale.</strong> Kinetics depend on concentration, and concentrations are unchanged, so a reaction that reached 60&nbsp;% conversion in four hours still takes four hours. Time is the one line in your notebook that should be copied across untouched.</li>
+      <li><strong>Heat removal scales against you.</strong> Volume grows as the cube of a vessel's linear dimension and surface area only as the square, so a batch twenty times larger has roughly seven times the heat-transfer area for twenty times the exotherm. The reaction that was self-regulating in a small flask has an internal temperature the bath no longer controls, and radical polymerisations autoaccelerate when they get hot.</li>
+      <li><strong>Degassing time scales with volume, not with the factor.</strong> Three freeze&ndash;pump&ndash;thaw cycles on 5&nbsp;mL is not three cycles on 100&nbsp;mL &ndash; freezing and thawing take far longer, and a sparge needs proportionally more time at the same gas flow. Under-degassing at scale is one of the commonest reasons a scaled-up controlled polymerisation gives a worse dispersity than the small one.</li>
+      <li><strong>Stirring does not scale by rpm.</strong> Geometric similarity means matching tip speed or power per unit volume, not revolutions per minute. The same setting on a larger impeller is a different mixing regime, and viscosity climbs steeply with conversion in a bulk or concentrated polymerisation.</li>
+      <li><strong>Trace impurities scale with the reagent, not with the target.</strong> Inhibitor, water and dissolved oxygen arrive in proportion to the monomer and solvent, so their absolute amount grows with the batch &ndash; but so does the amount of catalyst they can consume. What changes is that a longer, larger run gives them more opportunity to matter.</li>
+    </ul>
+    <p class="guide-note">
+      For the exotherm in particular, the usual answer at scale is to stop scaling the recipe and change the process instead: feed monomer or initiator semi-batch rather than charging it all at once, so the rate of heat release is set by a pump rather than by the kinetics. That is a different experiment from the one this calculator describes, and worth designing deliberately.
+    </p>
   </div>
 
   <div class="card">

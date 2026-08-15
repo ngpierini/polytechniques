@@ -162,7 +162,7 @@ body {
      columns: one short card in the left track, one enormous one in the
      right, and a column of blank space down the rest of the page.
      screen-only: on paper the sticky column and its max-height would clip. */
-  body.calc-wide #app { max-width: 1280px; }
+  body.calc-wide #app, body.calc-wide #calc-guide { max-width: 1280px; }
   /* Every grid property stays on .active so nothing leaks to the panels that
      are still flex columns. align-items: start in particular means "shrink to
      content width" to a column flex container, which quietly narrowed the
@@ -477,7 +477,7 @@ details.assumptions ul { margin: 6px 0; padding-left: 20px; }
   .topbar h1 { font-size: 1.25rem; }
 }
 
-#guide {
+#guide, #calc-guide {
   max-width: 1080px;
   margin: 20px auto 40px;
   padding: 0 24px;
@@ -485,6 +485,9 @@ details.assumptions ul { margin: 6px 0; padding-left: 20px; }
   flex-direction: column;
   gap: 16px;
 }
+/* The calculator's static reference section sits below the tool rather than
+   inside it (app.js owns #app), so it needs a rule off the end of the panels. */
+#calc-guide { margin-top: 0; padding-top: 24px; border-top: 1px solid var(--border); }
 .guide-list, .guide-sublist { margin: 0; padding-left: 20px; }
 .guide-list li, .guide-sublist li { margin-bottom: 8px; font-size: 0.92rem; }
 .guide-list li:last-child, .guide-sublist li:last-child { margin-bottom: 0; }
@@ -1684,7 +1687,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: 0.9rem; }
 
   .print-btn { display: none !important; }
 
-  #app, #guide, main {
+  #app, #guide, #calc-guide, main {
     max-width: 100%;
     margin: 0;
     padding: 0;
@@ -2281,7 +2284,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
   background: var(--primary-dim);
   border-color: var(--primary);
 }
-#guide > .card { scroll-margin-top: 56px; }
+#guide > .card, #calc-guide > .card { scroll-margin-top: 56px; }
 @media print { .section-nav { display: none !important; } }
 
 /* ---------- Inline numeric input validation (nav.js) ---------- */

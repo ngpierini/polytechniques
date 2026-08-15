@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=81">
+<link rel="stylesheet" href="style.css?v=82">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -131,6 +131,54 @@
   <div class="card">
     <h3>Comparing the two</h3>
     <div id="xl-compare" class="guide-note"></div>
+  </div>
+
+  <div class="card">
+    <h3>A worked example</h3>
+    <p class="guide-note">
+      A cured PDMS network, swollen to equilibrium in toluene. The solvent's molar volume is 106.3&nbsp;cm<sup>3</sup>/mol, &chi; for PDMS&ndash;toluene is about 0.465, and the dry polymer density is 0.97&nbsp;g/cm<sup>3</sup>. Suppose the swollen sample settles at a polymer volume fraction v<sub>2</sub>&nbsp;=&nbsp;0.25 &ndash; it has taken up three times its own volume in solvent.
+    </p>
+    <div class="guide-formula">
+      &minus;[ ln(0.75) + 0.25 + 0.465&nbsp;&times;&nbsp;0.25<sup>2</sup> ] = 0.00862<br>
+      V<sub>1</sub>( v<sub>2</sub><sup>1/3</sup> &minus; v<sub>2</sub>/2 ) = 106.3 &times; (0.630 &minus; 0.125) = 53.7<br>
+      &nu; = 0.00862 &divide; 53.7 = 1.61&nbsp;&times;&nbsp;10<sup>&minus;4</sup>&nbsp;mol/cm<sup>3</sup> &nbsp;&rarr;&nbsp; M<sub>c</sub> = &rho;&divide;&nu; = <strong>6,040&nbsp;g/mol</strong>
+    </div>
+    <p class="guide-note">
+      Putting the same M<sub>c</sub> through the modulus expression predicts what a DMA should read on the rubbery plateau: G&nbsp;=&nbsp;&rho;RT&divide;M<sub>c</sub>&nbsp;=&nbsp;0.40&nbsp;MPa, so a tensile modulus near 1.2&nbsp;MPa. That is an ordinary value for a soft silicone elastomer, which is the first sanity check &ndash; if the two routes predict something wildly outside the range the material obviously occupies, one of the inputs is wrong before either result is interesting.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>How much the &chi; you chose is worth</h3>
+    <p class="guide-note">
+      The swelling route has one input nobody measures and everybody looks up, and it dominates the answer. Repeating the calculation above with &chi; moved by &plusmn;0.05 &ndash; well inside the spread between literature sources for a single polymer&ndash;solvent pair:
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>&chi;</th><th>M<sub>c</sub> (g/mol)</th><th>vs. &chi; = 0.465</th></tr></thead>
+        <tbody>
+          <tr><td class="num">0.415</td><td class="num">4,430</td><td class="num">&minus;27 %</td></tr>
+          <tr><td class="num">0.465</td><td class="num">6,040</td><td class="num">&mdash;</td></tr>
+          <tr><td class="num">0.515</td><td class="num">9,480</td><td class="num">+57 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      A swing of 0.1 in &chi; moves M<sub>c</sub> by more than a factor of two. The sensitivity is worst exactly where swelling experiments are usually run &ndash; as &chi; approaches 0.5 the solvent becomes marginal, the bracketed term heads toward zero, and small errors are amplified without limit. Two practical consequences: quote M<sub>c</sub> from swelling as an order-of-magnitude figure unless you have fitted &chi; for your own system, and prefer a genuinely good solvent (low &chi;) where the calculation is far better conditioned. Comparing two cures measured the same way in the same solvent is reliable; comparing an absolute M<sub>c</sub> against someone else's is not.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>When the two routes disagree</h3>
+    <p class="guide-note">
+      They usually do, and the direction of the disagreement is diagnostic rather than a sign that one measurement failed:
+    </p>
+    <ul class="guide-list">
+      <li><strong>Modulus gives a lower M<sub>c</sub> than swelling.</strong> The commonest result, and usually real: trapped entanglements act as crosslinks mechanically, so the modulus counts them as strands, while swelling lets some of them slip. The gap is a rough measure of how much of the network's stiffness is topological rather than chemical.</li>
+      <li><strong>Swelling gives a much lower M<sub>c</sub> than modulus.</strong> Suspect incomplete extraction. Soluble chains and unreacted resin left in the sample count as polymer in v<sub>2</sub> but carry no load, and they inflate the apparent crosslink density. Extract to constant mass before swelling, and dry to constant mass afterwards.</li>
+      <li><strong>Both are high, and the material is soft.</strong> Dangling chain ends are the usual explanation. A strand attached at only one end contributes mass but no elastic restoring force, so the effective network is looser than the stoichiometry suggests. This is most pronounced at low conversion, or where one component was in excess &ndash; and it is the reason the calculated M<sub>c</sub> from a recipe is an upper bound on network quality, not a prediction.</li>
+      <li><strong>The modulus number is several times too small.</strong> Check where the plateau was read. Taking the modulus on the shoulder of the glass transition rather than well above it is the single commonest error in this measurement, and it goes the other way &ndash; it makes the network look far more tightly crosslinked than it is. See <a href="thermal-analysis.html">thermal analysis</a> for placing the plateau on a DMA trace.</li>
+    </ul>
   </div>
 
   <div class="card">

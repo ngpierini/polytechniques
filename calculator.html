@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=81">
+<link rel="stylesheet" href="style.css?v=82">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -118,6 +118,52 @@
 <nav class="tabs" id="tabs" role="tablist"></nav>
 
 <main id="app"></main>
+
+<!-- Static reference content. Kept outside #app because app.js appends its tab
+     panels there; this sits below the tool and stays visible on every tab. -->
+<section id="calc-guide">
+
+  <div class="card">
+    <h3>The calculation behind every tab</h3>
+    <p class="guide-note">
+      Whichever technique you pick above, the target molecular weight comes from one idea: if you know how many chains you are starting and how much monomer each one gets, you know how long they will be. In a controlled polymerisation every initiator, chain-transfer agent or catalyst molecule begins exactly one chain and all of them grow together, so the number of chains is fixed at the start and the degree of polymerisation is simply monomer divided by chains, corrected for how much monomer has actually been consumed.
+    </p>
+    <div class="guide-formula">
+      DP<sub>n</sub> = ( [M]<sub>0</sub> &divide; [I]<sub>0</sub> ) &times; <em>p</em> &nbsp;&nbsp;&nbsp; M<sub>n</sub> = DP<sub>n</sub> &times; M<sub>0</sub> + M<sub>end groups</sub>
+    </div>
+    <p class="guide-note">
+      <em>p</em> is fractional conversion, M<sub>0</sub> the monomer's molecular weight, and M<sub>end groups</sub> the mass of whatever the initiator or chain-transfer agent leaves on the ends. That last term is the one people drop, and it is only safe to drop when the chains are long. Targeting DP&nbsp;20 of methyl methacrylate from an ethyl &alpha;-bromoisobutyrate initiator gives 2,002&nbsp;g/mol of monomer carrying a 195&nbsp;g/mol end group &ndash; nearly 9&nbsp;% of the total. At DP&nbsp;500 the same end group is 0.4&nbsp;% and genuinely negligible. Short targets need the full expression.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Why free radical is the odd one out</h3>
+    <p class="guide-note">
+      The relationship above holds for ATRP, RAFT and ROMP because those are controlled methods: chains start together, grow together, and stay alive. Ordinary free radical polymerisation does none of that. Radicals are generated continuously and terminate within seconds of being born, so at any moment only a vanishing fraction of chains is growing and the rest are already dead. The initiator does not count the chains &ndash; it sets the <em>rate</em> at which chains are started and killed.
+    </p>
+    <p class="guide-note">
+      The practical consequence is worth internalising before you use the free radical tab, because it inverts the intuition the other tabs build. Chain length in free radical polymerisation follows the kinetic chain length, which depends on the square root of initiator concentration rather than on it directly:
+    </p>
+    <div class="guide-formula">
+      DP<sub>n</sub> &nbsp;&proportional;&nbsp; [M] &divide; [I]<sup>&frac12;</sup>
+    </div>
+    <p class="guide-note">
+      So in ATRP or RAFT, doubling the initiator halves the molecular weight. In free radical polymerisation, doubling the initiator divides it by only about 1.4 &ndash; and buys you a faster, hotter reaction in exchange. You cannot dial in a target molecular weight this way with any precision, which is the whole reason the controlled methods exist. Free radical dispersity reflects the same physics: it sits near 1.5 when chains terminate by combination and near 2.0 when they disproportionate, against the 1.1 or below a well-behaved controlled polymerisation reaches. The <a href="radical-kinetics.html">FRP kinetics page</a> works through the rate expressions, and the <a href="dispersity-predictor.html">dispersity predictor</a> covers what broadens a controlled polymerisation.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Checking the number before you trust it</h3>
+    <ul class="guide-list">
+      <li><strong>Conversion has to be measured, not assumed.</strong> Every target above is conditional on <em>p</em>, and a recipe designed for full conversion delivers a proportionally shorter chain if it stalls at 60&nbsp;%. Take an NMR or gravimetric point rather than trusting the clock &ndash; see <a href="conversion-monitoring.html">monitoring conversion</a>.</li>
+      <li><strong>GPC will not agree with your target, and that is expected.</strong> A conventional GPC reports the molecular weight a polystyrene chain would need to elute at the same time, not yours. Convert before you compare, on the <a href="gpc-calibration.html">GPC calibration page</a>; a two-fold disagreement between target and raw GPC is often calibration rather than chemistry.</li>
+      <li><strong>Compare M<sub>n</sub> against M<sub>n</sub>.</strong> GPC software reports M<sub>n</sub>, M<sub>w</sub> and M<sub>p</sub>, and they are not interchangeable. The target here is a number average; checking it against a peak or weight average will look like a failure that is not one.</li>
+      <li><strong>Initiator efficiency is rarely 100&nbsp;%.</strong> If the measured molecular weight sits consistently above target, the usual cause is that not every initiator started a chain, so the monomer was shared among fewer chains than the recipe assumed. Consistently below target points instead at transfer, or at an impurity starting extra chains.</li>
+      <li><strong>Sanity-check the magnitude.</strong> DP times monomer molecular weight should land where you expect &ndash; a DP of 200 in a 100&nbsp;g/mol monomer is a 20&nbsp;kg/mol polymer. If the answer is out by a factor of ten, a concentration or a unit is usually the reason.</li>
+    </ul>
+  </div>
+
+</section>
 
 <footer class="footer">
   <p>Reagent molecular weights are reference values for convenience. Always verify against your reagent's certificate of analysis before weighing out a real reaction.</p>

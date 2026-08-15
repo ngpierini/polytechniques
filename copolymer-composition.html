@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=81">
+<link rel="stylesheet" href="style.css?v=82">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -108,6 +108,47 @@
     <p class="guide-note" style="margin-top:8px;"><strong>Drag or click anywhere on the chart</strong> to move the feed point &ndash; the composition updates live. The dashed diagonal is where copolymer composition equals feed composition. The solid curve is F<sub>1</sub> predicted across the whole feed range; the accent dot marks your current feed. If the curve crosses the diagonal, that crossing (marked in red) is the azeotrope.</p>
     <p class="guide-note" id="cc-micro" style="margin-top:8px;"></p>
     <p class="guide-note" style="color:var(--text-dim);">The microstructure above is what the ratios imply for a <em>conventional</em> radical copolymerization. It is an instantaneous, statistical picture: away from the azeotrope the composition drifts as the faster monomer is consumed, so a batch taken to high conversion is really a gradient with a homopolymer-rich tail. Feeding the fast monomer continuously (starved feed) holds it constant, and controlled/living methods (RAFT, ATRP) let you build true blocks or deliberate gradients that the reactivity ratios alone would not give. In those living systems the reactivity ratios, and this composition equation, are essentially the same as in conventional radical copolymerization; what changes is that all chains start near t = 0 and grow together, so every chain carries the same composition and the same composition gradient instead of the chain-to-chain spread of a conventional batch. The blocks and controlled gradients come from that uniformity plus deliberate feed control, not from altered r values.</p>
+  </div>
+
+  <div class="card">
+    <h3>The word &ldquo;instantaneous&rdquo; is doing the work</h3>
+    <p class="guide-note">
+      The Mayo&ndash;Lewis equation describes the copolymer being formed <em>right now</em>, from the feed as it stands <em>right now</em>. If the copolymer is richer in one monomer than the feed is, then that monomer is being removed faster than the other, the feed shifts toward the slower monomer, and the next chains formed are different from the first. Composition drift is not a side effect &ndash; it is the direct consequence of r<sub>1</sub> and r<sub>2</sub> not both being 1.
+    </p>
+    <p class="guide-note">
+      Take methyl methacrylate with n-butyl acrylate, r<sub>1</sub>&nbsp;=&nbsp;2.2 and r<sub>2</sub>&nbsp;=&nbsp;0.37, a combination made industrially by the tonne. Charge an equimolar batch and the first chains are 70&nbsp;mol&nbsp;% MMA, not 50. Follow it through the reaction:
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>Conversion</th><th>Feed f<sub>1</sub></th><th>Chains forming now (F<sub>1</sub>)</th><th>Everything made so far</th></tr></thead>
+        <tbody>
+          <tr><td class="num">0 %</td><td class="num">0.500</td><td class="num">0.700</td><td class="num">&mdash;</td></tr>
+          <tr><td class="num">10 %</td><td class="num">0.479</td><td class="num">0.683</td><td class="num">0.692</td></tr>
+          <tr><td class="num">25 %</td><td class="num">0.441</td><td class="num">0.651</td><td class="num">0.677</td></tr>
+          <tr><td class="num">50 %</td><td class="num">0.355</td><td class="num">0.569</td><td class="num">0.645</td></tr>
+          <tr><td class="num">75 %</td><td class="num">0.212</td><td class="num">0.401</td><td class="num">0.596</td></tr>
+          <tr><td class="num">90 %</td><td class="num">0.077</td><td class="num">0.178</td><td class="num">0.547</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      By 90&nbsp;% conversion the chains coming off are 18&nbsp;mol&nbsp;% MMA &ndash; a different material from the 70&nbsp;% chains made at the start. The product is not a copolymer of one composition but a <em>distribution</em> of compositions, and the last column shows the trap: the bulk average ends up near 55&nbsp;% and, taken to full conversion, must equal the feed exactly. An elemental analysis or an NMR of the isolated product will report that average and look entirely reasonable, while the material actually contains chains ranging from MMA-rich to acrylate-rich. Two T<sub>g</sub>s in the DSC, or a hazy film where you expected a clear one, is often this and not an impurity.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Holding the composition constant</h3>
+    <p class="guide-note">
+      Three options, in ascending order of effort:
+    </p>
+    <ul class="guide-list">
+      <li><strong>Stop early.</strong> Drift is mild at low conversion &ndash; the MMA/BA case above moves only two points in feed composition by 10&nbsp;% conversion. Quenching early costs yield but gives a genuinely uniform product, and is the simplest answer when you need a well-defined material rather than a lot of it.</li>
+      <li><strong>Run at the azeotrope.</strong> When both reactivity ratios are below 1 (or both above), there is one feed composition at which F<sub>1</sub>&nbsp;=&nbsp;f<sub>1</sub> and nothing drifts at all, at f<sub>1</sub>&nbsp;=&nbsp;(1&nbsp;&minus;&nbsp;r<sub>2</sub>)&nbsp;&divide;&nbsp;(2&nbsp;&minus;&nbsp;r<sub>1</sub>&nbsp;&minus;&nbsp;r<sub>2</sub>). For styrene / methyl methacrylate that is f<sub>1</sub>&nbsp;=&nbsp;0.529, and a batch run there stays on composition to complete conversion. The limitation is obvious: the azeotrope is one composition, and it is whatever it is. Note also that MMA / n-butyl acrylate has none &ndash; with r<sub>1</sub> above 1 and r<sub>2</sub> below it, the formula returns a negative fraction, which is how it tells you no azeotrope exists.</li>
+      <li><strong>Starve-feed the faster monomer.</strong> The general solution. Charge the slow monomer and meter the fast one in at the rate it is consumed, keeping the instantaneous feed pinned wherever you want it. This decouples composition from conversion entirely and is how uniform copolymers are made at scale &ndash; at the cost of running a semi-batch process, with the pump rather than the kinetics setting the outcome.</li>
+    </ul>
+    <p class="guide-note">
+      One caution on the reactivity ratios themselves: they are fitted parameters with real uncertainty, and the pairs where drift matters most are often the ones whose values scatter most between sources. Treat a predicted composition as a design starting point and confirm the real one by NMR on the isolated polymer &ndash; and see <a href="conversion-monitoring.html">monitoring conversion</a> for taking the points that let you track both at once.
+    </p>
   </div>
 
   <div class="card">

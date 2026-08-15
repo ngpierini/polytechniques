@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=81">
+<link rel="stylesheet" href="style.css?v=82">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -139,6 +139,38 @@
       A rule of thumb that saves a lot of wasted reactions: run for about ten half-lives to consume the initiator, and pick an initiator whose half-life at your temperature is roughly a tenth of the intended run. An initiator with a ten-hour half-life at 60&nbsp;&deg;C will barely have started after twenty minutes there.
     </p>
     <div class="stat-grid" id="rk-half-stats"></div>
+  </div>
+
+  <div class="card">
+    <h3>A worked example: styrene with AIBN at 60 &deg;C</h3>
+    <p class="guide-note">
+      Bulk styrene is 8.7&nbsp;mol/L. Take k<sub>p</sub>&nbsp;=&nbsp;341&nbsp;L&nbsp;mol<sup>&minus;1</sup>s<sup>&minus;1</sup>, k<sub>t</sub>&nbsp;=&nbsp;6&nbsp;&times;&nbsp;10<sup>7</sup>&nbsp;L&nbsp;mol<sup>&minus;1</sup>s<sup>&minus;1</sup>, AIBN's k<sub>d</sub>&nbsp;=&nbsp;9.6&nbsp;&times;&nbsp;10<sup>&minus;6</sup>&nbsp;s<sup>&minus;1</sup> and f&nbsp;=&nbsp;0.6, with 0.01&nbsp;M initiator:
+    </p>
+    <div class="guide-formula">
+      [M&bull;] = (0.6 &times; 9.6&times;10<sup>&minus;6</sup> &times; 0.01 &divide; 6&times;10<sup>7</sup>)<sup>1/2</sup> = 3.1 &times; 10<sup>&minus;8</sup> mol/L<br>
+      R<sub>p</sub> = 341 &times; 8.7 &times; 3.1&times;10<sup>&minus;8</sup> = 9.2 &times; 10<sup>&minus;5</sup> mol L<sup>&minus;1</sup> s<sup>&minus;1</sup>
+    </div>
+    <p class="guide-note">
+      The radical concentration is the number to sit with: <strong>31&nbsp;nanomolar</strong>. There are roughly three hundred million monomer molecules for every growing radical in the flask, and each of those radicals lives about a second before it meets another one and dies. Everything else about free-radical polymerisation follows from that ratio &ndash; it is why the chains are long, why the reaction takes hours despite each addition step being fast, and why a trace of oxygen or inhibitor at micromolar levels can stop the whole thing.
+    </p>
+    <p class="guide-note">
+      The kinetic chain length works out at &nu;&nbsp;&asymp;&nbsp;800. Styrene terminates mainly by combination, so two growing chains join and the degree of polymerisation is about 2&nu;&nbsp;&asymp;&nbsp;1,600 &ndash; roughly 166&nbsp;kg/mol. Reaching 10&nbsp;% conversion takes a little under three hours.
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>[AIBN]</th><th>R<sub>p</sub> (mol L<sup>&minus;1</sup>s<sup>&minus;1</sup>)</th><th>M<sub>n</sub></th><th>Time to 10 %</th></tr></thead>
+        <tbody>
+          <tr><td class="num">0.01 M</td><td class="num">9.2 &times; 10<sup>&minus;5</sup></td><td class="num">166 kg/mol</td><td class="num">2.8 h</td></tr>
+          <tr><td class="num">0.04 M</td><td class="num">1.8 &times; 10<sup>&minus;4</sup></td><td class="num">83 kg/mol</td><td class="num">1.4 h</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      That second row is the trade in the heading above, made concrete. Quadrupling the initiator exactly doubles the rate and exactly halves the molecular weight, because rate goes as [I]<sup>&frac12;</sup> while chain length goes as [I]<sup>&minus;&frac12;</sup>. You buy speed with molecular weight at a fixed exchange rate, and there is no setting of [I] that gives you both. If you need a fast reaction <em>and</em> a long chain, initiator concentration is the wrong lever &ndash; lower the temperature and use a faster initiator, raise [M] by removing solvent, or move to a <a href="calculator.html">controlled method</a> where chain length is set by stoichiometry instead of by kinetics.
+    </p>
+    <p class="guide-note" style="font-size:0.85rem;">
+      Rate constants here are representative literature figures for illustration, on the same footing as the page's defaults; use values sourced for your own monomer, solvent and temperature for quantitative work. Note also that all of this describes the reaction at low conversion, before k<sub>t</sub> begins to fall.
+    </p>
   </div>
 
   <div class="card">
