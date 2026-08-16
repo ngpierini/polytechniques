@@ -282,6 +282,16 @@
     </div>
     <div id="mol-mass-readout" class="guide-note" style="margin:8px 0 0;" hidden></div>
     <div class="mol-toolbar-row" style="margin-top:10px;">
+      <button type="button" id="mol-search-structure" class="copy-btn mol-search-btn">
+        <svg viewBox="0 0 20 20" width="15" height="15" style="vertical-align:-2px;margin-right:4px;"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="13" y1="13" x2="17.5" y2="17.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Search this structure
+      </button>
+      <button type="button" id="mol-search-substruct" class="copy-btn" title="Find every library polymer whose repeat unit contains the drawn fragment - draw just an ester linkage, a ring, or a backbone motif, no brackets or chain ends needed">
+        &#8834; Contains fragment
+      </button>
+      <button type="button" id="mol-chain-btn" class="copy-btn" title="Draw three of your repeat unit joined end to end. The quickest way to catch a bracket that cuts the wrong bond or holds more than one unit.">
+        &#9741; Show 3 units
+      </button>
+      <span class="mol-tool-divider" aria-hidden="true"></span>
       <div class="mol-tool-cluster">
         <span class="mol-toolbar-label">Examples</span>
         <button type="button" class="mol-example-btn copy-btn" data-example="pe">Polyethylene</button>
@@ -303,15 +313,6 @@
           <button type="button" data-export="svg">SVG (vector)</button>
         </div>
       </div>
-      <button type="button" id="mol-search-structure" class="copy-btn mol-search-btn">
-        <svg viewBox="0 0 20 20" width="15" height="15" style="vertical-align:-2px;margin-right:4px;"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="13" y1="13" x2="17.5" y2="17.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Search this structure
-      </button>
-      <button type="button" id="mol-search-substruct" class="copy-btn" title="Find every library polymer whose repeat unit contains the drawn fragment - draw just an ester linkage, a ring, or a backbone motif, no brackets or chain ends needed">
-        &#8834; Contains fragment
-      </button>
-      <button type="button" id="mol-chain-btn" class="copy-btn" title="Draw three of your repeat unit joined end to end. The quickest way to catch a bracket that cuts the wrong bond or holds more than one unit.">
-        &#9741; Show 3 units
-      </button>
     </div>
     <div id="mol-arrow-labels" class="mol-arrow-labels" hidden>
       <span class="mol-arrow-lab" data-for="arrow">Over the arrow</span>
@@ -345,36 +346,39 @@
       <p id="mol-chain-note" class="guide-note"></p>
     </div>
     <div id="mol-photo-status" class="guide-note" style="margin:6px 0 0;font-size:0.82rem;" hidden></div>
-    <div class="mol-toolbar-row" style="margin-top:8px;">
-      <div class="mol-tool-cluster" style="flex:1 1 260px;">
-        <input type="text" id="mol-smiles-input" placeholder="Paste a SMILES, e.g. CC(c1ccccc1)&hellip;" style="flex:1;min-width:160px;" aria-label="SMILES input">
-        <button type="button" id="mol-smiles-load" class="copy-btn">Load SMILES</button>
+    <details class="mol-details mol-formats">
+      <summary>SMILES, SMARTS and other formats</summary>
+      <div class="mol-toolbar-row" style="margin-top:8px;">
+        <div class="mol-tool-cluster" style="flex:1 1 260px;">
+          <input type="text" id="mol-smiles-input" placeholder="Paste a SMILES, e.g. CC(c1ccccc1)&hellip;" style="flex:1;min-width:160px;" aria-label="SMILES input">
+          <button type="button" id="mol-smiles-load" class="copy-btn">Load SMILES</button>
+        </div>
+        <div class="mol-tool-cluster" style="flex:1 1 260px;">
+          <input type="text" id="mol-smarts-input" placeholder="Or a SMARTS pattern, e.g. [F,Cl,Br,I]&hellip;" style="flex:1;min-width:160px;" aria-label="SMARTS pattern">
+          <button type="button" id="mol-smarts-search" class="copy-btn" title="Find every library polymer whose repeat unit matches a SMARTS pattern. Unlike a drawn fragment, SMARTS can ask generic questions - any halogen, any aromatic ring, an ester however it is substituted.">&#8834; Match SMARTS</button>
+        </div>
       </div>
-      <div class="mol-tool-cluster" style="flex:1 1 260px;">
-        <input type="text" id="mol-smarts-input" placeholder="Or a SMARTS pattern, e.g. [F,Cl,Br,I]&hellip;" style="flex:1;min-width:160px;" aria-label="SMARTS pattern">
-        <button type="button" id="mol-smarts-search" class="copy-btn" title="Find every library polymer whose repeat unit matches a SMARTS pattern. Unlike a drawn fragment, SMARTS can ask generic questions - any halogen, any aromatic ring, an ester however it is substituted.">&#8834; Match SMARTS</button>
+      <div class="mol-smarts-examples">
+        <span class="mol-smarts-label">Try:</span>
+        <button type="button" class="mol-smarts-chip" data-smarts="[F,Cl,Br,I]">any halogen</button>
+        <button type="button" class="mol-smarts-chip" data-smarts="c1ccccc1">a benzene ring</button>
+        <button type="button" class="mol-smarts-chip" data-smarts="[CX3](=O)[OX2H0]">an ester linkage</button>
+        <button type="button" class="mol-smarts-chip" data-smarts="[CX3](=O)[NX3]">an amide linkage</button>
+        <button type="button" class="mol-smarts-chip" data-smarts="[#7]">any nitrogen</button>
+        <button type="button" class="mol-smarts-chip" data-smarts="[Si]">any silicon</button>
+        <button type="button" class="mol-smarts-chip" data-smarts="[CX4][F]">fluorine on sp3 carbon</button>
+        <button type="button" class="mol-smarts-chip" data-smarts="[R2]">an atom in two rings</button>
       </div>
-    </div>
-    <div class="mol-smarts-examples">
-      <span class="mol-smarts-label">Try:</span>
-      <button type="button" class="mol-smarts-chip" data-smarts="[F,Cl,Br,I]">any halogen</button>
-      <button type="button" class="mol-smarts-chip" data-smarts="c1ccccc1">a benzene ring</button>
-      <button type="button" class="mol-smarts-chip" data-smarts="[CX3](=O)[OX2H0]">an ester linkage</button>
-      <button type="button" class="mol-smarts-chip" data-smarts="[CX3](=O)[NX3]">an amide linkage</button>
-      <button type="button" class="mol-smarts-chip" data-smarts="[#7]">any nitrogen</button>
-      <button type="button" class="mol-smarts-chip" data-smarts="[Si]">any silicon</button>
-      <button type="button" class="mol-smarts-chip" data-smarts="[CX4][F]">fluorine on sp3 carbon</button>
-      <button type="button" class="mol-smarts-chip" data-smarts="[R2]">an atom in two rings</button>
-    </div>
-    <div class="mol-toolbar-row" style="margin-top:8px;">
-      <div class="mol-tool-cluster">
-        <button type="button" id="mol-copy-smiles" class="copy-btn" title="Copy the drawn structure as canonical SMILES">Copy SMILES</button>
-        <button type="button" id="mol-copy-inchi" class="copy-btn" title="Copy the drawn structure as an InChI string">Copy InChI</button>
-        <button type="button" id="mol-copy-psmiles" class="copy-btn" title="Copy the repeat unit as canonical PSMILES: [*]-terminated SMILES, folded to the shortest period and framed canonically. The identifier open polymer datasets use.">Copy PSMILES</button>
-        <button type="button" id="mol-cleanup" class="copy-btn" title="Redraw the structure with ideal geometry">&#10024; Clean up</button>
+      <div class="mol-toolbar-row" style="margin-top:8px;">
+        <div class="mol-tool-cluster">
+          <button type="button" id="mol-copy-smiles" class="copy-btn" title="Copy the drawn structure as canonical SMILES">Copy SMILES</button>
+          <button type="button" id="mol-copy-inchi" class="copy-btn" title="Copy the drawn structure as an InChI string">Copy InChI</button>
+          <button type="button" id="mol-copy-psmiles" class="copy-btn" title="Copy the repeat unit as canonical PSMILES: [*]-terminated SMILES, folded to the shortest period and framed canonically. The identifier open polymer datasets use.">Copy PSMILES</button>
+          <button type="button" id="mol-cleanup" class="copy-btn" title="Redraw the structure with ideal geometry">&#10024; Clean up</button>
+        </div>
       </div>
-    </div>
-    <div id="mol-smiles-status" class="guide-note" style="margin:6px 0 0;font-size:0.82rem;"></div>
+      <div id="mol-smiles-status" class="guide-note" style="margin:6px 0 0;font-size:0.82rem;"></div>
+    </details>
     <div id="mol-periodic-overlay" class="mol-modal-overlay" hidden>
       <div class="mol-modal-card">
         <div class="mol-modal-head">
