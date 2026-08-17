@@ -143,6 +143,28 @@ body {
 .tab-btn:hover { border-color: var(--primary); color: var(--text); }
 .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
 
+/* Eleven tabs wrap to four rows on a phone - 162px of an 812px viewport spent
+   on navigation before any content. One scrolling row costs 44px instead, and
+   unlike hiding content, a scrolling tab strip is what a phone user already
+   expects; the active tab is scrolled into view on load so you can always see
+   where you are. Desktop keeps the wrap, where all eleven fit in two rows and
+   seeing them at once is the better trade. */
+@media (max-width: 767px) {
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  /* No scroll-snap here. It was the obvious polish and it broke the thing that
+     matters: with scroll-snap-align on every tab, the snap point wins over
+     scrollIntoView, and restoring the eleventh tab left it hanging 64px off
+     the right edge. A tab strip you can see all of beats one that clicks. */
+  .tab-btn { flex: 0 0 auto; }
+}
+
 #app { max-width: 1080px; margin: 20px auto 40px; padding: 0 24px; }
 
 .panel { display: none; flex-direction: column; gap: 16px; }

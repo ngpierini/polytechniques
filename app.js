@@ -4466,6 +4466,18 @@ function switchTab(targetId) {
   try { localStorage.setItem(LAST_TAB_KEY, targetId); } catch (e) {}
   syncWideLayout();
   summaryBar.refresh();
+  revealActiveTab();
+}
+
+// On a phone the tab strip is one scrolling row, so the tab you are on can sit
+// off-screen - most obviously on load, when the last tab you used is restored
+// from localStorage and might be the eleventh. Bring it into view. inline:
+// "nearest" so it does not yank a tab that is already visible to the centre.
+function revealActiveTab() {
+  const active = document.querySelector(".tab-btn.active");
+  const bar = document.getElementById("tabs");
+  if (!active || !bar || bar.scrollWidth <= bar.clientWidth) return;
+  active.scrollIntoView({ inline: "nearest", block: "nearest" });
 }
 
 // Only panels split into .calc-inputs / .calc-output can use the two-column
