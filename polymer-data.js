@@ -31,6 +31,7 @@ window.POLYMER_DB = [
     name: "Polyethylene", aka: ["PE", "polyethene"], monomer: "Ethylene",
     cls: "Addition (vinyl)", cas: "9002-88-4", tg: "-110 °C", tm: "130 °C (HDPE)",
     tags: ["commodity", "packaging"],
+    note: "The melting point given here is for high-density PE; branching drops it, and ordinary LDPE melts nearer 110 °C. The glass transition is the disputed one — assignments range from about −125 °C (Odian's Table 1-3) to −20 °C depending on which relaxation is called Tg.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
@@ -44,6 +45,7 @@ window.POLYMER_DB = [
     name: "Polypropylene", aka: ["PP", "polypropene"], monomer: "Propylene",
     cls: "Addition (vinyl)", cas: "9003-07-0", tg: "-10 °C", tm: "165 °C (isotactic)",
     tags: ["commodity", "packaging"],
+    note: "The melting point here is for ordinary commercial isotactic PP; Odian's Table 1-3 gives 176 °C, which is closer to the perfectly isotactic crystal than to a moulding grade. The glass transition moves with tacticity too — that table quotes −1 °C against the −10 °C here.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
@@ -86,6 +88,7 @@ window.POLYMER_DB = [
     name: "Poly(vinylidene chloride)", aka: ["PVDC", "Saran"], monomer: "Vinylidene chloride",
     cls: "Addition (vinyl)", cas: "9002-85-1", tg: "-18 °C", tm: "190 °C",
     tags: ["vinyl-halide", "packaging"],
+    note: "Odian's Table 1-3 gives 200 °C for the melt against the 190 °C here; the two glass transitions agree. PVDC decomposes close to its melting point, so measured values depend on how fast the scan was run.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "Cl" }, { id: 4, el: "Cl" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
@@ -111,6 +114,7 @@ window.POLYMER_DB = [
     },
     name: "Poly(vinylidene fluoride)", aka: ["PVDF"], monomer: "Vinylidene fluoride", cls: "Addition (vinyl)",
     cas: "24937-79-9", tg: "-35 °C", tm: "170 °C", tags: ["engineering", "fluoropolymer"],
+    note: "Odian's Table 1-3 quotes 185 °C for the melting point against the 170 °C here. PVDF is polymorphic — the α, β and γ crystal forms melt at different temperatures — so a single figure is always a simplification of which phase was measured.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "F" }, { id: 4, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
@@ -123,6 +127,7 @@ window.POLYMER_DB = [
     },
     name: "Poly(vinyl fluoride)", aka: ["PVF"], monomer: "Vinyl fluoride", cls: "Addition (vinyl)",
     cas: "24981-14-4", tg: "-20 °C", tm: "200 °C", tags: ["fluoropolymer"],
+    note: "Handbook values for the glass transition disagree sharply: Odian's Table 1-3 quotes 41 °C where this entry carries −20 °C. PVF is about half crystalline and shows more than one relaxation, so the two numbers come from different assignments rather than from one of them being wrong. Treat either as approximate and say which you used.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
@@ -369,6 +374,7 @@ window.POLYMER_DB = [
     },
     name: "Poly(ethylene terephthalate)", aka: ["PET", "PETE"], monomer: "Ethylene glycol + terephthalic acid",
     cls: "Step-growth (polyester)", cas: "25038-59-9", tg: "75 °C", tm: "260 °C", tags: ["polyester", "commodity", "packaging", "fiber"],
+    note: "Both transitions move with crystallinity, which is why sources spread: Odian's Table 1-3 gives 61 °C and 270 °C against the 75 °C and 260 °C here. Quenched amorphous PET reads at the low end of Tg, drawn and crystallised PET at the high end.",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "C" }, { id: 6, el: "O" },
       { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" },
       { id: 13, el: "C" }, { id: 14, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
