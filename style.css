@@ -2104,6 +2104,46 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
    has to be obvious - it is the cursor for that navigation - so this is a ring
    rather than the faint default outline, and :focus-visible keeps it off for
    mouse users who clicked one. */
+/* ---- Touch targets ------------------------------------------------------
+   Measured on a 375px viewport: 165 visible controls sat under 44px, and 120
+   of them were the five external-link chips repeated on every result card, at
+   25px tall and 6px apart, wrapping to THREE rows per card. They clear the
+   WCAG 2.5.8 (AA) floor of 24px, but only just, and five tightly packed 25px
+   targets is where a thumb misses.
+
+   Scoped to pointer:coarse so a mouse keeps the compact layout it reads better
+   at - this is a fingers problem, not a screen-width one, and a small window on
+   a desktop should not get phone-sized chips. The cost on touch is about 69px
+   per result card; the alternative was hiding three of the five links behind a
+   horizontal scroller, which trades a tapping problem for a discovery one. */
+@media (pointer: coarse) {
+  .mol-pub-link,
+  .mol-recent-chip,
+  .mol-have-chip,
+  .mol-xref-link,
+  .mol-tag-chip,
+  .mol-smarts-chip {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .mol-draw-btn,
+  .mol-fs-btn,
+  .mol-fold-btn,
+  .mol-more-btn,
+  .mol-recent-clear,
+  .copy-btn {
+    min-height: 44px;
+  }
+  /* Inputs are already 36-40px; the last few pixels cost nothing here because
+     they do not repeat per card the way the chips do. */
+  .mol-result-filter,
+  .mol-prop-input,
+  #mol-name-search {
+    min-height: 44px;
+  }
+}
+
 /* Working a result set down: filter, "only the ones that have a value", export.
    Sits between the status line and the cards, so it reads as a control strip
    for the list rather than as another search box. */
