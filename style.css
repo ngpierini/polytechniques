@@ -9,28 +9,35 @@
   --fs-base: 0.9375rem;   /* 15px */
   --fs-md: 1rem;     /* 16px */
 
-  --bg: #f4f6f8;
+  /* Warm neutrals rather than the blue-greys this started with. A cool grey
+     ground reads as an application chrome; a warm one reads as paper, which is
+     what a page of chemistry that people read for minutes at a time should
+     look like. The hues are close enough that nothing else had to move. */
+  --bg: #faf9f7;
   --card-bg: #ffffff;
-  --text: #1c2530;
-  --text-dim: #5b6675;
-  --border: #dde3ea;
+  --text: #1f2328;
+  --text-dim: #5f6470;
+  --border: #e6e2dc;
   --primary: #2563eb;
-  --primary-dim: #eef3ff;
+  --primary-dim: #f0f4fd;
   --accent: #0e9f6e;
   --danger: #d64545;
   --radius: 10px;
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 1px rgba(16, 24, 40, 0.04);
+  /* Near-flat. A hairline border already separates a card from the ground;
+     a drop shadow on top of it is the second answer to a question that was
+     only asked once, and thirty of them down a page reads as clutter. */
+  --shadow: none;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #12161c;
-    --card-bg: #1b212a;
-    --text: #e7ebf0;
-    --text-dim: #9aa5b1;
-    --border: #2b333f;
+    --bg: #16151a;
+    --card-bg: #1f1e24;
+    --text: #ece9e4;
+    --text-dim: #a19da8;
+    --border: #322f39;
     --primary: #5b8def;
-    --primary-dim: #1c2740;
+    --primary-dim: #232130;
     --accent: #37c98f;
     --danger: #ef6a6a;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -39,13 +46,13 @@
 
 /* Explicit theme override (set via the toggle button) — wins over OS preference */
 :root[data-theme="dark"] {
-  --bg: #12161c;
-  --card-bg: #1b212a;
-  --text: #e7ebf0;
-  --text-dim: #9aa5b1;
-  --border: #2b333f;
+  --bg: #16151a;
+  --card-bg: #1f1e24;
+  --text: #ece9e4;
+  --text-dim: #a19da8;
+  --border: #322f39;
   --primary: #5b8def;
-  --primary-dim: #1c2740;
+  --primary-dim: #232130;
   --accent: #37c98f;
   --danger: #ef6a6a;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -235,14 +242,21 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 16px 18px;
+  /* More air. These cards hold paragraphs of chemistry, not dashboard tiles,
+     and 16px of padding crowded the text against the rule around it. */
+  padding: 22px 24px;
 }
+/* The heading was uppercase, letter-spaced, grey and smaller than the body
+   text under it - the idiom of a control-panel label. Read as a document
+   instead: sentence case, in the text colour, a step above the body, with the
+   tracking pulled in slightly the way larger type wants. It is the same
+   information; it just stops apologising for being a heading. */
 .card h3 {
-  margin: 0 0 12px;
-  font-size: var(--fs-base);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-dim);
+  margin: 0 0 14px;
+  font-size: 1.0625rem;
+  font-weight: 650;
+  letter-spacing: -0.011em;
+  color: var(--text);
 }
 
 .grid {
@@ -552,7 +566,7 @@ details.assumptions ul { margin: 6px 0; padding-left: 20px; }
   padding: 0 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 /* The calculator's static reference section sits below the tool rather than
    inside it (app.js owns #app), so it needs a rule off the end of the panels. */
