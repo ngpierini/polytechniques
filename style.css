@@ -40,7 +40,7 @@
     --primary-dim: #232130;
     --accent: #37c98f;
     --danger: #ef6a6a;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow: none;   /* flat in both themes; the border separates */
   }
 }
 
@@ -55,19 +55,23 @@
   --primary-dim: #232130;
   --accent: #37c98f;
   --danger: #ef6a6a;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: none;   /* flat in both themes; the border separates */
 }
+/* Must track :root exactly. Warming the palette there and not here meant an
+   OS-light visitor saw the new warm design while anyone who had explicitly
+   chosen light with the toggle kept the old cool one - the same site in two
+   different skins depending on a setting nobody would connect to it. */
 :root[data-theme="light"] {
-  --bg: #f4f6f8;
+  --bg: #faf9f7;
   --card-bg: #ffffff;
-  --text: #1c2530;
-  --text-dim: #5b6675;
-  --border: #dde3ea;
+  --text: #1f2328;
+  --text-dim: #5f6470;
+  --border: #e6e2dc;
   --primary: #2563eb;
-  --primary-dim: #eef3ff;
+  --primary-dim: #f0f4fd;
   --accent: #0e9f6e;
   --danger: #d64545;
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 1px rgba(16, 24, 40, 0.04);
+  --shadow: none;
 }
 
 * { box-sizing: border-box; }
