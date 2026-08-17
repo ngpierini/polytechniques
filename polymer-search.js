@@ -3247,6 +3247,61 @@
       var scheme = schemeFor ? reactionSchemeHtml(schemeFor) : '';
       resultsEl.innerHTML = scheme + list.map(polymerCard).join('');
       drawPendingScheme();
+      makeResultsNavigable(resultsEl);
+    }
+
+    // ---------- Keyboard navigation of the results list ----------
+    // Every keyboard affordance on this page went to the canvas - undo, redo,
+    // duplicate, delete, nudge, pan, zoom - and none to the list you actually
+    // read. The cards were plain divs with no tabindex, so a search returning
+    // 25 polymers could only be traversed by Tab, which stops at each of the
+    // five external-link chips inside every card: 125 stops to reach the end.
+    //
+    // Roving tabindex is the standard fix. One card is tabbable at a time;
+    // Up/Down move between cards, Home/End jump to either end, and Tab from a
+    // focused card still drills into that card's own links.
+    var resultsNavWired = false;
+    function makeResultsNavigable(resultsEl) {
+      var cards = resultsEl.querySelectorAll('.mol-result-card');
+      for (var i = 0; i < cards.length; i++) {
+        cards[i].setAttribute('tabindex', i === 0 ? '0' : '-1');
+      }
+      if (resultsNavWired) return;
+      resultsNavWired = true;
+
+      resultsEl.addEventListener('keydown', function (evt) {
+        var STEP = { ArrowDown: 1, ArrowUp: -1 };
+        var isJump = (evt.key === 'Home' || evt.key === 'End');
+        if (!STEP[evt.key] && !isJump) return;
+        var all = Array.prototype.slice.call(resultsEl.querySelectorAll('.mol-result-card'));
+        if (!all.length) return;
+        var current = evt.target.closest ? evt.target.closest('.mol-result-card') : null;
+        // Only steer when focus is on a card itself. Inside a card's own links
+        // the arrow keys belong to the browser, and Home/End to the text field
+        // if one is focused.
+        if (!current || current !== evt.target) return;
+        var at = all.indexOf(current);
+        var next = isJump
+          ? (evt.key === 'Home' ? 0 : all.length - 1)
+          : Math.min(all.length - 1, Math.max(0, at + STEP[evt.key]));
+        if (next === at) return;
+        evt.preventDefault();
+        current.setAttribute('tabindex', '-1');
+        all[next].setAttribute('tabindex', '0');
+        all[next].focus();
+        all[next].scrollIntoView({ block: 'nearest' });
+      });
+
+      // Focusing a card by mouse or Tab makes it the one the arrows resume
+      // from, so the roving index never points at a card the user has left.
+      resultsEl.addEventListener('focusin', function (evt) {
+        var card = evt.target.closest ? evt.target.closest('.mol-result-card') : null;
+        if (!card || card !== evt.target) return;
+        var all = resultsEl.querySelectorAll('.mol-result-card');
+        for (var i = 0; i < all.length; i++) {
+          all[i].setAttribute('tabindex', all[i] === card ? '0' : '-1');
+        }
+      });
     }
 
     // For a structure match: the hits share a repeat unit, so they share a
@@ -7568,6 +7623,28 @@
         nameInput.value = deepQ;
         nameInput.dispatchEvent(new Event('input', { bubbles: true }));
       }
+
+      // ...and the same link back out. The page has always READ ?q= - the
+      // Ctrl+K palette builds those URLs - but never wrote one, so a search you
+      // ran yourself could not be bookmarked, sent to a colleague, or undone
+      // with the Back button. replaceState rather than pushState: a search box
+      // fires on every keystroke, and pushing a history entry per character
+      // would bury the page you arrived from under fifty of them.
+      //
+      // window.history, not history: `var history = []` on line 188 is the
+      // editor's undo stack, and it shadows the global for this whole IIFE.
+      // Unqualified, this called .replaceState on an array, threw "not a
+      // function", and the try/catch I had wrapped it in swallowed the error -
+      // so the URL simply never changed and nothing said why.
+      var urlTimer = null;
+      nameInput.addEventListener('input', function () {
+        clearTimeout(urlTimer);
+        urlTimer = setTimeout(function () {
+          var q = nameInput.value.trim();
+          var url = location.pathname + (q ? '?q=' + encodeURIComponent(q) : '') + location.hash;
+          try { window.history.replaceState(null, '', url); } catch (e) {}
+        }, 400);
+      });
     }
 
     // Zero-hit name searches get two ladders of rescue before giving up:

@@ -2100,6 +2100,16 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .mol-result-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16, 24, 40, 0.12); }
+/* Results carry a roving tabindex so Up/Down walk the list. The focused card
+   has to be obvious - it is the cursor for that navigation - so this is a ring
+   rather than the faint default outline, and :focus-visible keeps it off for
+   mouse users who clicked one. */
+.mol-result-card:focus { outline: none; }
+.mol-result-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 6px 16px rgba(16, 24, 40, 0.12);
+}
 
 @media (prefers-reduced-motion: reduce) {
   .mol-card-in, .mol-result-card { animation: none; opacity: 1; }
