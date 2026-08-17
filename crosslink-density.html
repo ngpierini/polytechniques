@@ -32,12 +32,12 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=23" defer></script>
+<script src="nav.js?v=24" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=91">
+<link rel="stylesheet" href="style.css?v=94">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -305,7 +305,7 @@
     lastSwell = { Mc: Mc, nu: nu, v2: v2 };
 
     stats.innerHTML =
-      '<div class="stat"><div class="label">M<sub>c</sub></div><div class="value">' +
+      '<div class="stat stat--primary"><div class="label">M<sub>c</sub></div><div class="value">' +
         Math.round(Mc).toLocaleString() + '</div><div class="sub">g/mol between crosslinks</div></div>' +
       '<div class="stat"><div class="label">Crosslink density</div><div class="value">' +
         (nu * 1e6).toPrecision(3) + '</div><div class="sub">mol/m&sup3; of elastic chains</div></div>' +
@@ -351,7 +351,7 @@
     lastMod = { Mc: Mc, nu: nu };
 
     stats.innerHTML =
-      '<div class="stat"><div class="label">M<sub>c</sub></div><div class="value">' +
+      '<div class="stat stat--primary"><div class="label">M<sub>c</sub></div><div class="value">' +
         Math.round(Mc).toLocaleString() + '</div><div class="sub">g/mol between crosslinks</div></div>' +
       '<div class="stat"><div class="label">Crosslink density</div><div class="value">' +
         nu.toPrecision(3) + '</div><div class="sub">mol/m&sup3; of elastic chains</div></div>' +

@@ -328,8 +328,21 @@ input[type="number"]:focus, input[type="text"]:focus, input[type="search"]:focus
 .stat--primary {
   background: var(--primary-dim);
   border: 1px solid var(--primary);
+  /* A rule down the leading edge, heavier than the border it sits on. The
+     answer earns one piece of ornament; the tiles around it get none, which is
+     what makes it read as the answer rather than as the first of several. */
+  border-left-width: 3px;
+  padding: 14px 16px;
 }
-.stat--primary .value { font-size: 1.75rem; }
+.stat--primary .label { color: var(--primary); }
+.stat--primary .value {
+  font-size: 2rem;
+  line-height: 1.15;
+  /* Large figures set at default tracking look loose; pulling them together
+     makes a number read as a single quantity instead of a row of digits. */
+  letter-spacing: -0.015em;
+}
+.stat--primary .sub { font-size: var(--fs-xs); }
 .stat--muted { background: transparent; border: 1px dashed var(--border); }
 .stat--muted .value { font-size: var(--fs-md); color: var(--text); font-weight: 600; }
 /* Two fixed columns rather than auto-fit: it keeps the primary pair together
@@ -394,7 +407,31 @@ table.recipe.recipe-data { table-layout: auto; min-width: 480px; }
 table.recipe th, table.recipe td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); overflow-wrap: break-word; }
 table.recipe th { color: var(--text-dim); font-weight: 600; font-size: var(--fs-xs); text-transform: uppercase; }
 table.recipe tr:last-child td { border-bottom: none; }
-table.recipe td.num { font-variant-numeric: tabular-nums; }
+/* Numbers were left-aligned with the text, so comparing a column of them meant
+   reading each one instead of seeing the shape of the column. Right-aligned
+   tabular figures put the units under the units and the decimal points in a
+   line, which is the whole reason to put numbers in a table. The header goes
+   with its column. Cells that opt out with an inline text-align (a few carry
+   prose in a numeric column) are left as they are. */
+/* Right-aligned tabular figures put decimal points in a line, which is the
+   reason to tabulate numbers at all. Scoped to cells the author marked .num,
+   not to "every column after the first": several of these tables are prose
+   ("Method | Good for | Notes"), and aligning those right would be worse than
+   what it replaced. Headers carry .num too, added per column by
+   scripts/align-numeric-headers.js, so a heading never sits right over a
+   left-aligned column. */
+table.recipe td.num, table.recipe th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+table.recipe.recipe-data td:not(:first-child),
+table.recipe.recipe-data th:not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+table.recipe.recipe-data td:first-child,
+table.recipe.recipe-data th:first-child { text-align: left; }
 table.recipe.recipe-data td:not(:first-child), table.recipe.recipe-data th:not(:first-child) { white-space: nowrap; }
 
 /* ---------- Narrow screens: each row becomes a labelled card ----------
@@ -532,15 +569,23 @@ details.assumptions ul { margin: 6px 0; padding-left: 20px; }
   font-size: var(--fs-sm);
   color: var(--text-dim);
 }
+/* The equations are the most distinctive content on these pages and were set
+   as flat tinted boxes indistinguishable from a callout. Giving them a little
+   more air, a heavier leading rule and slightly larger figures makes a page
+   scan as "prose, equation, prose" rather than as an undifferentiated column -
+   and makes the equation findable when you come back to the page for it. */
 .guide-formula {
-  margin: 10px 0;
-  padding: 12px 16px;
+  margin: 14px 0;
+  padding: 16px 20px;
   background: var(--primary-dim);
   border-radius: 8px;
-  font-size: var(--fs-base);
+  border-left: 3px solid var(--primary);
+  font-size: var(--fs-md);
+  line-height: 1.7;
   text-align: center;
   color: var(--text);
   overflow-x: auto;
+  font-variant-numeric: tabular-nums;
 }
 h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 

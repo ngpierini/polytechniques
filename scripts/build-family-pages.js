@@ -359,12 +359,12 @@ function pageHtml(fam, entries) {
     publisher: { "@type": "Organization", name: "PolyTechniques" },
   }, null, 2) + "\n<\/script>\n";
   h += '<script src="theme.js?v=1"><\/script>\n';
-  h += '<script src="nav.js?v=23" defer><\/script>\n';
+  h += '<script src="nav.js?v=24" defer><\/script>\n';
   h += '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n';
   h += '<link rel="manifest" href="manifest.json">\n';
   h += '<meta name="theme-color" content="#5b8def">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=91">\n';
+  h += '<link rel="stylesheet" href="style.css?v=94">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 
@@ -456,12 +456,12 @@ function hubHtml(groups) {
   h += '<meta name="twitter:description" content="' + esc(desc) + '">\n';
   h += '<meta name="twitter:image" content="' + SITE + 'og-image.png">\n';
   h += '<script src="theme.js?v=1"><\/script>\n';
-  h += '<script src="nav.js?v=23" defer><\/script>\n';
+  h += '<script src="nav.js?v=24" defer><\/script>\n';
   h += '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n';
   h += '<link rel="manifest" href="manifest.json">\n';
   h += '<meta name="theme-color" content="#5b8def">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=91">\n';
+  h += '<link rel="stylesheet" href="style.css?v=94">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 

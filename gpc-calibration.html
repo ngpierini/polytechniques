@@ -32,12 +32,12 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=23" defer></script>
+<script src="nav.js?v=24" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=91">
+<link rel="stylesheet" href="style.css?v=94">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -266,7 +266,7 @@
     var trueMn = convert(mn, kStd, aStd, kSample, aSample);
     var factor = trueMn / mn;
     var html =
-      '<div class="stat"><div class="label">True M&#8345;</div><div class="value">' + fmt(trueMn) + '</div><div class="sub">g/mol</div></div>' +
+      '<div class="stat stat--primary"><div class="label">True M&#8345;</div><div class="value">' + fmt(trueMn) + '</div><div class="sub">g/mol</div></div>' +
       '<div class="stat"><div class="label">Conversion factor</div><div class="value">' + factor.toFixed(3) + '&times;</div><div class="sub">true M&#8345; &divide; apparent M&#8345;</div></div>';
 
     if (isFinite(mw) && mw > 0) {

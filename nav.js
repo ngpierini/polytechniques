@@ -368,6 +368,52 @@
     box.select();
   });
 
+  // ---- Numeric column headings follow their figures, site-wide ----
+  //
+  // Right-aligned tabular figures only read as an improvement if the heading
+  // moves with them; a heading sitting left over a right-aligned column looks
+  // like a bug, and so does the mirror image. CSS cannot say "align this th
+  // like the td beneath it", and a build-time pass cannot either: half these
+  // tables have a static <thead> in the HTML and a <tbody> generated at
+  // runtime from a template string elsewhere in the file, so nothing in the
+  // source connects a heading to its column. At runtime the connection is
+  // real, so it is done here.
+  //
+  // A column counts as numeric when its cell carries .num and does not
+  // override with an inline text-align - several tables use .num as a column
+  // marker and then put prose in it.
+  function alignNumericHeadings(root) {
+    (root || document).querySelectorAll("table.recipe:not(.recipe-data)").forEach(function (table) {
+      var head = table.querySelector("thead tr");
+      var body = table.querySelector("tbody tr");
+      if (!head || !body) return;
+      var ths = head.querySelectorAll("th");
+      body.querySelectorAll("td").forEach(function (td, i) {
+        if (!ths[i]) return;
+        var numeric = td.classList.contains("num") &&
+          !/left/i.test(td.style.textAlign || "");
+        ths[i].classList.toggle("num", numeric);
+      });
+    });
+  }
+
+  // The calculators re-render their tables on every keystroke, so this has to
+  // run again when rows appear rather than once on load. Debounced to a frame:
+  // a burst of row insertions is one realignment.
+  var alignQueued = false;
+  function queueAlign() {
+    if (alignQueued) return;
+    alignQueued = true;
+    requestAnimationFrame(function () { alignQueued = false; alignNumericHeadings(); });
+  }
+  document.addEventListener("DOMContentLoaded", queueAlign);
+  queueAlign();
+  new MutationObserver(function (muts) {
+    for (var i = 0; i < muts.length; i++) {
+      if (muts[i].addedNodes.length) { queueAlign(); return; }
+    }
+  }).observe(document.documentElement, { childList: true, subtree: true });
+
   // ---- Click-to-copy on result stat values, site-wide ----
   // Every tool renders results as .stat > .value blocks; clicking one copies
   // the number for pasting into a notebook or ELN.

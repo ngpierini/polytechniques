@@ -32,12 +32,12 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=23" defer></script>
+<script src="nav.js?v=24" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=91">
+<link rel="stylesheet" href="style.css?v=94">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -238,7 +238,7 @@
     var tHalfConv = 0.5 * M / Rp;
 
     stats.innerHTML =
-      '<div class="stat"><div class="label">R<sub>p</sub></div><div class="value">' + Rp.toExponential(3) +
+      '<div class="stat stat--primary"><div class="label">R<sub>p</sub></div><div class="value">' + Rp.toExponential(3) +
         '</div><div class="sub">mol/L&middot;s &mdash; ' + (Rp / M * 100).toExponential(2) + '%/s of monomer</div></div>' +
       '<div class="stat"><div class="label">Kinetic chain length</div><div class="value">' +
         Math.round(kinChain).toLocaleString() + '</div><div class="sub">monomers per radical formed</div></div>' +
@@ -295,7 +295,7 @@
     var rows = document.querySelectorAll(".rk-cta-row");
     if (state.dp0 == null) { stats.innerHTML = ""; return; }
     if (!rows.length) {
-      stats.innerHTML = '<div class="stat"><div class="label">DP<sub>n</sub> with transfer</div><div class="value">' +
+      stats.innerHTML = '<div class="stat stat--primary"><div class="label">DP<sub>n</sub> with transfer</div><div class="value">' +
         Math.round(state.dp0).toLocaleString() + '</div><div class="sub">no transfer agent added</div></div>';
       return;
     }
@@ -315,7 +315,7 @@
     var dominant = terms.length ? terms.reduce(function (a, b) { return b.t > a.t ? b : a; }) : null;
 
     stats.innerHTML =
-      '<div class="stat"><div class="label">DP<sub>n</sub> with transfer</div><div class="value">' +
+      '<div class="stat stat--primary"><div class="label">DP<sub>n</sub> with transfer</div><div class="value">' +
         Math.round(dp).toLocaleString() + '</div><div class="sub">was ' + Math.round(state.dp0).toLocaleString() +
         ' without</div></div>' +
       '<div class="stat"><div class="label">Chain length lost</div><div class="value">' + drop.toFixed(1) +
