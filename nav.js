@@ -254,7 +254,7 @@
     if (document.querySelector(".footer-legal")) return;
     var line = document.createElement("p");
     line.className = "footer-legal";
-    line.style.cssText = "font-size:0.78rem;opacity:0.7;margin-top:8px;";
+    line.style.cssText = "font-size:var(--fs-xs);opacity:0.7;margin-top:8px;";
     line.innerHTML = notice + ' PolyTechniques is proprietary. <a href="terms.html">Terms of Use</a> &middot; <a href="privacy.html">Privacy</a>.';
 
     var footer = document.querySelector("footer.footer");

@@ -37,18 +37,18 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=89">
+<link rel="stylesheet" href="style.css?v=91">
 <style>
   /* Page-scoped styles for the interactive thermal-analysis charts. Colours are
      pulled from the site's CSS variables so light/dark both work; the extra
      series colours are mid-tones chosen to read on either background. */
   .ta-controls { display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: flex-end; margin: 4px 0 14px; }
   .ta-control { display: flex; flex-direction: column; gap: 5px; min-width: 150px; flex: 1 1 150px; }
-  .ta-control-label { font-size: 0.8rem; font-weight: 600; color: var(--text-dim); display: flex; justify-content: space-between; gap: 8px; }
+  .ta-control-label { font-size:var(--fs-xs); font-weight: 600; color: var(--text-dim); display: flex; justify-content: space-between; gap: 8px; }
   .ta-control-label .ta-val { color: var(--primary); font-variant-numeric: tabular-nums; }
   .ta-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
   .ta-seg button {
-    font: inherit; font-size: 0.82rem; padding: 6px 11px; border: 1px solid var(--border);
+    font: inherit; font-size:var(--fs-xs); padding: 6px 11px; border: 1px solid var(--border);
     background: var(--bg); color: var(--text); border-radius: 999px; cursor: pointer; transition: all 0.12s;
   }
   .ta-seg button:hover { border-color: var(--primary); }
@@ -58,8 +58,8 @@
   .ta-chart { display: block; width: 100%; height: auto; min-width: 460px; }
   .ta-chart .ta-axis { stroke: var(--text-dim); stroke-width: 1; }
   .ta-chart .ta-grid { stroke: var(--border); stroke-width: 1; }
-  .ta-chart .ta-tick { fill: var(--text-dim); font-size: 10px; }
-  .ta-chart .ta-axis-label { fill: var(--text-dim); font-size: 11px; font-weight: 600; }
+  .ta-chart .ta-tick { fill: var(--text-dim); font-size:var(--fs-4xs); }
+  .ta-chart .ta-axis-label { fill: var(--text-dim); font-size:var(--fs-3xs); font-weight: 600; }
   .ta-chart .ta-curve { fill: none; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
   .ta-chart .ta-curve-e1 { stroke: var(--primary); }
   .ta-chart .ta-curve-e2 { stroke: #f2b84b; stroke-width: 1.8; }
@@ -67,50 +67,50 @@
   .ta-chart .ta-curve-dtg { stroke: #a78bfa; stroke-width: 1.8; }
   .ta-chart .ta-curve-ref { stroke: var(--text-dim); stroke-width: 1.7; stroke-dasharray: 6 4; opacity: 0.85; }
   select.ta-select {
-    font: inherit; font-size: 0.9rem; padding: 7px 10px; width: 100%;
+    font: inherit; font-size:var(--fs-sm); padding: 7px 10px; width: 100%;
     border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); color: var(--text); cursor: pointer;
   }
   select.ta-select:hover { border-color: var(--primary); }
-  .ta-conf { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 0.72rem; font-weight: 600;
+  .ta-conf { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size:var(--fs-3xs); font-weight: 600;
              background: rgba(242,184,75,0.18); color: #c98a1e; margin-left: 6px; vertical-align: middle; }
-  .ta-matnote { font-size: 0.85rem; color: var(--text-dim); margin: 2px 0 10px; line-height: 1.45; }
+  .ta-matnote { font-size:var(--fs-sm); color: var(--text-dim); margin: 2px 0 10px; line-height: 1.45; }
   .ta-export { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 0; }
-  .ta-export-btn { font: inherit; font-size: 0.82rem; padding: 5px 11px; cursor: pointer;
+  .ta-export-btn { font: inherit; font-size:var(--fs-xs); padding: 5px 11px; cursor: pointer;
     border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); }
   .ta-export-btn:hover { border-color: var(--primary); }
-  .ta-nodma { font-size: 0.85rem; color: var(--text-dim); margin: 0 0 10px; }
+  .ta-nodma { font-size:var(--fs-sm); color: var(--text-dim); margin: 0 0 10px; }
   .ta-nodma > summary { cursor: pointer; }
   .ta-nodma dl { margin: 8px 0 0; }
   .ta-nodma dt { font-weight: 600; margin-top: 6px; }
   .ta-nodma dd { margin: 0 0 0 14px; line-height: 1.45; }
-  .ta-formnote { font-size: 0.83rem; color: var(--text-dim); line-height: 1.45; margin-top: 7px;
+  .ta-formnote { font-size:var(--fs-xs); color: var(--text-dim); line-height: 1.45; margin-top: 7px;
                  padding: 8px 11px; border-left: 3px solid var(--primary); border-radius: 0 7px 7px 0;
                  background: rgba(127,127,127,0.06);
                  background: color-mix(in srgb, var(--primary) 6%, transparent); }
-  .ta-src { display: block; margin-top: 4px; font-size: 0.78rem; opacity: 0.82; font-style: italic; }
+  .ta-src { display: block; margin-top: 4px; font-size:var(--fs-xs); opacity: 0.82; font-style: italic; }
   .ta-mix-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
   .ta-mix-row select.ta-select { flex: 1 1 220px; width: auto; }
   .ta-mix-row input[type="range"] { flex: 0 1 130px; accent-color: var(--primary); cursor: pointer; }
-  .ta-mix-wt { font-size: 0.82rem; font-weight: 700; color: var(--primary); min-width: 46px; text-align: right; font-variant-numeric: tabular-nums; }
+  .ta-mix-wt { font-size:var(--fs-xs); font-weight: 700; color: var(--primary); min-width: 46px; text-align: right; font-variant-numeric: tabular-nums; }
   input.ta-mix-num {
-    font: inherit; font-size: 0.85rem; font-weight: 700; width: 62px; padding: 5px 6px; text-align: right;
+    font: inherit; font-size:var(--fs-sm); font-weight: 700; width: 62px; padding: 5px 6px; text-align: right;
     border: 1px solid var(--border); border-radius: 7px; background: var(--card-bg); color: var(--primary);
     font-variant-numeric: tabular-nums;
   }
   input.ta-mix-num:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
-  .ta-mix-pct { font-size: 0.82rem; font-weight: 700; color: var(--text-dim); margin-left: -3px; }
+  .ta-mix-pct { font-size:var(--fs-xs); font-weight: 700; color: var(--text-dim); margin-left: -3px; }
   .ta-mix-del {
     font: inherit; line-height: 1; padding: 5px 9px; border: 1px solid var(--border); background: var(--bg);
     color: var(--text-dim); border-radius: 7px; cursor: pointer;
   }
   .ta-mix-del:hover { border-color: var(--danger); color: var(--danger); }
   .ta-mix-add {
-    font: inherit; font-size: 0.84rem; padding: 6px 12px; border: 1px dashed var(--border);
+    font: inherit; font-size:var(--fs-sm); padding: 6px 12px; border: 1px dashed var(--border);
     background: transparent; color: var(--text-dim); border-radius: 8px; cursor: pointer;
   }
   .ta-mix-add:hover { border-color: var(--primary); color: var(--primary); }
-  .ta-na { padding: 14px; border: 1px dashed var(--border); border-radius: var(--radius); color: var(--text-dim); font-size: 0.88rem; }
-  .ta-verdict { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+  .ta-na { padding: 14px; border: 1px dashed var(--border); border-radius: var(--radius); color: var(--text-dim); font-size:var(--fs-sm); }
+  .ta-verdict { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size:var(--fs-xs); font-weight: 700; }
   .ta-verdict-ok { background: rgba(14,159,110,0.16); color: var(--accent); }
   .ta-verdict-warn { background: rgba(242,184,75,0.20); color: #c98a1e; }
   .ta-verdict-bad { background: rgba(214,69,69,0.16); color: var(--danger); }
@@ -118,22 +118,22 @@
   .ta-chart .ta-fill-endo { fill: var(--primary); }
   .ta-chart .ta-fill-exo { fill: #ef6a6a; }
   .ta-chart .ta-marker { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 3 3; }
-  .ta-chart .ta-marker-label { fill: var(--text); font-size: 10px; font-weight: 600; }
-  .ta-chart .ta-feat { fill: var(--text-dim); font-size: 10px; }
-  .ta-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.8rem; color: var(--text-dim); margin: 2px 0 10px; }
+  .ta-chart .ta-marker-label { fill: var(--text); font-size:var(--fs-4xs); font-weight: 600; }
+  .ta-chart .ta-feat { fill: var(--text-dim); font-size:var(--fs-4xs); }
+  .ta-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size:var(--fs-xs); color: var(--text-dim); margin: 2px 0 10px; }
   .ta-legend span { display: inline-flex; align-items: center; gap: 6px; }
   .ta-swatch { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
   .ta-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
   .ta-picker button {
-    font: inherit; font-size: 0.85rem; padding: 7px 13px; border: 1px solid var(--border);
+    font: inherit; font-size:var(--fs-sm); padding: 7px 13px; border: 1px solid var(--border);
     background: var(--bg); color: var(--text); border-radius: 8px; cursor: pointer; transition: all 0.12s;
   }
   .ta-picker button:hover { border-color: var(--primary); }
   .ta-picker button.active { background: var(--primary-dim); border-color: var(--primary); color: var(--text); }
   .ta-pick-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 10px; }
   .ta-pick-card { border: 2px solid var(--border); border-radius: var(--radius); padding: 12px 14px; transition: all 0.15s; }
-  .ta-pick-card h4 { margin: 0 0 4px; font-size: 0.98rem; }
-  .ta-pick-card p { margin: 0; font-size: 0.82rem; color: var(--text-dim); line-height: 1.45; }
+  .ta-pick-card h4 { margin: 0 0 4px; font-size:var(--fs-md); }
+  .ta-pick-card p { margin: 0; font-size:var(--fs-xs); color: var(--text-dim); line-height: 1.45; }
   .ta-pick-card.lit { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-dim); }
   .ta-pick-card.dim { opacity: 0.4; }
   @media (max-width: 620px) { .ta-pick-grid { grid-template-columns: 1fr; } }
@@ -194,7 +194,7 @@
     <p class="guide-note">
       The first heat carries the sample's processing history, including a small enthalpy-relaxation overshoot on the T<sub>g</sub> step if the glass has aged. A controlled cool followed by a second heat erases that history, which is why intrinsic values are quoted from the second heat. Percent crystallinity comes from the melting enthalpy: X<sub>c</sub> = (&Delta;H<sub>m</sub> &minus; &Delta;H<sub>cc</sub>) / &Delta;H<sub>m</sub>&deg; &times; 100, subtracting the cold-crystallization enthalpy so you count only crystals that were there before the scan.
     </p>
-    <p class="guide-note" style="font-size:0.85rem;">
+    <p class="guide-note" style="font-size:var(--fs-sm);">
       <strong>On the numbers:</strong> tabulated T<sub>g</sub> and T<sub>m</sub> vary with sample and method, and because the glass transition is at least partly kinetic, the T<sub>g</sub> also depends on measurement rate (a faster scan reads a higher T<sub>g</sub>). The transition is not a sharp point but the cessation of long-range segmental motion, spread over a modest temperature range for chain segments of different lengths (about 5&ndash;20 chain atoms), so which temperature you read depends on how fast you probe it. The cooling rate that formed the glass matters as well: a faster quench freezes in a higher T<sub>g</sub>, so a reheat scan also carries the history of how the sample was cooled. Standard reference tables (Brandrup's <em>Polymer Handbook</em>, as tabulated in Odian's <em>Principles of Polymerization</em>) list PET at T<sub>g</sub> 61&nbsp;&deg;C with a crystalline T<sub>m</sub> of 270&nbsp;&deg;C, while a 10&nbsp;K/min DSC scan of quenched PET shows an apparent T<sub>g</sub> around 75&ndash;80&nbsp;&deg;C and a melting peak near 250&nbsp;&deg;C. The heating-rate slider below shows why the T<sub>g</sub> figure is method-dependent.
     </p>
 

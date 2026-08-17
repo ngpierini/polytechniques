@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=89">
+<link rel="stylesheet" href="style.css?v=91">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -88,11 +88,11 @@
     b.id = "calc-err-banner";
     b.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:2147483647;margin:0;padding:14px 18px;" +
       "background:#fff5f5;color:#2a0a0a;border-bottom:4px solid #d64545;box-shadow:0 3px 12px rgba(0,0,0,0.28);" +
-      "font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-size:0.95rem;line-height:1.4;max-height:80vh;overflow:auto;";
+      "font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-size:var(--fs-base);line-height:1.4;max-height:80vh;overflow:auto;";
     b.innerHTML = "<strong>" + msg + "</strong>" +
-      (errs.length ? '<code style="display:block;white-space:pre-wrap;margin-top:6px;color:#b00020;font-size:0.85rem;">' + esc(errs.join("\n")) + "</code>" : "") +
-      '<div style="margin-top:6px;font-size:0.8rem;color:#555;">' + esc(navigator.userAgent) + "</div>" +
-      '<div style="margin-top:4px;font-size:0.8rem;">The other tools are on the <a href="/">home page</a>.</div>';
+      (errs.length ? '<code style="display:block;white-space:pre-wrap;margin-top:6px;color:#b00020;font-size:var(--fs-sm);">' + esc(errs.join("\n")) + "</code>" : "") +
+      '<div style="margin-top:6px;font-size:var(--fs-xs);color:#555;">' + esc(navigator.userAgent) + "</div>" +
+      '<div style="margin-top:4px;font-size:var(--fs-xs);">The other tools are on the <a href="/">home page</a>.</div>';
     document.body.insertBefore(b, document.body.firstChild);
     return false;
   }

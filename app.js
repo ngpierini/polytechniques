@@ -144,7 +144,7 @@ function raftChooserAdvice(monoKey, blockKey) {
   if (!mono) return "";
   let html = `
     <div class="stat" style="margin-top:10px;"><div class="label">Monomer family</div>
-      <div style="font-size:0.9rem;">${mono.family}</div></div>
+      <div style="font-size:var(--fs-sm);">${mono.family}</div></div>
     <p class="guide-note"><strong>Use:</strong> ${mono.best}</p>
     <p class="guide-note"><strong>Avoid:</strong> ${mono.avoid}</p>
     <p class="guide-note"><strong>Watch out:</strong> ${mono.caveats}</p>
@@ -161,7 +161,7 @@ function raftChooserAdvice(monoKey, blockKey) {
       html += `<p class="guide-note"><strong>Block order:</strong> this pairing works in the order stated${mono.rank > block.rank ? " (your first block's propagating radical is the better leaving group, which is exactly what a macro-CTA needs)" : ", and either order is workable since the two families have comparable leaving-group ability. Pick an agent rated excellent for both"}.</p>`;
     }
   }
-  html += `<p class="guide-note" style="font-size:0.8rem;">Guidance distilled from Moad &amp; Rizzardo (eds.), <em>RAFT Polymerization</em> (Wiley-VCH, 2022), ch. 3, Table 3.1/Fig. 3.2. Classic agents (dithiobenzoates, the common trithiocarbonates, simple xanthates) are off-patent; some newer switchable agents remain under CSIRO licence for commercial use.</p>`;
+  html += `<p class="guide-note" style="font-size:var(--fs-xs);">Guidance distilled from Moad &amp; Rizzardo (eds.), <em>RAFT Polymerization</em> (Wiley-VCH, 2022), ch. 3, Table 3.1/Fig. 3.2. Classic agents (dithiobenzoates, the common trithiocarbonates, simple xanthates) are off-patent; some newer switchable agents remain under CSIRO licence for commercial use.</p>`;
   return html;
 }
 
@@ -2139,8 +2139,8 @@ function wirePolyurethanePanel() {
       `<div class="stat"><div class="label">Final batch mass</div><div class="value">${puFmt(mFinal, 1)} g</div><div class="sub">prepolymer + extender</div></div>` +
       `<div class="stat"><div class="label">Hard segment content</div><div class="value">${puFmt(hardSeg, 1)}%</div><div class="sub">diisocyanate + extender, by mass &middot; soft segment ${puFmt(100 - hardSeg, 1)}%</div></div>` +
       (useCat ? `<div class="stat"><div class="label">${escapeHtml(catShort)} to charge</div><div class="value">${catMassText}</div><div class="sub">${puFmt(catPct, 3)} wt% of final batch</div></div>` : "") +
-      (!simple && extSel.type === "amine" ? `<div class="stat"><div class="label">Chemistry note</div><div class="value" style="font-size:0.92rem;">Urea hard segments</div><div class="sub">amine curatives give a urethane-urea; faster reaction, shorter pot life, harder product</div></div>` : "") +
-      (!simple && extSel.type === "triol" ? `<div class="stat"><div class="label">Chemistry note</div><div class="value" style="font-size:0.92rem;">Crosslinked network</div><div class="sub">f = 3 curative: this is a thermoset formulation, not a linear TPU</div></div>` : "");
+      (!simple && extSel.type === "amine" ? `<div class="stat"><div class="label">Chemistry note</div><div class="value" style="font-size:var(--fs-base);">Urea hard segments</div><div class="sub">amine curatives give a urethane-urea; faster reaction, shorter pot life, harder product</div></div>` : "") +
+      (!simple && extSel.type === "triol" ? `<div class="stat"><div class="label">Chemistry note</div><div class="value" style="font-size:var(--fs-base);">Crosslinked network</div><div class="sub">f = 3 curative: this is a thermoset formulation, not a linear TPU</div></div>` : "");
 
     const isoSel = PU_DIISOS[parseInt($("pu-iso-select").value, 10)] || PU_DIISOS[0];
     const polyolSel = PU_POLYOLS[parseInt($("pu-polyol-select").value, 10)] || PU_POLYOLS[0];
@@ -2553,7 +2553,7 @@ function wireEmulsionPanel() {
     const solidsPct = ((massPolymer + mSurf) / totalCharge) * 100;
 
     stats.innerHTML =
-      (belowCmc ? `<div class="stat" style="grid-column:1/-1;"><div class="label">Surfactant vs. CMC</div><div class="value" style="color:var(--danger);font-size:1rem;">Below CMC, no micelles</div><div class="sub">${emFmt(sTotalM * 1000, 2)} mmol/L total vs. ${emFmt(cmc, 2)} mmol/L CMC. Micellar nucleation doesn't apply here; particle number/size below aren't meaningful.</div></div>` : "") +
+      (belowCmc ? `<div class="stat" style="grid-column:1/-1;"><div class="label">Surfactant vs. CMC</div><div class="value" style="color:var(--danger);font-size:var(--fs-md);">Below CMC, no micelles</div><div class="sub">${emFmt(sTotalM * 1000, 2)} mmol/L total vs. ${emFmt(cmc, 2)} mmol/L CMC. Micellar nucleation doesn't apply here; particle number/size below aren't meaningful.</div></div>` : "") +
       `<div class="stat"><div class="label">Surfactant available for micelles</div><div class="value">${emFmt(sMicellarM * 1000, 2)}</div><div class="sub">mmol/L, above the ${emFmt(cmc, 2)} mmol/L CMC</div></div>` +
       `<div class="stat"><div class="label">Radical generation rate, R<sub>i</sub></div><div class="value">${emFmt(RiMolPerLs, 2)}</div><div class="sub">mol radicals / (L&middot;s), k<sub>d</sub> = ${emFmt(kd, 2)} s<sup>-1</sup></div></div>` +
       `<div class="stat"><div class="label">Predicted particle number</div><div class="value">${emFmt(NperL, 2)}</div><div class="sub">particles/L water &middot; ${emFmt(totalParticles, 2)} total</div></div>` +

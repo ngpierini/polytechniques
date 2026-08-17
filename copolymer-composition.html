@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=89">
+<link rel="stylesheet" href="style.css?v=91">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -335,10 +335,10 @@
 
     var micro = microstructure(r1, r2);
     stats.innerHTML =
-      '<div class="stat stat--primary"><div class="label">Likely microstructure</div><div class="value" style="font-size:1.05rem;">' + micro.label + '</div><div class="sub">r&#8321;&middot;r&#8322; = ' + (r1 * r2).toFixed(3) + '</div></div>' +
+      '<div class="stat stat--primary"><div class="label">Likely microstructure</div><div class="value" style="font-size:var(--fs-md);">' + micro.label + '</div><div class="sub">r&#8321;&middot;r&#8322; = ' + (r1 * r2).toFixed(3) + '</div></div>' +
       '<div class="stat"><div class="label">F&#8321; (' + m1 + ' in copolymer)</div><div class="value">' + F1val.toFixed(3) + '</div><div class="sub">mole fraction</div></div>' +
       '<div class="stat"><div class="label">F&#8322; (' + m2 + ' in copolymer)</div><div class="value">' + (1 - F1val).toFixed(3) + '</div><div class="sub">mole fraction</div></div>' +
-      '<div class="stat"><div class="label">Drift at this feed point</div><div class="value" style="font-size:0.92rem;">' + driftNote + '</div></div>' +
+      '<div class="stat"><div class="label">Drift at this feed point</div><div class="value" style="font-size:var(--fs-base);">' + driftNote + '</div></div>' +
       '<div class="stat"><div class="label">Azeotrope (f&#8321; = F&#8321;)</div><div class="value">' + (result.azeo != null ? result.azeo.toFixed(3) : "None in range") + '</div><div class="sub">' + (result.azeo != null ? "constant composition point" : "composition always drifts with conversion") + '</div></div>';
     var microEl = document.getElementById("cc-micro");
     if (microEl) microEl.innerHTML = '<strong>' + micro.label + '</strong> &mdash; ' + micro.detail;

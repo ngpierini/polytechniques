@@ -3486,7 +3486,7 @@
       if (!resultsEl) return;
       function card(r) {
         return '<div class="mol-sim-item">' +
-          '<div style="font-size:0.8rem;color:var(--text-dim);margin:10px 0 2px;">' +
+          '<div style="font-size:var(--fs-xs);color:var(--text-dim);margin:10px 0 2px;">' +
           Math.round(r.sim * 100) + '% similar</div>' + polymerCard(r.p) + '</div>';
       }
       var strong = ranked.filter(function (r) { return r.sim >= SIM_STRONG; });
@@ -6990,7 +6990,7 @@
       renderPublications(null);
       resultsEl.innerHTML = hits.map(function (h, i) {
         return '<div class="mol-sim-item">' +
-          '<div style="font-size:0.8rem;color:var(--text-dim);margin:10px 0 2px;">appears ' + h.count +
+          '<div style="font-size:var(--fs-xs);color:var(--text-dim);margin:10px 0 2px;">appears ' + h.count +
           (h.count === 1 ? ' time' : ' times') + ' &middot; fragment is ' + Math.round(h.cov * 100) + '% of ' +
           (h.viaDepiction ? 'the whole molecule &mdash; <strong>matched in the end group, not the repeat unit</strong>'
                           : 'the repeat unit') +

@@ -37,7 +37,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=89">
+<link rel="stylesheet" href="style.css?v=91">
 <style>
   /* The canvas has a fixed 494x390 internal resolution; let it scale down to
      fit narrow screens while keeping its aspect ratio and crisp 8-bit pixels. */
@@ -62,7 +62,7 @@
   .game-fs-btn {
     display: inline-flex; align-items: center; gap: 6px;
     border: 1px solid var(--border); background: var(--card-bg); color: var(--text);
-    border-radius: 8px; padding: 7px 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    border-radius: 8px; padding: 7px 12px; font-size:var(--fs-sm); font-weight: 600; cursor: pointer;
   }
   .game-fs-btn:hover { border-color: var(--primary); color: var(--primary); }
   /* Volume sits in the play bar with the buttons, sized to match them. */
@@ -75,7 +75,7 @@
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
     overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
   }
-  .game-fs-icon { font-size: 1.05rem; line-height: 1; }
+  .game-fs-icon { font-size:var(--fs-md); line-height: 1; }
 
   .game-rotate-hint { display: none; }
 
@@ -99,8 +99,8 @@
     padding-right: 96px;  /* clear the exit button pinned top-right */
   }
   body.game-immersive .game-hud .stat { flex: 0 0 auto; min-width: 0; }
-  body.game-immersive .game-hud .stat .label { font-size: 0.58rem; margin-bottom: 1px; }
-  body.game-immersive .game-hud .stat .value { font-size: 0.9rem; }
+  body.game-immersive .game-hud .stat .label { font-size: var(--fs-4xs); margin-bottom: 1px; }
+  body.game-immersive .game-hud .stat .value { font-size:var(--fs-sm); }
   body.game-immersive .game-stage {
     grid-area: stage; min-height: 0; min-width: 0;
     align-items: center; padding: 0;
@@ -113,7 +113,7 @@
   }
   body.game-immersive .game-rotate-hint {
     grid-area: hint; display: block; margin: 0;
-    text-align: center; font-size: 0.78rem; color: rgba(255,255,255,0.72);
+    text-align: center; font-size:var(--fs-xs); color: rgba(255,255,255,0.72);
   }
   body.game-immersive .game-controls { grid-area: controls; margin: 0; }
   body.game-immersive .game-legend { display: none; }
@@ -164,7 +164,7 @@
   .game-fold summary::after {
     content: "\25B8";
     color: var(--text-dim);
-    font-size: 1.05rem;
+    font-size:var(--fs-md);
     transition: transform 0.15s ease;
   }
   .game-fold[open] summary::after { transform: rotate(90deg); }
@@ -192,13 +192,13 @@
      passed while the game was actually unplayable: finish a level and there was
      no visible way on. It has to sit above the board. */
   .game-overlay { z-index: 2; overflow-y: auto; gap: 12px; }
-  .game-overlay p { font-size: 0.84rem; line-height: 1.4; }
+  .game-overlay p { font-size:var(--fs-sm); line-height: 1.4; }
   /* On a phone the board is barely 220px tall, so the title screen has to give
      up its comfortable spacing or it scrolls - and a title screen you have to
      scroll to reach the button on is a title screen that has failed. */
   @media (max-width: 560px) {
     .game-overlay { gap: 6px; padding: 10px; }
-    .game-overlay p { font-size: 0.7rem; line-height: 1.25; }
+    .game-overlay p { font-size:var(--fs-3xs); line-height: 1.25; }
     .game-overlay button#game-start-btn { padding: 9px 14px 11px; margin-bottom: 6px; }
   }
 
@@ -307,7 +307,7 @@
       </div>
       <div class="stat">
         <div class="label">M<sub>n</sub></div>
-        <div class="value" id="game-mn" style="font-size:1rem;">0 g/mol</div>
+        <div class="value" id="game-mn" style="font-size:var(--fs-md);">0 g/mol</div>
       </div>
       <div class="stat">
         <div class="label">Points</div>
@@ -315,7 +315,7 @@
       </div>
       <div class="stat">
         <div class="label">Time</div>
-        <div class="value" id="game-time" style="font-size:1rem;">0.0s</div>
+        <div class="value" id="game-time" style="font-size:var(--fs-md);">0.0s</div>
       </div>
       <div class="stat">
         <div class="label">Lives</div>
@@ -323,15 +323,15 @@
       </div>
       <div class="stat">
         <div class="label">Chains</div>
-        <div class="value" id="game-chains" style="font-size:1rem;">0</div>
+        <div class="value" id="game-chains" style="font-size:var(--fs-md);">0</div>
       </div>
       <div class="stat">
         <div class="label">Dispersity &#272;</div>
-        <div class="value" id="game-disp" style="font-size:1rem;">&mdash;</div>
+        <div class="value" id="game-disp" style="font-size:var(--fs-md);">&mdash;</div>
       </div>
       <div class="stat">
         <div class="label">Status</div>
-        <div class="value" id="game-status" style="font-size:1rem;">Ready</div>
+        <div class="value" id="game-status" style="font-size:var(--fs-md);">Ready</div>
       </div>
     </div>
 

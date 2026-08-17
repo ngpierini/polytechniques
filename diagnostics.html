@@ -13,14 +13,14 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5b8def">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=89">
+<link rel="stylesheet" href="style.css?v=91">
 <style>
-  .diag-pill { display:inline-block; min-width:64px; text-align:center; padding:2px 10px; border-radius:999px; font-weight:600; font-size:0.85rem; }
+  .diag-pill { display:inline-block; min-width:64px; text-align:center; padding:2px 10px; border-radius:999px; font-weight:600; font-size:var(--fs-sm); }
   .diag-ok   { background:rgba(14,159,110,0.15); color:var(--accent); }
   .diag-fail { background:rgba(214,69,69,0.15); color:var(--danger); }
   .diag-warn { background:rgba(242,184,75,0.18); color:#b7791f; }
   .diag-info { background:var(--primary-dim); color:var(--primary); }
-  .diag-summary { border-left:4px solid var(--primary); padding:12px 14px; border-radius:8px; background:var(--bg); margin:4px 0 14px; font-size:1rem; line-height:1.5; }
+  .diag-summary { border-left:4px solid var(--primary); padding:12px 14px; border-radius:8px; background:var(--bg); margin:4px 0 14px; font-size:var(--fs-md); line-height:1.5; }
   #diag-table td:first-child { white-space:nowrap; font-weight:600; }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
@@ -73,7 +73,7 @@
       <button type="button" class="copy-btn" id="diag-copy">Copy report</button>
       <button type="button" class="copy-btn" id="diag-rerun">Run again</button>
     </div>
-    <p class="guide-note" id="diag-env" style="margin-top:10px; color:var(--text-dim); font-size:0.85rem;"></p>
+    <p class="guide-note" id="diag-env" style="margin-top:10px; color:var(--text-dim); font-size:var(--fs-sm);"></p>
   </div>
 
   <div class="card">
@@ -292,7 +292,7 @@
     var body = document.querySelector("#diag-table tbody");
     body.innerHTML = results.map(function (r) {
       return '<tr><td data-label="Capability">' + r.name + '</td><td data-label="Result">' + pill(r.status) +
-        ' <span style="color:var(--text-dim);font-size:0.85rem;">' + escapeHtml(r.detail) + '</span></td>' +
+        ' <span style="color:var(--text-dim);font-size:var(--fs-sm);">' + escapeHtml(r.detail) + '</span></td>' +
         '<td data-label="Powers">' + r.affects + '</td></tr>';
     }).join("");
   }
@@ -311,7 +311,7 @@
     if (calc && (calc.status === "fail" || calc.status === "warn") && calc.detail && calc.detail.indexOf("works here") === -1) {
       el.style.borderLeftColor = "var(--danger)";
       el.innerHTML = "<strong>Reproduced the Calculator failure on this machine. Please copy this whole line to the site owner:</strong><br>" +
-        "<code style=\"display:inline-block;margin-top:6px;font-size:0.85rem;\">" + escapeHtml(calc.detail) + "</code>";
+        "<code style=\"display:inline-block;margin-top:6px;font-size:var(--fs-sm);\">" + escapeHtml(calc.detail) + "</code>";
       return;
     }
     if (!coreOk) {
