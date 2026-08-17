@@ -2104,6 +2104,47 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
    has to be obvious - it is the cursor for that navigation - so this is a ring
    rather than the faint default outline, and :focus-visible keeps it off for
    mouse users who clicked one. */
+/* Working a result set down: filter, "only the ones that have a value", export.
+   Sits between the status line and the cards, so it reads as a control strip
+   for the list rather than as another search box. */
+.mol-result-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.mol-result-filter {
+  flex: 1 1 200px;
+  min-width: 140px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 0.88rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
+}
+.mol-result-haves { display: flex; flex-wrap: wrap; gap: 6px; }
+.mol-have-chip {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.mol-have-chip:hover { border-color: var(--primary); color: var(--text); }
+.mol-have-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
 .mol-result-card:focus { outline: none; }
 .mol-result-card:focus-visible {
   outline: 2px solid var(--primary);

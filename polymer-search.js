@@ -3235,6 +3235,12 @@
       if (!resultsEl) return;
       clearIdentification();
       pendingScheme = null;
+      // Every path into the results goes through here - name, category,
+      // structure, SMARTS - so this is the one place that knows what is on
+      // screen. The guard is for applyResultTools, which re-renders a FILTERED
+      // subset: without it the filter would overwrite the set it is filtering
+      // and there would be no way to widen it again.
+      if (!suppressResultCapture) setResultSet(list);
       if (!list.length) { resultsEl.innerHTML = '<p class="guide-note">No matches.</p>'; return; }
       // Which polymer the scheme belongs to is the CALLER's call, because only
       // the caller knows how confident the answer is. An exact structure match
@@ -7277,7 +7283,134 @@
       renderResults(list.slice(0, FACET_PAGE), schemeFor);
       if (statusEl) statusEl.textContent = message;
       if (list.length > FACET_PAGE) renderMore(list.slice(FACET_PAGE), 'polymers');
+      setResultSet(list);
     }
+
+    // ---------- Working a result set down ----------
+    // Searching "polyester" returns 185 polymers, shows 24, and offered exactly
+    // two controls: draw-and-find-publications, and show-the-other-161. A set
+    // that size was a dead end - you could scroll it or start over.
+    //
+    // What it can offer is limited by what the library actually holds. Name,
+    // monomer, class and tags are on ~100% of entries; a Tg is on 6%, a Tm on
+    // 4%, a CAS on 13%. So there is deliberately no "sort by Tg" here: across
+    // those 185 polyesters only 10 carry one, and a numeric sort would rank the
+    // set on ten data points while implying the other 175 belong at the bottom.
+    // The sparse fields are offered the honest way round instead - as filters
+    // that say "only the ones where I have this" - and the dense fields carry
+    // the text filter and the export.
+    var resultSet = [];
+    var resultHaves = { tg: false, tm: false, cas: false };
+    var suppressResultCapture = false;
+
+    function setResultSet(list) {
+      resultSet = (list || []).slice();
+      var f = document.getElementById('mol-result-filter');
+      if (f) f.value = '';
+      resultHaves = { tg: false, tm: false, cas: false };
+      syncResultTools();
+    }
+
+    function filteredResultSet() {
+      var f = document.getElementById('mol-result-filter');
+      var q = f ? f.value.trim().toLowerCase() : '';
+      return resultSet.filter(function (p) {
+        if (resultHaves.tg && !p.tg) return false;
+        if (resultHaves.tm && !p.tm) return false;
+        if (resultHaves.cas && !p.cas) return false;
+        if (!q) return true;
+        var hay = [p.name, (p.aka || []).join(' '), p.monomer, p.cls,
+          (p.tags || []).join(' '), p.note].join(' ').toLowerCase();
+        return hay.indexOf(q) !== -1;
+      });
+    }
+
+    function syncResultTools() {
+      var tools = document.getElementById('mol-result-tools');
+      if (!tools) return;
+      // One result is an answer, not a set - the tools would be noise on it.
+      if (resultSet.length < 2) { tools.hidden = true; return; }
+      tools.hidden = false;
+
+      var f = document.getElementById('mol-result-filter');
+      if (f) f.placeholder = 'Filter these ' + resultSet.length + '…';
+
+      var haves = document.getElementById('mol-result-haves');
+      if (haves) {
+        haves.innerHTML = '';
+        // innerHTML, not textContent: there is no Unicode subscript "g", so a
+        // literal "T₉" would read as T-nine. These two strings are the only
+        // markup here and they are mine, not user input.
+        [['tg', 'has T<sub>g</sub>'], ['tm', 'has T<sub>m</sub>'], ['cas', 'has CAS']].forEach(function (d) {
+          var key = d[0];
+          var n = resultSet.filter(function (p) { return !!p[key]; }).length;
+          if (!n || n === resultSet.length) return;   // says nothing about this set
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'mol-have-chip' + (resultHaves[key] ? ' active' : '');
+          b.innerHTML = d[1] + ' (' + n + ')';
+          b.setAttribute('aria-pressed', resultHaves[key] ? 'true' : 'false');
+          b.addEventListener('click', function () {
+            resultHaves[key] = !resultHaves[key];
+            applyResultTools();
+          });
+          haves.appendChild(b);
+        });
+      }
+    }
+
+    function applyResultTools() {
+      var list = filteredResultSet();
+      var statusEl = document.getElementById('mol-status');
+      // Re-render from the filtered set. No scheme here on purpose: a scheme is
+      // drawn for a single confident answer, and a filtered subset is a list.
+      suppressResultCapture = true;
+      try {
+        renderResults(list.slice(0, FACET_PAGE));
+        if (list.length > FACET_PAGE) renderMore(list.slice(FACET_PAGE), 'polymers');
+      } finally { suppressResultCapture = false; }
+      if (statusEl) {
+        statusEl.textContent = list.length === resultSet.length
+          ? resultSet.length + ' matches:'
+          : list.length + ' of ' + resultSet.length + ' shown:';
+      }
+      syncResultTools();
+    }
+
+    function csvCell(v) {
+      var s = (v === undefined || v === null) ? '' : String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }
+
+    function exportResultsCsv() {
+      var list = filteredResultSet();
+      if (!list.length) return;
+      var cols = ['Name', 'Also known as', 'CAS', 'Monomer', 'Class', 'Tg', 'Tm', 'Tags', 'Note'];
+      var rows = [cols.join(',')];
+      list.forEach(function (p) {
+        rows.push([p.name, (p.aka || []).join('; '), p.cas, p.monomer, p.cls,
+          p.tg, p.tm, (p.tags || []).join('; '), p.note].map(csvCell).join(','));
+      });
+      // A BOM so Excel opens the degree signs and Greek in the notes as UTF-8
+      // rather than as mojibake in the local codepage. Note when testing this:
+      // Blob.text() strips a leading BOM per spec, so reading the blob back
+      // that way always reports it missing. Check arrayBuffer() for EF BB BF.
+      var blob = new Blob(['﻿' + rows.join('\r\n') + '\r\n'], { type: 'text/csv;charset=utf-8' });
+      downloadBlob(blob, 'polytechniques-' + list.length + '-polymers.csv');
+    }
+
+    (function wireResultTools() {
+      var f = document.getElementById('mol-result-filter');
+      if (f) {
+        var t = null;
+        f.addEventListener('input', function () {
+          clearTimeout(t);
+          t = setTimeout(applyResultTools, 200);
+        });
+      }
+      var csv = document.getElementById('mol-export-csv');
+      if (csv) csv.addEventListener('click', exportResultsCsv);
+    })();
 
     function facetLabel(term) {
       return term.charAt(0).toUpperCase() + term.slice(1);
