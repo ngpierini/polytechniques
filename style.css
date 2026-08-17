@@ -2104,6 +2104,13 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
    has to be obvious - it is the cursor for that navigation - so this is a ring
    rather than the faint default outline, and :focus-visible keeps it off for
    mouse users who clicked one. */
+/* The recipe ratio reads as a quoted recipe rather than as a form field, so it
+   gets the tabular figures and the spacing of the notation it is imitating. */
+.ratio-input {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
 /* ---- Touch targets ------------------------------------------------------
    Measured on a 375px viewport: 165 visible controls sat under 44px, and 120
    of them were the five external-link chips repeated on every result card, at

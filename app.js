@@ -538,6 +538,11 @@ function panelTemplate(cfg) {
           <span class="hint">Feed ratio targets Mₙ at full conversion; this reports Mₙ at a given conversion</span>
         </div>
       </div>
+      <div class="field" style="margin-top:12px;">
+        <label for="${id}-ratio">Recipe ratio</label>
+        <input type="text" id="${id}-ratio" class="ratio-input" spellcheck="false" autocomplete="off" inputmode="text">
+        <span class="hint" id="${id}-ratio-hint"></span>
+      </div>
     </div>
 
     <div class="card">
@@ -932,6 +937,130 @@ function wirePanel(cfg) {
   function getTargetMode() {
     return document.querySelector(`input[name="${id}-target-mode"]:checked`).value;
   }
+
+  /* ---- Recipe ratio -------------------------------------------------------
+     A recipe is written [M]:[I]:[Cu]:[L] = 200:1:1:1 in every paper and every
+     notebook, but the three numbers behind it lived in three different cards
+     here: the DP in Target, the copper and ligand equivalents down in the
+     catalyst section. You could set them, but never read the recipe back in
+     the form you would actually quote it, and never paste one in.
+
+     This is both directions at once - a readout that follows the fields, and
+     an input that drives them. Each component knows how to read itself out of
+     the panel and how to write itself back, because the relationship is not
+     the same for all of them: ATRP stores equivalents per initiator directly,
+     while RAFT stores [CTA]:[Initiator], which is the reciprocal of the
+     initiator's position in the ratio. */
+  function ratioSpec() {
+    // Position 1 is always the monomer (the DP); position 2 is always the
+    // species that defines a chain, and is 1 by construction.
+    const parts = [
+      { label: "[M]", read: () => dpFromPanel(), write: (v) => setDpOnPanel(v) },
+      { label: cfg.secondary === "raft" ? "[CTA]" : "[I]", read: () => 1, write: () => {} },
+    ];
+    if (cfg.secondary === "atrp") {
+      parts.push({ label: "[Cu]", read: () => parseFloat(el("cat-eq").value),
+        write: (v) => { el("cat-eq").value = trimNum(v); } });
+      parts.push({ label: "[L]", read: () => parseFloat(el("lig-eq").value),
+        write: (v) => { el("lig-eq").value = trimNum(v); } });
+    } else if (cfg.secondary === "raft") {
+      // The field is [CTA]:[Initiator], so the initiator's share of the ratio
+      // is its reciprocal - 5 in that box means 0.2 initiator per CTA.
+      const enabled = () => { const c = el("cat-enable"); return !c || c.checked; };
+      const pet = () => { const p = el("pet-toggle"); return p && p.checked; };
+      if (!pet()) {
+        parts.push({ label: "[Initiator]",
+          read: () => (enabled() ? 1 / parseFloat(el("cat-ratio").value) : null),
+          write: (v) => { if (v > 0 && enabled()) el("cat-ratio").value = trimNum(1 / v); } });
+      }
+    }
+    return parts;
+  }
+
+  function trimNum(v) {
+    if (!isFinite(v)) return "";
+    return parseFloat(v.toFixed(6)).toString();
+  }
+
+  // Display precision, which is not the same as stored precision. A 20,000
+  // g/mol target on a 104.15 monomer is a DP of 190.157945, and printing that
+  // into a field labelled like a recipe invites someone to copy it into a
+  // notebook. Nobody weighs to the seventh significant figure of a DP.
+  function fmtRatio(v) {
+    if (!isFinite(v)) return "";
+    const a = Math.abs(v);
+    if (a >= 100) return String(Math.round(v));
+    if (a >= 10) return parseFloat(v.toFixed(1)).toString();
+    if (a >= 1) return parseFloat(v.toFixed(2)).toString();
+    return parseFloat(v.toPrecision(3)).toString();
+  }
+
+  // The ratio speaks in DP whichever basis the Target radio is on, so an Mn
+  // target has to be converted through the same relation the calculator uses:
+  // Mn = DP x MW(monomer) + MW(chain-carrier).
+  function dpFromPanel() {
+    const v = parseFloat(el("target-value").value);
+    if (!isFinite(v)) return null;
+    if (getTargetMode() === "dp") return v;
+    const mwM = parseFloat(el("monomer-mw").value);
+    const macroMode = el("agent-macro-toggle").checked;
+    const mwX = macroMode ? parseFloat(el("agent-macro-mn").value) : parseFloat(el("agent-mw").value);
+    if (!isFinite(mwM) || mwM <= 0 || !isFinite(mwX)) return null;
+    return (v - mwX) / mwM;
+  }
+
+  // Writing a DP back switches the basis to DP rather than solving for the Mn
+  // that would produce it. Typing "200:1:1:1" means a DP of 200; quietly
+  // rewriting the Mn box to 20,232 would be a surprising thing to watch happen.
+  function setDpOnPanel(dp) {
+    const dpRadio = document.querySelector(`input[name="${id}-target-mode"][value="dp"]`);
+    if (dpRadio && !dpRadio.checked) {
+      dpRadio.checked = true;
+      dpRadio.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    el("target-value").value = trimNum(dp);
+  }
+
+  function syncRatioField(force) {
+    const input = el("ratio");
+    if (!input) return;
+    const parts = ratioSpec();
+    const vals = parts.map((p) => p.read());
+    if (vals.some((v) => v === null || !isFinite(v))) {
+      input.value = "";
+      el("ratio-hint").textContent = "Enter a ratio like 200:1 to set the target from a recipe.";
+      return;
+    }
+    // Do not fight the user mid-keystroke - but do repaint once they commit,
+    // which is what `force` is for. Without it a recipe typed as 800:2:0.1:1
+    // stays on screen as typed while the panel underneath holds the normalised
+    // 400:1:0.05:0.5, and the two disagree until something else redraws.
+    if (force || document.activeElement !== input) {
+      input.value = vals.map((v) => fmtRatio(v)).join(" : ");
+    }
+    el("ratio-hint").innerHTML = parts.map((p) => p.label).join(" : ") +
+      " &mdash; edit to set them all at once";
+  }
+
+  function applyRatioField() {
+    const input = el("ratio");
+    if (!input) return;
+    const parts = ratioSpec();
+    const nums = input.value.split(/[:\s,]+/).filter(Boolean).map(Number);
+    if (nums.length < 2 || nums.some((n) => !isFinite(n) || n < 0) || !(nums[1] > 0)) {
+      el("ratio-hint").textContent = "Need at least two positive numbers, e.g. 200:1";
+      return;
+    }
+    // Normalise so the chain-carrier is 1: a recipe quoted as 400:2:2:2 is the
+    // same reaction as 200:1:1:1, and someone scaling one up in their head
+    // should not get a different answer for typing it that way.
+    const base = nums[1];
+    for (let i = 0; i < parts.length && i < nums.length; i++) {
+      parts[i].write(nums[i] / base);
+    }
+    recalc();
+    syncRatioField(true);
+  }
   function getScaleMode() {
     return document.querySelector(`input[name="${id}-scale-mode"]:checked`).value;
   }
@@ -960,6 +1089,19 @@ function wirePanel(cfg) {
     });
 
     renderResults(cfg, core, { mwM, densityM, mwX, macroMode });
+    syncRatioField();
+  }
+
+  // The ratio box is the one input that must NOT recalc on every keystroke:
+  // "200:1:1:1" passes through "2", "20", "200:", each of which is a valid but
+  // wrong ratio, and applying them would rewrite the DP three times and fight
+  // the typist. It commits on Enter or on blur instead.
+  const ratioInput = el("ratio");
+  if (ratioInput) {
+    ratioInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); applyRatioField(); ratioInput.blur(); }
+    });
+    ratioInput.addEventListener("blur", applyRatioField);
   }
 
   // expose for initial call

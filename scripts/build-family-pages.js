@@ -364,7 +364,7 @@ function pageHtml(fam, entries) {
   h += '<link rel="manifest" href="manifest.json">\n';
   h += '<meta name="theme-color" content="#5b8def">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=86">\n';
+  h += '<link rel="stylesheet" href="style.css?v=87">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 
@@ -461,7 +461,7 @@ function hubHtml(groups) {
   h += '<link rel="manifest" href="manifest.json">\n';
   h += '<meta name="theme-color" content="#5b8def">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=86">\n';
+  h += '<link rel="stylesheet" href="style.css?v=87">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 
