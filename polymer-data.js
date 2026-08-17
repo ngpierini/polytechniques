@@ -235,6 +235,7 @@ window.POLYMER_DB = [
     },
     name: "Polyisobutylene", aka: ["PIB", "butyl rubber base"], monomer: "Isobutylene", cls: "Addition (vinyl)",
     cas: "9003-27-4", tg: "-70 °C", tags: ["elastomer"],
+    note: "Amorphous at rest, so only Tg applies in ordinary use; the 44 C melting point in Odian's Table 1-3 is for the strain-crystallised form, which is why a stretched butyl rubber behaves differently from a relaxed one.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
