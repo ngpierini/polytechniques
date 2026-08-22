@@ -151,7 +151,19 @@ async function overBudget(env, request) {
   return null;
 }
 
+// An unhandled throw anywhere below becomes a bare 502 from the edge with no
+// body and nothing in it to debug - which is exactly what happened on the first
+// deploy of this endpoint. Wrapping the handler turns any such failure into a
+// JSON error the caller can read and the browser can display.
 export async function onRequestPost(context) {
+  try {
+    return await handleParse(context);
+  } catch (e) {
+    return json(500, { ok: false, error: "The reader failed: " + (e && e.message ? e.message : String(e)) });
+  }
+}
+
+async function handleParse(context) {
   const { request, env } = context;
 
   if (!originAllowed(request)) return json(403, { ok: false, error: "Blocked." });
