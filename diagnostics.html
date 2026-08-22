@@ -195,7 +195,7 @@
           var ctrl = ("AbortController" in window) ? new AbortController() : null;
           var t = setTimeout(function () { if (ctrl) ctrl.abort(); resolve({ status: "fail", detail: "no response (blocked or timed out)" }); }, 9000);
           var opts = { cache: "no-store" }; if (ctrl) opts.signal = ctrl.signal;
-          fetch("app.js?v=50&diag=" + (new Date()).getTime(), opts).then(function (r) { return r.text(); }).then(function (txt) {
+          fetch("app.js?v=51&diag=" + (new Date()).getTime(), opts).then(function (r) { return r.text(); }).then(function (txt) {
             clearTimeout(t);
             if (!txt || txt.length < 500) { resolve({ status: "fail", detail: "served empty/truncated (" + (txt ? txt.length : 0) + " bytes) — likely a stale cache; use the Clear button above" }); return; }
             if (/^\s*<(!doctype|html)/i.test(txt)) { resolve({ status: "fail", detail: "served as an HTML page, not JavaScript (a proxy block page was cached) — use the Clear button above" }); return; }

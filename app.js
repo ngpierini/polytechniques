@@ -1202,7 +1202,7 @@ function wirePanel(cfg) {
     if (btn) btn.disabled = true;
     pasteStatus("Reading the procedure…", true);
 
-    fetch("/api/parse-recipe", {
+    fetch("/api/recipe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
