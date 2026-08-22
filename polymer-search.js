@@ -7399,6 +7399,130 @@
       downloadBlob(blob, 'polytechniques-' + list.length + '-polymers.csv');
     }
 
+    // ---------- Ask: a question in English, answered from the local library ----------
+    //
+    // The endpoint never answers a chemistry question and never returns a fact.
+    // It returns a FILTER, and everything below applies that filter to the 968
+    // curated entries already in the browser. So the model chooses which rows
+    // to show and the data decides what they say - which is the only split that
+    // makes an AI feature safe to put on a reference site.
+    //
+    // Its reading of the question is shown back to the user verbatim, because
+    // the failure mode here is not a wrong number, it is a reasonable-looking
+    // list that answers a different question than the one asked.
+    function libraryVocabulary() {
+      var db = window.POLYMER_DB || [];
+      var tags = {}, classes = {};
+      db.forEach(function (p) {
+        (p.tags || []).forEach(function (t) { tags[t] = 1; });
+        if (p.cls) classes[p.cls] = 1;
+      });
+      return { tags: Object.keys(tags).sort(), classes: Object.keys(classes).sort() };
+    }
+
+    function numOf(v) {
+      if (v === undefined || v === null) return null;
+      var m = String(v).match(/-?\d+(\.\d+)?/);
+      return m ? parseFloat(m[0]) : null;
+    }
+
+    function applyAskFilter(f) {
+      var db = window.POLYMER_DB || [];
+      var all = (f.allTags || []).map(function (t) { return String(t).toLowerCase(); });
+      var any = (f.anyTags || []).map(function (t) { return String(t).toLowerCase(); });
+      var cls = f.classContains ? String(f.classContains).toLowerCase() : null;
+      var txt = f.textContains ? String(f.textContains).toLowerCase() : null;
+
+      return db.filter(function (p) {
+        var tags = (p.tags || []).map(function (t) { return t.toLowerCase(); });
+        if (all.length && !all.every(function (t) { return tags.indexOf(t) !== -1; })) return false;
+        if (any.length && !any.some(function (t) { return tags.indexOf(t) !== -1; })) return false;
+        if (cls && String(p.cls || '').toLowerCase().indexOf(cls) === -1) return false;
+        if (txt) {
+          var hay = [p.name, (p.aka || []).join(' '), p.monomer, p.note].join(' ').toLowerCase();
+          if (hay.indexOf(txt) === -1) return false;
+        }
+        if (f.requireTg && !p.tg) return false;
+        if (f.requireTm && !p.tm) return false;
+        if (f.requireCas && !p.cas) return false;
+        var tg = numOf(p.tg), tm = numOf(p.tm);
+        if (f.tgMin !== null && f.tgMin !== undefined) { if (tg === null || tg < f.tgMin) return false; }
+        if (f.tgMax !== null && f.tgMax !== undefined) { if (tg === null || tg > f.tgMax) return false; }
+        if (f.tmMin !== null && f.tmMin !== undefined) { if (tm === null || tm < f.tmMin) return false; }
+        if (f.tmMax !== null && f.tmMax !== undefined) { if (tm === null || tm > f.tmMax) return false; }
+        return true;
+      });
+    }
+
+    function askStatus(msg, busy) {
+      var el = document.getElementById('mol-ask-status');
+      if (!el) return;
+      el.hidden = !msg;
+      el.textContent = msg || '';
+      el.classList.toggle('is-busy', !!busy);
+    }
+
+    var askInFlight = false;
+    function runAsk() {
+      var box = document.getElementById('mol-ask');
+      var btn = document.getElementById('mol-ask-btn');
+      if (!box || askInFlight) return;
+      var q = box.value.trim();
+      if (!q) { askStatus(''); return; }
+
+      askInFlight = true;
+      if (btn) btn.disabled = true;
+      askStatus('Reading the question…', true);
+
+      var vocab = libraryVocabulary();
+      fetch('/api/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q, tags: vocab.tags, classes: vocab.classes })
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        if (!res || !res.ok) {
+          askStatus((res && res.error) || 'That did not work. Try the name search.');
+          return;
+        }
+        var f = res.filter || {};
+        if (f.unanswerable) {
+          askStatus(f.interpretation || 'That is not something this library can answer.');
+          return;
+        }
+        var hits = applyAskFilter(f);
+        var statusEl = document.getElementById('mol-status');
+        if (!hits.length) {
+          askStatus(f.interpretation + ' — nothing in the library matches that.');
+          renderResults([]);
+          if (statusEl) statusEl.textContent = 'No matches.';
+          return;
+        }
+        // Clear the other two inputs: three search boxes showing results for
+        // three different queries is how someone ends up reading the wrong list.
+        var name = document.getElementById('mol-name-search');
+        if (name && name.value) { name.value = ''; }
+        if (activeFacets.length) { activeFacets = []; renderFacetBar(); }
+        renderFacetResults(hits, statusEl, hits.length + (hits.length === 1 ? ' match:' : ' matches:'));
+        askStatus(f.interpretation);
+      }).catch(function () {
+        askStatus('Could not reach the interpreter. The name search still works.');
+      }).then(function () {
+        askInFlight = false;
+        if (btn) btn.disabled = false;
+        var el = document.getElementById('mol-ask-status');
+        if (el) el.classList.remove('is-busy');
+      });
+    }
+
+    (function wireAsk() {
+      var box = document.getElementById('mol-ask');
+      var btn = document.getElementById('mol-ask-btn');
+      if (btn) btn.addEventListener('click', runAsk);
+      if (box) box.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); runAsk(); }
+      });
+    })();
+
     (function wireResultTools() {
       var f = document.getElementById('mol-result-filter');
       if (f) {

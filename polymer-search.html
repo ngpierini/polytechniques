@@ -38,7 +38,7 @@
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=97">
+<link rel="stylesheet" href="style.css?v=98">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -58,6 +58,13 @@
     <h3><span class="mol-card-icon mol-card-icon--2">&#127991;&#65039;</span>Search by name or category</h3>
     <input type="search" id="mol-name-search" aria-label="Search polymers by name, abbreviation, CAS number, formula or category" placeholder="&quot;PMMA&quot;, &quot;Teflon&quot;, &quot;biodegradable polyester&quot;&hellip; (press / to focus, Ctrl+K anywhere)">
     <div id="mol-recent" class="mol-recent" hidden></div>
+    <div class="mol-ask-row">
+      <input type="search" id="mol-ask" class="mol-ask-input" maxlength="400"
+             aria-label="Ask for a set of polymers in your own words"
+             placeholder="Or ask for a set &mdash; &quot;biodegradable polyesters that melt above 150 C&quot;">
+      <button type="button" id="mol-ask-btn" class="copy-btn" title="Turn the question into a filter over the library. The answer is always drawn from the 968 curated entries, never written by the model.">Ask</button>
+    </div>
+    <p id="mol-ask-status" class="guide-note mol-ask-status" role="status" aria-live="polite" hidden></p>
     <details class="mol-details mol-browse">
       <summary>Browse by category</summary>
       <div id="mol-facets" class="mol-facets" hidden></div>
@@ -433,7 +440,7 @@
 <script src="bracket-geometry.js?v=1"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=202"></script>
+<script src="polymer-search.js?v=203"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

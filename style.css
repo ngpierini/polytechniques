@@ -3201,3 +3201,26 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 .fam-index a:hover { border-color: var(--primary); }
 /* Anchored headings must clear the sticky topbar when jumped to. */
 .fam-entry, #guide .card[id^="letter-"] { scroll-margin-top: 80px; }
+
+/* The ask box. Visually subordinate to the name search above it - that one is
+   the fast path and should stay the obvious one - but full width, because a
+   question is longer than a name. The status line under it carries the model's
+   own reading of the question back to the reader, which is the whole safety
+   story of the feature: a wrong number would be serious, a reasonable-looking
+   list answering a different question is the realistic failure, and the only
+   defence is showing what was understood. */
+.mol-ask-row { display: flex; gap: 8px; margin-top: 10px; }
+.mol-ask-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: var(--fs-sm);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+}
+.mol-ask-input:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.mol-ask-status { margin-top: 8px !important; }
+.mol-ask-status.is-busy { opacity: 0.7; font-style: italic; }
