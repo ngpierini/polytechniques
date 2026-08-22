@@ -100,7 +100,7 @@ const SYSTEM = [
   "  and a number you derived would be indistinguishable from one it derived.",
   "- statedRatio is a quotation, not a calculation. Copy it only if the text writes it out.",
   "- Do not supply a molar mass from memory, even for a monomer you know. Null unless stated.",
-  "- Convert units only where it is mechanical: mg to g, µL to mL, mol to mmol. Never infer a",
+  "- Convert units only where it is mechanical: mg to g, microlitres to mL, mol to mmol. Never infer a",
   "  mass from a volume, which would need a density the text may not give.",
   "- If two procedures appear, take the first complete one and say so in `missing`.",
   "- `missing` is read by the user. Name what was absent, plainly, in one sentence.",
