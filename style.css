@@ -3224,3 +3224,23 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 .mol-ask-input:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
 .mol-ask-status { margin-top: 8px !important; }
 .mol-ask-status.is-busy { opacity: 0.7; font-style: italic; }
+
+/* The paste box on each calculator. Deliberately three rows: a synthesis
+   paragraph is short, and a tall empty textarea at the top of the inputs would
+   push the fields people actually type in below the fold. */
+.recipe-paste {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  resize: vertical;
+}
+.recipe-paste:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.recipe-paste-status { margin: 0 !important; }
+.recipe-paste-status.is-busy { opacity: 0.7; font-style: italic; }

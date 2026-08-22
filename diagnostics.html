@@ -14,7 +14,7 @@
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=98">
+<link rel="stylesheet" href="style.css?v=99">
 <style>
   .diag-pill { display:inline-block; min-width:64px; text-align:center; padding:2px 10px; border-radius:999px; font-weight:600; font-size:var(--fs-sm); }
   .diag-ok   { background:rgba(14,159,110,0.15); color:var(--accent); }
@@ -195,7 +195,7 @@
           var ctrl = ("AbortController" in window) ? new AbortController() : null;
           var t = setTimeout(function () { if (ctrl) ctrl.abort(); resolve({ status: "fail", detail: "no response (blocked or timed out)" }); }, 9000);
           var opts = { cache: "no-store" }; if (ctrl) opts.signal = ctrl.signal;
-          fetch("app.js?v=49&diag=" + (new Date()).getTime(), opts).then(function (r) { return r.text(); }).then(function (txt) {
+          fetch("app.js?v=50&diag=" + (new Date()).getTime(), opts).then(function (r) { return r.text(); }).then(function (txt) {
             clearTimeout(t);
             if (!txt || txt.length < 500) { resolve({ status: "fail", detail: "served empty/truncated (" + (txt ? txt.length : 0) + " bytes) — likely a stale cache; use the Clear button above" }); return; }
             if (/^\s*<(!doctype|html)/i.test(txt)) { resolve({ status: "fail", detail: "served as an HTML page, not JavaScript (a proxy block page was cached) — use the Clear button above" }); return; }

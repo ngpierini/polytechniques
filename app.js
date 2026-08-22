@@ -499,6 +499,17 @@ function panelTemplate(cfg) {
     ${presetBarHTML(id)}
 
     <div class="calc-inputs">
+    <div class="card" id="${id}-paste-card">
+      <h3>Read a procedure</h3>
+      <p class="guide-note">Paste the synthesis paragraph from a paper or its SI. The reagents and amounts are read out of the text; every ratio, degree of polymerisation and concentration below is then computed here from those amounts, not taken from the paper.</p>
+      <textarea id="${id}-paste" class="recipe-paste" rows="3" maxlength="6000" spellcheck="false"
+                aria-label="Paste a synthesis procedure to fill these fields"
+                placeholder="e.g. MMA (5.0 g, 50 mmol), EBiB (48.8 mg, 0.25 mmol), CuBr (35.9 mg, 0.25 mmol) and PMDETA (43.3 mg, 0.25 mmol) in anisole (5 mL) at 60 &deg;C&hellip;"></textarea>
+      <div class="actions" style="justify-content:flex-start; margin-top:8px; gap:8px;">
+        <button type="button" class="copy-btn" id="${id}-paste-btn">Fill from this text</button>
+        <span id="${id}-paste-status" class="guide-note recipe-paste-status" role="status" aria-live="polite"></span>
+      </div>
+    </div>
     <div class="card">
       <h3>${cfg.monomerLabel}</h3>
       <div class="grid">
@@ -1091,6 +1102,133 @@ function wirePanel(cfg) {
     renderResults(cfg, core, { mwM, densityM, mwX, macroMode });
     syncRatioField();
   }
+
+  /* ---- Read a procedure ---------------------------------------------------
+     The endpoint reports what the paragraph says was weighed out. Everything
+     derived from those amounts is computed HERE, by the same code that runs
+     when the fields are typed by hand - moles from mass and molar mass, DP
+     from the mole ratio, then the full recalc.
+
+     That split is the point. If the reader returned a DP it would land in the
+     Target box looking exactly like the calculator's own output, and someone
+     would weigh reagents against a number no part of this page had checked.
+     Reading "48.8 mg" off a page is the model's job; dividing by it is not. */
+  function pasteStatus(msg, busy) {
+    const el = document.getElementById(`${id}-paste-status`);
+    if (!el) return;
+    el.textContent = msg || "";
+    el.classList.toggle("is-busy", !!busy);
+  }
+
+  // mmol, preferring what the text stated outright over anything reconstructed.
+  function mmolOf(moles, grams, molarMass) {
+    if (moles != null && isFinite(moles) && moles > 0) return moles;
+    if (grams != null && molarMass != null && isFinite(grams) && isFinite(molarMass) && molarMass > 0) {
+      return (grams / molarMass) * 1000;
+    }
+    return null;
+  }
+
+  function applyRecipe(r) {
+    const notes = [];
+
+    // The technique decides which panel should be showing. Filling the ATRP
+    // fields from a RAFT procedure would silently produce a plausible recipe
+    // for the wrong chemistry.
+    if (r.technique && r.technique !== "unknown" && r.technique !== id) {
+      const target = document.querySelector(`.tab-btn[data-target="${r.technique}"]`);
+      if (target) {
+        switchTab(r.technique);
+        const panel = document.getElementById(`panel-${r.technique}`);
+        const box = document.getElementById(`${r.technique}-paste`);
+        if (box) { box.value = document.getElementById(`${id}-paste`).value; }
+        if (panel && panel._applyRecipe) { panel._applyRecipe(r); return; }
+      }
+      notes.push(`the text reads as ${r.technique.toUpperCase()}, not ${id.toUpperCase()}`);
+    }
+
+    if (r.monomerMolarMass != null && isFinite(r.monomerMolarMass)) {
+      el("monomer-mw").value = r.monomerMolarMass;
+    }
+    if (r.carrierMolarMass != null && isFinite(r.carrierMolarMass)) {
+      el("agent-mw").value = r.carrierMolarMass;
+    }
+
+    // DP is computed here, from the two amounts, never taken from the text.
+    const mMon = mmolOf(r.monomerMolesMmol, r.monomerMassGram, parseFloat(el("monomer-mw").value));
+    const mCar = mmolOf(r.carrierMolesMmol, r.carrierMassGram, parseFloat(el("agent-mw").value));
+    if (mMon && mCar && mCar > 0) {
+      setDpOnPanel(mMon / mCar);
+    } else {
+      notes.push("not enough amounts to set a target - fill the Target box yourself");
+    }
+
+    // ATRP equivalents, again as a ratio computed from the reported amounts.
+    if (mCar && mCar > 0) {
+      if (r.catalystMolesMmol != null && el("cat-eq")) el("cat-eq").value = trimNum(r.catalystMolesMmol / mCar);
+      if (r.ligandMolesMmol != null && el("lig-eq")) el("lig-eq").value = trimNum(r.ligandMolesMmol / mCar);
+    }
+
+    // Scale: the monomer mass the procedure actually used.
+    if (r.monomerMassGram != null && isFinite(r.monomerMassGram) && el("scale-mass")) {
+      const massRadio = document.querySelector(`input[name="${id}-scale-mode"][value="mass"]`);
+      if (massRadio && !massRadio.checked) {
+        massRadio.checked = true;
+        massRadio.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      el("scale-mass").value = r.monomerMassGram;
+    }
+
+    recalc();
+
+    const said = [];
+    if (r.monomerName) said.push(r.monomerName);
+    if (r.carrierName) said.push(r.carrierName);
+    const lead = said.length ? `Read ${said.join(" and ")}.` : "Read the procedure.";
+    const extra = [r.missing, notes.join("; ")].filter(Boolean).join(" ");
+    pasteStatus(`${lead}${extra ? " " + extra : ""} Check the fields against your source.`);
+  }
+  panelRoot._applyRecipe = applyRecipe;
+
+  let pasteInFlight = false;
+  function runPaste() {
+    const box = document.getElementById(`${id}-paste`);
+    const btn = document.getElementById(`${id}-paste-btn`);
+    if (!box || pasteInFlight) return;
+    const text = box.value.trim();
+    if (!text) { pasteStatus(""); return; }
+
+    pasteInFlight = true;
+    if (btn) btn.disabled = true;
+    pasteStatus("Reading the procedure…", true);
+
+    fetch("/api/parse-recipe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    }).then((r) => r.json()).then((res) => {
+      if (!res || !res.ok) {
+        pasteStatus((res && res.error) || "That did not work. The fields still work by hand.");
+        return;
+      }
+      const r = res.recipe || {};
+      if (r.unusable) {
+        pasteStatus(r.missing || "That does not read as a polymerisation procedure.");
+        return;
+      }
+      applyRecipe(r);
+    }).catch(() => {
+      pasteStatus("Could not reach the reader. The fields still work by hand.");
+    }).then(() => {
+      pasteInFlight = false;
+      if (btn) btn.disabled = false;
+      const el2 = document.getElementById(`${id}-paste-status`);
+      if (el2) el2.classList.remove("is-busy");
+    });
+  }
+
+  const pasteBtn = document.getElementById(`${id}-paste-btn`);
+  if (pasteBtn) pasteBtn.addEventListener("click", runPaste);
 
   // The ratio box is the one input that must NOT recalc on every keystroke:
   // "200:1:1:1" passes through "2", "20", "200:", each of which is a valid but
