@@ -499,7 +499,13 @@ function panelTemplate(cfg) {
     ${presetBarHTML(id)}
 
     <div class="calc-inputs">
-    <div class="card" id="${id}-paste-card">
+    <!-- Hidden until /api/recipe is fixed. The endpoint 502s at the edge on
+         every deploy while /api/ask, /api/health and /api/recognize all respond,
+         and the cause is not visible from the client - see the commit history.
+         The client half is finished and tested; remove the hidden attribute to
+         turn it back on once the Function loads. A button that always fails is
+         worse than no button. -->
+    <div class="card" id="${id}-paste-card" hidden>
       <h3>Read a procedure</h3>
       <p class="guide-note">Paste the synthesis paragraph from a paper or its SI. The reagents and amounts are read out of the text; every ratio, degree of polymerisation and concentration below is then computed here from those amounts, not taken from the paper.</p>
       <textarea id="${id}-paste" class="recipe-paste" rows="3" maxlength="6000" spellcheck="false"
