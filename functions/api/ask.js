@@ -144,7 +144,19 @@ async function overBudget(env, request) {
   return null;
 }
 
+// An unhandled throw below would surface as a bare 502 from the edge with no
+// body - which is exactly how /api/recipe failed and could not be diagnosed
+// from outside. Wrapping the handler turns any such failure into JSON the
+// browser can read and display.
 export async function onRequestPost(context) {
+  try {
+    return await handleAsk(context);
+  } catch (e) {
+    return json(500, { ok: false, error: "The interpreter failed: " + (e && e.message ? e.message : String(e)) });
+  }
+}
+
+async function handleAsk(context) {
   const { request, env } = context;
 
   if (!originAllowed(request)) return json(403, { ok: false, error: "Blocked." });

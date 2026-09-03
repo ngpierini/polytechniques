@@ -185,7 +185,7 @@
     var ringHoverKey = null;
     var dragStart = null;
     var moved = false;
-    var history = [];
+    var undoStack = [];
 
     var ATOM_R = 15;
     var BOND_HIT = 7;
@@ -202,7 +202,7 @@
       return { x: anchor.x + BOND_LEN * Math.cos(snapped), y: anchor.y + BOND_LEN * Math.sin(snapped) };
     }
 
-    // Undo/redo. `history` is the past, `future` is what undo took away.
+    // Undo/redo. `undoStack` is the past, `future` is what undo took away.
     // Any new edit invalidates the future, which is the standard contract and
     // the one users already expect from every other editor.
     var future = [];
@@ -220,26 +220,26 @@
       syncHistoryButtons();
     }
     function snapshot() {
-      history.push(editorState());
-      if (history.length > 40) history.shift();
+      undoStack.push(editorState());
+      if (undoStack.length > 40) undoStack.shift();
       future.length = 0;
       syncHistoryButtons();
     }
     function undo() {
-      if (!history.length) return;
+      if (!undoStack.length) return;
       future.push(editorState());
-      restoreState(history.pop());
+      restoreState(undoStack.pop());
     }
     function redo() {
       if (!future.length) return;
-      history.push(editorState());
+      undoStack.push(editorState());
       restoreState(future.pop());
     }
     // A disabled button is how the user finds out there is nothing to undo,
     // instead of pressing it and wondering whether the editor is broken.
     function syncHistoryButtons() {
       var u = document.getElementById('mol-undo'), r = document.getElementById('mol-redo');
-      if (u) u.disabled = !history.length;
+      if (u) u.disabled = !undoStack.length;
       if (r) r.disabled = !future.length;
     }
 
