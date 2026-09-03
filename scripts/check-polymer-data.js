@@ -166,6 +166,102 @@ function casLooksLikeMonomer(cas) {
   return true;
 }
 
+
+// --- Thermal provenance ----------------------------------------------------
+// A Tg or Tm added from here on must say where it came from, in "tgSource" or
+// "tmSource": a book with an edition and a table or page, a DOI, or a CAS/
+// supplier datasheet. Not "literature", not a bare author name.
+//
+// Why this rule exists: seven commodity polymers were found to disagree with
+// Odian's Table 1-3 by 10 K or more - poly(vinyl fluoride) by 61 K - and not
+// one of them recorded a source, so the disagreement could be described but
+// not settled. Values without provenance are not cheaper than no values; they
+// are more expensive, because someone has to re-derive them before they can be
+// trusted or corrected.
+//
+// The names below already carried a value when the rule landed. They are
+// exempt so the rule can bite on new work immediately rather than waiting for
+// a hundred citations to be reconstructed. Removing a name from this list as
+// its source is found is the intended direction of travel, and the length of
+// the list is a fair measure of how much of the library's thermal data is
+// still unattributed.
+const THERMAL_NO_SOURCE_LEGACY = new Set([
+  "Nylon 11",
+  "Nylon 12",
+  "Nylon 6",
+  "Nylon 6,10",
+  "Nylon 6,6",
+  "Poly(2,6-dimethyl-1,4-phenylene oxide)",
+  "Poly(2-ethyl-2-oxazoline)",
+  "Poly(2-hydroxyethyl methacrylate)",
+  "Poly(2-vinylpyridine)",
+  "Poly(3-hydroxybutyrate)",
+  "Poly(3-hydroxyvalerate)",
+  "Poly(4-vinylpyridine)",
+  "Poly(N,N-dimethylacrylamide)",
+  "Poly(N-isopropylacrylamide)",
+  "Poly(N-vinylpyrrolidone)",
+  "Poly(acrylic acid)",
+  "Poly(butylene succinate)",
+  "Poly(butylene terephthalate)",
+  "Poly(chlorotrifluoroethylene)",
+  "Poly(cyclohexyl methacrylate)",
+  "Poly(dimethylsiloxane)",
+  "Poly(dioxanone)",
+  "Poly(ether ether ketone)",
+  "Poly(ether sulfone)",
+  "Poly(ethyl acrylate)",
+  "Poly(ethyl methacrylate)",
+  "Poly(ethylene adipate)",
+  "Poly(ethylene disulfide)",
+  "Poly(ethylene naphthalate)",
+  "Poly(ethylene oxide)",
+  "Poly(ethylene succinate)",
+  "Poly(ethylene terephthalate)",
+  "Poly(methacrylic acid)",
+  "Poly(methacrylonitrile)",
+  "Poly(methyl acrylate)",
+  "Poly(methyl methacrylate)",
+  "Poly(p-phenylene sulfide)",
+  "Poly(propylene oxide)",
+  "Poly(tetrahydrofuran)",
+  "Poly(trimethylene terephthalate)",
+  "Poly(vinyl acetate)",
+  "Poly(vinyl alcohol)",
+  "Poly(vinyl chloride)",
+  "Poly(vinyl fluoride)",
+  "Poly(vinyl methyl ketone)",
+  "Poly(vinylidene chloride)",
+  "Poly(vinylidene fluoride)",
+  "Polyacrylamide",
+  "Polyacrylonitrile",
+  "Polybutadiene (cis-1,4)",
+  "Polybutadiene (trans-1,4)",
+  "Polycarbonate (bisphenol A)",
+  "Polychloroprene",
+  "Polyethylene",
+  "Polyisobutylene",
+  "Polyisoprene (cis-1,4)",
+  "Polyisoprene (trans-1,4)",
+  "Polyoxymethylene",
+  "Polypropylene",
+  "Polystyrene",
+  "Polytetrafluoroethylene"
+]);
+
+function checkThermalProvenance(entry, where, errors) {
+  if (!entry.tg && !entry.tm) return;
+  if (THERMAL_NO_SOURCE_LEGACY.has(entry.name)) return;
+  if (entry.tg && !entry.tgSource) {
+    errors.push(where + ': has a "tg" but no "tgSource". A thermal value added now must cite ' +
+      'a book with an edition and table/page, a DOI, or a datasheet.');
+  }
+  if (entry.tm && !entry.tmSource) {
+    errors.push(where + ': has a "tm" but no "tmSource". A thermal value added now must cite ' +
+      'a book with an edition and table/page, a DOI, or a datasheet.');
+  }
+}
+
 function checkEntry(entry, idx, errors) {
   const where = "entry #" + idx + (entry && entry.name ? " (" + entry.name + ")" : "");
 
@@ -327,6 +423,7 @@ function checkEntry(entry, idx, errors) {
     }
     return;
   }
+  checkThermalProvenance(entry, where, errors);
   if (entry.cls !== undefined && !VALID_CLASSES.has(entry.cls)) {
     errors.push(where + ": unrecognized \"cls\" value \"" + entry.cls + "\"");
   }
