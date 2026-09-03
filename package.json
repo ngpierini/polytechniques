@@ -16,7 +16,8 @@
     "build-monomers": "node scripts/build-monomer-library.js",
     "check-monomers": "node scripts/build-monomer-library.js --check",
     "build-families": "node scripts/build-family-pages.js",
-    "check-families": "node scripts/build-family-pages.js --check"
+    "check-families": "node scripts/build-family-pages.js --check",
+    "check-math": "node scripts/check-calculator-math.js"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"

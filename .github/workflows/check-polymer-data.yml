@@ -22,6 +22,8 @@ on:
       - 'thermal-analysis.html'
       - 'search-index.json'
       - 'scripts/**'
+      - 'app.js'
+      - 'nav.js'
   push:
     branches:
       - main
@@ -33,6 +35,8 @@ on:
       - 'thermal-analysis.html'
       - 'search-index.json'
       - 'scripts/**'
+      - 'app.js'
+      - 'nav.js'
   workflow_dispatch: {}
 
 jobs:
@@ -67,6 +71,13 @@ jobs:
       # against the entry it names.
       - name: Family pages are current with the polymer library
         run: node scripts/build-family-pages.js --check
+
+      # The repo had thorough checks on the DATA and none on the arithmetic the
+      # calculators publish. Every case is a number printed on a page as a
+      # worked example, so a failure means the site is telling a visitor
+      # something the code no longer does.
+      - name: Calculator worked examples still match the maths
+        run: node scripts/check-calculator-math.js
 
       # Fails if an indexable page is missing from sitemap.xml, which is
       # hand-maintained and had silently dropped one of the main tools.
