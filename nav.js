@@ -368,6 +368,103 @@
     box.select();
   });
 
+  // ---- Print and copy, on every calculator ----
+  //
+  // These existed on some pages and not others with no principle behind which:
+  // CSV export on one of ten, copy buttons ranging from none to five, print on
+  // none at all despite a print stylesheet being written. Someone learns on one
+  // page that results can be copied, moves to the next, and it is gone.
+  //
+  // Injected here rather than added to ten files so the set cannot drift apart
+  // again, and so a calculator added later gets them for free. The hook is a
+  // .stat-grid, which is what every calculator on this site renders its answers
+  // into - no page needs to opt in.
+  function resultsAsText() {
+    var out = [];
+    out.push(document.title.replace(/: PolyTechniques$/, ""));
+    out.push("");
+    document.querySelectorAll(".panel.active .stat, #guide .stat").forEach(function (stat) {
+      var label = stat.querySelector(".label");
+      var value = stat.querySelector(".value");
+      var sub = stat.querySelector(".sub");
+      if (!label || !value) return;
+      out.push(label.textContent.trim() + ": " + value.textContent.trim() +
+        (sub && sub.textContent.trim() ? " (" + sub.textContent.trim() + ")" : ""));
+    });
+    // The tables carry the working, which is usually the half worth pasting
+    // into a notebook - a list of quantities rather than one headline number.
+    document.querySelectorAll(".panel.active table.recipe, #guide table.recipe").forEach(function (table) {
+      var rows = table.querySelectorAll("tr");
+      if (!rows.length) return;
+      out.push("");
+      rows.forEach(function (tr) {
+        var cells = [];
+        tr.querySelectorAll("th, td").forEach(function (c) { cells.push(c.textContent.trim()); });
+        if (cells.join("").length) out.push(cells.join("\t"));
+      });
+    });
+    out.push("");
+    out.push(location.href);
+    return out.join("\n");
+  }
+
+  function addCalcActions() {
+    // Only where there is something to print or copy, and only once.
+    if (document.getElementById("calc-actions")) return;
+    if (!document.querySelector(".stat-grid")) return;
+    var host = document.getElementById("guide") || document.getElementById("app");
+    if (!host) return;
+
+    var bar = document.createElement("div");
+    bar.id = "calc-actions";
+    bar.className = "calc-actions";
+
+    var copy = document.createElement("button");
+    copy.type = "button";
+    copy.className = "copy-btn";
+    copy.textContent = "Copy results";
+    copy.title = "Copy the results and working on this page as plain text";
+    copy.addEventListener("click", function () {
+      var text = resultsAsText();
+      var done = function () {
+        copy.textContent = "Copied";
+        setTimeout(function () { copy.textContent = "Copy results"; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { copy.textContent = "Press Ctrl+C"; });
+      } else {
+        // Clipboard API needs a secure context; a hidden textarea still works
+        // on an http preview or an older browser at the bench.
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) { copy.textContent = "Press Ctrl+C"; }
+        ta.remove();
+      }
+    });
+
+    var print = document.createElement("button");
+    print.type = "button";
+    print.className = "copy-btn";
+    print.textContent = "Print";
+    print.title = "Print this page, or save it as a PDF, laid out for paper";
+    print.addEventListener("click", function () { window.print(); });
+
+    bar.appendChild(copy);
+    bar.appendChild(print);
+    host.appendChild(bar);
+  }
+
+  document.addEventListener("DOMContentLoaded", addCalcActions);
+  addCalcActions();
+  // The calculator builds its panels from JS after this runs, so the stat-grid
+  // that gates the bar may not exist yet on first pass.
+  setTimeout(addCalcActions, 400);
+  setTimeout(addCalcActions, 1500);
+
   // ---- Numeric column headings follow their figures, site-wide ----
   //
   // Right-aligned tabular figures only read as an improvement if the heading

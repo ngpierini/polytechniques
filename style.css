@@ -409,12 +409,41 @@ input[type="number"]:focus, input[type="text"]:focus, input[type="search"]:focus
 }
 .calc-summary-bar[hidden] { display: none; }
 @media (min-width: 1000px) { .calc-summary-bar { display: none; } }
+/* ---- Print: the gaps only ------------------------------------------------
+   The substantial print stylesheet is further down (token overrides for all
+   three theme selectors, topbar/tabs/footer/hero hidden, container widths
+   reset, cards kept off page breaks). This block covers what has been added
+   to the site since that one was written, plus two refinements to it.
+
+   It does NOT re-declare the print palette and does NOT print link hrefs -
+   the existing block sets a[href]::after to empty content deliberately, and
+   overriding that would put a URL after every link on the paper. */
 @media print {
-  .calc-summary-bar { display: none !important; }
-  body.has-calc-summary #app { padding-bottom: 0; }
-  /* The fold is a reading affordance; on paper the steps just print. */
-  .procedure-fold > summary::before,
-  .procedure-count { display: none !important; }
+  /* Controls that postdate the original print block. */
+  .mol-fold-btn,
+  .mol-fs-btn,
+  .mol-more-btn,
+  .mol-result-tools,
+  .mol-ask-row,
+  .mol-ask-status,
+  .recipe-paste,
+  .recipe-paste-status,
+  ins.adsbygoogle,
+  .adsbygoogle { display: none !important; }
+
+  /* A disclosure the reader left closed still holds content they may want on
+     paper, and paper has no way to open one. */
+  details > summary { list-style: none; font-weight: 600; }
+  details[open] > summary { margin-bottom: 6px; }
+  details > *:not(summary) { display: revert !important; }
+
+  /* The existing block keeps a whole card off a page break. These are the
+     finer-grained cases inside one: a single result tile, a table row, an
+     equation, and a heading stranded at the foot of a page. */
+  .stat,
+  table.recipe tr,
+  .guide-formula { break-inside: avoid; page-break-inside: avoid; }
+  h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
 }
 /* Keep the bar from covering the last card. */
 body.has-calc-summary #app { padding-bottom: 72px; }
@@ -425,18 +454,12 @@ table.recipe.recipe-data { table-layout: auto; min-width: 480px; }
 table.recipe th, table.recipe td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); overflow-wrap: break-word; }
 table.recipe th { color: var(--text-dim); font-weight: 600; font-size: var(--fs-xs); text-transform: uppercase; }
 table.recipe tr:last-child td { border-bottom: none; }
-/* Numbers were left-aligned with the text, so comparing a column of them meant
-   reading each one instead of seeing the shape of the column. Right-aligned
-   tabular figures put the units under the units and the decimal points in a
-   line, which is the whole reason to put numbers in a table. The header goes
-   with its column. Cells that opt out with an inline text-align (a few carry
-   prose in a numeric column) are left as they are. */
 /* Right-aligned tabular figures put decimal points in a line, which is the
    reason to tabulate numbers at all. Scoped to cells the author marked .num,
    not to "every column after the first": several of these tables are prose
    ("Method | Good for | Notes"), and aligning those right would be worse than
-   what it replaced. Headers carry .num too, added per column by
-   scripts/align-numeric-headers.js, so a heading never sits right over a
+   what it replaced. Headers carry .num too, added per column at runtime by
+   nav.js, so a heading never sits right over a
    left-aligned column. */
 table.recipe td.num, table.recipe th.num {
   text-align: right;
@@ -3244,3 +3267,15 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 .recipe-paste:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
 .recipe-paste-status { margin: 0 !important; }
 .recipe-paste-status.is-busy { opacity: 0.7; font-style: italic; }
+
+/* The two actions every calculator now carries, appended to the end of the
+   page's own content so they read as "done with this page" rather than
+   competing with the inputs. Hidden on paper, since they only exist to be
+   clicked. */
+.calc-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+@media print { .calc-actions { display: none !important; } }
