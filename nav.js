@@ -368,6 +368,159 @@
     box.select();
   });
 
+  // ---- The structure map ----
+  //
+  // Draws window.STRUCTURE_MAP, which is generated offline and checked in CI.
+  // Canvas rather than SVG or a chart library: 746 points redrawn on every
+  // mouse move is trivial for a canvas and would be 746 DOM nodes otherwise,
+  // and nothing here needs a dependency.
+  //
+  // Hit-testing is linear over the points. At this size that is well under a
+  // millisecond, and a quadtree would be a structure to maintain for no
+  // measurable gain.
+  function drawStructureMap() {
+    var canvas = document.getElementById("smap");
+    var data = window.STRUCTURE_MAP;
+    if (!canvas || !data || !data.points || !data.points.length) return;
+    if (canvas.dataset.drawn === "1") return;
+    canvas.dataset.drawn = "1";
+
+    var readout = document.getElementById("smap-readout");
+    var keyBox = document.getElementById("smap-key");
+    var ctx = canvas.getContext("2d");
+
+    // Distinguishable at small size in both themes, and deliberately not the
+    // per-card accent palette: these are categories, not brand colours.
+    var COLOURS = ["#2563eb", "#7c3aed", "#0e9f6e", "#d97706", "#0891b2",
+                   "#dc2626", "#4f46e5", "#65a30d", "#db2777", "#0d9488", "#9333ea"];
+    var css = getComputedStyle(document.documentElement);
+    var dim = (css.getPropertyValue("--text-dim") || "#666").trim();
+    var border = (css.getPropertyValue("--border") || "#ccc").trim();
+
+    var PAD = 26;
+    var hidden = {};          // family index -> true when switched off
+    var hover = null;
+
+    function layout() {
+      var rect = canvas.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      // Match the backing store to the CSS size, or the points land in the
+      // wrong place the moment the canvas is scaled by its container.
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { w: rect.width, h: rect.height };
+    }
+
+    function place(p, box) {
+      return {
+        x: PAD + (p.x / 1000) * (box.w - 2 * PAD),
+        y: PAD + (1 - p.y / 1000) * (box.h - 2 * PAD),
+      };
+    }
+
+    function draw() {
+      var box = layout();
+      ctx.clearRect(0, 0, box.w, box.h);
+      ctx.strokeStyle = border;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(0.5, 0.5, box.w - 1, box.h - 1);
+
+      data.points.forEach(function (p) {
+        if (p.f >= 0 && hidden[p.f]) return;
+        var at = place(p, box);
+        ctx.beginPath();
+        ctx.arc(at.x, at.y, hover === p ? 5.5 : 3, 0, Math.PI * 2);
+        ctx.fillStyle = p.f >= 0 ? COLOURS[p.f % COLOURS.length] : dim;
+        ctx.globalAlpha = hover && hover !== p ? 0.35 : 0.8;
+        ctx.fill();
+        if (hover === p) {
+          ctx.globalAlpha = 1;
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = (css.getPropertyValue("--text") || "#000").trim();
+          ctx.stroke();
+        }
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    function nearest(mx, my) {
+      var box = { w: canvas.getBoundingClientRect().width, h: canvas.getBoundingClientRect().height };
+      var best = null, bestD = 14 * 14;
+      data.points.forEach(function (p) {
+        if (p.f >= 0 && hidden[p.f]) return;
+        var at = place(p, box);
+        var d = (at.x - mx) * (at.x - mx) + (at.y - my) * (at.y - my);
+        if (d < bestD) { bestD = d; best = p; }
+      });
+      return best;
+    }
+
+    canvas.addEventListener("mousemove", function (e) {
+      var r = canvas.getBoundingClientRect();
+      var p = nearest(e.clientX - r.left, e.clientY - r.top);
+      if (p === hover) return;
+      hover = p;
+      canvas.style.cursor = p ? "pointer" : "default";
+      if (readout) {
+        readout.textContent = p
+          ? p.n + (p.f >= 0 ? " — " + data.families[p.f] : "") + (p.t ? " — has a measured Tg" : "")
+          : "Hover a point to name it. Click to search for it.";
+      }
+      draw();
+    });
+    canvas.addEventListener("mouseleave", function () {
+      hover = null;
+      canvas.style.cursor = "default";
+      if (readout) readout.textContent = "Hover a point to name it. Click to search for it.";
+      draw();
+    });
+    canvas.addEventListener("click", function (e) {
+      var r = canvas.getBoundingClientRect();
+      var p = nearest(e.clientX - r.left, e.clientY - r.top);
+      if (p) window.location.href = "polymer-search.html?q=" + encodeURIComponent(p.n);
+    });
+
+    // A key that also filters. Clicking a family isolates it, which is the only
+    // way to read an overlapping region.
+    if (keyBox) {
+      var counts = {};
+      data.points.forEach(function (p) { if (p.f >= 0) counts[p.f] = (counts[p.f] || 0) + 1; });
+      data.families.forEach(function (name, i) {
+        if (!counts[i]) return;
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "smap-key-item";
+        b.innerHTML = '<span class="smap-dot" style="background:' + COLOURS[i % COLOURS.length] + '"></span>' +
+          name + ' <span class="smap-count">' + counts[i] + "</span>";
+        b.setAttribute("aria-pressed", "true");
+        b.addEventListener("click", function () {
+          hidden[i] = !hidden[i];
+          b.classList.toggle("is-off", !!hidden[i]);
+          b.setAttribute("aria-pressed", hidden[i] ? "false" : "true");
+          draw();
+        });
+        keyBox.appendChild(b);
+      });
+    }
+
+    draw();
+    window.addEventListener("resize", draw);
+    // The canvas inherits theme colours, so a theme flip has to redraw it.
+    if (window.matchMedia) {
+      var mq = window.matchMedia("(prefers-color-scheme: dark)");
+      if (mq.addEventListener) mq.addEventListener("change", function () {
+        css = getComputedStyle(document.documentElement);
+        draw();
+      });
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", drawStructureMap);
+  // structure-map.js is deferred, so it may land after DOMContentLoaded.
+  window.addEventListener("load", drawStructureMap);
+  setTimeout(drawStructureMap, 600);
+
   // ---- Print and copy, on every calculator ----
   //
   // These existed on some pages and not others with no principle behind which:

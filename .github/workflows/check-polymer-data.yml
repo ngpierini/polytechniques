@@ -79,6 +79,13 @@ jobs:
       - name: Calculator worked examples still match the maths
         run: node scripts/check-calculator-math.js
 
+      # The structure map is a projection of polymer-data.js, so it goes stale
+      # when an entry is added or its structure edited. Deterministic by
+      # construction - t-SNE seeded from PCA, no RNG - so this can be checked
+      # rather than merely rebuilt.
+      - name: Structure map is current with the polymer library
+        run: node scripts/build-structure-map.js --check
+
       # Fails if an indexable page is missing from sitemap.xml, which is
       # hand-maintained and had silently dropped one of the main tools.
       - run: node scripts/check-sitemap.js

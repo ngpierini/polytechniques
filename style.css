@@ -3279,3 +3279,43 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
   margin-top: 4px;
 }
 @media print { .calc-actions { display: none !important; } }
+
+/* The structure map on the families hub. The canvas is sized in CSS and its
+   backing store is matched to that in JS, so it stays sharp on a retina screen
+   and the hit-testing keeps agreeing with what is drawn. */
+.smap-wrap { margin: 14px 0 10px; }
+#smap {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 900 / 560;
+  display: block;
+  border-radius: 8px;
+  background: var(--card-bg);
+  touch-action: manipulation;
+}
+.smap-readout {
+  margin: 8px 0 0 !important;
+  min-height: 1.4em;
+  font-variant-numeric: tabular-nums;
+}
+.smap-key { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.smap-key-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  font-size: var(--fs-2xs);
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card-bg);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.smap-key-item:hover { border-color: var(--primary); color: var(--text); }
+/* A switched-off family keeps its dot, so the key still reads as a legend
+   rather than turning into an unlabelled row of greyed pills. */
+.smap-key-item.is-off { opacity: 0.4; text-decoration: line-through; }
+.smap-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+.smap-count { font-variant-numeric: tabular-nums; opacity: 0.7; }
+@media (pointer: coarse) { .smap-key-item { min-height: 44px; } }

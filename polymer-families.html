@@ -18,14 +18,15 @@
 <meta name="twitter:title" content="Polymer families: PolyTechniques">
 <meta name="twitter:description" content="A reference to 968 polymers grouped by chemical family - acrylates, methacrylates, silicones and more - each with CAS numbers, monomers, thermal data and notes on structure and properties.">
 <meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script src="structure-map.js?v=2" defer></script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=25" defer></script>
+<script src="nav.js?v=26" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=101">
+<link rel="stylesheet" href="style.css?v=102">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -45,6 +46,18 @@
     <h3>How this is organised</h3>
     <p>The library behind the <a href="polymer-search.html">structure search</a> holds 968 polymers. These pages lay it out by family, so you can read a whole class at once rather than querying it one structure at a time &ndash; useful when you are choosing between esters in a series, or want to see what else shares a backbone with the polymer you have.</p>
     <p>Grouping is by polymerisation chemistry rather than by application, because that is what the structure&ndash;property arguments actually turn on: every acrylate answers to the same rules about ester length and backbone rotation, whether it ends up in an adhesive or a photoresist. Each polymer appears on exactly one page.</p>
+  </div>
+
+  <div class="card">
+    <h3>The library as a map</h3>
+    <p>Every structure in the library placed next to the ones it chemically resembles. Nothing is predicted here and no property was used to build it: each repeat unit becomes thirty descriptors read straight off its atoms and bonds &ndash; what elements it contains, how branched it is, whether it is aromatic, what links its backbone &ndash; and those are projected onto two dimensions. Polymers that sit together sit together because they are built alike.</p>
+    <div class="smap-wrap">
+      <canvas id="smap" width="900" height="560" aria-label="A map of the polymer library, each point one structure, coloured by family"></canvas>
+      <p id="smap-readout" class="guide-note smap-readout" role="status" aria-live="polite">Hover a point to name it. Click to search for it.</p>
+      <div id="smap-key" class="smap-key"></div>
+    </div>
+    <p class="guide-note">How well does it work? Take each structure&rsquo;s eight nearest neighbours on the map and ask how often they come from the same family: <strong>45&nbsp;%</strong>, against <strong>13&nbsp;%</strong> if the points were scattered at random &ndash; a 3.4&times; lift. In the full thirty-dimensional descriptor space that figure is 54&nbsp;%, so flattening it to a picture costs about a fifth of the structure it found. That gap is the honest limit of any two-dimensional map, and it is why this one is for browsing rather than for drawing conclusions from a distance.</p>
+    <p class="guide-note">The families overlap, and that is chemistry rather than a failure of the method: an acrylate and a methacrylate differ by one methyl group, a polyester and a polyamide by a single atom in the linkage. Where the map does separate them cleanly, it is telling you the backbones really are different.</p>
   </div>
 
   <div class="card">
