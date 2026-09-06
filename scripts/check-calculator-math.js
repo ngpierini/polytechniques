@@ -25,6 +25,8 @@ const path = require("path");
 const cases = [];
 let failed = 0;
 
+const calHtml = fs.readFileSync(path.join(__dirname, "..", "gpc-calibration.html"), "utf8");
+
 function check(name, actual, expected, tol, unit) {
   const ok = Math.abs(actual - expected) <= tol;
   if (!ok) failed++;
@@ -149,14 +151,77 @@ function trueMw(Mapp, Ks, as, Kp, ap) {
   return Math.pow((Ks / Kp) * Math.pow(Mapp, 1 + as), 1 / (1 + ap));
 }
 const gpc = (M) => trueMw(M, 1.14e-4, 0.716, 0.80e-4, 0.70);
-[[10000, 13400], [25000, 33900], [45500, 62000], [100000, 137300], [250000, 346100]]
-  .forEach(([app, exp]) => check(`GPC true M for PS-equivalent ${app}`, gpc(app), exp, 100, "g/mol"));
+
+// The rows are read out of the page rather than restated here. A figure copied
+// into this file can drift from the one on the page without either side
+// complaining, which is how the 137,300 in this test outlived the 137,000 that
+// replaced it on the page.
+const gpcRows = [...calHtml.matchAll(
+  /<tr><td class="num">([\d,]+)<\/td><td class="num">([\d,]+)<\/td><td class="num">([\d.]+)<\/td><\/tr>/g
+)].map((m) => m.slice(1).map((v) => Number(v.replace(/,/g, ""))));
+
+if (gpcRows.length !== 5) {
+  failed++;
+  cases.push({ ok: false, name: "GPC worked-example table has 5 rows to check", actual: gpcRows.length, expected: 5, tol: 0, unit: "rows" });
+}
+
+// The page shows three significant figures because the result is not worth
+// more - shifting each alpha by 0.02 opens a band of roughly -22% to +29%.
+// So the published figure must BE the 3-sf rounding of the maths, exactly.
+const sf3 = (n) => Number(n.toPrecision(3));
+
+gpcRows.forEach(([app, published, ratio]) => {
+  const exact = gpc(app);
+  if (sf3(exact) !== published) {
+    failed++;
+    cases.push({ ok: false, name: `GPC row ${app.toLocaleString()}: page prints ${published.toLocaleString()}`,
+      actual: published, expected: sf3(exact), tol: 0, unit: "g/mol (3 s.f. of " + Math.round(exact) + ")" });
+  }
+  check(`GPC ratio published for PS-equivalent ${app}`, exact / app, ratio, 0.005, "x");
+});
 const lowRatio = gpc(10000) / 10000, highRatio = gpc(250000) / 250000;
 check("correction ratio at 10 kg/mol", lowRatio, 1.34, 0.01, "x");
 check("correction ratio at 250 kg/mol", highRatio, 1.38, 0.01, "x");
 if (!(highRatio > lowRatio)) {
   failed++;
   cases.push({ ok: false, name: "correction must drift upward with molecular weight", actual: highRatio - lowRatio, expected: "> 0", tol: 0, unit: "" });
+}
+
+// ---- Converted dispersity: gpc-calibration.html ----------------------------
+// Both moments go through the same transform, so the ratio between them has a
+// closed form containing no K: D_true = D_app^((1+a_std)/(1+a_sample)). The page
+// prints that expression and reasons from it that an error in either K shifts
+// every molecular weight while leaving dispersity exactly alone. If the
+// conversion ever stopped obeying it, the page would be arguing from an
+// identity that no longer holds.
+const dispClosed = (Dapp, as, ap) => Math.pow(Dapp, (1 + as) / (1 + ap));
+const dispConverted = (Mn, Mw, Ks, as, Kp, ap) =>
+  trueMw(Mw, Ks, as, Kp, ap) / trueMw(Mn, Ks, as, Kp, ap);
+
+check("converted Đ matches the closed form",
+  dispConverted(35000, 45500, 1.14e-4, 0.716, 0.80e-4, 0.70),
+  dispClosed(45500 / 35000, 0.716, 0.70), 1e-9, "");
+check("page's worked example: Đ 1.30 converts to 1.303",
+  dispConverted(35000, 45500, 1.14e-4, 0.716, 0.80e-4, 0.70), 1.303, 0.0005, "");
+check("page's broad-sample case: Đ 5.0 at alpha 0.60 converts to 5.6",
+  dispClosed(5.0, 0.716, 0.60), 5.62, 0.01, "");
+
+// K independence, stated on the page as the reason Đ is the one number here a
+// reader can take at face value. Two wildly different K pairs, same Đ.
+check("Đ is untouched by K",
+  dispConverted(35000, 45500, 9.9e-4, 0.716, 0.13e-4, 0.70) -
+  dispConverted(35000, 45500, 1.14e-4, 0.716, 0.80e-4, 0.70), 0, 1e-12, "");
+
+// And the sensitivity claim the band is built on: alpha beats K by more than 2x.
+const mBase = trueMw(35000, 1.14e-4, 0.716, 0.80e-4, 0.70);
+const dAlpha = Math.abs(trueMw(35000, 1.14e-4, 0.716, 0.80e-4, 0.72) / mBase - 1);
+const dK = Math.abs(trueMw(35000, 1.14e-4, 0.716, 0.88e-4, 0.70) / mBase - 1);
+check("0.02 in alpha moves M by", 100 * dAlpha, 11.8, 0.2, "%");
+check("10% in K moves M by", 100 * dK, 5.5, 0.2, "%");
+if (!(dAlpha > 2 * dK)) {
+  failed++;
+  cases.push({ ok: false, name: "alpha must dominate K, which is why the band perturbs only alpha",
+    actual: (dAlpha / dK).toFixed(2), expected: "> 2", tol: 0, unit: "x" });
 }
 
 // ---- The converter's reference table has to stay checkable -----------------
@@ -172,7 +237,6 @@ if (!(highRatio > lowRatio)) {
 // and the comparison stops meaning anything. So every row must carry an eluent
 // that ELUENT actually names, plus the temperature bounds the softer caution
 // reads.
-const calHtml = fs.readFileSync(path.join(__dirname, "..", "gpc-calibration.html"), "utf8");
 
 const eluentBlock = calHtml.match(/var ELUENT = \{([\s\S]*?)\};/);
 const refBlock = calHtml.match(/var REF = \[([\s\S]*?)\n  \];/);
