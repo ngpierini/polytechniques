@@ -136,6 +136,57 @@
   </div>
 
   <div class="card">
+    <h3>Plan a method from the polymer</h3>
+    <p class="guide-note">
+      Column choice is downstream of three things: whether the polymer dissolves, whether it
+      carries charge, and how wide its molecular-weight distribution is. Set those and this
+      names a starting method &ndash; mobile phase, salt, packing chemistry and a bank of
+      columns &ndash; which you can then load straight into the simulator below to check the
+      range is actually covered. It is a starting point to take to your column supplier's
+      compatibility table, not a substitute for it.
+    </p>
+
+    <div class="grid" style="margin-top:12px;">
+      <div class="field">
+        <label for="gm-polymer">Polymer (optional, from the library)</label>
+        <input type="text" id="gm-polymer" list="gm-polymer-list" placeholder="e.g. Poly(sodium 4-styrenesulfonate)" autocomplete="off">
+        <datalist id="gm-polymer-list"></datalist>
+        <span class="hint" id="gm-polymer-hint">Picking one fills in the two boxes below; check them, they are inferred.</span>
+      </div>
+      <div class="field">
+        <label for="gm-charge">Charge on the chain</label>
+        <select id="gm-charge">
+          <option value="neutral">Neutral</option>
+          <option value="anionic">Anionic (sulfonate, carboxylate, phosphate)</option>
+          <option value="cationic">Cationic (ammonium, protonated amine)</option>
+          <option value="zwitterionic">Zwitterionic / polyampholyte</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="gm-solub">What dissolves it</label>
+        <select id="gm-solub">
+          <option value="thf">THF or chloroform</option>
+          <option value="polar">DMF / DMAc (polar, hydrogen bonding)</option>
+          <option value="water">Water</option>
+          <option value="hfip">Only HFIP or hot m-cresol (nylon, PET, PBT)</option>
+          <option value="olefin">Only hot solvent (PE, PP, and other polyolefins)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="gm-mlo">Lowest M<sub>n</sub> expected (g/mol)</label>
+        <input type="number" id="gm-mlo" value="5000" step="any" min="100">
+      </div>
+      <div class="field">
+        <label for="gm-mhi">Highest M<sub>w</sub> expected (g/mol)</label>
+        <input type="number" id="gm-mhi" value="200000" step="any" min="100">
+        <span class="hint">A guess is fine &ndash; it decides pore size, and the simulator below will show if you guessed wrong</span>
+      </div>
+    </div>
+
+    <div id="gm-out" class="gm-out"></div>
+    <div class="actions" style="justify-content:flex-start; margin-top:10px;">
+      <button type="button" class="copy-btn" id="gm-load">Load this bank into the simulator below</button>
+    </div>
     <h3>Try it: build a column bank</h3>
     <p class="guide-note">
       Pick up to four columns and watch the combined calibration curve, the separation of a chosen peak pair, and the costs. The model uses typical 300 &times; 7.5 mm analytical columns (polystyrene-equivalent molecular weights, 1 mL/min): each column adds its pore volume where its pores are the right size, band spreading adds in quadrature, and resolution R<sub>s</sub> = &Delta;V<sub>e</sub> / 4&sigma;. Values are representative, not a substitute for a vendor's data sheet; the scaling behavior is the point.
@@ -1153,6 +1204,203 @@
   var calSvg = $("bank-cal-chart");
   if (!calSvg) return;
 
+  // ---------- Method planner ----------
+  //
+  // A rule table, not a model. Every branch below is a documented consequence of
+  // one of three inputs, and the output says which input drove it - so a reader
+  // who disagrees can see exactly which rule to argue with. That matters more
+  // here than usual: getting this wrong wastes a column, not an afternoon.
+  var GM_SOLVENT = {
+    thf:    { phase: "THF",
+              salt: "none",
+              packing: "Cross-linked polystyrene-divinylbenzene (PS-DVB)",
+              temp: "35-40 &deg;C",
+              why: "THF dissolves most non-polar organics, has low viscosity and a large refractive-index difference from most polymers, which is what makes RI detection sensitive." },
+    polar:  { phase: "DMF or DMAc",
+              salt: "0.01-0.05 M LiBr",
+              packing: "PS-DVB rated for DMF (check the maximum-temperature and solvent list)",
+              temp: "50-60 &deg;C",
+              why: "The lithium salt screens hydrogen bonding and residual ionic interaction with the packing. Without it, polyamides and polyacids tail or stick outright." },
+    water:  { phase: "Water",
+              salt: "0.05-0.2 M NaNO<sub>3</sub>, or a 0.1 M phosphate/acetate buffer if pH matters",
+              packing: "Hydroxylated polymethacrylate (TSKgel PW type) or silica-diol",
+              temp: "30-40 &deg;C",
+              why: "Aqueous packings are chosen for low residual charge; even so, salt is what makes elution depend on size rather than on electrostatics." },
+    hfip:   { phase: "HFIP (hexafluoroisopropanol)",
+              salt: "0.02 M sodium trifluoroacetate",
+              packing: "PS-DVB explicitly rated for HFIP &ndash; most columns are not",
+              temp: "30-40 &deg;C",
+              why: "HFIP breaks the hydrogen-bond network that makes nylons and PET insoluble in anything else at room temperature. It is expensive and it attacks some hardware, so confirm the whole flow path first." },
+    olefin: { phase: "1,2,4-trichlorobenzene (TCB), stabilised with BHT",
+              salt: "none",
+              packing: "High-temperature PS-DVB",
+              temp: "140-160 &deg;C, on a dedicated high-temperature instrument",
+              why: "Polyethylene and polypropylene do not dissolve below about 130 &deg;C. This is not a method you can run on a room-temperature GPC; the whole oven, injector and detector have to be heated or the polymer crystallises in the line." }
+  };
+
+  // Charge behaviour. The two failure modes point in OPPOSITE directions, which
+  // is why "my MW looks wrong" is not diagnostic on its own.
+  var GM_CHARGE = {
+    neutral: [],
+    anionic: [
+      ["Ion exclusion, if the salt is too low",
+       "An anionic chain is repelled by the residual anionic sites on the packing, so it is pushed away from the pores and elutes EARLY. Early elution reads as high molecular weight, so the error inflates your answer. Raising ionic strength is the fix; if M<sub>w</sub> falls as you add salt, this was happening."],
+      ["Check it is fully ionised",
+       "A weak polyacid part-way through its titration curve changes size with pH, so run well above its pK<sub>a</sub> where it is fully charged, or well below where it is neutral - not in between, where a small pH drift moves the whole distribution."]
+    ],
+    cationic: [
+      ["Adsorption, the harder failure",
+       "A cationic chain is attracted to those same anionic sites, so it elutes LATE or does not come off at all. Late elution reads as low molecular weight, and partial retention quietly removes the high-MW end of your distribution while still giving you a peak. Compare injected against recovered mass before trusting the result."],
+      ["Salt alone is often not enough",
+       "Cationics usually need the higher end of the salt range, sometimes 10-20% acetonitrile or methanol as well, and sometimes a packing sold specifically for cationic polymers. This is the case where the column supplier's compatibility table is worth reading before you buy."]
+    ],
+    zwitterionic: [
+      ["Both failure modes at once",
+       "A polyampholyte can be excluded and adsorbed on the same column depending on local pH, and its own coil size collapses near its isoelectric point. Buffer the mobile phase, state the pH in your method, and do not compare runs at different pH."]
+    ]
+  };
+
+  function gmPlan() {
+    var charge = $("gm-charge").value;
+    var solub = $("gm-solub").value;
+    var lo = parseFloat($("gm-mlo").value);
+    var hi = parseFloat($("gm-mhi").value);
+    var sol = GM_SOLVENT[solub];
+    var out = $("gm-out");
+    if (!out || !sol) return null;
+
+    if (!isFinite(lo) || !isFinite(hi) || lo <= 0 || hi <= 0 || hi < lo) {
+      out.innerHTML = '<p class="guide-note">Enter a molecular-weight range, lowest first.</p>';
+      return null;
+    }
+
+    // Pore choice. A single pore size resolves about a decade and a half well;
+    // past that a mixed bed trades peak-to-peak resolution for a calibration
+    // that stays linear across the whole range, which is the better trade when
+    // the distribution is broad or you do not yet know where it sits.
+    var lgLo = Math.log(lo) / Math.LN10, lgHi = Math.log(hi) / Math.LN10;
+    var decades = lgHi - lgLo;
+    var mid = (lgLo + lgHi) / 2;
+    var bank, bankWhy;
+    if (decades <= 1.5) {
+      var single = mid < 3.1 ? "a100" : mid < 3.8 ? "a500" : mid < 4.5 ? "a1e3" :
+                   mid < 5.4 ? "a1e4" : mid < 6.1 ? "a1e5" : "a1e6";
+      bank = ["guard", single, single, "none"];
+      bankWhy = "Your range spans " + decades.toFixed(1) + " decades, which one pore size covers. Two matched columns of the same pore size resolve better across it than a mixed bed would.";
+    } else if (mid < 4.0) {
+      bank = ["guard", "mixE", "mixE", "none"];
+      bankWhy = "A " + decades.toFixed(1) + "-decade range centred low. Oligomer-class mixed bed, doubled for plate count.";
+    } else if (mid > 5.2) {
+      bank = ["guard", "mixB", "mixB", "none"];
+      bankWhy = "A " + decades.toFixed(1) + "-decade range centred high. High-MW mixed bed, doubled for plate count.";
+    } else {
+      bank = ["guard", "mixC", "mixC", "none"];
+      bankWhy = "A " + decades.toFixed(1) + "-decade range across the middle. General-purpose mixed bed, doubled for plate count.";
+    }
+
+    var warn = (GM_CHARGE[charge] || []).slice();
+    if (charge !== "neutral" && solub !== "water") {
+      warn.unshift(["Charge in a non-aqueous phase",
+        "A charged chain usually needs an aqueous or strongly polar phase to stay dissolved and screened. If it genuinely dissolves in " + sol.phase + ", the salt advice above still applies in spirit &ndash; you need enough ionic strength to screen the packing."]);
+    }
+    if (hi >= 1e6) {
+      warn.push(["Shear degradation above about 10<sup>6</sup>",
+        "Very long chains can be cut by the frit and packing at ordinary flow. Drop to 0.5 mL/min or below, use the largest pore size that still resolves, and if M<sub>w</sub> falls when you raise the flow rate you are shearing the sample, not measuring it."]);
+    }
+    if (solub === "water" && charge === "neutral") {
+      warn.push(["Salt still helps even with no charge",
+        "Neutral water-soluble polymers such as PEO and PVA can still adsorb by hydrogen bonding. The salt is cheap insurance, and it keeps the method comparable with charged samples run on the same column."]);
+    }
+
+    var rows = [
+      ["Mobile phase", sol.phase],
+      ["Additive", sol.salt],
+      ["Packing", sol.packing],
+      ["Temperature", sol.temp],
+      ["Column bank", bank.filter(function (k) { return k !== "none"; })
+        .map(function (k) { return COLS[k].label; }).join(" + ")]
+    ];
+
+    out.innerHTML =
+      '<div class="table-scroll"><table class="recipe recipe-data"><tbody>' +
+      rows.map(function (r) {
+        return "<tr><td>" + r[0] + "</td><td>" + r[1] + "</td></tr>";
+      }).join("") +
+      "</tbody></table></div>" +
+      '<p class="guide-note"><strong>Why this phase.</strong> ' + sol.why + "</p>" +
+      '<p class="guide-note"><strong>Why these columns.</strong> ' + bankWhy +
+      " The guard column is not optional on a real sample: it is cheaper to replace than the analytical pair behind it.</p>" +
+      (warn.length
+        ? '<h4 class="guide-subhead">What to watch on this method</h4><ul class="guide-list">' +
+          warn.map(function (w) { return "<li><strong>" + w[0] + ".</strong> " + w[1] + "</li>"; }).join("") +
+          "</ul>"
+        : '<p class="guide-note">Nothing charge-related to watch for here. The usual cautions about flow stability and calibration range still apply.</p>');
+
+    return bank;
+  }
+
+  // The cases where the answer is not obvious: everything in the library that
+  // carries charge, everything that needs HFIP or hot TCB, and a few familiar
+  // neutrals for contrast. Inlined at about 6 KB rather than pulling in the
+  // 1.2 MB structure library for a convenience field on a guide page.
+  //
+  // Charge is read off the name, so it is a starting guess and the hint under
+  // the box says so. It is right for the obvious salts and wrong for anything
+  // whose ionisation depends on pH - which is most weak polyacids and
+  // polybases, and exactly the case where you should be setting it yourself.
+  var GM_LIBRARY = [["Alginate","a","water"],["Alginate lyase-degraded oligoalginate","a","water"],["Atactic polypropylene","n","olefin"],["Carboxymethylcellulose","a","water"],["Carrageenan","a","water"],["Cellulose sulfate","a","water"],["Chitosan","c","water"],["Chitosan oligosaccharide","c","water"],["Chondroitin sulfate","a","water"],["Curdlan sulfate","a","water"],["DNA-backbone bottlebrush","a","water"],["Deoxyribonucleic acid","a","water"],["Dermatan sulfate","a","water"],["Fucoidan","n","water"],["Gellan gum","a","water"],["Gum arabic","a","water"],["Heparan sulfate","a","water"],["Heparin","a","water"],["Hyaluronan","a","water"],["Isotactic polypropylene","n","olefin"],["Keratan sulfate","a","water"],["Lignosulfonate","a","water"],["Maleic anhydride grafted polypropylene","n","olefin"],["Nafion","n","water"],["Nylon 10,10","n","hfip"],["Nylon 10,12","n","hfip"],["Nylon 10,14","n","hfip"],["Nylon 10,6","n","hfip"],["Nylon 10T","n","hfip"],["Nylon 11","n","hfip"],["Nylon 11,10","n","hfip"],["Nylon 12","n","hfip"],["Nylon 12,12","n","hfip"],["Nylon 12,6","n","hfip"],["Nylon 13","n","hfip"],["Nylon 4","n","hfip"],["Nylon 4,10","n","hfip"],["Nylon 4,12","n","hfip"],["Nylon 4,6","n","hfip"],["Nylon 4,8","n","hfip"],["Nylon 5","n","hfip"],["Nylon 5,10","n","hfip"],["Nylon 5,6","n","hfip"],["Nylon 6","n","hfip"],["Nylon 6,10","n","hfip"],["Nylon 6,12","n","hfip"],["Nylon 6,14","n","hfip"],["Nylon 6,16","n","hfip"],["Nylon 6,18","n","hfip"],["Nylon 6,36","n","hfip"],["Nylon 6,6","n","hfip"],["Nylon 6,9","n","hfip"],["Nylon 6I","n","hfip"],["Nylon 7","n","hfip"],["Nylon 8","n","hfip"],["Nylon 8,6","n","hfip"],["Nylon 9","n","hfip"],["Nylon 9,6","n","hfip"],["Nylon 9T","n","hfip"],["Pectin","a","water"],["Poly(1-butene)","n","olefin"],["Poly(2-(acryloyloxy)ethyl trimethylammonium chloride)","c","water"],["Poly(2-(diethylamino)ethyl methacrylate)","n","water"],["Poly(2-(diisopropylamino)ethyl methacrylate)","n","water"],["Poly(2-(dimethylamino)ethyl acrylate)","c","water"],["Poly(2-(dimethylamino)ethyl methacrylate)","c","water"],["Poly(2-(methacryloyloxy)ethyl trimethylammonium chloride)","c","water"],["Poly(2-(tert-butylamino)ethyl methacrylate)","n","water"],["Poly(2-acrylamido-2-methylpropane sulfonic acid)","n","water"],["Poly(2-aminoethyl methacrylate)","n","water"],["Poly(2-carboxyethyl acrylate)","n","water"],["Poly(2-ethyl-2-oxazoline)-graft chitosan","c","water"],["Poly(2-methacryloyloxyethyl phosphorylcholine)","z","water"],["Poly(2-sulfoethyl methacrylate)","n","water"],["Poly(2-vinylpyridinium)","n","water"],["Poly(3-(dimethylamino)propyl acrylate)","c","water"],["Poly(3-(dimethylamino)propyl methacrylate)","c","water"],["Poly(3-(methacryloylamino)propyl trimethylammonium chloride)","c","water"],["Poly(3-sulfopropyl acrylate)","n","water"],["Poly(3-sulfopropyl methacrylate)","n","water"],["Poly(4-aminostyrene)","n","water"],["Poly(L-arginine)","n","water"],["Poly(L-glutamic acid)","a","water"],["Poly(L-histidine)","n","water"],["Poly(L-lysine)","c","water"],["Poly(N-(3-(dimethylamino)propyl)acrylamide)","c","water"],["Poly(N-(3-aminopropyl)methacrylamide)","c","water"],["Poly(N-isopropylacrylamide-co-acrylic acid)","a","water"],["Poly(N-vinylimidazole)","c","water"],["Poly(acrylamide-co-acrylic acid)","a","water"],["Poly(acrylic acid)","a","water"],["Poly(allylamine)","c","water"],["Poly(amidoamine) dendrimer","n","water"],["Poly(arylene ether sulfone) with quaternary ammonium","c","water"],["Poly(aspartic acid)","a","water"],["Poly(beta-amino ester)","n","water"],["Poly(butylene adipate-co-terephthalate)","n","hfip"],["Poly(butylene terephthalate)","n","hfip"],["Poly(butylene terephthalate)-b-poly(tetrahydrofuran)","n","hfip"],["Poly(carboxybetaine methacrylate)","z","water"],["Poly(carboxypropylmethylsiloxane)","n","water"],["Poly(cyclohexylenedimethylene terephthalate)","n","hfip"],["Poly(decamethylene terephthalate)","n","hfip"],["Poly(diallyldimethylammonium chloride)","c","water"],["Poly(dimethylaminopropyl methacrylamide)","c","water"],["Poly(dimethylsiloxane)","n","thf"],["Poly(ethylene oxide)","n","water"],["Poly(ethylene oxide)-b-poly(acrylic acid)","a","water"],["Poly(ethylene terephthalate)","n","hfip"],["Poly(ethylene terephthalate-co-cyclohexylenedimethylene terephthalate)","n","hfip"],["Poly(gamma-glutamic acid)","a","water"],["Poly(gamma-glutamic acid) crosslinked hydrogel","a","water"],["Poly(hexamethylene terephthalate)","n","hfip"],["Poly(itaconic acid)","n","water"],["Poly(m-phenylene isophthalamide)","n","hfip"],["Poly(malic acid)","n","water"],["Poly(methacrylic acid)","a","water"],["Poly(methyl methacrylate)","n","thf"],["Poly(methyl(2-carboxyethyl)siloxane)","n","water"],["Poly(methyl(3-(dimethylamino)propyl)siloxane)","c","water"],["Poly(methyl(3-sulfopropyl)siloxane)","n","water"],["Poly(oxamide)","n","hfip"],["Poly(p-phenylene terephthalamide)","n","hfip"],["Poly(propylene imine)","n","water"],["Poly(semicarbazide)","n","hfip"],["Poly(sodium 4-styrenesulfonate)","a","water"],["Poly(sodium acrylate)","n","water"],["Poly(sodium vinyl sulfonate)","a","water"],["Poly(sulfobetaine acrylamide)","z","water"],["Poly(sulfobetaine methacrylate)","z","water"],["Poly(thiophene-3-acetic acid)","n","water"],["Poly(trimethylene terephthalate)","n","hfip"],["Poly(vinyl alcohol)","n","water"],["Poly(vinylamine)","c","water"],["Poly(vinylbenzyl trimethylammonium chloride)","c","water"],["Poly(vinylimidazolium)","c","water"],["Poly(vinylphosphonic acid)","a","water"],["Polyacrylonitrile","n","polar"],["Polycarbonate (bisphenol A)","n","thf"],["Polyether block amide","n","hfip"],["Polyethylene","n","olefin"],["Polyethylenimine","c","water"],["Polyisobutylene","n","olefin"],["Polyphosphate","a","water"],["Polypropylene","n","olefin"],["Polypropylene impact copolymer","n","olefin"],["Polypropylene random copolymer","n","olefin"],["Polypropylenimine dendrimer","n","water"],["Polysialic acid","n","water"],["Polystyrene","n","thf"],["Polystyrene-b-poly(acrylic acid)","a","water"],["Polystyrene-b-polyisobutylene-b-polystyrene","n","olefin"],["Ribonucleic acid","a","water"],["Self-assembled DNA bottlebrush","a","water"],["Sulfonated poly(ether ether ketone)","a","water"],["Sulfonated polysulfone","a","water"],["Syndiotactic polypropylene","n","olefin"],["Teichoic acid","n","water"],["Xanthan gum","a","water"],["epsilon-Poly-L-lysine","c","water"]];
+  var GM_CHARGE_NAME = {"a":"anionic","c":"cationic","z":"zwitterionic","n":"neutral"};
+
+  function gmFillLibrary() {
+    var dl = $("gm-polymer-list");
+    if (!dl) return;
+    dl.innerHTML = GM_LIBRARY.map(function (r) {
+      return '<option value="' + r[0].replace(/"/g, "&quot;") + '"></option>';
+    }).join("");
+    $("gm-polymer").addEventListener("change", function () {
+      var name = $("gm-polymer").value.trim().toLowerCase();
+      var hit = null;
+      for (var i = 0; i < GM_LIBRARY.length; i++) {
+        if (GM_LIBRARY[i][0].toLowerCase() === name) { hit = GM_LIBRARY[i]; break; }
+      }
+      var hint = $("gm-polymer-hint");
+      if (!hit) {
+        if (hint) hint.textContent = "Not in this shortlist - set the two boxes below yourself. " +
+          "The list only covers the polymers where the choice is not obvious.";
+        return;
+      }
+      $("gm-charge").value = GM_CHARGE_NAME[hit[1]] || "neutral";
+      $("gm-solub").value = hit[2];
+      if (hint) {
+        hint.textContent = "Set to " + (GM_CHARGE_NAME[hit[1]] || "neutral") + ", " +
+          $("gm-solub").selectedOptions[0].text +
+          ". Charge is inferred from the name - correct it if your sample is at a pH that changes it.";
+      }
+      gmPlan();
+    });
+  }
+
+  ["gm-charge", "gm-solub", "gm-mlo", "gm-mhi"].forEach(function (id) {
+    var el = $(id);
+    if (el) el.addEventListener("input", gmPlan);
+    if (el) el.addEventListener("change", gmPlan);
+  });
+  if ($("gm-load")) {
+    $("gm-load").addEventListener("click", function () {
+      var bank = gmPlan();
+      if (!bank) return;
+      for (var i = 0; i < 4; i++) {
+        var sel = $("bank-slot-" + (i + 1));
+        if (sel) sel.value = bank[i];
+      }
+      // Redraw through the simulator's own path so the two tools cannot drift.
+      var first = $("bank-slot-1");
+      if (first) first.dispatchEvent(new Event("change", { bubbles: true }));
+      var target = document.getElementById("bank-slot-1");
+      if (target && target.scrollIntoView) target.scrollIntoView({ block: "center" });
+    });
+  }
+
   var COLS = {
     none:  { label: "(empty)" },
     guard: { label: "Guard column",                 V0: 1.2, Vp: 0.4, mid: 4.0, k: 1.0,  bar: 5,  sigma: 0.05 },
@@ -1387,6 +1635,8 @@
   $("bank-peak-b").addEventListener("input", update);
 
   // default: the workhorse two-column general bank
+  gmFillLibrary();
+  gmPlan();
   $("bank-slot-1").value = "mixC";
   $("bank-slot-2").value = "mixC";
   $("bank-slot-3").value = "none";
