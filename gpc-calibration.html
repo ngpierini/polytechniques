@@ -132,6 +132,7 @@
     </div>
 
     <div class="stat-grid" id="gpc-stats" style="margin-top:16px;"></div>
+    <div id="gpc-caution"></div>
   </div>
 
   <div class="card">
@@ -163,7 +164,7 @@
     <h3>When this conversion does not rescue the number</h3>
     <ul class="guide-list">
       <li><strong>Branching.</strong> A branched chain is more compact than a linear one of the same molecular weight, so it elutes late and reads low &ndash; and universal calibration cannot see the difference, because it only knows hydrodynamic volume. Mark&ndash;Houwink constants are measured on linear chains, so applying them to a branched sample corrects one error while leaving a larger one in place. Long-chain branching needs a light-scattering or viscometry detector, not a better calibration.</li>
-      <li><strong>Constants from the wrong conditions.</strong> K and &alpha; are specific to a polymer <em>in a solvent at a temperature</em>. Values measured in THF at 30&nbsp;&deg;C do not apply to a DMF run at 50&nbsp;&deg;C, and using them will introduce an error of its own. The two sets also have to come from the same solvent as each other, not merely from the same paper.</li>
+      <li><strong>Constants from the wrong conditions.</strong> K and &alpha; are specific to a polymer <em>in a solvent at a temperature</em>. Values measured in THF at 30&nbsp;&deg;C do not apply to a DMF run at 50&nbsp;&deg;C, and using them will introduce an error of its own. The two sets also have to come from the same solvent as each other, not merely from the same paper. The picker above enforces this: choose two reference polymers characterised in different eluents and the converter refuses rather than returning a number, because there is no approximation on offer &ndash; universal calibration equates hydrodynamic volume between chains in the same liquid, and across two liquids there is no equality to work from.</li>
       <li><strong>Copolymers do not have Mark&ndash;Houwink constants.</strong> A statistical copolymer's hydrodynamic behaviour lies somewhere between its two homopolymers and shifts with composition, so there is no single pair of constants to look up. Treat any converted value for a copolymer as an estimate bracketed by the two homopolymer results.</li>
       <li><strong>Interaction with the column is not a calibration problem.</strong> If your polymer adsorbs to the packing or is charged and unshielded, it is not eluting purely by size and universal calibration does not apply at all. Suspect this when a polar or ionic sample gives an implausibly low molecular weight or a tailing peak &ndash; the fix is salt in the eluent or a different column chemistry, covered on the <a href="gpc-peak-interpretation.html">peak interpretation page</a>.</li>
       <li><strong>The peak has to be inside the calibrated range.</strong> A conversion applied to a peak sitting at the exclusion limit propagates a meaningless input into a precise-looking output.</li>
@@ -194,23 +195,42 @@
 (function () {
   function $(id) { return document.getElementById(id); }
 
+  // "eluent" is the key the code compares; "solvent" is only what gets printed.
+  // They were one free-text string until a THF standard was found converting
+  // against an aqueous sample without complaint, which is a pairing this page's
+  // own text tells you is invalid. A machine cannot honour a rule written in
+  // prose, so the eluent had to become data.
+  //
+  // "tLo"/"tHi" bound the temperature the parameters were measured over. A ten
+  // degree spread inside one solvent is a real but second order effect, so it
+  // earns a caution rather than a refusal.
+  var ELUENT = {
+    thf:   "THF",
+    water: "water (aqueous SEC)"
+  };
+
   var REF = [
-    { name: "Polystyrene", solvent: "THF, 25 to 35 °C", k: 1.14, a: 0.716 },
-    { name: "Poly(methyl methacrylate)", solvent: "THF, 25 to 35 °C", k: 0.80, a: 0.70 },
-    { name: "Polybutadiene (high cis)", solvent: "THF, 25 °C", k: 3.07, a: 0.75 },
-    { name: "Polyisoprene", solvent: "THF, 25 °C", k: 1.77, a: 0.735 },
-    { name: "Poly(ethylene glycol)", solvent: "Water, 25 °C (aqueous SEC)", k: 1.25, a: 0.78 }
+    { name: "Polystyrene", eluent: "thf", tLo: 25, tHi: 35, solvent: "THF, 25 to 35 °C", k: 1.14, a: 0.716 },
+    { name: "Poly(methyl methacrylate)", eluent: "thf", tLo: 25, tHi: 35, solvent: "THF, 25 to 35 °C", k: 0.80, a: 0.70 },
+    { name: "Polybutadiene (high cis)", eluent: "thf", tLo: 25, tHi: 25, solvent: "THF, 25 °C", k: 3.07, a: 0.75 },
+    { name: "Polyisoprene", eluent: "thf", tLo: 25, tHi: 25, solvent: "THF, 25 °C", k: 1.77, a: 0.735 },
+    { name: "Poly(ethylene glycol)", eluent: "water", tLo: 25, tHi: 25, solvent: "Water, 25 °C (aqueous SEC)", k: 1.25, a: 0.78 }
   ];
 
   function fillPicks() {
     var opts = ['<option value="-1">Custom</option>'];
     REF.forEach(function (p, i) {
-      opts.push('<option value="' + i + '">' + p.name + '</option>');
+      // The eluent rides along in the label. Two entries can only be paired if
+      // this half of the string matches, and showing it makes that legible
+      // without anyone having to scroll down to the reference table.
+      opts.push('<option value="' + i + '">' + p.name + ' &mdash; ' + ELUENT[p.eluent] + '</option>');
     });
     $("gpc-std-pick").innerHTML = opts.join("");
     $("gpc-std-pick").value = "0";
     $("gpc-sample-pick").innerHTML = opts.join("");
     $("gpc-sample-pick").value = "1";
+    picked.std = REF[0];
+    picked.sample = REF[1];
   }
 
   function fillRefTable() {
@@ -220,10 +240,16 @@
     }).join("");
   }
 
-  function wirePick(pickId, nameId, kId, aId) {
+  // Which reference entry each side is on, or null when the values were typed
+  // in by hand. Hand typed parameters carry no eluent we can check, so they get
+  // a reminder rather than a block - the page cannot verify what it was not told.
+  var picked = { std: null, sample: null };
+
+  function wirePick(pickId, nameId, kId, aId, slot) {
     $(pickId).addEventListener("change", function () {
       var idx = parseInt(this.value, 10);
-      if (idx < 0) return;
+      picked[slot] = idx < 0 ? null : REF[idx];
+      if (idx < 0) { recalc(); return; }
       var p = REF[idx];
       $(nameId).value = p.name;
       $(kId).value = p.k;
@@ -233,9 +259,60 @@
     [nameId, kId, aId].forEach(function (id) {
       $(id).addEventListener("input", function () {
         $(pickId).value = "-1";
+        picked[slot] = null;
         recalc();
       });
     });
+  }
+
+  // Returns a blocking message, an advisory one, or neither.
+  //
+  // Universal calibration equates hydrodynamic volume at equal retention
+  // volume. That equality only holds when both chains are in the same liquid:
+  // K and alpha are not properties of a polymer, they are properties of a
+  // polymer dissolved in a particular solvent at a particular temperature. Feed
+  // the equation a THF K against an aqueous one and every term is individually
+  // correct while the sentence they form is not about anything.
+  function eluentCheck() {
+    var a = picked.std, b = picked.sample;
+
+    if (!a || !b) {
+      return {
+        block: false,
+        note: "One or both parameter sets were typed in rather than picked, so this page cannot " +
+          "check them. K and &alpha; are specific to a solvent <em>and</em> a temperature, and the two " +
+          "sets have to come from the same solvent as each other, not merely from the same paper. " +
+          "Confirm that before you use this number."
+      };
+    }
+
+    if (a.eluent !== b.eluent) {
+      return {
+        block: true,
+        title: "These two parameter sets are not comparable",
+        note: a.name + " is characterised in " + ELUENT[a.eluent] + " and " + b.name + " in " +
+          ELUENT[b.eluent] + ". Universal calibration equates the hydrodynamic volume of two chains " +
+          "in the same liquid; across two different liquids there is no equality to work from, and " +
+          "the conversion would hand you a confident number that is not about anything. Find both " +
+          "sets in the eluent you actually ran, or calibrate against standards of your own polymer."
+      };
+    }
+
+    // Same solvent, different temperature. Coil dimensions shift with
+    // temperature, so this is a real error - just a far smaller one than
+    // crossing solvents, and worth stating rather than blocking on.
+    if (a.tHi < b.tLo || b.tHi < a.tLo) {
+      var aT = a.tLo === a.tHi ? a.tLo + " &deg;C" : a.tLo + " to " + a.tHi + " &deg;C";
+      var bT = b.tLo === b.tHi ? b.tLo + " &deg;C" : b.tLo + " to " + b.tHi + " &deg;C";
+      return {
+        block: false,
+        note: "Both sets are in " + ELUENT[a.eluent] + ", but they were measured over temperatures that " +
+          "do not overlap (" + a.name + " at " + aT + ", " + b.name + " at " + bT + "). Coil dimensions " +
+          "change with temperature, so treat the result as approximate and report the temperature you ran at."
+      };
+    }
+
+    return { block: false, note: "" };
   }
 
   function convert(mApparent, kStd, aStd, kSample, aSample) {
@@ -261,6 +338,14 @@
 
     if (!isFinite(kStd) || !isFinite(aStd) || !isFinite(kSample) || !isFinite(aSample) || kStd <= 0 || kSample <= 0 || !isFinite(mn) || mn <= 0) {
       stats.innerHTML = '<div class="error-msg">Enter positive K and &alpha; values for both polymers, and a positive apparent M&#8345;.</div>';
+      $("gpc-caution").innerHTML = "";
+      return;
+    }
+
+    var chk = eluentCheck();
+    if (chk.block) {
+      stats.innerHTML = '<div class="error-msg"><strong>' + chk.title + '.</strong> ' + chk.note + '</div>';
+      $("gpc-caution").innerHTML = "";
       return;
     }
 
@@ -280,10 +365,11 @@
     }
 
     stats.innerHTML = html;
+    $("gpc-caution").innerHTML = chk.note ? '<p class="guide-note">' + chk.note + '</p>' : "";
   }
 
-  wirePick("gpc-std-pick", "gpc-std-name", "gpc-std-k", "gpc-std-a");
-  wirePick("gpc-sample-pick", "gpc-sample-name", "gpc-sample-k", "gpc-sample-a");
+  wirePick("gpc-std-pick", "gpc-std-name", "gpc-std-k", "gpc-std-a", "std");
+  wirePick("gpc-sample-pick", "gpc-sample-name", "gpc-sample-k", "gpc-sample-a", "sample");
   $("gpc-mn").addEventListener("input", recalc);
   $("gpc-mw").addEventListener("input", recalc);
 

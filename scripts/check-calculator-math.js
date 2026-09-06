@@ -19,6 +19,9 @@
 // failure says which number stopped matching.
 "use strict";
 
+const fs = require("fs");
+const path = require("path");
+
 const cases = [];
 let failed = 0;
 
@@ -154,6 +157,54 @@ check("correction ratio at 250 kg/mol", highRatio, 1.38, 0.01, "x");
 if (!(highRatio > lowRatio)) {
   failed++;
   cases.push({ ok: false, name: "correction must drift upward with molecular weight", actual: highRatio - lowRatio, expected: "> 0", tol: 0, unit: "" });
+}
+
+// ---- The converter's reference table has to stay checkable -----------------
+// gpc-calibration.html refuses to convert between two polymers characterised in
+// different eluents, because universal calibration equates hydrodynamic volume
+// between chains in the same liquid and has nothing to say across two. That
+// refusal reads a structured "eluent" key. Before it existed the solvent was
+// free text, and a polystyrene-in-THF standard would convert against a
+// PEG-in-water sample and print a 0.652x factor without a word of complaint.
+//
+// An entry added with only the old free-text "solvent" would reintroduce that
+// silently: its eluent would be undefined, undefined matches nothing in ELUENT,
+// and the comparison stops meaning anything. So every row must carry an eluent
+// that ELUENT actually names, plus the temperature bounds the softer caution
+// reads.
+const calHtml = fs.readFileSync(path.join(__dirname, "..", "gpc-calibration.html"), "utf8");
+
+const eluentBlock = calHtml.match(/var ELUENT = \{([\s\S]*?)\};/);
+const refBlock = calHtml.match(/var REF = \[([\s\S]*?)\n  \];/);
+if (!eluentBlock || !refBlock) {
+  failed++;
+  cases.push({ ok: false, name: "gpc-calibration.html still declares ELUENT and REF", actual: "not found", expected: "both present", tol: 0, unit: "" });
+} else {
+  const known = new Set([...eluentBlock[1].matchAll(/^\s*(\w+):/gm)].map((m) => m[1]));
+  const rows = refBlock[1].split("\n").map((l) => l.trim()).filter((l) => l.startsWith("{"));
+
+  // Without this, a regex that stopped matching would sail through: zero rows
+  // to inspect reads exactly like zero problems found.
+  if (!rows.length) {
+    failed++;
+    cases.push({ ok: false, name: "REF parsed to zero entries - the check is not looking at anything", actual: 0, expected: "> 0", tol: 0, unit: "entries" });
+  }
+
+  rows.forEach((row) => {
+    const name = (row.match(/name:\s*"([^"]+)"/) || [])[1] || row.slice(0, 40);
+    const eluent = (row.match(/eluent:\s*"([^"]+)"/) || [])[1];
+    const tLo = Number((row.match(/tLo:\s*(-?[\d.]+)/) || [])[1]);
+    const tHi = Number((row.match(/tHi:\s*(-?[\d.]+)/) || [])[1]);
+    let problem = null;
+    if (!eluent) problem = 'no "eluent" key, so the cross-solvent guard cannot see it';
+    else if (!known.has(eluent)) problem = 'eluent "' + eluent + '" is not declared in ELUENT';
+    else if (!Number.isFinite(tLo) || !Number.isFinite(tHi)) problem = "missing tLo/tHi temperature bounds";
+    else if (tHi < tLo) problem = "tHi is below tLo";
+    if (problem) {
+      failed++;
+      cases.push({ ok: false, name: "REF entry " + name + ": " + problem, actual: "invalid", expected: "eluent in ELUENT, tLo <= tHi", tol: 0, unit: "" });
+    }
+  });
 }
 
 // ---- Controlled polymerisation targets: calculator.html --------------------
