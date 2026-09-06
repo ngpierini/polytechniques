@@ -1215,26 +1215,36 @@
               salt: "none",
               packing: "Cross-linked polystyrene-divinylbenzene (PS-DVB)",
               temp: "35-40 &deg;C",
+              standard: "Polystyrene, 500 to a few million g/mol",
+              standardWhy: "Cheapest, most stable, available in the narrowest dispersities. Your result is a PS-equivalent molecular weight.",
               why: "THF dissolves most non-polar organics, has low viscosity and a large refractive-index difference from most polymers, which is what makes RI detection sensitive." },
     polar:  { phase: "DMF or DMAc",
               salt: "0.01-0.05 M LiBr",
               packing: "PS-DVB rated for DMF (check the maximum-temperature and solvent list)",
               temp: "50-60 &deg;C",
+              standard: "PMMA",
+              standardWhy: "Polystyrene interacts with the packing in polar eluents and is a poor choice there. Your result is PMMA-equivalent.",
               why: "The lithium salt screens hydrogen bonding and residual ionic interaction with the packing. Without it, polyamides and polyacids tail or stick outright." },
     water:  { phase: "Water",
               salt: "0.05-0.2 M NaNO<sub>3</sub>, or a 0.1 M phosphate/acetate buffer if pH matters",
               packing: "Hydroxylated polymethacrylate (TSKgel PW type) or silica-diol",
               temp: "30-40 &deg;C",
+              standard: "PEO/PEG, or pullulan for polysaccharides",
+              standardWhy: "A PEO chain is a different hydrodynamic size from a polystyrene chain of the same mass, so an aqueous range is not comparable with an organic one.",
               why: "Aqueous packings are chosen for low residual charge; even so, salt is what makes elution depend on size rather than on electrostatics." },
     hfip:   { phase: "HFIP (hexafluoroisopropanol)",
               salt: "0.02 M sodium trifluoroacetate",
               packing: "PS-DVB explicitly rated for HFIP &ndash; most columns are not",
               temp: "30-40 &deg;C",
+              standard: "PMMA",
+              standardWhy: "The standard choice for polyamides and fluoropolymers run in HFIP, which is why those are almost always reported PMMA-equivalent.",
               why: "HFIP breaks the hydrogen-bond network that makes nylons and PET insoluble in anything else at room temperature. It is expensive and it attacks some hardware, so confirm the whole flow path first." },
     olefin: { phase: "1,2,4-trichlorobenzene (TCB), stabilised with BHT",
               salt: "none",
               packing: "High-temperature PS-DVB",
               temp: "140-160 &deg;C, on a dedicated high-temperature instrument",
+              standard: "Polystyrene, or polyethylene standards where the lab has them",
+              standardWhy: "PS-equivalent is usual, but PE standards remove one conversion step if you can get them.",
               why: "Polyethylene and polypropylene do not dissolve below about 130 &deg;C. This is not a method you can run on a room-temperature GPC; the whole oven, injector and detector have to be heated or the polymer crystallises in the line." }
   };
 
@@ -1312,13 +1322,53 @@
         "Neutral water-soluble polymers such as PEO and PVA can still adsorb by hydrogen bonding. The salt is cheap insurance, and it keeps the method comparable with charged samples run on the same column."]);
     }
 
+    // How much to inject. The page names column overload as a cause of a broad,
+    // skewed peak but never says what dose avoids it, which leaves the one
+    // number a user needs. The rule is that the injected chains must not
+    // overlap in solution: keep c well below 1/[eta], and since intrinsic
+    // viscosity climbs steeply with molecular weight, a high-MW sample needs a
+    // more dilute injection than a low-MW one of the same chemistry.
+    var conc, concWhy;
+    if (hi >= 1e6) {
+      conc = "0.2-0.5 mg/mL";
+      concWhy = "Chains this long have a high intrinsic viscosity, so they begin to overlap and shear at concentrations a routine sample tolerates easily.";
+    } else if (hi >= 1e5) {
+      conc = "0.5-1 mg/mL";
+      concWhy = "Standard for this range. Halve it if the peak fronts or tails in a way that changes with injection volume, which is the signature of overload rather than of the sample.";
+    } else {
+      conc = "1-2 mg/mL";
+      concWhy = "Low-MW material scatters and refracts weakly, so it needs the concentration; overload is not the binding constraint down here.";
+    }
+
+    // Detector. The page puts the light-scattering floor at 5,000-10,000 g/mol;
+    // the planner knows the low end of your range, so it can say whether that
+    // floor lands inside your distribution instead of leaving you to check.
+    var det, detWhy;
+    if (lo < 1e4 && hi >= 1e5) {
+      det = "RI, with MALS only for the high end";
+      detWhy = "Light scattering hits a floor around 5,000-10,000 g/mol, and your range starts at " +
+        Math.round(lo).toLocaleString() + " - below it. MALS will report the top of this distribution well and the bottom badly, so the conventional calibration is what carries the low end.";
+    } else if (lo < 1e4) {
+      det = "RI, on conventional calibration";
+      detWhy = "Your whole range sits at or below the light-scattering floor of about 5,000-10,000 g/mol, where MALS signal is too weak to trust. Calibration against standards is the honest method here.";
+    } else {
+      det = "RI, and MALS worth adding";
+      detWhy = "Your range sits comfortably above the light-scattering floor, so MALS would give an absolute molecular weight with no equivalent-standard conversion at all - provided you have a dn/dc for this polymer in this eluent.";
+    }
+    if (solub === "water" && charge !== "neutral") {
+      detWhy += " One caution for a charged polymer: dn/dc shifts with salt concentration, so a MALS result is only as good as a dn/dc measured in the same eluent you are running.";
+    }
+
     var rows = [
       ["Mobile phase", sol.phase],
       ["Additive", sol.salt],
       ["Packing", sol.packing],
       ["Temperature", sol.temp],
       ["Column bank", bank.filter(function (k) { return k !== "none"; })
-        .map(function (k) { return COLS[k].label; }).join(" + ")]
+        .map(function (k) { return COLS[k].label; }).join(" + ")],
+      ["Calibration standard", sol.standard],
+      ["Detector", det],
+      ["Inject at", conc]
     ];
 
     out.innerHTML =
@@ -1328,6 +1378,11 @@
       }).join("") +
       "</tbody></table></div>" +
       '<p class="guide-note"><strong>Why this phase.</strong> ' + sol.why + "</p>" +
+      '<p class="guide-note"><strong>Why that standard.</strong> ' + sol.standardWhy +
+      ' Whatever you use, the standard identity, eluent and column set belong in every report - a molecular weight without them is not reproducible. ' +
+      'The <a href="gpc-calibration.html">GPC Convert</a> page translates between equivalent scales when Mark-Houwink parameters are known.</p>' +
+      '<p class="guide-note"><strong>Why that detector.</strong> ' + detWhy + "</p>" +
+      '<p class="guide-note"><strong>Why that concentration.</strong> ' + concWhy + "</p>" +
       '<p class="guide-note"><strong>Why these columns.</strong> ' + bankWhy +
       " The guard column is not optional on a real sample: it is cheaper to replace than the analytical pair behind it.</p>" +
       (warn.length
