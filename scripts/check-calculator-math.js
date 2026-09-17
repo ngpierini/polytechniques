@@ -187,6 +187,140 @@ if (!(highRatio > lowRatio)) {
   cases.push({ ok: false, name: "correction must drift upward with molecular weight", actual: highRatio - lowRatio, expected: "> 0", tol: 0, unit: "" });
 }
 
+// ---- Slice summation: gpc-trace.html ---------------------------------------
+// The trace analyser ships a demo chromatogram generated from an EXACT
+// log-normal, which is the whole point of it: the right answer is known before
+// the page computes anything, so the worked example can state the gap between
+// the right answer and the reported one as a measurement.
+//
+// That only holds while the published table and the page agree. The table is
+// therefore recomputed here from the same generator and the same summation,
+// and compared against the figures the page prints - which are read out of the
+// page, not restated, for the reason the GPC rows above were.
+//
+// For lnM ~ N(mu, s2): Mn = exp(mu + s2/2) and Mw/Mn = exp(s2). The WEIGHT
+// distribution in lnM is Gaussian with the same s2 centred at mu + s2, and an
+// RI detector reads dW/dV, so with a log-linear calibration the chromatogram
+// IS that Gaussian. The first assertion below is that identity: integrate the
+// untruncated trace and the summation must return the generator's own numbers.
+const traceHtml = fs.readFileSync(path.join(__dirname, "..", "gpc-trace.html"), "utf8");
+
+const TR_MN = 20000, TR_D = 1.30;
+const trS2 = Math.log(TR_D);
+const trMuW = Math.log(TR_MN) - trS2 / 2 + trS2;
+const trM = (V) => Math.pow(10, 10.5 - 0.70 * V);
+
+const trRows = [];
+for (let V = 6.5; V <= 11.0 + 1e-9; V += 0.025) {
+  const x = Math.log(trM(V));
+  const g = Math.exp(-Math.pow(x - trMuW, 2) / (2 * trS2));
+  trRows.push([Number(V.toFixed(3)), Number((g + 0.002 + 0.0015 * (V - 6.5)).toFixed(5))]);
+}
+
+function trBaseline(rows) {
+  const k = Math.max(3, Math.round(rows.length * 0.1));
+  const pts = rows.slice(0, k).concat(rows.slice(rows.length - k));
+  let sx = 0, sy = 0, sxx = 0, sxy = 0;
+  pts.forEach(([x, y]) => { sx += x; sy += y; sxx += x * x; sxy += x * y; });
+  const m = pts.length, b = (m * sxy - sx * sy) / (m * sxx - sx * sx), a = (sy - b * sx) / m;
+  return (V) => a + b * V;
+}
+function trAnalyse(rows, lo, hi, base) {
+  let s0 = 0, sInv = 0, sM = 0;
+  for (let i = lo; i <= hi; i++) {
+    const V = rows[i][0], h = rows[i][1] - base(V);
+    if (h <= 0) continue;
+    const wLo = i === lo ? 0 : rows[i][0] - rows[i - 1][0];
+    const wHi = i === hi ? 0 : rows[i + 1][0] - rows[i][0];
+    const w = h * (wLo + wHi) / 2, M = trM(V);
+    s0 += w; sInv += w / M; sM += w * M;
+  }
+  return { Mn: s0 / sInv, Mw: sM / s0, D: (sM / s0) / (s0 / sInv) };
+}
+function trLimits(rows, base, frac) {
+  let best = -Infinity, pk = 0;
+  rows.forEach((r, i) => { const h = r[1] - base(r[0]); if (h > best) { best = h; pk = i; } });
+  const thr = best * frac;
+  let lo = pk, hi = pk;
+  while (lo > 0 && rows[lo][1] - base(rows[lo][0]) > thr) lo--;
+  while (hi < rows.length - 1 && rows[hi][1] - base(rows[hi][0]) > thr) hi++;
+  return [lo, hi];
+}
+
+// Read the page's own generator constants back, so CI's copy cannot drift
+// from the page's without a failure. See the note above on why it is a copy.
+const trConst = {
+  moments: /var Mn = (\d+), D = ([\d.]+)/.exec(traceHtml),
+  calibration: /Math\.pow\(10, ([\d.]+) - ([\d.]+) \* V\)/.exec(traceHtml),
+  sampling: /for \(var V = ([\d.]+); V <= ([\d.]+) \+ 1e-9; V \+= ([\d.]+)\)/.exec(traceHtml),
+  baseline: /\+ ([\d.]+) \+ ([\d.]+) \* \(V - ([\d.]+)\)\)\.toFixed/.exec(traceHtml),
+};
+const trExpect = {
+  moments: ["20000", "1.30"],
+  calibration: ["10.5", "0.70"],
+  sampling: ["6.5", "11.0", "0.025"],
+  baseline: ["0.002", "0.0015", "6.5"],
+};
+Object.keys(trExpect).forEach((k) => {
+  const m = trConst[k];
+  const got = m ? m.slice(1) : null;
+  if (!got || got.join(",") !== trExpect[k].join(",")) {
+    failed++;
+    cases.push({
+      ok: false,
+      name: 'gpc-trace demo generator "' + k + '" differs from the one the published table was computed from',
+      actual: got ? got.join(",") : "not found",
+      expected: trExpect[k].join(","),
+      tol: 0, unit: "",
+    });
+  }
+});
+
+const trBase = trBaseline(trRows);
+const trFull = trAnalyse(trRows, 0, trRows.length - 1, trBase);
+
+// The generator's own numbers must come back out. If this fails, either the
+// summation is wrong or the demo trace no longer is what the page says it is.
+check("trace analyser recovers the generator's Mn", trFull.Mn, TR_MN, 1, "g/mol");
+check("trace analyser recovers the generator's Mw", trFull.Mw, TR_MN * TR_D, 1, "g/mol");
+check("trace analyser recovers the generator's Đ", trFull.D, TR_D, 0.0001, "");
+
+// Now the published table. Clipping can only ever narrow a distribution, so
+// the direction of each error is itself an assertion: Mn high, Đ low, always.
+const trPublished = [...traceHtml.matchAll(
+  /<tr><td>[^<]*<\/td><td class="num">([\d,]+)<\/td><td class="num">([\d,]+)<\/td><td class="num">(1\.\d{4})<\/td>/g
+)].map((m) => [Number(m[1].replace(/,/g, "")), Number(m[2].replace(/,/g, "")), Number(m[3])]);
+
+if (trPublished.length !== 6) {
+  failed++;
+  cases.push({ ok: false, name: "gpc-trace.html worked example has 6 rows to check", actual: trPublished.length, expected: 6, tol: 0, unit: "rows" });
+}
+
+const trThresholds = [0.10, 0.05, 0.02, 0.01, 0.005];
+trThresholds.forEach((f, i) => {
+  const [lo, hi] = trLimits(trRows, trBase, f);
+  const r = trAnalyse(trRows, lo, hi, trBase);
+  const pub = trPublished[i];
+  if (!pub) return;
+  if (sf3(r.Mn) !== pub[0] || sf3(r.Mw) !== pub[1]) {
+    failed++;
+    cases.push({ ok: false, name: "gpc-trace row " + (f * 100) + "%: page prints Mn " + pub[0] + ", Mw " + pub[1],
+      actual: pub[0] + "/" + pub[1], expected: sf3(r.Mn) + "/" + sf3(r.Mw), tol: 0, unit: "g/mol" });
+  }
+  check("gpc-trace Đ published at " + (f * 100) + "%", r.D, pub[2], 0.00005, "");
+  // Direction, not just magnitude.
+  if (!(r.Mn > TR_MN && r.D < TR_D)) {
+    failed++;
+    cases.push({ ok: false, name: "clipping at " + (f * 100) + "% must raise Mn and lower Đ",
+      actual: "Mn " + Math.round(r.Mn) + ", Đ " + r.D.toFixed(4), expected: "Mn > 20000, Đ < 1.3", tol: 0, unit: "" });
+  }
+});
+
+// And the claim the page argues from: Đ takes roughly twice the hit Mn does.
+const tr2 = trAnalyse(trRows, ...trLimits(trRows, trBase, 0.10), trBase);
+const ratio = Math.abs(tr2.D / TR_D - 1) / Math.abs(tr2.Mn / TR_MN - 1);
+check("Đ error is about twice the Mn error at 10%", ratio, 1.95, 0.25, "x");
+
 // ---- Converted dispersity: gpc-calibration.html ----------------------------
 // Both moments go through the same transform, so the ratio between them has a
 // closed form containing no K: D_true = D_app^((1+a_std)/(1+a_sample)). The page

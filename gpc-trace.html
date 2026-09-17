@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC Trace Analyzer: PolyTechniques</title>
+<meta name="description" content="Paste a raw GPC chromatogram and a calibration, and compute Mn, Mw, Mz and dispersity slice by slice - including how much those numbers move when you move the integration limits.">
+<link rel="canonical" href="https://getpolytechniques.com/gpc-trace.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="GPC Trace Analyzer: PolyTechniques">
+<meta property="og:description" content="Paste a raw GPC chromatogram and compute Mn, Mw, Mz and dispersity slice by slice, with the integration-limit sensitivity shown.">
+<meta property="og:url" content="https://getpolytechniques.com/gpc-trace.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GPC Trace Analyzer: PolyTechniques">
+<meta name="twitter:description" content="Compute Mn, Mw, Mz and Đ from a raw GPC chromatogram, and see how much they move with the integration limits.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "GPC Trace Analyzer",
+  "url": "https://getpolytechniques.com/gpc-trace.html",
+  "description": "Paste a raw GPC chromatogram and a calibration, and compute Mn, Mw, Mz and dispersity slice by slice, including the sensitivity to integration limits.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js?v=1"></script>
+<script src="nav.js?v=27" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=103">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>GPC Trace Analyzer</h1>
+      <p class="subtitle">Compute M&#8345;, M<sub>w</sub>, M<sub>z</sub> and &#272; from a raw chromatogram, and see how far they move when you move the limits</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>What this does</h3>
+    <p class="guide-note">
+      Every other molecular weight tool on this site asks you for M&#8345; and M<sub>w</sub> as though those were things you measured. They are not. They are things your chromatography software <em>computed</em>, from a trace, using a calibration and a pair of integration limits somebody chose. This page does that computation in the open, on your own data, so you can see what the choices were worth.
+    </p>
+    <p class="guide-note">
+      The arithmetic is the standard slice summation. A GPC concentration detector reads a signal proportional to the mass of polymer eluting at each moment, so after subtracting a baseline, each slice <em>i</em> contributes a mass h<sub>i</sub> at a molecular weight M<sub>i</sub> read off the calibration:
+    </p>
+    <div class="guide-formula">
+      M&#8345; = &Sigma;h<sub>i</sub> &divide; &Sigma;(h<sub>i</sub>/M<sub>i</sub>) &nbsp;&nbsp;&nbsp; M<sub>w</sub> = &Sigma;(h<sub>i</sub>M<sub>i</sub>) &divide; &Sigma;h<sub>i</sub> &nbsp;&nbsp;&nbsp; M<sub>z</sub> = &Sigma;(h<sub>i</sub>M<sub>i</sub><sup>2</sup>) &divide; &Sigma;(h<sub>i</sub>M<sub>i</sub>)
+    </div>
+    <p class="guide-note">
+      Nothing in those three expressions is difficult. What makes GPC numbers soft is everything <em>around</em> them: where the baseline sits, where the integration starts and stops, and whether the calibration was ever measured in the region you are reading. This page reports all three alongside the answer instead of behind it.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Analyze a trace</h3>
+
+    <div class="subsection">
+      <div class="subsection-title">Chromatogram</div>
+      <div class="field">
+        <label for="tr-data">Two columns: retention volume (mL) or time (min), and detector response. Tabs, spaces or commas. Header lines are ignored.</label>
+        <textarea id="tr-data" class="data-paste" rows="6" spellcheck="false"></textarea>
+        <p class="hint" id="tr-data-hint"></p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Calibration</div>
+      <div class="grid">
+        <div class="field">
+          <label for="tr-cal-mode">Source</label>
+          <select id="tr-cal-mode">
+            <option value="loglinear">Log-linear coefficients</option>
+            <option value="standards">Fit from standards</option>
+          </select>
+        </div>
+        <div class="field" id="tr-f-a">
+          <label for="tr-cal-a">A in log&#8321;&#8320;M = A &minus; B&middot;V</label>
+          <input type="number" id="tr-cal-a" value="10.5" step="any">
+        </div>
+        <div class="field" id="tr-f-b">
+          <label for="tr-cal-b">B (slope, per mL)</label>
+          <input type="number" id="tr-cal-b" value="0.70" step="any" min="0">
+        </div>
+      </div>
+      <div class="field" id="tr-f-std" hidden>
+        <label for="tr-std">Standards: retention volume and molecular weight, one pair per line</label>
+        <textarea id="tr-std" class="data-paste" rows="5" spellcheck="false"></textarea>
+        <p class="hint" id="tr-std-hint"></p>
+      </div>
+      <div class="grid" id="tr-f-order" hidden>
+        <div class="field">
+          <label for="tr-order">Fit order</label>
+          <select id="tr-order">
+            <option value="1">1 (log-linear)</option>
+            <option value="3" selected>3 (cubic, the usual default)</option>
+            <option value="2">2 (quadratic)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Baseline and limits</div>
+      <div class="grid">
+        <div class="field">
+          <label for="tr-base">Baseline</label>
+          <select id="tr-base">
+            <option value="fit">Fitted from both ends</option>
+            <option value="ends">Straight line between the limits</option>
+            <option value="none">None (signal is already zeroed)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tr-thresh">Integrate down to</label>
+          <select id="tr-thresh">
+            <option value="0.10">10% of peak height</option>
+            <option value="0.05">5% of peak height</option>
+            <option value="0.02" selected>2% of peak height</option>
+            <option value="0.01">1% of peak height</option>
+            <option value="0.005">0.5% of peak height</option>
+            <option value="0.001">0.1% of peak height</option>
+            <option value="manual">Limits I set below</option>
+          </select>
+        </div>
+        <div class="field" id="tr-f-lo" hidden>
+          <label for="tr-lo">Start at (x)</label>
+          <input type="number" id="tr-lo" step="any">
+        </div>
+        <div class="field" id="tr-f-hi" hidden>
+          <label for="tr-hi">Stop at (x)</label>
+          <input type="number" id="tr-hi" step="any">
+        </div>
+      </div>
+    </div>
+
+    <div id="tr-plot" class="chart-wrap"></div>
+    <p class="diagram-caption" id="tr-plot-caption"></p>
+
+    <div class="stat-grid" id="tr-stats" style="margin-top:16px;"></div>
+    <div id="tr-warn"></div>
+
+    <h4 id="tr-sens-title" style="margin-top:22px;">What the limits are worth</h4>
+    <p class="guide-note" id="tr-sens-note"></p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data" id="tr-sens">
+        <thead><tr><th>Integrate down to</th><th class="num">Window</th><th class="num">M&#8345;</th><th class="num">M<sub>w</sub></th><th class="num">&#272;</th><th class="num">Area kept</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>A worked example with a known answer</h3>
+    <p class="guide-note">
+      The trace the page loads with is not a real injection. It was generated from an exact log-normal distribution with M&#8345;&nbsp;=&nbsp;20,000&nbsp;g/mol and &#272;&nbsp;=&nbsp;1.300, sampled every 0.025&nbsp;mL, and given a gently rising baseline so the baseline correction has something to do. That matters: it means the right answer is known before the page computes anything, so the gap between the right answer and the reported one is measurable rather than arguable.
+    </p>
+    <p class="guide-note">
+      Integrate the whole trace and the summation returns M&#8345;&nbsp;=&nbsp;20,000 and &#272;&nbsp;=&nbsp;1.3000, which is the check that the arithmetic is right. Then cut the tails off, the way every real integration does:
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>Integrate down to</th><th class="num">M&#8345;</th><th class="num">M<sub>w</sub></th><th class="num">&#272; (4&nbsp;dp)</th><th class="num">M&#8345; error</th><th class="num">&#272; error</th></tr></thead>
+        <tbody>
+          <tr><td>10% of peak height</td><td class="num">20,400</td><td class="num">25,400</td><td class="num">1.2440</td><td class="num">+2.2%</td><td class="num">&minus;4.3%</td></tr>
+          <tr><td>5%</td><td class="num">20,200</td><td class="num">25,700</td><td class="num">1.2689</td><td class="num">+1.2%</td><td class="num">&minus;2.4%</td></tr>
+          <tr><td>2%</td><td class="num">20,100</td><td class="num">25,800</td><td class="num">1.2844</td><td class="num">+0.6%</td><td class="num">&minus;1.2%</td></tr>
+          <tr><td>1%</td><td class="num">20,100</td><td class="num">25,900</td><td class="num">1.2914</td><td class="num">+0.3%</td><td class="num">&minus;0.7%</td></tr>
+          <tr><td>0.5%</td><td class="num">20,000</td><td class="num">26,000</td><td class="num">1.2955</td><td class="num">+0.2%</td><td class="num">&minus;0.3%</td></tr>
+          <tr><td>the whole trace</td><td class="num">20,000</td><td class="num">26,000</td><td class="num">1.3000</td><td class="num">0.0%</td><td class="num">0.0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      Two things fall out of that table, and both are worth carrying to a real sample.
+    </p>
+    <p class="guide-note">
+      <strong>The error only ever runs one way.</strong> Integration limits discard tail, and a distribution with its tails clipped is narrower than the one you injected. So &#272; is always reported <em>low</em> and M&#8345; always <em>high</em>, never the reverse. A sample integrated at 10% of peak height reads &#272;&nbsp;=&nbsp;1.244 when it is really 1.300 &ndash; and there is nothing in the chromatogram to tell you that, because the trace looks perfectly clean. This is the mechanism behind the well-known observation that two analysts integrating one raw file disagree: they are not making random errors in opposite directions, they are both clipping, by different amounts.
+    </p>
+    <p class="guide-note">
+      <strong>&#272; is about twice as sensitive as M&#8345;.</strong> At every row above, the dispersity error is roughly double the M&#8345; error, because &#272; is a ratio of two moments that move in opposite directions when you clip &ndash; M&#8345; rises as the low-M tail goes, M<sub>w</sub> falls as the high-M tail goes, and the ratio takes both hits. If you are comparing dispersities between samples, matching integration limits matters more than anything else you could do to the method.
+    </p>
+    <p class="guide-note">
+      It is worth putting that next to the opposite result from the <a href="gpc-calibration.html">calibration converter</a>. There, &#272; is the <em>robust</em> number: converting between polymer scales transforms it as &#272;<sub>true</sub>&nbsp;=&nbsp;&#272;<sub>apparent</sub><sup>(1+&alpha;<sub>std</sub>)/(1+&alpha;<sub>sample</sub>)</sup>, which contains no K at all, so a badly chosen calibration constant leaves dispersity untouched. Here it is the fragile one. The two are not in tension: dispersity survives a wrong <em>molecular weight axis</em> and does not survive a wrong <em>integration window</em>, because the first rescales the axis and the second throws material away.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>What this cannot do for you</h3>
+    <ul class="guide-list">
+      <li><strong>It cannot fix a calibration that was never measured where you are reading.</strong> If your peak runs past the last standard you injected, the molecular weight out there is an extrapolation of a polynomial, not a measurement, and a cubic fit can bend hard beyond its data. The page reports how much of your peak area sits outside the standards' range; treat anything above a few percent as a reason to run more standards rather than a number to report.</li>
+      <li><strong>It cannot separate band broadening from the real distribution.</strong> Every column adds spreading, so a measured trace is the true distribution convolved with the instrument's response. That inflates &#272; &ndash; in the opposite direction from the clipping above, which is why a narrow standard reads &#272;&nbsp;&asymp;&nbsp;1.02 rather than 1.00. Deconvolving it needs a measured broadening function for your bank.</li>
+      <li><strong>It assumes the detector response is proportional to mass.</strong> That is a fair assumption for RI on a homopolymer well above oligomer molecular weights. It fails for a UV detector on a copolymer whose composition drifts across the peak, and it fails near the oligomer end where end groups change dn/dc per unit mass.</li>
+      <li><strong>It cannot see coelution.</strong> Anything past the exclusion limit stacks at one volume, and this page will faithfully integrate that stack as though it were separated. The <a href="gpc-peak-interpretation.html">peak interpretation page</a> covers what those artifacts look like.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <ul class="guide-list">
+      <li><a href="gpc-peak-interpretation.html">GPC peak interpretation</a> &ndash; what the shape of the trace is telling you, and how to plan a method for a given polymer.</li>
+      <li><a href="gpc-calibration.html">GPC calibration converter</a> &ndash; turn a polystyrene-equivalent molecular weight into a true one.</li>
+      <li><a href="dispersity-predictor.html">Dispersity predictor</a> &ndash; what &#272; your polymerization should have produced, to compare against what you just integrated.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>For planning and sanity checking only. A molecular weight is only reproducible when reported with its calibration standards, eluent, column set and integration limits.</p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+
+  // ---- The demo trace -------------------------------------------------------
+  // Generated from an exact log-normal so the page has a ground truth rather
+  // than an assertion. For lnM ~ N(mu, s2): Mn = exp(mu + s2/2) and
+  // Mw/Mn = exp(s2); the WEIGHT distribution in lnM is Gaussian with the same
+  // s2 centred at mu + s2, and an RI detector reads dW/dV, so with a log-linear
+  // calibration the chromatogram is simply that Gaussian. A gently rising
+  // baseline is added so the baseline correction has something real to remove.
+  var DEMO = (function () {
+    var Mn = 20000, D = 1.30, s2 = Math.log(D), mu = Math.log(Mn) - s2 / 2, muW = mu + s2;
+    var out = [];
+    for (var V = 6.5; V <= 11.0 + 1e-9; V += 0.025) {
+      var x = Math.log(Math.pow(10, 10.5 - 0.70 * V));
+      var g = Math.exp(-Math.pow(x - muW, 2) / (2 * s2));
+      out.push(V.toFixed(3) + "  " + (g + 0.002 + 0.0015 * (V - 6.5)).toFixed(5));
+    }
+    return out.join("\n");
+  })();
+
+  var DEMO_STD = [
+    "7.20   400000", "7.90   96000", "8.60   30000",
+    "9.30   9200", "10.00  2800", "10.70  850"
+  ].join("\n");
+
+  // ---- Parsing --------------------------------------------------------------
+  // Deliberately forgiving: instrument exports carry headers, units rows, blank
+  // lines and any of three separators. A line that does not start with two
+  // finite numbers is skipped rather than fatal, and the count of skipped lines
+  // is surfaced - silently dropping half a file would be much worse than
+  // refusing it.
+  function parsePairs(text) {
+    var rows = [], skipped = 0;
+    text.split(/\r?\n/).forEach(function (line) {
+      var t = line.trim();
+      if (!t) return;
+      var parts = t.split(/[\s,;]+/);
+      var a = parseFloat(parts[0]), b = parseFloat(parts[1]);
+      if (isFinite(a) && isFinite(b)) rows.push([a, b]); else skipped++;
+    });
+    rows.sort(function (p, q) { return p[0] - q[0]; });
+    return { rows: rows, skipped: skipped };
+  }
+
+  // ---- Least squares polynomial, for the standards fit ----------------------
+  function polyFit(pts, order) {
+    var n = order + 1, i, j, k;
+    var A = [], b = [];
+    for (i = 0; i < n; i++) { A.push(new Array(n).fill(0)); b.push(0); }
+    pts.forEach(function (p) {
+      var x = p[0], y = p[1], pw = [];
+      for (k = 0; k < 2 * n; k++) pw.push(Math.pow(x, k));
+      for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) A[i][j] += pw[i + j];
+        b[i] += pw[i] * y;
+      }
+    });
+    // Gaussian elimination with partial pivoting.
+    for (i = 0; i < n; i++) {
+      var piv = i;
+      for (k = i + 1; k < n; k++) if (Math.abs(A[k][i]) > Math.abs(A[piv][i])) piv = k;
+      if (Math.abs(A[piv][i]) < 1e-14) return null;
+      var tA = A[i]; A[i] = A[piv]; A[piv] = tA;
+      var tb = b[i]; b[i] = b[piv]; b[piv] = tb;
+      for (k = i + 1; k < n; k++) {
+        var f = A[k][i] / A[i][i];
+        for (j = i; j < n; j++) A[k][j] -= f * A[i][j];
+        b[k] -= f * b[i];
+      }
+    }
+    var c = new Array(n).fill(0);
+    for (i = n - 1; i >= 0; i--) {
+      var s = b[i];
+      for (j = i + 1; j < n; j++) s -= A[i][j] * c[j];
+      c[i] = s / A[i][i];
+    }
+    var ybar = pts.reduce(function (a2, p) { return a2 + p[1]; }, 0) / pts.length;
+    var ssTot = 0, ssRes = 0;
+    pts.forEach(function (p) {
+      var yh = c.reduce(function (a2, ci, ix) { return a2 + ci * Math.pow(p[0], ix); }, 0);
+      ssRes += Math.pow(p[1] - yh, 2);
+      ssTot += Math.pow(p[1] - ybar, 2);
+    });
+    return { c: c, r2: ssTot > 0 ? 1 - ssRes / ssTot : 1 };
+  }
+
+  // ---- Calibration ----------------------------------------------------------
+  function calibration() {
+    if ($("tr-cal-mode").value === "standards") {
+      var p = parsePairs($("tr-std").value);
+      var pts = p.rows.filter(function (r) { return r[1] > 0; })
+        .map(function (r) { return [r[0], Math.log10(r[1])]; });
+      var order = parseInt($("tr-order").value, 10);
+      if (pts.length < order + 1) {
+        return { err: "A fit of order " + order + " needs at least " + (order + 1) +
+          " standards; " + pts.length + " were read." };
+      }
+      var f = polyFit(pts, order);
+      if (!f) return { err: "Those standards are collinear in a way the fit cannot solve." };
+      var xs = pts.map(function (r) { return r[0]; });
+      return {
+        M: function (V) {
+          var lg = f.c.reduce(function (a, ci, ix) { return a + ci * Math.pow(V, ix); }, 0);
+          return Math.pow(10, lg);
+        },
+        loV: Math.min.apply(null, xs), hiV: Math.max.apply(null, xs),
+        r2: f.r2, n: pts.length, order: order
+      };
+    }
+    var A = parseFloat($("tr-cal-a").value), B = parseFloat($("tr-cal-b").value);
+    if (!isFinite(A) || !isFinite(B) || B <= 0) {
+      return { err: "Enter a finite A and a positive B. B must be positive because molecular weight falls as elution volume rises." };
+    }
+    return { M: function (V) { return Math.pow(10, A - B * V); }, loV: -Infinity, hiV: Infinity };
+  }
+
+  // ---- Baseline -------------------------------------------------------------
+  // "fit" uses the outer 10% at each end, which is what copes with the drift a
+  // real run has. "ends" is the classic straight line between the integration
+  // limits. Both are offered because labs differ, and the difference between
+  // them is itself informative.
+  function baselineFn(rows, mode, lo, hi) {
+    if (mode === "none") return function () { return 0; };
+    var pts;
+    if (mode === "ends") {
+      pts = [rows[lo], rows[hi]];
+    } else {
+      var k = Math.max(3, Math.round(rows.length * 0.1));
+      pts = rows.slice(0, k).concat(rows.slice(rows.length - k));
+    }
+    var sx = 0, sy = 0, sxx = 0, sxy = 0, m = pts.length;
+    pts.forEach(function (p) { sx += p[0]; sy += p[1]; sxx += p[0] * p[0]; sxy += p[0] * p[1]; });
+    var den = m * sxx - sx * sx;
+    if (Math.abs(den) < 1e-15) { var mean = sy / m; return function () { return mean; }; }
+    var b = (m * sxy - sx * sy) / den, a = (sy - b * sx) / m;
+    return function (V) { return a + b * V; };
+  }
+
+  // ---- The summation --------------------------------------------------------
+  // Trapezoid slice widths, so an unevenly sampled export is handled honestly
+  // rather than by pretending every slice is the same width. Slices whose
+  // baseline-corrected height is at or below zero contribute nothing: a
+  // negative mass is not a small mass, it is a baseline that was set too high,
+  // and it is counted and reported instead of being summed in.
+  function analyse(rows, lo, hi, M, base) {
+    var s0 = 0, sInv = 0, sM = 0, sM2 = 0, neg = 0, peakH = -Infinity, peakV = null;
+    for (var i = lo; i <= hi; i++) {
+      var V = rows[i][0], h = rows[i][1] - base(V);
+      if (h > peakH) { peakH = h; peakV = V; }
+      if (h <= 0) { if (h < 0) neg++; continue; }
+      var wLo = i === lo ? 0 : rows[i][0] - rows[i - 1][0];
+      var wHi = i === hi ? 0 : rows[i + 1][0] - rows[i][0];
+      var w = h * (wLo + wHi) / 2;
+      var Mi = M(V);
+      if (!isFinite(Mi) || Mi <= 0) continue;
+      s0 += w; sInv += w / Mi; sM += w * Mi; sM2 += w * Mi * Mi;
+    }
+    if (s0 <= 0 || sInv <= 0) return null;
+    return {
+      area: s0, Mn: s0 / sInv, Mw: sM / s0, Mz: sM > 0 ? sM2 / sM : NaN,
+      D: (sM / s0) / (s0 / sInv), Mp: peakV === null ? NaN : M(peakV),
+      negSlices: neg, peakV: peakV
+    };
+  }
+
+  function peakIndex(rows, base) {
+    var best = -Infinity, at = 0;
+    rows.forEach(function (r, i) { var h = r[1] - base(r[0]); if (h > best) { best = h; at = i; } });
+    return { i: at, h: best };
+  }
+
+  function limitsAt(rows, base, frac) {
+    var pk = peakIndex(rows, base), thr = pk.h * frac, lo = pk.i, hi = pk.i;
+    while (lo > 0 && rows[lo][1] - base(rows[lo][0]) > thr) lo--;
+    while (hi < rows.length - 1 && rows[hi][1] - base(rows[hi][0]) > thr) hi++;
+    return [lo, hi];
+  }
+
+  function nearestIndex(rows, x) {
+    var at = 0, best = Infinity;
+    rows.forEach(function (r, i) { var d = Math.abs(r[0] - x); if (d < best) { best = d; at = i; } });
+    return at;
+  }
+
+  // ---- Formatting -----------------------------------------------------------
+  // Three significant figures, for the same reason the calibration converter
+  // uses three: a GPC molecular weight that agrees between two labs to 10-20%
+  // has no business displaying five digits.
+  function fmt(n) {
+    if (!isFinite(n)) return "n/a";
+    if (n >= 1000) return Number(n.toPrecision(3)).toLocaleString();
+    return Number(n.toPrecision(3)).toString();
+  }
+  function pct(n) { return (n * 100).toFixed(1) + "%"; }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+
+  // ---- Plot -----------------------------------------------------------------
+  // Inline SVG with the theme's own custom properties, so it follows light and
+  // dark without a redraw and without reading computed styles.
+  function plot(rows, base, lo, hi, cal) {
+    var W = 680, H = 316, Mg = { left: 46, right: 14, top: 12, bottom: 56 };
+    var pw = W - Mg.left - Mg.right, ph = H - Mg.top - Mg.bottom;
+    var xs = rows.map(function (r) { return r[0]; });
+    var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+    var hs = rows.map(function (r) { return r[1] - base(r[0]); });
+    var yMax = Math.max.apply(null, hs), yMin = Math.min(0, Math.min.apply(null, hs));
+    if (!(yMax > yMin)) yMax = yMin + 1;
+    function sx(v) { return Mg.left + ((v - x0) / (x1 - x0)) * pw; }
+    function sy(v) { return Mg.top + ((yMax - v) / (yMax - yMin)) * ph; }
+
+    var s = "";
+    // The integrated window, drawn first so the trace sits on top of it.
+    s += '<rect x="' + sx(rows[lo][0]) + '" y="' + Mg.top + '" width="' +
+      Math.max(0, sx(rows[hi][0]) - sx(rows[lo][0])) + '" height="' + ph +
+      '" fill="var(--primary, #5b8def)" opacity="0.10"/>';
+
+    // Where the calibration stops being a measurement.
+    if (isFinite(cal.loV) && cal.loV > x0) {
+      s += '<rect x="' + sx(x0) + '" y="' + Mg.top + '" width="' + Math.max(0, sx(cal.loV) - sx(x0)) +
+        '" height="' + ph + '" fill="var(--danger, #d9534f)" opacity="0.10"/>';
+    }
+    if (isFinite(cal.hiV) && cal.hiV < x1) {
+      s += '<rect x="' + sx(cal.hiV) + '" y="' + Mg.top + '" width="' + Math.max(0, sx(x1) - sx(cal.hiV)) +
+        '" height="' + ph + '" fill="var(--danger, #d9534f)" opacity="0.10"/>';
+    }
+
+    // Axes.
+    s += '<line x1="' + Mg.left + '" y1="' + sy(0) + '" x2="' + (W - Mg.right) + '" y2="' + sy(0) +
+      '" stroke="var(--border)" stroke-width="1.5"/>';
+    s += '<line x1="' + Mg.left + '" y1="' + Mg.top + '" x2="' + Mg.left + '" y2="' + (H - Mg.bottom) +
+      '" stroke="var(--border)" stroke-width="1.5"/>';
+
+    // x ticks, and the molecular weight each one corresponds to.
+    var nTick = 6;
+    for (var t = 0; t <= nTick; t++) {
+      var xv = x0 + (x1 - x0) * t / nTick;
+      s += '<line x1="' + sx(xv) + '" y1="' + sy(0) + '" x2="' + sx(xv) + '" y2="' + (sy(0) + 4) +
+        '" stroke="var(--border)" stroke-width="1"/>';
+      s += '<text x="' + sx(xv) + '" y="' + (sy(0) + 16) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">' +
+        xv.toFixed(2) + '</text>';
+      var Mt = cal.M(xv);
+      if (isFinite(Mt) && Mt > 0) {
+        s += '<text x="' + sx(xv) + '" y="' + (sy(0) + 29) + '" text-anchor="middle" font-size="9.5" fill="var(--text-dim)" opacity="0.75">' +
+          (Mt >= 1e6 ? (Mt / 1e6).toPrecision(2) + "M" : Mt >= 1000 ? Math.round(Mt / 1000) + "k" : Math.round(Mt)) + '</text>';
+      }
+    }
+
+    // Baseline, then the raw trace, then the corrected trace.
+    var dRaw = "", dCor = "", dBase = "";
+    rows.forEach(function (r, i) {
+      var pfx = i ? " L " : "M ";
+      dRaw += pfx + sx(r[0]) + " " + sy(r[1] - base(r[0]));
+      dBase += pfx + sx(r[0]) + " " + sy(0);
+    });
+    for (var j = lo; j <= hi; j++) {
+      dCor += (j === lo ? "M " : " L ") + sx(rows[j][0]) + " " + sy(rows[j][1] - base(rows[j][0]));
+    }
+    s += '<path d="' + dBase + '" fill="none" stroke="var(--text-dim)" stroke-width="1" opacity="0.4" stroke-dasharray="3 3"/>';
+    s += '<path d="' + dRaw + '" fill="none" stroke="var(--text-dim)" stroke-width="1.25" opacity="0.55"/>';
+    s += '<path d="' + dCor + '" fill="none" stroke="var(--primary, #5b8def)" stroke-width="2.5" stroke-linejoin="round"/>';
+
+    // Limit markers.
+    [[lo, "start"], [hi, "stop"]].forEach(function (lm) {
+      var x = sx(rows[lm[0]][0]);
+      s += '<line x1="' + x + '" y1="' + Mg.top + '" x2="' + x + '" y2="' + sy(0) +
+        '" stroke="var(--primary, #5b8def)" stroke-width="1.25" stroke-dasharray="4 3"/>';
+    });
+
+    s += '<text x="' + (W / 2) + '" y="' + (H - 3) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">retention (upper) and molecular weight, g/mol (lower)</text>';
+    s += '<text x="12" y="' + (H / 2) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)" transform="rotate(-90 12 ' + (H / 2) + ')">response, baseline corrected</text>';
+
+    return '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+      'aria-label="Chromatogram with the integrated window shaded and the integration limits marked.">' + s + '</svg>';
+  }
+
+  // ---- Main -----------------------------------------------------------------
+  var THRESHOLDS = [0.10, 0.05, 0.02, 0.01, 0.005, 0.001];
+
+  function recalc() {
+    var stats = $("tr-stats"), warn = $("tr-warn");
+    var sens = document.querySelector("#tr-sens tbody");
+    var parsed = parsePairs($("tr-data").value);
+    var rows = parsed.rows;
+
+    $("tr-data-hint").textContent = rows.length
+      ? rows.length + " points read" + (parsed.skipped ? ", " + parsed.skipped + " line(s) skipped as non-numeric" : "") +
+        ", " + rows[0][0] + " to " + rows[rows.length - 1][0]
+      : "";
+
+    function fail(msg) {
+      stats.innerHTML = '<div class="error-msg">' + msg + '</div>';
+      warn.innerHTML = ""; sens.innerHTML = "";
+      $("tr-plot").innerHTML = ""; $("tr-plot-caption").textContent = "";
+      $("tr-sens-note").textContent = "";
+    }
+
+    if (rows.length < 10) {
+      return fail("Paste at least 10 points of chromatogram. Two columns per line: retention volume or time, then detector response.");
+    }
+
+    var cal = calibration();
+    if (cal.err) return fail(esc(cal.err));
+
+    $("tr-std-hint").textContent = cal.r2 !== undefined
+      ? cal.n + " standards, order " + cal.order + " fit, R² = " + cal.r2.toFixed(5) +
+        ", calibrated from " + cal.loV + " to " + cal.hiV
+      : "";
+
+    // Baseline mode "ends" needs limits, and the limits need a baseline. Settle
+    // it with one pass on a fitted baseline, then rebuild on the chosen mode.
+    var mode = $("tr-base").value;
+    var provisional = baselineFn(rows, mode === "ends" ? "fit" : mode, 0, rows.length - 1);
+    var lo, hi;
+    if ($("tr-thresh").value === "manual") {
+      var lv = parseFloat($("tr-lo").value), hv = parseFloat($("tr-hi").value);
+      if (!isFinite(lv) || !isFinite(hv) || hv <= lv) {
+        return fail("Set a start and stop on the x axis, with the stop after the start.");
+      }
+      lo = nearestIndex(rows, lv); hi = nearestIndex(rows, hv);
+    } else {
+      var lim = limitsAt(rows, provisional, parseFloat($("tr-thresh").value));
+      lo = lim[0]; hi = lim[1];
+    }
+    if (hi - lo < 3) return fail("That window contains fewer than four points. Lower the threshold or widen the limits.");
+
+    var base = baselineFn(rows, mode, lo, hi);
+    var r = analyse(rows, lo, hi, cal.M, base);
+    if (!r) return fail("No positive signal inside those limits once the baseline was removed.");
+
+    var full = analyse(rows, 0, rows.length - 1, cal.M, base);
+    var areaKept = full && full.area > 0 ? r.area / full.area : NaN;
+
+    stats.innerHTML =
+      '<div class="stat stat--primary"><div class="label">M&#8345;</div><div class="value">' + fmt(r.Mn) + '</div><div class="sub">g/mol</div></div>' +
+      '<div class="stat"><div class="label">M<sub>w</sub></div><div class="value">' + fmt(r.Mw) + '</div><div class="sub">g/mol</div></div>' +
+      '<div class="stat"><div class="label">&#272;</div><div class="value">' + r.D.toFixed(3) + '</div><div class="sub">M<sub>w</sub> &divide; M&#8345;</div></div>' +
+      '<div class="stat"><div class="label">M<sub>z</sub></div><div class="value">' + fmt(r.Mz) + '</div><div class="sub">g/mol</div></div>' +
+      '<div class="stat"><div class="label">M<sub>p</sub></div><div class="value">' + fmt(r.Mp) + '</div><div class="sub">at the peak</div></div>';
+
+    // ---- Warnings, in the order they would mislead you ----------------------
+    var w = [];
+    if (r.negSlices) {
+      w.push("<strong>" + r.negSlices + " slice(s) inside the limits fall below the baseline.</strong> " +
+        "They were left out of the sums rather than subtracted, because a negative mass is not a small mass - " +
+        "it means the baseline is sitting above the signal. Check the baseline mode before reading anything else here.");
+    }
+    if (isFinite(cal.loV)) {
+      var outside = 0;
+      for (var i = lo; i <= hi; i++) {
+        var V = rows[i][0], h = rows[i][1] - base(V);
+        if (h <= 0) continue;
+        if (V < cal.loV || V > cal.hiV) {
+          var wl = i === lo ? 0 : rows[i][0] - rows[i - 1][0];
+          var wh = i === hi ? 0 : rows[i + 1][0] - rows[i][0];
+          outside += h * (wl + wh) / 2;
+        }
+      }
+      var fracOut = r.area > 0 ? outside / r.area : 0;
+      if (fracOut > 0.005) {
+        w.push("<strong>" + pct(fracOut) + " of the integrated area sits outside the range your standards covered (" +
+          cal.loV + " to " + cal.hiV + ").</strong> The molecular weight assigned out there is the fit extrapolated past its data, " +
+          "not a measurement, and an order-" + cal.order + " polynomial can bend sharply beyond the last standard. " +
+          "Run standards that bracket your peak, or report the result as bounded by the calibrated range.");
+      }
+    }
+    if (lo === 0 || hi === rows.length - 1) {
+      w.push("<strong>The integration ran to the edge of the data.</strong> The trace stops before the signal does, " +
+        "so some of the distribution was never exported. Whatever this page reports is a lower bound on the width.");
+    }
+    var pk = peakIndex(rows, base);
+    if (pk.i < 3 || pk.i > rows.length - 4) {
+      w.push("<strong>The peak maximum is at the edge of the trace.</strong> Either the export is clipped or the baseline " +
+        "is wrong; the moments below are not meaningful until that is resolved.");
+    }
+    warn.innerHTML = w.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    // ---- Plot ---------------------------------------------------------------
+    $("tr-plot").innerHTML = plot(rows, base, lo, hi, cal);
+    $("tr-plot-caption").textContent =
+      "Raw trace faint, integrated window shaded and bold, baseline dashed. Integrating " +
+      rows[lo][0] + " to " + rows[hi][0] + ", which keeps " + pct(areaKept) + " of the total area." +
+      (isFinite(cal.loV) ? " Red shading marks retention outside the calibrated range." : "");
+
+    // ---- The sensitivity table ---------------------------------------------
+    var rowsOut = [], atUser = null;
+    THRESHOLDS.forEach(function (f) {
+      var lm = limitsAt(rows, provisional, f);
+      if (lm[1] - lm[0] < 3) return;
+      var b2 = baselineFn(rows, mode, lm[0], lm[1]);
+      var rr = analyse(rows, lm[0], lm[1], cal.M, b2);
+      if (!rr) return;
+      var fullA = analyse(rows, 0, rows.length - 1, cal.M, b2);
+      rowsOut.push({
+        f: f, lo: rows[lm[0]][0], hi: rows[lm[1]][0], r: rr,
+        kept: fullA && fullA.area > 0 ? rr.area / fullA.area : NaN
+      });
+    });
+    sens.innerHTML = rowsOut.map(function (o) {
+      var mark = $("tr-thresh").value !== "manual" && Math.abs(o.f - parseFloat($("tr-thresh").value)) < 1e-9;
+      return "<tr" + (mark ? ' style="font-weight:600;"' : "") + "><td>" +
+        (o.f * 100) + "% of peak height" + (mark ? " (selected)" : "") + "</td>" +
+        '<td class="num">' + o.lo + " to " + o.hi + "</td>" +
+        '<td class="num">' + fmt(o.r.Mn) + "</td>" +
+        '<td class="num">' + fmt(o.r.Mw) + "</td>" +
+        '<td class="num">' + o.r.D.toFixed(3) + "</td>" +
+        '<td class="num">' + pct(o.kept) + "</td></tr>";
+    }).join("");
+
+    if (rowsOut.length >= 2) {
+      var tight = rowsOut[0], loose = rowsOut[rowsOut.length - 1];
+      var dD = (loose.r.D - tight.r.D) / tight.r.D;
+      var dMn = (loose.r.Mn - tight.r.Mn) / tight.r.Mn;
+      $("tr-sens-note").innerHTML =
+        "Nothing about the sample changes down this table &ndash; only where the integration stops. Moving from " +
+        (tight.f * 100) + "% of peak height to " + (loose.f * 100) + "% moves &#272; by " +
+        "<strong>" + pct(Math.abs(dD)) + "</strong> and M&#8345; by <strong>" + pct(Math.abs(dMn)) + "</strong>. " +
+        "Clipping always narrows a distribution, so the tighter limits report the lower &#272; and the higher M&#8345;, " +
+        "and &#272; takes roughly twice the hit because its two moments move in opposite directions. " +
+        "Report where you set the limits, and use the same ones across any samples you intend to compare.";
+    } else {
+      $("tr-sens-note").textContent = "";
+    }
+  }
+
+  // ---- Wiring ---------------------------------------------------------------
+  function syncFields() {
+    var std = $("tr-cal-mode").value === "standards";
+    $("tr-f-std").hidden = !std;
+    $("tr-f-order").hidden = !std;
+    $("tr-f-a").hidden = std;
+    $("tr-f-b").hidden = std;
+    var manual = $("tr-thresh").value === "manual";
+    $("tr-f-lo").hidden = !manual;
+    $("tr-f-hi").hidden = !manual;
+  }
+
+  $("tr-data").value = DEMO;
+  $("tr-std").value = DEMO_STD;
+
+  ["tr-data", "tr-std", "tr-cal-a", "tr-cal-b", "tr-lo", "tr-hi"].forEach(function (id) {
+    $(id).addEventListener("input", recalc);
+  });
+  ["tr-cal-mode", "tr-order", "tr-base", "tr-thresh"].forEach(function (id) {
+    $(id).addEventListener("change", function () { syncFields(); recalc(); });
+  });
+
+  // Seed the manual limits with the current auto window, so switching to
+  // "limits I set" starts from where the page already was instead of empty.
+  (function () {
+    var p = parsePairs(DEMO).rows;
+    var b = baselineFn(p, "fit", 0, p.length - 1);
+    var lm = limitsAt(p, b, 0.02);
+    $("tr-lo").value = p[lm[0]][0];
+    $("tr-hi").value = p[lm[1]][0];
+  })();
+
+  syncFields();
+  recalc();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
+}
+</script>
+
+</body>
+</html>

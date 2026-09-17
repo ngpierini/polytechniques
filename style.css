@@ -3319,3 +3319,22 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 .smap-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
 .smap-count { font-variant-numeric: tabular-nums; opacity: 0.7; }
 @media (pointer: coarse) { .smap-key-item { min-height: 44px; } }
+
+/* The HTML "hidden" attribute is styled by the UA sheet at the lowest
+   possible specificity, so ANY class rule that sets display beats it and the
+   element stays on screen. That had already been patched five times here, once
+   per element that failed to hide. This is the general form of those five. */
+[hidden] { display: none !important; }
+
+/* Pasted instrument data is a table, not a sentence: it only lines up in a
+   fixed pitch, and wrapping a long row destroys the column structure that
+   tells you at a glance whether the paste came through intact. Scoped to a
+   class rather than applied to every textarea, because the other textareas on
+   the site hold prose. */
+.data-paste {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: var(--fs-2xs);
+  line-height: 1.45;
+  white-space: pre;
+  overflow-wrap: normal;
+}
