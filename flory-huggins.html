@@ -408,9 +408,9 @@
     var spin = spinodalRoots(N1, N2, chi);
 
     stats.innerHTML =
-      '<div class="stat stat--primary"><div class="label"><span class="keepcase">&chi;</span><sub>c</sub></div><div class="value">' + fmt(cc, 5) + '</div><div class="sub">critical &chi;</div></div>' +
-      '<div class="stat"><div class="label"><span class="keepcase">&phi;</span><sub>c</sub></div><div class="value">' + fmtPhi(pc) + '</div><div class="sub">critical composition</div></div>' +
-      '<div class="stat"><div class="label"><span class="keepcase">&chi; &divide; &chi;</span><sub>c</sub></div><div class="value">' + (chi / cc).toFixed(2) + '</div><div class="sub">how far past the edge</div></div>';
+      '<div class="stat stat--primary"><div class="label"><span class="keepcase">&chi;<sub>c</sub></span></div><div class="value">' + fmt(cc, 5) + '</div><div class="sub">critical &chi;</div></div>' +
+      '<div class="stat"><div class="label"><span class="keepcase">&phi;<sub>c</sub></span></div><div class="value">' + fmtPhi(pc) + '</div><div class="sub">critical composition</div></div>' +
+      '<div class="stat"><div class="label"><span class="keepcase">&chi; &divide; &chi;<sub>c</sub></span></div><div class="value">' + (chi / cc).toFixed(2) + '</div><div class="sub">how far past the edge</div></div>';
 
     var v = [];
     if (!bino) {
