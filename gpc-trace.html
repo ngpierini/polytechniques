@@ -80,6 +80,18 @@
         <textarea id="tr-data" class="data-paste" rows="6" spellcheck="false"></textarea>
         <p class="hint" id="tr-data-hint"></p>
       </div>
+      <div class="grid">
+        <div class="field">
+          <label for="tr-ycol">Detector response is in column</label>
+          <select id="tr-ycol">
+            <option value="1" selected>2</option>
+            <option value="2">3</option>
+            <option value="3">4</option>
+            <option value="4">5</option>
+          </select>
+          <p class="hint">Column 1 is always the x axis. Choose the concentration detector &ndash; usually RI. The slice sums assume the signal is proportional to mass, which a UV channel is only for a homopolymer with a constant chromophore, and a light-scattering channel is not at all.</p>
+        </div>
+      </div>
     </div>
 
     <div class="subsection">
@@ -262,17 +274,58 @@
   // finite numbers is skipped rather than fatal, and the count of skipped lines
   // is surfaced - silently dropping half a file would be much worse than
   // refusing it.
-  function parsePairs(text) {
-    var rows = [], skipped = 0;
+  // ---- splitFields: begin (shared with the other paste-driven page; CI checks the copies match)
+  // Split one line of an instrument export into numeric fields.
+  //
+  // The comma is the hazard. In an English-locale CSV it separates fields; in
+  // a European-locale export it is the decimal point, and those files use a
+  // semicolon or tab between fields instead. Reading "6,500;0,00200" with the
+  // comma as a separator gives x = 6, y = 500 - and the analysis downstream
+  // returns a plausible-looking wrong answer rather than an error. So:
+  //   - a semicolon or tab on the line means commas inside fields are decimal;
+  //   - whitespace-separated fields each holding one comma between digits are
+  //     decimal commas too ("6,500 0,00200");
+  //   - otherwise the comma is a separator.
+  // A field holding both a comma and a point uses the comma as a thousands
+  // separator, and it is dropped.
+  function splitFields(line) {
+    var t = line.trim(), decimalComma = false, parts;
+    if (!t) return { fields: [], decimalComma: false };
+    function clean(x, dec) {
+      if (x.indexOf(",") !== -1 && x.indexOf(".") !== -1) return x.replace(/,/g, "");
+      return dec ? x.replace(",", ".") : x;
+    }
+    if (/[;\t]/.test(t)) {
+      parts = t.split(/\s*[;\t]\s*/);
+      decimalComma = parts.some(function (x) { return /\d,\d/.test(x) && x.indexOf(".") === -1; });
+      return { fields: parts.map(function (x) { return clean(x, true); }), decimalComma: decimalComma };
+    }
+    parts = t.split(/\s+/);
+    if (parts.length >= 2 &&
+        parts.some(function (x) { return /\d,\d/.test(x) && x.indexOf(".") === -1; }) &&
+        parts.every(function (x) { return (x.match(/,/g) || []).length <= 1; })) {
+      return { fields: parts.map(function (x) { return clean(x, true); }), decimalComma: true };
+    }
+    return { fields: t.split(/[\s,]+/).map(function (x) { return clean(x, false); }), decimalComma: false };
+  }
+  // ---- splitFields: end
+
+  // ycol is the 0-based column holding the response; the x axis is always the
+  // first. Exports routinely carry RI, UV and light scattering side by side.
+  function parsePairs(text, ycol) {
+    var rows = [], skipped = 0, decimalComma = false;
+    var yc = ycol === undefined ? 1 : ycol;
     text.split(/\r?\n/).forEach(function (line) {
-      var t = line.trim();
-      if (!t) return;
-      var parts = t.split(/[\s,;]+/);
-      var a = parseFloat(parts[0]), b = parseFloat(parts[1]);
-      if (isFinite(a) && isFinite(b)) rows.push([a, b]); else skipped++;
+      var sf = splitFields(line);
+      if (!sf.fields.length) return;
+      var a = parseFloat(sf.fields[0]), b = parseFloat(sf.fields[yc]);
+      if (isFinite(a) && isFinite(b)) {
+        rows.push([a, b]);
+        if (sf.decimalComma) decimalComma = true;
+      } else skipped++;
     });
     rows.sort(function (p, q) { return p[0] - q[0]; });
-    return { rows: rows, skipped: skipped };
+    return { rows: rows, skipped: skipped, decimalComma: decimalComma };
   }
 
   // ---- Least squares polynomial, for the standards fit ----------------------
@@ -512,12 +565,13 @@
   function recalc() {
     var stats = $("tr-stats"), warn = $("tr-warn");
     var sens = document.querySelector("#tr-sens tbody");
-    var parsed = parsePairs($("tr-data").value);
+    var parsed = parsePairs($("tr-data").value, parseInt($("tr-ycol").value, 10));
     var rows = parsed.rows;
 
     $("tr-data-hint").textContent = rows.length
       ? rows.length + " points read" + (parsed.skipped ? ", " + parsed.skipped + " line(s) skipped as non-numeric" : "") +
-        ", " + rows[0][0] + " to " + rows[rows.length - 1][0]
+        ", " + rows[0][0] + " to " + rows[rows.length - 1][0] +
+        (parsed.decimalComma ? ". Decimal commas were read as decimal points." : "")
       : "";
 
     function fail(msg) {
@@ -554,7 +608,7 @@
       var lim = limitsAt(rows, provisional, parseFloat($("tr-thresh").value));
       lo = lim[0]; hi = lim[1];
     }
-    if (hi - lo < 3) return fail("That window contains fewer than four points. Lower the threshold or widen the limits.");
+    if (hi - lo < 3) return fail("That window contains fewer than four points. Lower the threshold or widen the limits &ndash; or check the response column, since a column with no peak in it produces exactly this.");
 
     var base = baselineFn(rows, mode, lo, hi);
     var r = analyse(rows, lo, hi, cal.M, base);
@@ -673,7 +727,7 @@
   ["tr-data", "tr-std", "tr-cal-a", "tr-cal-b", "tr-lo", "tr-hi"].forEach(function (id) {
     $(id).addEventListener("input", recalc);
   });
-  ["tr-cal-mode", "tr-order", "tr-base", "tr-thresh"].forEach(function (id) {
+  ["tr-cal-mode", "tr-order", "tr-base", "tr-thresh", "tr-ycol"].forEach(function (id) {
     $(id).addEventListener("change", function () { syncFields(); recalc(); });
   });
 

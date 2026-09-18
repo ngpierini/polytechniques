@@ -82,6 +82,21 @@
       </div>
       <div class="grid">
         <div class="field">
+          <label for="tt-ct">Temperature is in column</label>
+          <select id="tt-ct"><option value="0" selected>1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option></select>
+        </div>
+        <div class="field">
+          <label for="tt-cw">Frequency is in column</label>
+          <select id="tt-cw"><option value="0">1</option><option value="1" selected>2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option></select>
+        </div>
+        <div class="field">
+          <label for="tt-cg">Modulus is in column</label>
+          <select id="tt-cg"><option value="0">1</option><option value="1">2</option><option value="2" selected>3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option></select>
+          <p class="hint">Rheometer exports usually carry G&prime; and G&Prime; side by side. Superpose each in turn: if they give different shift factors, the material is not thermorheologically simple over this range.</p>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="field">
           <label for="tt-unit">Temperature column is in</label>
           <select id="tt-unit">
             <option value="K" selected>kelvin</option>
@@ -232,29 +247,82 @@
   })();
 
   // ---- Parsing --------------------------------------------------------------
-  function parse(text, unit) {
-    var rows = [], skipped = 0;
+  // ---- splitFields: begin (shared with the other paste-driven page; CI checks the copies match)
+  // Split one line of an instrument export into numeric fields.
+  //
+  // The comma is the hazard. In an English-locale CSV it separates fields; in
+  // a European-locale export it is the decimal point, and those files use a
+  // semicolon or tab between fields instead. Reading "6,500;0,00200" with the
+  // comma as a separator gives x = 6, y = 500 - and the analysis downstream
+  // returns a plausible-looking wrong answer rather than an error. So:
+  //   - a semicolon or tab on the line means commas inside fields are decimal;
+  //   - whitespace-separated fields each holding one comma between digits are
+  //     decimal commas too ("6,500 0,00200");
+  //   - otherwise the comma is a separator.
+  // A field holding both a comma and a point uses the comma as a thousands
+  // separator, and it is dropped.
+  function splitFields(line) {
+    var t = line.trim(), decimalComma = false, parts;
+    if (!t) return { fields: [], decimalComma: false };
+    function clean(x, dec) {
+      if (x.indexOf(",") !== -1 && x.indexOf(".") !== -1) return x.replace(/,/g, "");
+      return dec ? x.replace(",", ".") : x;
+    }
+    if (/[;\t]/.test(t)) {
+      parts = t.split(/\s*[;\t]\s*/);
+      decimalComma = parts.some(function (x) { return /\d,\d/.test(x) && x.indexOf(".") === -1; });
+      return { fields: parts.map(function (x) { return clean(x, true); }), decimalComma: decimalComma };
+    }
+    parts = t.split(/\s+/);
+    if (parts.length >= 2 &&
+        parts.some(function (x) { return /\d,\d/.test(x) && x.indexOf(".") === -1; }) &&
+        parts.every(function (x) { return (x.match(/,/g) || []).length <= 1; })) {
+      return { fields: parts.map(function (x) { return clean(x, true); }), decimalComma: true };
+    }
+    return { fields: t.split(/[\s,]+/).map(function (x) { return clean(x, false); }), decimalComma: false };
+  }
+  // ---- splitFields: end
+
+  // Readings within this many kelvin of the previous one belong to the same
+  // sweep. A rheometer's oven holds a set point to a tenth of a kelvin or so,
+  // and every point carries its own reading; grouping by exact temperature
+  // turned a 16-sweep dataset with +/-0.08 K of jitter into 272 one-point
+  // "sweeps" and the fit collapsed. Real temperature steps are a few kelvin.
+  var SWEEP_GAP = 0.5;
+
+  // ---- parseSweeps: begin
+  // cols: 0-based column indices { T, w, G }.
+  function parse(text, unit, cols) {
+    var c = cols || { T: 0, w: 1, G: 2 };
+    var rows = [], skipped = 0, decimalComma = false;
     text.split(/\r?\n/).forEach(function (line) {
-      var t = line.trim();
-      if (!t) return;
-      var p = t.split(/[\s,;]+/);
-      var T = parseFloat(p[0]), w = parseFloat(p[1]), G = parseFloat(p[2]);
+      var sf = splitFields(line);
+      if (!sf.fields.length) return;
+      var T = parseFloat(sf.fields[c.T]), w = parseFloat(sf.fields[c.w]), G = parseFloat(sf.fields[c.G]);
       if (!isFinite(T) || !isFinite(w) || !isFinite(G) || w <= 0 || G <= 0) { skipped++; return; }
+      if (sf.decimalComma) decimalComma = true;
       rows.push([unit === "C" ? T + 273.15 : T, w, G]);
     });
-    // Group by temperature. Rounded to 0.01 K so a float printed twice in an
-    // export does not become two sweeps of one point each.
-    var byT = {};
+    // Cluster by temperature: sort, then start a new sweep wherever the gap to
+    // the previous reading exceeds SWEEP_GAP. The sweep's temperature is the
+    // mean of its readings.
+    rows.sort(function (a, b) { return a[0] - b[0]; });
+    var groups = [], cur = null, maxSpread = 0;
     rows.forEach(function (r) {
-      var key = r[0].toFixed(2);
-      (byT[key] = byT[key] || []).push([Math.log10(r[1]), Math.log10(r[2])]);
+      if (!cur || r[0] - cur.last > SWEEP_GAP) { cur = { Ts: [], pts: [], last: r[0] }; groups.push(cur); }
+      cur.Ts.push(r[0]);
+      cur.pts.push([Math.log10(r[1]), Math.log10(r[2])]);
+      cur.last = r[0];
     });
-    var sets = Object.keys(byT).map(function (k) {
-      var pts = byT[k].slice().sort(function (a, b) { return a[0] - b[0]; });
-      return { T: parseFloat(k), pts: pts };
-    }).sort(function (a, b) { return a.T - b.T; });
-    return { sets: sets, skipped: skipped, n: rows.length };
+    var sets = groups.map(function (g) {
+      var sum = 0;
+      g.Ts.forEach(function (v) { sum += v; });
+      maxSpread = Math.max(maxSpread, g.Ts[g.Ts.length - 1] - g.Ts[0]);
+      return { T: sum / g.Ts.length, pts: g.pts.slice().sort(function (a, b) { return a[0] - b[0]; }) };
+    });
+    return { sets: sets, skipped: skipped, n: rows.length, decimalComma: decimalComma, maxSpread: maxSpread };
   }
+  // ---- parseSweeps: end
 
   // ---- Shifting -------------------------------------------------------------
   // Each sweep is aligned onto its NEIGHBOUR, not onto the accumulated master
@@ -405,14 +473,19 @@
   }
 
   function recalc(refill) {
-    var parsed = parse($("tt-data").value, $("tt-unit").value);
+    var parsed = parse($("tt-data").value, $("tt-unit").value, {
+      T: parseInt($("tt-ct").value, 10), w: parseInt($("tt-cw").value, 10), G: parseInt($("tt-cg").value, 10)
+    });
     var sets = parsed.sets;
     var stats = $("tt-stats"), notes = $("tt-notes");
     var body = document.querySelector("#tt-shifts tbody");
 
     $("tt-data-hint").textContent = parsed.n
       ? parsed.n + " points in " + sets.length + " sweeps" +
-        (parsed.skipped ? ", " + parsed.skipped + " line(s) skipped" : "")
+        (parsed.skipped ? ", " + parsed.skipped + " line(s) skipped" : "") +
+        (parsed.maxSpread > 0.005 ? ". Readings within " + SWEEP_GAP + " K were grouped into one sweep; the widest spans " +
+          parsed.maxSpread.toFixed(2) + " K" : "") +
+        (parsed.decimalComma ? ". Decimal commas were read as decimal points" : "")
       : "";
 
     function fail(msg) {
@@ -531,6 +604,9 @@
   $("tt-data").value = DEMO;
   $("tt-data").addEventListener("input", function () { recalc(true); });
   $("tt-unit").addEventListener("change", function () { recalc(true); });
+  ["tt-ct", "tt-cw", "tt-cg"].forEach(function (id) {
+    $(id).addEventListener("change", function () { recalc(true); });
+  });
   $("tt-ref").addEventListener("change", function () { recalc(false); });
   $("tt-vert").addEventListener("change", function () { recalc(false); });
 

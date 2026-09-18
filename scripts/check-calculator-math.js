@@ -960,6 +960,84 @@ if (nfHtml.indexOf("var canGel = prod > 1 && pGelLim <= 1;") === -1) {
     actual: "not found", expected: "canGel = prod > 1 && pGelLim <= 1", tol: 0, unit: "" });
 }
 
+// ---- Instrument-export parsing: gpc-trace.html and tts-master-curve.html ---
+// Measured before the fix: a European-locale export ("6,500;0,00200") was read
+// as x = 6, y = 500 and the trace analyzer reported Mn 3,160 and D 1.000 - a
+// confident wrong answer - and +/-0.08 K of oven jitter turned 16 rheometer
+// sweeps into 272.
+function extractBetween(html, begin, end, label) {
+  const a = html.indexOf(begin), b = html.indexOf(end);
+  if (a === -1 || b === -1 || b < a) {
+    failed++;
+    cases.push({ ok: false, name: label + ": markers not found", actual: "missing", expected: begin, tol: 0, unit: "" });
+    return null;
+  }
+  return html.slice(a, b + end.length);
+}
+const traceSplit = extractBetween(traceHtml, "// ---- splitFields: begin", "// ---- splitFields: end", "gpc-trace splitFields");
+const ttsSplit = extractBetween(ttsHtml, "// ---- splitFields: begin", "// ---- splitFields: end", "tts splitFields");
+
+// Two copies of one parser must be one parser.
+if (traceSplit && ttsSplit && traceSplit !== ttsSplit) {
+  failed++;
+  cases.push({ ok: false, name: "the two copies of splitFields have drifted apart", actual: "different", expected: "byte-identical", tol: 0, unit: "" });
+}
+
+if (traceSplit) {
+  const splitFields = new Function(traceSplit + "\nreturn splitFields;")();
+  const nums = (line) => splitFields(line).fields.slice(0, 3).map(Number);
+  const same = (name, line, want) => {
+    const got = nums(line).slice(0, want.length);
+    const ok = want.every((v, i) => Math.abs(got[i] - v) < 1e-12);
+    if (!ok) { failed++; }
+    cases.push({ ok: ok, name: "parse " + name, actual: got.join(" | "), expected: want.join(" | "), tol: 0, unit: "" });
+  };
+  same("semicolon, decimal commas", "6,500;0,00200", [6.5, 0.002]);
+  same("tab, decimal commas", "6,500\t0,00200\t1,5", [6.5, 0.002, 1.5]);
+  same("spaces, decimal commas", "6,500   0,00200", [6.5, 0.002]);
+  same("English CSV", "6.5,0.002", [6.5, 0.002]);
+  same("English CSV with spaces", "6.5, 0.002, 7", [6.5, 0.002, 7]);
+  same("whitespace, decimal points", "6.5  0.002", [6.5, 0.002]);
+  same("scientific notation with decimal comma", "1,5E+03;2,25e-4", [1500, 0.000225]);
+  same("thousands separator is dropped", "1,234.5;6", [1234.5, 6]);
+  same("comma-separated integers stay separate", "6,500,7", [6, 500, 7]);
+  if (!splitFields("6,500;0,002").decimalComma || splitFields("6.5,0.002").decimalComma) {
+    failed++;
+    cases.push({ ok: false, name: "decimalComma flag must report what was detected", actual: "wrong", expected: "true / false", tol: 0, unit: "" });
+  }
+}
+
+// The sweep clustering, run from the page's own code on the page's own demo
+// data with deterministic jitter.
+const ttsParseSrc = extractBetween(ttsHtml, "// ---- parseSweeps: begin", "// ---- parseSweeps: end", "tts parseSweeps");
+const gapMatch = /var SWEEP_GAP = ([\d.]+);/.exec(ttsHtml);
+if (ttsSplit && ttsParseSrc && gapMatch) {
+  const parse = new Function(ttsSplit + "\nvar SWEEP_GAP = " + gapMatch[1] + ";\n" + ttsParseSrc + "\nreturn parse;")();
+  const lines = [];
+  let k = 0;
+  for (let T = TTS_TREF - 15; T <= TTS_TREF + 60.001; T += 5) {
+    const la = ttsLogA(T);
+    for (let lw = -2; lw <= 2.0001; lw += 0.2) {
+      k++;
+      const jitter = ((k * 7919) % 17 - 8) / 100;          // -0.08 .. +0.08 K
+      const G = 5.5 + 2.6 / (1 + Math.exp(-((lw + la) + 1.5) / 2.2));
+      // The worst realistic export: frequency first, decimal commas, semicolons,
+      // temperature jitter, and an extra column the user did not ask for.
+      lines.push([Math.pow(10, lw).toExponential(4), (T + jitter).toFixed(2), Math.pow(10, G).toExponential(5), "0.5"]
+        .map((x) => x.replace(".", ",")).join(";"));
+    }
+  }
+  const r = parse(lines.join("\n"), "K", { T: 1, w: 0, G: 2 });
+  check("jittered sweeps cluster back into 16", r.sets.length, 16, 0, "sweeps");
+  check("every jittered point is kept", r.n, 16 * 21, 0, "points");
+  check("widest within-sweep spread is the injected jitter", r.maxSpread, 0.16, 0.001, "K");
+  check("cluster temperature is the mean reading", r.sets[3].T, TTS_TREF, 0.02, "K");
+  if (!r.decimalComma) {
+    failed++;
+    cases.push({ ok: false, name: "tts parser did not report decimal commas", actual: false, expected: true, tol: 0, unit: "" });
+  }
+}
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume
