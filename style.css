@@ -3326,6 +3326,12 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
    per element that failed to hide. This is the general form of those five. */
 [hidden] { display: none !important; }
 
+/* Greek letters have uppercase forms that are different characters, and two of
+   them are indistinguishable from Latin capitals: chi uppercases to X and alpha
+   to A. Any label under text-transform: uppercase therefore turns a symbol into
+   a different symbol - "chi sub c" renders as "XC" - so the symbol opts out. */
+.keepcase { text-transform: none; }
+
 /* Pasted instrument data is a table, not a sentence: it only lines up in a
    fixed pitch, and wrapping a long row destroys the column structure that
    tells you at a glance whether the paste came through intact. Scoped to a

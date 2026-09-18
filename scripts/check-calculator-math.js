@@ -517,6 +517,175 @@ if (mwdHtml.indexOf("var xFloor = Math.min(0.5, 1 / dpn);") === -1) {
 // And numerically, at the page's own defaults.
 check("living D at DP 200, p 0.9, Cex 20", 1 + 1 / 180 + (1 / 20) * (2 / 0.9 - 1), 1.0667, 0.0002, "");
 
+// ---- Flory-Huggins: flory-huggins.html -------------------------------------
+const fhHtml = fs.readFileSync(path.join(__dirname, "..", "flory-huggins.html"), "utf8");
+
+const fhF = (p, N1, N2, x) => (p / N1) * Math.log(p) + ((1 - p) / N2) * Math.log(1 - p) + x * p * (1 - p);
+const fhMu1 = (p, N1, N2, x) => Math.log(p) + (1 - N1 / N2) * (1 - p) + x * N1 * (1 - p) * (1 - p);
+const fhMu2 = (p, N1, N2, x) => Math.log(1 - p) + (1 - N2 / N1) * p + x * N2 * p * p;
+const fhChiSp = (p, N1, N2) => 0.5 * (1 / (N1 * p) + 1 / (N2 * (1 - p)));
+const fhChiC = (N1, N2) => 0.5 * Math.pow(1 / Math.sqrt(N1) + 1 / Math.sqrt(N2), 2);
+const fhPhiC = (N1, N2) => Math.sqrt(N2) / (Math.sqrt(N1) + Math.sqrt(N2));
+
+// The three textbook limits of one expression.
+check("chi_c for two small molecules (N=1)", fhChiC(1, 1), 2, 1e-12, "");
+check("phi_c for two small molecules", fhPhiC(1, 1), 0.5, 1e-12, "");
+check("chi_c for a symmetric blend is 2/N", fhChiC(1000, 1000), 2 / 1000, 1e-15, "");
+check("chi_c for a long polymer in solvent tends to 1/2", fhChiC(1, 1e8), 0.5, 1e-3, "");
+
+// The closed form must BE the minimum of the spinodal curve. Independent route.
+[[1, 1], [1, 500], [100, 400], [1000, 1000], [50, 5000]].forEach(([N1, N2]) => {
+  let best = Infinity, at = 0;
+  for (let i = 1; i < 200000; i++) {
+    const p = i / 200000;
+    const c = fhChiSp(p, N1, N2);
+    if (c < best) { best = c; at = p; }
+  }
+  check("spinodal minimum = chi_c for N " + N1 + "/" + N2, best, fhChiC(N1, N2), 1e-7, "");
+  check("spinodal minimum sits at phi_c for N " + N1 + "/" + N2, at, fhPhiC(N1, N2), 1e-4, "");
+});
+
+// The binodal, by the page's own method: lower convex hull then Newton polish.
+function fhGrid(n) {
+  const g = [];
+  for (let i = 1; i < n; i++) g.push(1 / (1 + Math.exp(-(-18 + 36 * i / n))));
+  return g;
+}
+const FH_GRID = fhGrid(3000);
+function fhBinodal(N1, N2, chi) {
+  if (!(chi > fhChiC(N1, N2))) return null;
+  const F = FH_GRID.map((p) => fhF(p, N1, N2, chi));
+  const hull = [];
+  for (let i = 0; i < FH_GRID.length; i++) {
+    while (hull.length >= 2) {
+      const p1 = hull[hull.length - 2], p2 = hull[hull.length - 1];
+      if ((p2[1] - p1[1]) * (FH_GRID[i] - p1[0]) - (F[i] - p1[1]) * (p2[0] - p1[0]) >= 0) hull.pop();
+      else break;
+    }
+    hull.push([FH_GRID[i], F[i], i]);
+  }
+  let best = null, width = 0;
+  for (let i = 0; i + 1 < hull.length; i++) {
+    if (hull[i + 1][2] - hull[i][2] > 1 && hull[i + 1][0] - hull[i][0] > width) {
+      width = hull[i + 1][0] - hull[i][0];
+      best = [hull[i][0], hull[i + 1][0]];
+    }
+  }
+  if (!best) return null;
+  let a = best[0], b = best[1];
+  const G = (x, y) => [fhMu1(x, N1, N2, chi) - fhMu1(y, N1, N2, chi), fhMu2(x, N1, N2, chi) - fhMu2(y, N1, N2, chi)];
+  for (let it = 0; it < 80; it++) {
+    const f0 = G(a, b);
+    if (!isFinite(f0[0]) || !isFinite(f0[1])) break;
+    if (Math.abs(f0[0]) < 1e-14 && Math.abs(f0[1]) < 1e-14) break;
+    const ha = Math.max(1e-13, a * 1e-7), hb = Math.max(1e-13, (1 - b) * 1e-7);
+    const fa = G(a + ha, b), fb = G(a, b + hb);
+    const J00 = (fa[0] - f0[0]) / ha, J01 = (fb[0] - f0[0]) / hb;
+    const J10 = (fa[1] - f0[1]) / ha, J11 = (fb[1] - f0[1]) / hb;
+    const det = J00 * J11 - J01 * J10;
+    if (!isFinite(det) || det === 0) break;
+    const da = -(f0[0] * J11 - f0[1] * J01) / det;
+    const db = -(-f0[0] * J10 + f0[1] * J00) / det;
+    let t = 1;
+    while (t > 1e-12 && (a + t * da <= 0 || b + t * db >= 1 || a + t * da >= b + t * db)) t /= 2;
+    if (t <= 1e-12) break;
+    a += t * da; b += t * db;
+  }
+  return a < b ? [a, b] : null;
+}
+
+// A symmetric pair must coexist at compositions summing to exactly 1. This is
+// the check that catches a solver sitting on the trivial a = b root, which
+// would also "sum to 1" - so the separation is asserted too.
+[1.05, 1.5, 3, 8].forEach((mult) => {
+  const N = 1000, chi = fhChiC(N, N) * mult;
+  const b = fhBinodal(N, N, chi);
+  if (!b) {
+    failed++;
+    cases.push({ ok: false, name: "symmetric binodal at chi/chi_c " + mult, actual: "none", expected: "a pair", tol: 0, unit: "" });
+    return;
+  }
+  check("symmetric binodal pair sums to 1 at chi/chi_c " + mult, b[0] + b[1], 1, 1e-12, "");
+  if (!(b[1] - b[0] > 0.01)) {
+    failed++;
+    cases.push({ ok: false, name: "binodal at chi/chi_c " + mult + " collapsed onto the critical point",
+      actual: (b[1] - b[0]).toExponential(2), expected: "> 0.01 apart", tol: 0, unit: "" });
+  }
+});
+
+// Binodal outside spinodal, across the cases that broke the earlier solvers.
+function fhSpinRoots(N1, N2, chi) {
+  const pc = fhPhiC(N1, N2);
+  let lo = 1e-300, hi = pc, i, m;
+  for (i = 0; i < 400; i++) {
+    m = Math.exp((Math.log(lo) + Math.log(hi)) / 2);
+    if (fhChiSp(m, N1, N2) > chi) lo = m; else hi = m;
+  }
+  const left = hi;
+  lo = pc; hi = 1 - 1e-15;
+  for (i = 0; i < 400; i++) {
+    m = (lo + hi) / 2;
+    if (fhChiSp(m, N1, N2) < chi) lo = m; else hi = m;
+  }
+  return [left, lo];
+}
+[[200, 800], [100, 1000], [1, 500], [1, 10000], [50, 5000]].forEach(([N1, N2]) => {
+  [1.05, 1.5, 3].forEach((mult) => {
+    const chi = fhChiC(N1, N2) * mult;
+    const b = fhBinodal(N1, N2, chi), sp = fhSpinRoots(N1, N2, chi);
+    if (!b) {
+      failed++;
+      cases.push({ ok: false, name: "binodal for N " + N1 + "/" + N2 + " at chi/chi_c " + mult, actual: "none", expected: "a pair", tol: 0, unit: "" });
+      return;
+    }
+    if (!(b[0] < sp[0] && b[1] > sp[1])) {
+      failed++;
+      cases.push({ ok: false, name: "binodal must lie outside the spinodal, N " + N1 + "/" + N2 + " at chi/chi_c " + mult,
+        actual: b[0].toExponential(2) + "/" + b[1].toFixed(6), expected: "outside " + sp[0].toExponential(2) + "/" + sp[1].toFixed(6), tol: 0, unit: "" });
+    }
+  });
+});
+
+// And below chi_c there must be no tie-line at all.
+[[1000, 1000], [1, 500], [200, 800]].forEach(([N1, N2]) => {
+  if (fhBinodal(N1, N2, fhChiC(N1, N2) * 0.9)) {
+    failed++;
+    cases.push({ ok: false, name: "no phase separation below chi_c for N " + N1 + "/" + N2,
+      actual: "found a tie-line", expected: "none", tol: 0, unit: "" });
+  }
+});
+
+// CI runs its own copy of the binodal solver, so the page could switch back to
+// a naive Newton solve - which converges on the trivial a = b root and silently
+// reports every mixture as miscible - without any of this failing. Require the
+// page to still carry the hull construction that makes that impossible.
+["function binodal(", "lower convex hull", "hull.pop()"].forEach((needle) => {
+  if (fhHtml.indexOf(needle) === -1) {
+    failed++;
+    cases.push({ ok: false, name: "flory-huggins.html lost its convex-hull binodal (missing: " + needle + ")",
+      actual: "not found", expected: needle, tol: 0, unit: "" });
+  }
+});
+
+// The published 2/N table, read out of the page.
+const fhTable = [...fhHtml.matchAll(/<tr><td>([\d,]+)<\/td><td class="num">([\d.]+)<\/td>/g)]
+  .map((m) => [Number(m[1].replace(/,/g, "")), Number(m[2])]);
+if (fhTable.length !== 4) {
+  failed++;
+  cases.push({ ok: false, name: "flory-huggins 2/N table has 4 rows", actual: fhTable.length, expected: 4, tol: 0, unit: "rows" });
+}
+fhTable.forEach(([N, chic]) => check("published chi_c for symmetric N = " + N, fhChiC(N, N), chic, 1e-9, ""));
+
+// The diblock contrast the page argues from: a blend of two N/2 homopolymers
+// demixes at chi*N = 4, the diblock orders at 10.495, so the diblock needs
+// 2.62x more. If either number moves the sentence stops being true.
+check("blend of two N/2 chains demixes at chi*N", fhChiC(500, 500) * 1000, 4, 1e-12, "");
+check("diblock needs this much more than the blend", 10.495 / 4, 2.62, 0.005, "x");
+if (fhHtml.indexOf("10.495") === -1) {
+  failed++;
+  cases.push({ ok: false, name: "flory-huggins.html no longer states the ODT value", actual: "not found", expected: "10.495", tol: 0, unit: "" });
+}
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flory-Huggins Phase Behaviour: PolyTechniques</title>
+<meta name="description" content="Binodal, spinodal and critical point for a polymer blend or a polymer in solvent from Flory-Huggins theory, plus the order-disorder transition for a diblock copolymer.">
+<link rel="canonical" href="https://getpolytechniques.com/flory-huggins.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Flory-Huggins Phase Behaviour: PolyTechniques">
+<meta property="og:description" content="Binodal, spinodal and critical point for a blend or solution, and the order-disorder transition for a diblock.">
+<meta property="og:url" content="https://getpolytechniques.com/flory-huggins.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Flory-Huggins Phase Behaviour: PolyTechniques">
+<meta name="twitter:description" content="Where a polymer blend or solution separates, and why polymers almost never mix.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Flory-Huggins Phase Behaviour",
+  "url": "https://getpolytechniques.com/flory-huggins.html",
+  "description": "Compute the binodal, spinodal and critical point of a polymer blend or solution from Flory-Huggins theory.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js?v=1"></script>
+<script src="nav.js?v=27" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=103">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Flory&ndash;Huggins Phase Behaviour</h1>
+      <p class="subtitle">Where a blend or a solution separates, which kind of separation it is, and why two polymers almost never mix</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>The one equation, and the one consequence</h3>
+    <p class="guide-note">
+      Flory&ndash;Huggins writes the free energy of mixing per lattice site as an entropy term for each component and one enthalpy term for the contact between them, with &phi; the volume fraction of component 1 and N the number of segments per chain:
+    </p>
+    <div class="guide-formula">
+      &Delta;G<sub>mix</sub> / RT = (&phi;/N&#8321;)&middot;ln&nbsp;&phi; + ((1&minus;&phi;)/N&#8322;)&middot;ln(1&minus;&phi;) + &chi;&middot;&phi;(1&minus;&phi;)
+    </div>
+    <p class="guide-note">
+      The two entropy terms are what drive mixing, and both carry a 1/N. That is the whole story of polymer thermodynamics in one place: a chain of a thousand segments gains a thousandth of the mixing entropy that a thousand free segments would, because the segments are tied together and cannot spread out independently. The enthalpy term carries no 1/N at all. So as chains get longer, the thing opposing mixing stays the same size while the thing favouring it vanishes.
+    </p>
+    <p class="guide-note">
+      Setting the second and third derivatives to zero gives the critical point in closed form, and it makes the consequence quantitative:
+    </p>
+    <div class="guide-formula">
+      &chi;<sub>c</sub> = &frac12;&middot;(N&#8321;<sup>&minus;&frac12;</sup> + N&#8322;<sup>&minus;&frac12;</sup>)&sup2; &nbsp;&nbsp;&nbsp;&nbsp; &phi;<sub>c</sub> = &radic;N&#8322; / (&radic;N&#8321; + &radic;N&#8322;)
+    </div>
+    <p class="guide-note">
+      For two chains of equal length that is &chi;<sub>c</sub>&nbsp;=&nbsp;2/N. For a polymer in a small-molecule solvent (N&#8321;&nbsp;=&nbsp;1) it tends to &frac12; from above as the chain grows, which is exactly what a theta solvent means: &chi;&nbsp;=&nbsp;0.5 is the borderline where a very long chain is on the edge of precipitating. And for two small molecules it gives &chi;<sub>c</sub>&nbsp;=&nbsp;2, the regular-solution result. One expression, three familiar limits.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Phase diagram</h3>
+
+    <div class="subsection">
+      <div class="subsection-title">The pair</div>
+      <div class="grid">
+        <div class="field">
+          <label for="fh-n1">N&#8321; (segments, component 1)</label>
+          <input type="number" id="fh-n1" value="1000" step="any" min="1">
+        </div>
+        <div class="field">
+          <label for="fh-n2">N&#8322; (segments, component 2)</label>
+          <input type="number" id="fh-n2" value="1000" step="any" min="1">
+          <p class="hint">Use N = 1 for a small-molecule solvent. These are segment counts on a common lattice, so for chemically different repeat units use V<sub>molar</sub>/V<sub>ref</sub> rather than DP.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Conditions</div>
+      <div class="grid">
+        <div class="field">
+          <label for="fh-chi">&chi; at your temperature</label>
+          <input type="number" id="fh-chi" value="0.005" step="any">
+        </div>
+        <div class="field">
+          <label for="fh-phi">&phi;&#8321;, the composition you are making</label>
+          <input type="number" id="fh-phi" value="0.5" step="any" min="0.0001" max="0.9999">
+        </div>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label for="fh-a">&chi; = A + B/T &nbsp; &mdash; &nbsp; A</label>
+          <input type="number" id="fh-a" value="" step="any" placeholder="optional">
+        </div>
+        <div class="field">
+          <label for="fh-b">B (K)</label>
+          <input type="number" id="fh-b" value="" step="any" placeholder="optional">
+          <p class="hint">Give both and the page reports the temperature at which your composition reaches the binodal &ndash; the cloud point. B&nbsp;&gt;&nbsp;0 is ordinary UCST behaviour: cooling drives separation.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="fh-plot" class="chart-wrap"></div>
+    <p class="diagram-caption" id="fh-caption"></p>
+
+    <div class="stat-grid" id="fh-stats" style="margin-top:16px;"></div>
+    <div id="fh-verdict"></div>
+  </div>
+
+  <div class="card">
+    <h3>Why two polymers almost never mix</h3>
+    <p class="guide-note">
+      &chi;<sub>c</sub>&nbsp;=&nbsp;2/N for a symmetric blend is a brutal criterion. Put numbers on it:
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>N (each chain)</th><th class="num">&chi;<sub>c</sub></th><th class="num">What that demands</th></tr></thead>
+        <tbody>
+          <tr><td>10</td><td class="num">0.2</td><td class="num">oligomers; many pairs manage it</td></tr>
+          <tr><td>100</td><td class="num">0.02</td><td class="num">chemically close pairs only</td></tr>
+          <tr><td>1,000</td><td class="num">0.002</td><td class="num">near-identical chemistry</td></tr>
+          <tr><td>10,000</td><td class="num">0.0002</td><td class="num">essentially nothing</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      Typical &chi; between two chemically distinct polymers runs from about 0.01 to well above 0.1. Compare that with the 0.002 a pair of N&nbsp;=&nbsp;1000 chains is allowed, and the rule follows: <strong>polymer blends are immiscible unless the two polymers are nearly the same molecule, or something other than contact enthalpy is paying for the mixing</strong> &ndash; hydrogen bonding, a specific interaction, or a copolymer engineered to sit between them. This is why compatibilisers exist as an industry, and why "alloy" in a polymer datasheet usually means a controlled two-phase morphology rather than a solution.
+    </p>
+    <p class="guide-note">
+      It also runs the other way, and that is the useful direction: the same 1/N is why a polymer dissolves at all. A solvent has N&nbsp;=&nbsp;1 and keeps its full mixing entropy, so it can tolerate &chi; up to about &frac12;. Solvency is not a property of the polymer, it is the solvent's entropy doing the work.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>The same two blocks, joined</h3>
+    <p class="guide-note">
+      Tie the two polymers together at one end and they cannot separate macroscopically &ndash; the junction will not let a chain leave its partner. What is left is separation on the scale of the chain itself, and mean-field theory puts the order&ndash;disorder transition for a symmetric diblock at <strong>&chi;N&nbsp;=&nbsp;10.495</strong>, where N is the total degree of polymerization.
+    </p>
+    <div class="grid">
+      <div class="field">
+        <label for="fh-dn">Total N for the diblock</label>
+        <input type="number" id="fh-dn" value="200" step="any" min="2">
+      </div>
+      <div class="field">
+        <label for="fh-dchi">&chi;</label>
+        <input type="number" id="fh-dchi" value="0.06" step="any" min="0">
+      </div>
+    </div>
+    <div class="stat-grid" id="fh-diblock" style="margin-top:14px;"></div>
+    <p class="guide-note">
+      The contrast with the blend is the point. A symmetric <em>blend</em> of the same two polymers, each of length N/2, demixes once &chi;N exceeds 4 &ndash; that is &chi;<sub>c</sub>&nbsp;=&nbsp;2/(N/2). The diblock needs &chi;N&nbsp;&gt;&nbsp;10.495, a factor of <strong>2.6&times;</strong> more incompatibility, and even then it orders into domains of tens of nanometres instead of separating into two layers. The covalent bond is worth that much frustration, and it is the entire reason block copolymers are useful: they are held permanently at a length scale that a blend would race past on its way to two macroscopic phases.
+    </p>
+    <p class="guide-note">
+      Two cautions. 10.495 is the mean-field value for a symmetric diblock; composition asymmetry raises it, and fluctuation corrections raise it further for short chains, so a real transition sits above this number rather than on it. And &chi; here must be defined on the same reference volume as the N you typed &ndash; a &chi; quoted per repeat unit and an N counted in repeat units of a different size do not multiply.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Reading the diagram</h3>
+    <ul class="guide-list">
+      <li><strong>Outside the binodal</strong> the mixture is stable: one phase, and it stays one phase.</li>
+      <li><strong>Between binodal and spinodal</strong> it is metastable. It wants to separate but has to nucleate a droplet of the other phase first, and the barrier can hold for a long time. Separation here is nucleation and growth: discrete droplets that coarsen, with a well-defined size distribution.</li>
+      <li><strong>Inside the spinodal</strong> there is no barrier at all &ndash; the free energy curves the wrong way, so any composition fluctuation grows rather than decays. That is spinodal decomposition, and it produces the characteristic co-continuous, interpenetrating morphology instead of droplets. If you have ever seen a blend with two interlocking phases rather than spheres in a matrix, it was quenched into this region.</li>
+      <li><strong>The tie-line ends</strong> are the compositions of the two phases you actually get, and they do not depend on where you started between them. Only the <em>amounts</em> change, by the lever rule, which the calculator reports.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>What the theory is missing</h3>
+    <ul class="guide-list">
+      <li><strong>&chi; is not a constant.</strong> It is treated here as one number, but a measured &chi; varies with composition and with molecular weight, and the temperature dependence is rarely exactly A&nbsp;+&nbsp;B/T. A &chi; taken from one composition and applied across the whole diagram is an approximation the diagram cannot show you the error of.</li>
+      <li><strong>No volume change on mixing, and no equation of state.</strong> The lattice is incompressible by construction, which is why plain Flory&ndash;Huggins cannot produce LCST behaviour from an entirely enthalpic &chi;. Real polymer solutions that phase separate <em>on heating</em> need free volume, which needs a compressible theory.</li>
+      <li><strong>Mean field.</strong> Concentration fluctuations are ignored, which matters most near the critical point and for short chains &ndash; exactly where the numbers look most precise.</li>
+      <li><strong>Monodisperse chains.</strong> A real N is a distribution, and polydispersity broadens the coexistence region and shifts the cloud point away from the binodal computed here.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <ul class="guide-list">
+      <li><a href="crosslink-density.html">Crosslink density</a> &ndash; uses the same &chi; in the Flory&ndash;Rehner swelling equation, and shows how much the value you pick is worth.</li>
+      <li><a href="block-copolymers.html">Block copolymers</a> &ndash; the chemistry of the chains this page treats as two numbers.</li>
+      <li><a href="chain-dimensions.html">Chain dimensions</a> &ndash; how big a coil is, which sets the domain spacing a diblock orders into.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Mean-field theory with a single composition-independent &chi;. Use it for the shape of the diagram and the scale of the numbers, not as a substitute for a measured cloud-point curve.</p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+
+  // ---- Flory-Huggins --------------------------------------------------------
+  function fMix(p, N1, N2, chi) {
+    return (p / N1) * Math.log(p) + ((1 - p) / N2) * Math.log(1 - p) + chi * p * (1 - p);
+  }
+  // Exchange chemical potentials, per molecule.
+  function mu1(p, N1, N2, chi) { return Math.log(p) + (1 - N1 / N2) * (1 - p) + chi * N1 * (1 - p) * (1 - p); }
+  function mu2(p, N1, N2, chi) { return Math.log(1 - p) + (1 - N2 / N1) * p + chi * N2 * p * p; }
+
+  // Closed forms. f'' = 0 gives the spinodal; adding f''' = 0 gives the rest.
+  function chiSpinodal(p, N1, N2) { return 0.5 * (1 / (N1 * p) + 1 / (N2 * (1 - p))); }
+  function chiCrit(N1, N2) { return 0.5 * Math.pow(1 / Math.sqrt(N1) + 1 / Math.sqrt(N2), 2); }
+  function phiCrit(N1, N2) { return Math.sqrt(N2) / (Math.sqrt(N1) + Math.sqrt(N2)); }
+
+  // A grid that resolves both dilute ends. A polymer/solvent binodal puts one
+  // phase within parts per million of the pure solvent; a uniform grid in phi
+  // cannot see it at all.
+  function phiGrid(n) {
+    var g = [];
+    for (var i = 1; i < n; i++) g.push(1 / (1 + Math.exp(-(-18 + 36 * i / n))));
+    return g;
+  }
+  var GRID = phiGrid(3000);
+
+  // ---- Binodal --------------------------------------------------------------
+  // By the lower convex hull of the free energy, then polished with Newton.
+  //
+  // The obvious approach - solve mu1(a) = mu1(b) and mu2(a) = mu2(b) with
+  // Newton - has a trap: a = b is an exact solution for every chi, so any
+  // symmetric starting guess converges to the critical point and reports no
+  // phase separation at all. The common-tangent line IS the lower convex hull
+  // of f, so building the hull finds the tie-line directly, and a hull edge
+  // that spans a single grid step is simply the curve being convex there, not a
+  // tie-line. Newton then only has to polish endpoints that are already right.
+  function binodal(N1, N2, chi) {
+    if (!(chi > chiCrit(N1, N2))) return null;
+    var F = GRID.map(function (p) { return fMix(p, N1, N2, chi); });
+    var hull = [], i;
+    for (i = 0; i < GRID.length; i++) {
+      while (hull.length >= 2) {
+        var p1 = hull[hull.length - 2], p2 = hull[hull.length - 1];
+        if ((p2[1] - p1[1]) * (GRID[i] - p1[0]) - (F[i] - p1[1]) * (p2[0] - p1[0]) >= 0) hull.pop();
+        else break;
+      }
+      hull.push([GRID[i], F[i], i]);
+    }
+    var best = null, width = 0;
+    for (i = 0; i + 1 < hull.length; i++) {
+      if (hull[i + 1][2] - hull[i][2] > 1 && hull[i + 1][0] - hull[i][0] > width) {
+        width = hull[i + 1][0] - hull[i][0];
+        best = [hull[i][0], hull[i + 1][0]];
+      }
+    }
+    if (!best) return null;
+
+    var a = best[0], b = best[1];
+    var G = function (a2, b2) {
+      return [mu1(a2, N1, N2, chi) - mu1(b2, N1, N2, chi), mu2(a2, N1, N2, chi) - mu2(b2, N1, N2, chi)];
+    };
+    for (var it = 0; it < 80; it++) {
+      var f0 = G(a, b);
+      if (!isFinite(f0[0]) || !isFinite(f0[1])) break;
+      if (Math.abs(f0[0]) < 1e-14 && Math.abs(f0[1]) < 1e-14) break;
+      var ha = Math.max(1e-13, a * 1e-7), hb = Math.max(1e-13, (1 - b) * 1e-7);
+      var fa = G(a + ha, b), fb = G(a, b + hb);
+      var J00 = (fa[0] - f0[0]) / ha, J01 = (fb[0] - f0[0]) / hb;
+      var J10 = (fa[1] - f0[1]) / ha, J11 = (fb[1] - f0[1]) / hb;
+      var det = J00 * J11 - J01 * J10;
+      if (!isFinite(det) || det === 0) break;
+      var da = -(f0[0] * J11 - f0[1] * J01) / det;
+      var db = -(-f0[0] * J10 + f0[1] * J00) / det;
+      var t = 1;
+      while (t > 1e-12 && (a + t * da <= 0 || b + t * db >= 1 || a + t * da >= b + t * db)) t /= 2;
+      if (t <= 1e-12) break;
+      a += t * da; b += t * db;
+    }
+    return a < b ? [a, b] : null;
+  }
+
+  // Spinodal roots at a given chi, by bisection on each side of the critical
+  // composition. Bisected in log space on the dilute side for the same reason
+  // the grid is logit-spaced.
+  function spinodalRoots(N1, N2, chi) {
+    var pc = phiCrit(N1, N2);
+    if (!(chi > chiCrit(N1, N2))) return null;
+    var lo = 1e-300, hi = pc, i, m;
+    for (i = 0; i < 400; i++) {
+      m = Math.exp((Math.log(lo) + Math.log(hi)) / 2);
+      if (chiSpinodal(m, N1, N2) > chi) lo = m; else hi = m;
+    }
+    var left = hi;
+    lo = pc; hi = 1 - 1e-15;
+    for (i = 0; i < 400; i++) {
+      m = (lo + hi) / 2;
+      if (chiSpinodal(m, N1, N2) < chi) lo = m; else hi = m;
+    }
+    return [left, lo];
+  }
+
+  function fmtPhi(p) {
+    if (p >= 1e-4 && p <= 1 - 1e-4) return p.toFixed(4);
+    if (p < 0.5) return p.toExponential(2);
+    return (1 - (1 - p)).toFixed(8);
+  }
+  function fmt(n, d) {
+    if (!isFinite(n)) return "n/a";
+    if (Math.abs(n) >= 1e-3 && Math.abs(n) < 1e5) return n.toFixed(d === undefined ? 4 : d);
+    return n.toExponential(3);
+  }
+
+  // ---- Plot -----------------------------------------------------------------
+  function plot(N1, N2, chi, phi, bino) {
+    var W = 680, H = 340, Mg = { left: 58, right: 16, top: 14, bottom: 48 };
+    var pw = W - Mg.left - Mg.right, ph = H - Mg.top - Mg.bottom;
+    var cc = chiCrit(N1, N2), pc = phiCrit(N1, N2);
+    var chiMax = Math.max(chi * 1.25, cc * 4);
+    function sx(p) { return Mg.left + p * pw; }
+    function sy(c) { return Mg.top + (1 - c / chiMax) * ph; }
+
+    var s = "";
+    // Spinodal and binodal, traced across chi.
+    var spPath = "", biPath = "", started = false, startedB = false;
+    var pts = [];
+    for (var i = 1; i < 240; i++) {
+      var c = cc * (1 + (chiMax / cc - 1) * Math.pow(i / 240, 2));
+      if (c > chiMax) break;
+      var sp = spinodalRoots(N1, N2, c), bi = binodal(N1, N2, c);
+      if (sp) pts.push([c, sp[0], sp[1], bi ? bi[0] : null, bi ? bi[1] : null]);
+    }
+    // Left branches upward, then right branches back down, so each curve is one path.
+    pts.forEach(function (p) {
+      spPath += (started ? " L " : "M ") + sx(p[1]) + " " + sy(p[0]); started = true;
+    });
+    for (var j = pts.length - 1; j >= 0; j--) spPath += " L " + sx(pts[j][2]) + " " + sy(pts[j][0]);
+    pts.forEach(function (p) {
+      if (p[3] === null) return;
+      biPath += (startedB ? " L " : "M ") + sx(p[3]) + " " + sy(p[0]); startedB = true;
+    });
+    for (j = pts.length - 1; j >= 0; j--) if (pts[j][4] !== null) biPath += " L " + sx(pts[j][4]) + " " + sy(pts[j][0]);
+
+    // Axes.
+    s += '<line x1="' + Mg.left + '" y1="' + (H - Mg.bottom) + '" x2="' + (W - Mg.right) + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    s += '<line x1="' + Mg.left + '" y1="' + Mg.top + '" x2="' + Mg.left + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    for (var t = 0; t <= 5; t++) {
+      s += '<text x="' + sx(t / 5) + '" y="' + (H - Mg.bottom + 15) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">' + (t / 5).toFixed(1) + '</text>';
+      var cv = chiMax * t / 5;
+      s += '<text x="' + (Mg.left - 7) + '" y="' + (sy(cv) + 3.5) + '" text-anchor="end" font-size="10.5" fill="var(--text-dim)">' + (cv < 0.01 ? cv.toExponential(1) : cv.toPrecision(2)) + '</text>';
+    }
+    s += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">&#966;&#8321;</text>';
+    s += '<text x="13" y="' + (H / 2) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)" transform="rotate(-90 13 ' + (H / 2) + ')">&#967;</text>';
+
+    if (spPath) s += '<path d="' + spPath + '" fill="none" stroke="var(--danger, #d9534f)" stroke-width="1.5" stroke-dasharray="5 3"/>';
+    if (biPath) s += '<path d="' + biPath + '" fill="none" stroke="var(--primary, #5b8def)" stroke-width="2.5"/>';
+
+    // Critical point and the user's state.
+    s += '<circle cx="' + sx(pc) + '" cy="' + sy(cc) + '" r="4" fill="var(--primary, #5b8def)"/>';
+    if (bino) {
+      s += '<line x1="' + sx(bino[0]) + '" y1="' + sy(chi) + '" x2="' + sx(bino[1]) + '" y2="' + sy(chi) +
+        '" stroke="var(--text-dim)" stroke-width="1" stroke-dasharray="2 2"/>';
+      [bino[0], bino[1]].forEach(function (p) {
+        s += '<circle cx="' + sx(p) + '" cy="' + sy(chi) + '" r="3" fill="var(--text-dim)"/>';
+      });
+    }
+    if (chi <= chiMax) {
+      s += '<circle cx="' + sx(phi) + '" cy="' + sy(chi) + '" r="5.5" fill="none" stroke="var(--text)" stroke-width="2"/>';
+    }
+
+    var ly = H - 24, lx = Mg.left + 6;
+    [["var(--primary, #5b8def)", "binodal", false], ["var(--danger, #d9534f)", "spinodal", true]].forEach(function (it) {
+      s += '<line x1="' + lx + '" y1="' + (ly - 4) + '" x2="' + (lx + 15) + '" y2="' + (ly - 4) + '" stroke="' + it[0] +
+        '" stroke-width="2.5"' + (it[2] ? ' stroke-dasharray="5 3"' : '') + '/>';
+      s += '<text x="' + (lx + 20) + '" y="' + ly + '" font-size="10" fill="var(--text-dim)">' + it[1] + '</text>';
+      lx += 26 + it[1].length * 5.4;
+    });
+
+    return '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+      'aria-label="Phase diagram in chi against composition, with binodal, spinodal and critical point."></svg>'.replace("></svg>", ">" + s + "</svg>");
+  }
+
+  // ---- Main -----------------------------------------------------------------
+  function recalc() {
+    var N1 = parseFloat($("fh-n1").value), N2 = parseFloat($("fh-n2").value);
+    var chi = parseFloat($("fh-chi").value), phi = parseFloat($("fh-phi").value);
+    var stats = $("fh-stats"), verdict = $("fh-verdict");
+    if (!isFinite(N1) || N1 < 1 || !isFinite(N2) || N2 < 1 || !isFinite(chi) || !isFinite(phi) || phi <= 0 || phi >= 1) {
+      stats.innerHTML = '<div class="error-msg">N&#8321; and N&#8322; must be at least 1, &chi; finite, and &phi; strictly between 0 and 1.</div>';
+      verdict.innerHTML = ""; $("fh-plot").innerHTML = ""; $("fh-caption").textContent = "";
+      return;
+    }
+
+    var cc = chiCrit(N1, N2), pc = phiCrit(N1, N2);
+    var bino = binodal(N1, N2, chi);
+    var spin = spinodalRoots(N1, N2, chi);
+
+    stats.innerHTML =
+      '<div class="stat stat--primary"><div class="label"><span class="keepcase">&chi;</span><sub>c</sub></div><div class="value">' + fmt(cc, 5) + '</div><div class="sub">critical &chi;</div></div>' +
+      '<div class="stat"><div class="label"><span class="keepcase">&phi;</span><sub>c</sub></div><div class="value">' + fmtPhi(pc) + '</div><div class="sub">critical composition</div></div>' +
+      '<div class="stat"><div class="label"><span class="keepcase">&chi; &divide; &chi;</span><sub>c</sub></div><div class="value">' + (chi / cc).toFixed(2) + '</div><div class="sub">how far past the edge</div></div>';
+
+    var v = [];
+    if (!bino) {
+      v.push("<strong>One phase.</strong> &chi; = " + fmt(chi, 5) + " is below the critical value " + fmt(cc, 5) +
+        ", so this pair is miscible at every composition. There is no binodal to cross.");
+    } else if (phi <= bino[0] || phi >= bino[1]) {
+      v.push("<strong>One phase, at this composition.</strong> The mixture separates between &phi; = " + fmtPhi(bino[0]) +
+        " and " + fmtPhi(bino[1]) + ", and you are outside that window, so it is stable. Note that it is stable because of where you sit, not because the pair is miscible.");
+    } else {
+      var inSpin = spin && phi > spin[0] && phi < spin[1];
+      var fracB = (phi - bino[0]) / (bino[1] - bino[0]);
+      v.push("<strong>Two phases.</strong> This separates into &phi;&#8321; = " + fmtPhi(bino[0]) + " and &phi;&#8321; = " +
+        fmtPhi(bino[1]) + ". By the lever rule the second takes up " + (fracB * 100).toFixed(1) +
+        "% of the volume and the first " + ((1 - fracB) * 100).toFixed(1) + "%. Those two compositions are fixed by &chi; and the chain lengths; moving your overall &phi; inside the window changes only how much of each you get.");
+      if (inSpin) {
+        v.push("<strong>Inside the spinodal</strong> (" + fmtPhi(spin[0]) + " to " + fmtPhi(spin[1]) +
+          "), so there is no nucleation barrier: every fluctuation grows. Expect spinodal decomposition and a co-continuous, interpenetrating morphology rather than droplets.");
+      } else {
+        v.push("<strong>Metastable.</strong> You are between the binodal and the spinodal (" + fmtPhi(spin[0]) + " to " +
+          fmtPhi(spin[1]) + "), so separation has to nucleate before it can grow. Expect droplets that coarsen, and expect the mixture to survive for a while if nothing seeds it.");
+      }
+    }
+
+    // Cloud point, if chi(T) was supplied.
+    var A = parseFloat($("fh-a").value), B = parseFloat($("fh-b").value);
+    if (isFinite(A) && isFinite(B) && B !== 0) {
+      // Find the chi at which THIS composition first lies on the binodal, then
+      // invert chi = A + B/T. Bisection on chi, since the coexistence window
+      // widens monotonically with chi.
+      var loC = cc, hiC = cc * 1e4, inside = function (c) {
+        var bb = binodal(N1, N2, c);
+        return bb && phi > bb[0] && phi < bb[1];
+      };
+      if (inside(hiC)) {
+        for (var i = 0; i < 80; i++) {
+          var m = Math.sqrt(loC * hiC);
+          if (inside(m)) hiC = m; else loC = m;
+        }
+        var chiCloud = (loC + hiC) / 2, Tcloud = B / (chiCloud - A);
+        if (isFinite(Tcloud) && Tcloud > 0) {
+          v.push("<strong>Cloud point.</strong> At &phi; = " + phi + " this composition reaches the binodal at &chi; = " +
+            fmt(chiCloud, 5) + ", which with &chi; = " + A + " + " + B + "/T is <strong>" + Tcloud.toFixed(1) +
+            "&nbsp;K (" + (Tcloud - 273.15).toFixed(1) + "&nbsp;&deg;C)</strong>. " +
+            (B > 0 ? "B is positive, so &chi; rises on cooling and this is the temperature you separate BELOW." :
+              "B is negative, so &chi; rises on heating and this is the temperature you separate ABOVE."));
+        }
+      }
+    }
+    verdict.innerHTML = v.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    $("fh-plot").innerHTML = plot(N1, N2, chi, phi, bino);
+    $("fh-caption").textContent = "Binodal (solid) and spinodal (dashed) against χ. The filled dot is the critical point, the ring is your composition" +
+      (bino ? ", and the light line is the tie-line joining the two phases you get." : ".");
+  }
+
+  function diblock() {
+    var N = parseFloat($("fh-dn").value), chi = parseFloat($("fh-dchi").value);
+    var el = $("fh-diblock");
+    if (!isFinite(N) || N < 2 || !isFinite(chi) || chi < 0) {
+      el.innerHTML = '<div class="error-msg">Enter a total N of at least 2 and a non-negative &chi;.</div>';
+      return;
+    }
+    var chiN = chi * N, ODT = 10.495;
+    var blendCrit = 4;   // two homopolymers of length N/2: chi_c = 2/(N/2)
+    el.innerHTML =
+      '<div class="stat stat--primary"><div class="label"><span class="keepcase">&chi;</span>N</div><div class="value">' + chiN.toFixed(2) + '</div><div class="sub">vs 10.495 at the ODT</div></div>' +
+      '<div class="stat"><div class="label">State</div><div class="value" style="font-size:1.1rem;">' +
+      (chiN > ODT ? "Ordered" : "Disordered") + '</div><div class="sub">' +
+      (chiN > ODT ? (chiN / ODT).toFixed(2) + "&times; past the transition" : "needs &chi;N &gt; 10.495") + '</div></div>' +
+      '<div class="stat"><div class="label">N for the ODT</div><div class="value">' + Math.ceil(ODT / chi) + '</div><div class="sub">at this &chi;</div></div>' +
+      '<div class="stat"><div class="label">Blend would demix at</div><div class="value"><span class="keepcase">&chi;</span>N &gt; ' + blendCrit + '</div><div class="sub">' +
+      (ODT / blendCrit).toFixed(2) + '&times; easier than the diblock</div></div>';
+  }
+
+  ["fh-n1", "fh-n2", "fh-chi", "fh-phi", "fh-a", "fh-b"].forEach(function (id) {
+    $(id).addEventListener("input", recalc);
+  });
+  ["fh-dn", "fh-dchi"].forEach(function (id) { $(id).addEventListener("input", diblock); });
+
+  recalc();
+  diblock();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
+}
+</script>
+
+</body>
+</html>
