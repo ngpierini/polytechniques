@@ -686,6 +686,151 @@ if (fhHtml.indexOf("10.495") === -1) {
   cases.push({ ok: false, name: "flory-huggins.html no longer states the ODT value", actual: "not found", expected: "10.495", tol: 0, unit: "" });
 }
 
+// ---- Time-temperature superposition: tts-master-curve.html -----------------
+const ttsHtml = fs.readFileSync(path.join(__dirname, "..", "tts-master-curve.html"), "utf8");
+
+const TTS_C1 = 12.5, TTS_C2 = 65.0, TTS_TREF = 373.15;
+const ttsLogA = (T) => -TTS_C1 * (T - TTS_TREF) / (TTS_C2 + (T - TTS_TREF));
+
+// The same generator the page ships, at the same settings.
+const ttsSets = [];
+for (let T = TTS_TREF - 15; T <= TTS_TREF + 60.001; T += 5) {
+  const la = ttsLogA(T), pts = [];
+  for (let lw = -2; lw <= 2.0001; lw += 0.2) {
+    pts.push([lw, 5.5 + 2.6 / (1 + Math.exp(-((lw + la) + 1.5) / 2.2))]);
+  }
+  ttsSets.push({ T: Number(T.toFixed(2)), pts: pts });
+}
+
+function ttsResid(A, B, sh) {
+  const xs = A.map((p) => p[0]), ys = A.map((p) => p[1]);
+  let n = 0, acc = 0;
+  for (const p of B) {
+    const x = p[0] + sh;
+    if (x < xs[0] || x > xs[xs.length - 1]) continue;
+    let i = 0;
+    while (i < xs.length - 2 && xs[i + 1] < x) i++;
+    const d = xs[i + 1] - xs[i];
+    const t = d === 0 ? 0 : (x - xs[i]) / d;
+    acc += Math.pow(p[1] - (ys[i] + t * (ys[i + 1] - ys[i])), 2);
+    n++;
+  }
+  const need = Math.max(5, Math.floor(Math.min(A.length, B.length) * 0.5));
+  return n < need ? Infinity : acc / n;
+}
+function ttsPairShift(A, B) {
+  const lo = A[0][0] - B[B.length - 1][0], hi = A[A.length - 1][0] - B[0][0];
+  let best = null, bv = Infinity;
+  for (let i = 0; i <= 3000; i++) {
+    const sh = lo + (hi - lo) * i / 3000;
+    const v = ttsResid(A, B, sh);
+    if (v < bv) { bv = v; best = sh; }
+  }
+  if (best === null || !isFinite(bv)) return null;
+  let a = best - (hi - lo) / 3000, b = best + (hi - lo) / 3000;
+  for (let i = 0; i < 200; i++) {
+    const m1 = a + (b - a) / 3, m2 = b - (b - a) / 3;
+    if (ttsResid(A, B, m1) < ttsResid(A, B, m2)) b = m2; else a = m1;
+  }
+  return (a + b) / 2;
+}
+function ttsFit(iRef) {
+  const shifts = new Array(ttsSets.length).fill(null);
+  shifts[iRef] = 0;
+  let i;
+  for (i = iRef - 1; i >= 0; i--) {
+    const d = ttsPairShift(ttsSets[i + 1].pts, ttsSets[i].pts);
+    if (d === null) break;
+    shifts[i] = shifts[i + 1] + d;
+  }
+  for (i = iRef + 1; i < ttsSets.length; i++) {
+    const d = ttsPairShift(ttsSets[i - 1].pts, ttsSets[i].pts);
+    if (d === null) break;
+    shifts[i] = shifts[i - 1] + d;
+  }
+  const Tref = ttsSets[iRef].T;
+  let sx = 0, sy = 0, sxx = 0, sxy = 0, n = 0;
+  ttsSets.forEach((S, ix) => {
+    const dT = S.T - Tref;
+    if (Math.abs(dT) < 1e-9 || shifts[ix] === null) return;
+    const x = 1 / dT, y = 1 / shifts[ix];
+    sx += x; sy += y; sxx += x * x; sxy += x * y; n++;
+  });
+  const slope = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+  const icpt = (sy - slope * sx) / n;
+  return { C1: -1 / icpt, C2: slope / icpt, shifts: shifts, Tref: Tref, unshifted: shifts.filter((v) => v === null).length };
+}
+
+// Every sweep must shift. A version of this that silently dropped the ones it
+// could not align would still fit a plausible-looking WLF to what remained.
+{
+  const iGen = ttsSets.findIndex((S) => Math.abs(S.T - TTS_TREF) < 1e-9);
+  const r = ttsFit(iGen);
+  check("every demo sweep shifts", r.unshifted, 0, 0, "unshifted");
+  check("TTS recovers the generating C1", r.C1, TTS_C1, 0.02, "");
+  check("TTS recovers the generating C2", r.C2, TTS_C2, 0.15, "K");
+  // And every individual shift factor, not just the fitted summary - a fit can
+  // absorb a lot of per-point error.
+  let worst = 0;
+  ttsSets.forEach((S, ix) => {
+    if (r.shifts[ix] === null) return;
+    worst = Math.max(worst, Math.abs(r.shifts[ix] - ttsLogA(S.T)));
+  });
+  check("worst individual shift factor error", worst, 0, 0.01, "decades");
+}
+
+// The reference conversion the page argues from, exactly, and the published
+// table of it.
+const ttsConv = (d) => ({ C1: TTS_C1 * TTS_C2 / (TTS_C2 + d), C2: TTS_C2 + d });
+[0, 10, 25].forEach((d) => {
+  const iRef = ttsSets.findIndex((S) => Math.abs(S.T - (TTS_TREF + d)) < 1e-9);
+  if (iRef < 0) return;
+  const r = ttsFit(iRef), e = ttsConv(d);
+  check("TTS C1 at reference +" + d + " K", r.C1, e.C1, Math.max(0.08, e.C1 * 0.012), "");
+  check("TTS C2 at reference +" + d + " K", r.C2, e.C2, Math.max(0.3, e.C2 * 0.012), "K");
+});
+// C1*C2 is invariant under a change of reference. This is the content-bearing
+// part of the identity, so it is asserted directly rather than inferred.
+[0, 10, 25, -10].forEach((d) => {
+  const e = ttsConv(d);
+  check("C1*C2 is invariant at reference shift " + d, e.C1 * e.C2, TTS_C1 * TTS_C2, 1e-9, "");
+});
+
+// The published reference table.
+const ttsTable = [...ttsHtml.matchAll(
+  /<tr><td>([\d.]+) K[^<]*<\/td><td class="num">([\d.]+)<\/td><td class="num">([\d.]+)<\/td><td class="num">([\d.]+)<\/td><td class="num">([\d.]+)<\/td><\/tr>/g
+)].map((m) => m.slice(1).map(Number));
+if (ttsTable.length !== 3) {
+  failed++;
+  cases.push({ ok: false, name: "tts-master-curve reference table has 3 rows", actual: ttsTable.length, expected: 3, tol: 0, unit: "rows" });
+}
+ttsTable.forEach(([T, , , c1ex, c2ex]) => {
+  const e = ttsConv(T - TTS_TREF);
+  check("published exact C1 at " + T + " K", e.C1, c1ex, 0.006, "");
+  check("published exact C2 at " + T + " K", e.C2, c2ex, 0.06, "K");
+});
+
+// The apparent activation energy the page quotes for the universal constants.
+// Ea = 2.303 R C1 C2 T^2 / (C2 + dT)^2.
+{
+  const R = 8.314, uC1 = 17.44, uC2 = 51.6, Tg = 373;
+  const Ea = (dT) => 2.303 * R * uC1 * uC2 * (Tg + dT) * (Tg + dT) / Math.pow(uC2 + dT, 2) / 1000;
+  check("apparent Ea at Tg with universal constants", Ea(0), 900, 12, "kJ/mol");
+  check("apparent Ea at Tg+50", Ea(50), 300, 12, "kJ/mol");
+  // The page's claim is the RATIO - a threefold fall over 50 K.
+  check("Ea falls threefold over 50 K", Ea(0) / Ea(50), 3.0, 0.15, "x");
+}
+
+// CI runs its own copy of the shifting algorithm, so require the page to still
+// shift onto the NEIGHBOUR. Shifting onto the accumulated master curve is the
+// bug this replaced, and it produced shift factors sitting on the search bound.
+if (ttsHtml.indexOf("pairShift(work[i + 1].pts, work[i].pts)") === -1 ||
+    ttsHtml.indexOf("pairShift(work[i - 1].pts, work[i].pts)") === -1) {
+  failed++;
+  cases.push({ ok: false, name: "tts-master-curve.html no longer shifts onto the adjacent sweep",
+    actual: "not found", expected: "pairwise shifting", tol: 0, unit: "" });
+}
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume

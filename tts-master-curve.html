@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time-Temperature Superposition: PolyTechniques</title>
+<meta name="description" content="Paste isothermal modulus sweeps at several temperatures and build a master curve: shift factors, a WLF fit for C1 and C2, and the apparent activation energy.">
+<link rel="canonical" href="https://getpolytechniques.com/tts-master-curve.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Time-Temperature Superposition: PolyTechniques">
+<meta property="og:description" content="Build a master curve from isothermal frequency sweeps, and fit WLF constants to the shift factors.">
+<meta property="og:url" content="https://getpolytechniques.com/tts-master-curve.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Time-Temperature Superposition: PolyTechniques">
+<meta name="twitter:description" content="Master curve, shift factors and WLF constants from isothermal frequency sweeps.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Time-Temperature Superposition",
+  "url": "https://getpolytechniques.com/tts-master-curve.html",
+  "description": "Build a viscoelastic master curve from isothermal frequency sweeps and fit the WLF equation to the shift factors.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js?v=1"></script>
+<script src="nav.js?v=27" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=103">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Time&ndash;Temperature Superposition</h1>
+      <p class="subtitle">Turn a stack of isothermal frequency sweeps into one master curve, and read the WLF constants off the shift factors</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>What superposition buys you</h3>
+    <p class="guide-note">
+      A rheometer covers three or four decades of frequency. The viscoelastic response of a polymer covers ten or twelve. The gap is bridged by an empirical observation that turns out to hold remarkably well above T<sub>g</sub>: <strong>raising the temperature and lowering the frequency do the same thing.</strong> Every relaxation process in the material speeds up by the same factor, so a curve measured hot and slow lies on top of one measured cold and fast, once you slide it along the frequency axis.
+    </p>
+    <p class="guide-note">
+      That sliding distance is the shift factor a<sub>T</sub>. Collect them and you have not just a master curve spanning a dozen decades, but a measurement of how the relaxation time itself depends on temperature &ndash; which is the Williams&ndash;Landel&ndash;Ferry equation:
+    </p>
+    <div class="guide-formula">
+      log&nbsp;a<sub>T</sub> = &minus;C&#8321;(T &minus; T<sub>ref</sub>) / (C&#8322; + T &minus; T<sub>ref</sub>)
+    </div>
+    <p class="guide-note">
+      The <a href="thermal-analysis.html">thermal analysis guide</a> explains what a DMA sweep tells you. This page does something with one.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Build a master curve</h3>
+
+    <div class="subsection">
+      <div class="subsection-title">Isothermal sweeps</div>
+      <div class="field">
+        <label for="tt-data">Three columns: temperature, frequency (or &omega;), modulus. One point per line; the temperature column is what groups them into sweeps.</label>
+        <textarea id="tt-data" class="data-paste" rows="7" spellcheck="false"></textarea>
+        <p class="hint" id="tt-data-hint"></p>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label for="tt-unit">Temperature column is in</label>
+          <select id="tt-unit">
+            <option value="K" selected>kelvin</option>
+            <option value="C">degrees Celsius</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tt-ref">Reference temperature</label>
+          <select id="tt-ref"></select>
+        </div>
+        <div class="field">
+          <label for="tt-vert">Vertical shift</label>
+          <select id="tt-vert">
+            <option value="none" selected>None</option>
+            <option value="rubber">b&#8348; = T<sub>ref</sub>/T (rubber elasticity)</option>
+          </select>
+          <p class="hint">The entropic correction is small next to the horizontal shift and is often left out. Turn it on and see whether it changes the fit.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="tt-plot" class="chart-wrap"></div>
+    <p class="diagram-caption" id="tt-caption"></p>
+
+    <div class="stat-grid" id="tt-stats" style="margin-top:16px;"></div>
+    <div id="tt-notes"></div>
+
+    <h4 style="margin-top:22px;">Shift factors</h4>
+    <div class="table-scroll">
+      <table class="recipe recipe-data" id="tt-shifts">
+        <thead><tr><th>T</th><th class="num">T &minus; T<sub>ref</sub></th><th class="num">log a<sub>T</sub></th><th class="num">WLF fit</th><th class="num">residual</th><th class="num">points</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>A worked example with a known answer</h3>
+    <p class="guide-note">
+      The data this page loads with is not a measurement. It was generated from a WLF law with <strong>C&#8321;&nbsp;=&nbsp;12.5 and C&#8322;&nbsp;=&nbsp;65.0&nbsp;K referenced to 373.15&nbsp;K</strong>, sixteen temperatures five kelvin apart, each a four-decade sweep. So the right answer exists before the page computes anything, and what comes out is a measurement of the algorithm rather than a claim about it.
+    </p>
+    <p class="guide-note">
+      Set the reference to 373.15&nbsp;K and the fit returns <strong>C&#8321;&nbsp;=&nbsp;12.49, C&#8322;&nbsp;=&nbsp;64.9</strong>, with every shift factor within 0.007 decades of the value it was built from. The page opens on 398.15&nbsp;K instead &ndash; the middle sweep &ndash; and reports C&#8321;&nbsp;=&nbsp;9.10, C&#8322;&nbsp;=&nbsp;90.7. Those are not a disagreement. They are the same law stated against a different reference, which is the subject of the next section.
+    </p>
+    <p class="guide-note">
+      <strong>Why five kelvin and four decades.</strong> Those are not arbitrary. Superposition needs adjacent sweeps to <em>overlap</em>, and the shift between two temperatures grows fast as you approach T<sub>g</sub>: on this WLF law, 10&nbsp;K steps near the reference demand more than three decades of shift, so consecutive four-decade sweeps would share no frequency range at all and there would be nothing to align. If your own curves refuse to shift cleanly at the cold end, the usual cause is that the temperature steps were too coarse, not that superposition has failed.
+    </p>
+    <p class="guide-note">
+      <strong>Error accumulates away from the reference.</strong> Each sweep is aligned onto its neighbour and the shifts are summed outward, so the uncertainty in log&nbsp;a<sub>T</sub> grows with distance from T<sub>ref</sub> &ndash; in the example above from 0.0003 decades next to the reference to 0.007 at the far end, a factor of twenty. Pick the reference in the middle of your temperature range rather than at one end, and treat the extreme ends of the master curve as the least certain part of it.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>C&#8321; and C&#8322; mean nothing without their reference</h3>
+    <p class="guide-note">
+      A WLF constant pair is not a property of the material on its own. Move the reference temperature by &delta; and the same physical law is described by different constants, exactly:
+    </p>
+    <div class="guide-formula">
+      C&#8322;&prime; = C&#8322; + &delta; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; C&#8321;&prime; = C&#8321;C&#8322; / (C&#8322; + &delta;) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (&delta; = T<sub>ref</sub>&prime; &minus; T<sub>ref</sub>)
+    </div>
+    <p class="guide-note">
+      Note that the product C&#8321;C&#8322; is invariant, and so is the quantity that actually has physical content. Run the demo data at three references and the page reproduces the conversion:
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>Reference</th><th class="num">C&#8321; recovered</th><th class="num">C&#8322; recovered</th><th class="num">C&#8321; exact</th><th class="num">C&#8322; exact</th></tr></thead>
+        <tbody>
+          <tr><td>373.15 K (as generated)</td><td class="num">12.49</td><td class="num">64.9</td><td class="num">12.50</td><td class="num">65.0</td></tr>
+          <tr><td>383.15 K</td><td class="num">10.85</td><td class="num">75.1</td><td class="num">10.83</td><td class="num">75.0</td></tr>
+          <tr><td>398.15 K</td><td class="num">9.10</td><td class="num">90.7</td><td class="num">9.03</td><td class="num">90.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      Two things to take from that table. <strong>Quoting C&#8321; and C&#8322; without the reference temperature is not a result</strong>, and comparing two literature pairs referenced to different temperatures is comparing nothing &ndash; convert first. The "universal" constants C&#8321;&nbsp;=&nbsp;17.44, C&#8322;&nbsp;=&nbsp;51.6 are specifically referenced to T<sub>g</sub>, and applying them at any other temperature without converting is a common and silent error.
+    </p>
+    <p class="guide-note">
+      And <strong>the accuracy degrades as the reference moves off centre</strong>: 0.1% at 373.15&nbsp;K, 0.8% at 398.15&nbsp;K. That is the shift-factor error accumulating, since a reference near one end of the data leaves the far end many pairwise steps away. Put the reference in the middle of your temperature range when you want the best constants, and move it afterwards with the conversion above rather than by re-shifting.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>The activation energy that is not one</h3>
+    <p class="guide-note">
+      It is tempting to fit log&nbsp;a<sub>T</sub> against 1/T and quote an Arrhenius activation energy. Near T<sub>g</sub> that is a mistake, and the WLF fit says exactly why. Differentiating gives an apparent activation energy that is not constant at all:
+    </p>
+    <div class="guide-formula">
+      E<sub>a</sub> = 2.303&nbsp;R&nbsp;C&#8321;C&#8322;T&sup2; / (C&#8322; + T &minus; T<sub>ref</sub>)&sup2;
+    </div>
+    <p class="guide-note">
+      Put the "universal" constants in &ndash; C&#8321;&nbsp;=&nbsp;17.44 and C&#8322;&nbsp;=&nbsp;51.6&nbsp;K referenced to T<sub>g</sub>, taking T<sub>g</sub>&nbsp;=&nbsp;373&nbsp;K &ndash; and the number at T<sub>g</sub> is about <strong>900&nbsp;kJ/mol</strong>. That is not a chemical activation energy; no bond in the polymer is worth 900&nbsp;kJ/mol. It is the signature of cooperative motion: near T<sub>g</sub> a segment cannot move until a whole neighbourhood rearranges with it, so the effective barrier is the sum of many small ones. Fifty kelvin above T<sub>g</sub> the same expression gives about <strong>300&nbsp;kJ/mol</strong> &ndash; a threefold fall over 50&nbsp;K, which is not what any Arrhenius process does.
+    </p>
+    <p class="guide-note">
+      The practical rule that follows: use WLF between T<sub>g</sub> and roughly T<sub>g</sub>&nbsp;+&nbsp;100&nbsp;K, and only switch to an Arrhenius description well above that, where the free volume has stopped changing quickly and the apparent energy really does settle. A single Arrhenius fit spanning both regions will describe neither, and will extrapolate badly in the direction you care about.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>When superposition fails, and what that tells you</h3>
+    <ul class="guide-list">
+      <li><strong>A material is only thermorheologically simple if every relaxation shifts by the same factor.</strong> That is an assumption, not a law. When it holds, the shifted curves lie on one line; when it does not, they cross or fan out and no shift will fix it. The failure is the measurement: it says you have two processes with different temperature dependences.</li>
+      <li><strong>Semicrystalline polymers usually fail it</strong>, because the amorphous fraction and the crystal population respond to temperature differently, and because the crystallinity itself changes as you heat. A master curve through a melting range is not a master curve.</li>
+      <li><strong>Block copolymers and filled systems fail it near a transition.</strong> A diblock approaching its order&ndash;disorder transition has a morphology changing underneath the measurement &ndash; see the <a href="flory-huggins.html">phase behaviour page</a> for where that sits &ndash; and a filled rubber has a filler network that yields rather than relaxes.</li>
+      <li><strong>Check the overlap, not just the fit.</strong> A shift can be numerically optimal while aligning almost nothing, if two sweeps barely touch. This page reports how many points actually overlapped for each shift; anything in single figures should be treated as a guess.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <ul class="guide-list">
+      <li><a href="thermal-analysis.html">Thermal analysis</a> &ndash; what DSC, TGA and DMA each answer, and how to read them together.</li>
+      <li><a href="tg-predictor.html">Tg predictor</a> &ndash; the transition this whole construction is referenced to.</li>
+      <li><a href="crosslink-density.html">Crosslink density</a> &ndash; uses the rubbery plateau modulus that sits at one end of the master curve.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Superposition is an empirical assumption that holds well for amorphous homopolymers above T<sub>g</sub> and poorly elsewhere. A clean master curve is evidence for it; a fan of curves that will not overlay is evidence against.</p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+
+  // ---- Demo data ------------------------------------------------------------
+  // Generated from a KNOWN WLF so the page has a ground truth to be measured
+  // against. The relaxation shape is a smooth sigmoid in log frequency; its
+  // exact form does not matter, only that it is the SAME at every temperature
+  // once shifted, which is precisely what superposition asserts.
+  //
+  // Five kelvin steps and four-decade sweeps are chosen so that adjacent
+  // curves overlap. That is a real experimental constraint: on this WLF law a
+  // 10 K step near the reference needs more than three decades of shift, so
+  // consecutive four-decade sweeps would share no frequency range at all.
+  var DEMO = (function () {
+    var C1 = 12.5, C2 = 65.0, Tref = 373.15, out = [];
+    for (var T = Tref - 15; T <= Tref + 60.001; T += 5) {
+      var la = -C1 * (T - Tref) / (C2 + (T - Tref));
+      for (var lw = -2; lw <= 2.0001; lw += 0.2) {
+        var G = 5.5 + 2.6 / (1 + Math.exp(-((lw + la) + 1.5) / 2.2));
+        out.push(T.toFixed(2) + "  " + Math.pow(10, lw).toExponential(4) + "  " + Math.pow(10, G).toExponential(5));
+      }
+    }
+    return out.join("\n");
+  })();
+
+  // ---- Parsing --------------------------------------------------------------
+  function parse(text, unit) {
+    var rows = [], skipped = 0;
+    text.split(/\r?\n/).forEach(function (line) {
+      var t = line.trim();
+      if (!t) return;
+      var p = t.split(/[\s,;]+/);
+      var T = parseFloat(p[0]), w = parseFloat(p[1]), G = parseFloat(p[2]);
+      if (!isFinite(T) || !isFinite(w) || !isFinite(G) || w <= 0 || G <= 0) { skipped++; return; }
+      rows.push([unit === "C" ? T + 273.15 : T, w, G]);
+    });
+    // Group by temperature. Rounded to 0.01 K so a float printed twice in an
+    // export does not become two sweeps of one point each.
+    var byT = {};
+    rows.forEach(function (r) {
+      var key = r[0].toFixed(2);
+      (byT[key] = byT[key] || []).push([Math.log10(r[1]), Math.log10(r[2])]);
+    });
+    var sets = Object.keys(byT).map(function (k) {
+      var pts = byT[k].slice().sort(function (a, b) { return a[0] - b[0]; });
+      return { T: parseFloat(k), pts: pts };
+    }).sort(function (a, b) { return a.T - b.T; });
+    return { sets: sets, skipped: skipped, n: rows.length };
+  }
+
+  // ---- Shifting -------------------------------------------------------------
+  // Each sweep is aligned onto its NEIGHBOUR, not onto the accumulated master
+  // curve, and the shifts are summed outward from the reference.
+  //
+  // Shifting onto the accumulated curve looks more principled and is worse: the
+  // master grows long, and a candidate shift can park a sweep against a sliver
+  // at its far end with a small residual and no physical meaning. An early
+  // version of this did exactly that and returned shift factors landing on
+  // exact multiples of the search bound. Neighbours overlap most and have the
+  // most similar shape, so the alignment is least ambiguous - at the cost that
+  // error accumulates with distance from the reference, which the page reports
+  // rather than hides.
+  function residual(A, B, s) {
+    var xs = A.map(function (p) { return p[0]; });
+    var ys = A.map(function (p) { return p[1]; });
+    var n = 0, acc = 0;
+    for (var j = 0; j < B.length; j++) {
+      var x = B[j][0] + s;
+      if (x < xs[0] || x > xs[xs.length - 1]) continue;
+      var i = 0;
+      while (i < xs.length - 2 && xs[i + 1] < x) i++;
+      var d = xs[i + 1] - xs[i];
+      var t = d === 0 ? 0 : (x - xs[i]) / d;
+      acc += Math.pow(B[j][1] - (ys[i] + t * (ys[i + 1] - ys[i])), 2);
+      n++;
+    }
+    // Real overlap, not a few points at the edge.
+    var need = Math.max(5, Math.floor(Math.min(A.length, B.length) * 0.5));
+    return n < need ? { v: Infinity, n: n } : { v: acc / n, n: n };
+  }
+
+  function pairShift(A, B) {
+    if (A.length < 3 || B.length < 3) return null;
+    var lo = A[0][0] - B[B.length - 1][0], hi = A[A.length - 1][0] - B[0][0];
+    if (!(hi > lo)) return null;
+    var best = null, bv = Infinity, bn = 0, i;
+    for (i = 0; i <= 3000; i++) {
+      var s = lo + (hi - lo) * i / 3000;
+      var r = residual(A, B, s);
+      if (r.v < bv) { bv = r.v; best = s; bn = r.n; }
+    }
+    if (best === null || !isFinite(bv)) return null;
+    var a = best - (hi - lo) / 3000, b = best + (hi - lo) / 3000;
+    for (i = 0; i < 200; i++) {
+      var m1 = a + (b - a) / 3, m2 = b - (b - a) / 3;
+      if (residual(A, B, m1).v < residual(A, B, m2).v) b = m2; else a = m1;
+    }
+    var mid = (a + b) / 2;
+    return { shift: mid, overlap: residual(A, B, mid).n, rms: Math.sqrt(residual(A, B, mid).v) };
+  }
+
+  // ---- WLF fit --------------------------------------------------------------
+  // log aT = -C1 dT/(C2 + dT) rearranges to 1/log aT = -(C2/C1)(1/dT) - 1/C1,
+  // which is a straight line in (1/dT, 1/log aT). Linear least squares on that
+  // needs no starting guess and cannot wander off, which matters more here than
+  // the small statistical cost of fitting a transformed variable.
+  function fitWLF(pts) {
+    var sx = 0, sy = 0, sxx = 0, sxy = 0, n = 0;
+    pts.forEach(function (p) {
+      if (Math.abs(p[0]) < 1e-9 || Math.abs(p[1]) < 1e-12) return;
+      var x = 1 / p[0], y = 1 / p[1];
+      sx += x; sy += y; sxx += x * x; sxy += x * y; n++;
+    });
+    if (n < 2) return null;
+    var den = n * sxx - sx * sx;
+    if (Math.abs(den) < 1e-300) return null;
+    var slope = (n * sxy - sx * sy) / den, icpt = (sy - slope * sx) / n;
+    if (!isFinite(slope) || !isFinite(icpt) || icpt === 0) return null;
+    var C1 = -1 / icpt, C2 = slope / icpt;
+    if (!isFinite(C1) || !isFinite(C2)) return null;
+    // R^2 measured on log aT itself, not on the transformed variable, because
+    // that is the quantity anyone cares about the fit of.
+    var ybar = pts.reduce(function (a, p) { return a + p[1]; }, 0) / pts.length;
+    var ssTot = 0, ssRes = 0;
+    pts.forEach(function (p) {
+      var pred = -C1 * p[0] / (C2 + p[0]);
+      ssRes += Math.pow(p[1] - pred, 2);
+      ssTot += Math.pow(p[1] - ybar, 2);
+    });
+    return { C1: C1, C2: C2, r2: ssTot > 0 ? 1 - ssRes / ssTot : 1 };
+  }
+
+  function fmt(n, d) { return isFinite(n) ? n.toFixed(d === undefined ? 3 : d) : "n/a"; }
+
+  // ---- Plot -----------------------------------------------------------------
+  function plot(sets, shifts, iRef) {
+    var W = 680, H = 330, Mg = { left: 46, right: 14, top: 12, bottom: 44 };
+    var pw = W - Mg.left - Mg.right, ph = H - Mg.top - Mg.bottom;
+    var xs = [], ys = [];
+    sets.forEach(function (S, i) {
+      if (shifts[i] === null) return;
+      S.pts.forEach(function (p) { xs.push(p[0] + shifts[i]); ys.push(p[1]); });
+    });
+    if (!xs.length) return "";
+    var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+    var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+    if (x1 - x0 < 1e-9) x1 = x0 + 1;
+    if (y1 - y0 < 1e-9) y1 = y0 + 1;
+    var padY = (y1 - y0) * 0.06; y0 -= padY; y1 += padY;
+    function sx(v) { return Mg.left + ((v - x0) / (x1 - x0)) * pw; }
+    function sy(v) { return Mg.top + (1 - (v - y0) / (y1 - y0)) * ph; }
+
+    var s = "";
+    var d;
+    for (d = Math.ceil(x0); d <= Math.floor(x1); d++) {
+      s += '<line x1="' + sx(d) + '" y1="' + Mg.top + '" x2="' + sx(d) + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="0.5" opacity="0.6"/>';
+      s += '<text x="' + sx(d) + '" y="' + (H - Mg.bottom + 15) + '" text-anchor="middle" font-size="10" fill="var(--text-dim)">10<tspan baseline-shift="super" font-size="8">' + d + '</tspan></text>';
+    }
+    for (d = Math.ceil(y0); d <= Math.floor(y1); d++) {
+      s += '<line x1="' + Mg.left + '" y1="' + sy(d) + '" x2="' + (W - Mg.right) + '" y2="' + sy(d) + '" stroke="var(--border)" stroke-width="0.5" opacity="0.6"/>';
+      s += '<text x="' + (Mg.left - 6) + '" y="' + (sy(d) + 3.5) + '" text-anchor="end" font-size="10" fill="var(--text-dim)">10<tspan baseline-shift="super" font-size="8">' + d + '</tspan></text>';
+    }
+    s += '<line x1="' + Mg.left + '" y1="' + (H - Mg.bottom) + '" x2="' + (W - Mg.right) + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    s += '<line x1="' + Mg.left + '" y1="' + Mg.top + '" x2="' + Mg.left + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+
+    // One hue per temperature, cycling through the wheel so neighbouring
+    // sweeps are distinguishable where they overlap.
+    sets.forEach(function (S, i) {
+      if (shifts[i] === null) return;
+      var hue = Math.round(210 + 150 * i / Math.max(1, sets.length - 1)) % 360;
+      var col = i === iRef ? "var(--primary, #5b8def)" : "hsl(" + hue + " 62% 52%)";
+      S.pts.forEach(function (p) {
+        s += '<circle cx="' + sx(p[0] + shifts[i]).toFixed(2) + '" cy="' + sy(p[1]).toFixed(2) +
+          '" r="' + (i === iRef ? 2.6 : 2) + '" fill="' + col + '" opacity="0.85"/>';
+      });
+    });
+    s += '<text x="' + (W / 2) + '" y="' + (H - 4) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">&#969;&middot;aₜ (reduced frequency)</text>';
+    s += '<text x="12" y="' + (H / 2) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)" transform="rotate(-90 12 ' + (H / 2) + ')">modulus</text>';
+    return '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Master curve of modulus against reduced frequency.">' + s + '</svg>';
+  }
+
+  // ---- Main -----------------------------------------------------------------
+  var lastSets = [];
+
+  function fillRefOptions(sets) {
+    var sel = $("tt-ref"), prev = sel.value;
+    sel.innerHTML = sets.map(function (S, i) {
+      return '<option value="' + i + '">' + S.T.toFixed(2) + ' K</option>';
+    }).join("");
+    if (prev !== "" && sets[parseInt(prev, 10)]) sel.value = prev;
+    else sel.value = String(Math.floor(sets.length / 2));
+  }
+
+  function recalc(refill) {
+    var parsed = parse($("tt-data").value, $("tt-unit").value);
+    var sets = parsed.sets;
+    var stats = $("tt-stats"), notes = $("tt-notes");
+    var body = document.querySelector("#tt-shifts tbody");
+
+    $("tt-data-hint").textContent = parsed.n
+      ? parsed.n + " points in " + sets.length + " sweeps" +
+        (parsed.skipped ? ", " + parsed.skipped + " line(s) skipped" : "")
+      : "";
+
+    function fail(msg) {
+      stats.innerHTML = '<div class="error-msg">' + msg + '</div>';
+      notes.innerHTML = ""; body.innerHTML = "";
+      $("tt-plot").innerHTML = ""; $("tt-caption").textContent = "";
+    }
+    if (sets.length < 2) return fail("Paste at least two isothermal sweeps. Three columns per line: temperature, frequency, modulus.");
+    if (refill || $("tt-ref").options.length !== sets.length) fillRefOptions(sets);
+
+    var iRef = parseInt($("tt-ref").value, 10);
+    if (!(iRef >= 0 && iRef < sets.length)) iRef = Math.floor(sets.length / 2);
+
+    // Vertical shift first, so the horizontal alignment sees the corrected data.
+    var vert = $("tt-vert").value;
+    var Tref = sets[iRef].T;
+    var work = sets.map(function (S) {
+      if (vert !== "rubber") return S;
+      var b = Math.log10(Tref / S.T);
+      return { T: S.T, pts: S.pts.map(function (p) { return [p[0], p[1] + b]; }) };
+    });
+
+    var shifts = new Array(sets.length).fill(null);
+    var meta = new Array(sets.length).fill(null);
+    shifts[iRef] = 0;
+    var i;
+    for (i = iRef - 1; i >= 0; i--) {
+      var rd = pairShift(work[i + 1].pts, work[i].pts);
+      if (!rd || shifts[i + 1] === null) break;
+      shifts[i] = shifts[i + 1] + rd.shift; meta[i] = rd;
+    }
+    for (i = iRef + 1; i < sets.length; i++) {
+      var ru = pairShift(work[i - 1].pts, work[i].pts);
+      if (!ru || shifts[i - 1] === null) break;
+      shifts[i] = shifts[i - 1] + ru.shift; meta[i] = ru;
+    }
+
+    var fitPts = [];
+    sets.forEach(function (S, ix) {
+      if (shifts[ix] === null || ix === iRef) return;
+      fitPts.push([S.T - Tref, shifts[ix]]);
+    });
+    var wlf = fitWLF(fitPts);
+
+    var R = 8.314;
+    var EaAt = function (T) {
+      if (!wlf) return NaN;
+      return 2.303 * R * wlf.C1 * wlf.C2 * T * T / Math.pow(wlf.C2 + (T - Tref), 2) / 1000;
+    };
+
+    stats.innerHTML =
+      '<div class="stat stat--primary"><div class="label">C&#8321;</div><div class="value">' + (wlf ? fmt(wlf.C1, 2) : "n/a") + '</div><div class="sub">WLF</div></div>' +
+      '<div class="stat"><div class="label">C&#8322;</div><div class="value">' + (wlf ? fmt(wlf.C2, 1) : "n/a") + '</div><div class="sub">K</div></div>' +
+      '<div class="stat"><div class="label">R&sup2;</div><div class="value">' + (wlf ? wlf.r2.toFixed(5) : "n/a") + '</div><div class="sub">on log aₜ</div></div>' +
+      '<div class="stat"><div class="label">Span</div><div class="value">' +
+      (function () {
+        var used = shifts.filter(function (v) { return v !== null; });
+        if (!used.length) return "0";
+        var lo = Infinity, hi = -Infinity;
+        sets.forEach(function (S, ix) {
+          if (shifts[ix] === null) return;
+          lo = Math.min(lo, S.pts[0][0] + shifts[ix]);
+          hi = Math.max(hi, S.pts[S.pts.length - 1][0] + shifts[ix]);
+        });
+        return (hi - lo).toFixed(1);
+      })() + '</div><div class="sub">decades of reduced frequency</div></div>' +
+      '<div class="stat"><div class="label">Apparent E<sub>a</sub></div><div class="value">' + (wlf ? Math.round(EaAt(Tref)) : "n/a") + '</div><div class="sub">kJ/mol at T<sub>ref</sub></div></div>';
+
+    var n = [];
+    var unshifted = shifts.filter(function (v) { return v === null; }).length;
+    if (unshifted) {
+      n.push("<strong>" + unshifted + " sweep(s) could not be shifted.</strong> Superposition needs adjacent sweeps to share " +
+        "a frequency range, and these did not overlap enough to align. That is usually a temperature step too coarse for how " +
+        "fast aₜ is changing, not a failure of the method.");
+    }
+    if (wlf) {
+      n.push("<strong>What the fit says about mechanism.</strong> At T<sub>ref</sub> these constants give an apparent activation energy of " +
+        Math.round(EaAt(Tref)) + "&nbsp;kJ/mol, falling to " + Math.round(EaAt(Tref + 50)) +
+        "&nbsp;kJ/mol fifty kelvin higher. An energy that large is not a bond breaking and one that changes that fast is not " +
+        "an Arrhenius process; both are the signature of cooperative segmental motion, which is why WLF and not Arrhenius " +
+        "belongs in this temperature range.");
+      if (wlf.C1 <= 0 || wlf.C2 <= 0) {
+        n.push("<strong>The fitted constants are not physical.</strong> C&#8321; and C&#8322; should both be positive. " +
+          "A negative value means the shift factors do not follow a WLF form over this range - check whether the sweeps " +
+          "genuinely superpose, or whether a transition sits inside the temperature range.");
+      }
+      if (wlf.r2 < 0.99) {
+        n.push("<strong>R&sup2; is " + wlf.r2.toFixed(4) + ".</strong> A clean thermorheologically simple material fits far better than " +
+          "this. Look at whether the curves actually lie on one line in the plot above, rather than trusting the constants.");
+      }
+    }
+    notes.innerHTML = n.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    body.innerHTML = sets.map(function (S, ix) {
+      var dT = S.T - Tref;
+      var pred = wlf ? -wlf.C1 * dT / (wlf.C2 + dT) : NaN;
+      if (shifts[ix] === null) {
+        return "<tr><td>" + S.T.toFixed(2) + " K</td><td class=\"num\">" + dT.toFixed(2) +
+          "</td><td class=\"num\">not shifted</td><td class=\"num\">&mdash;</td><td class=\"num\">&mdash;</td><td class=\"num\">&mdash;</td></tr>";
+      }
+      return "<tr" + (ix === iRef ? ' style="font-weight:600;"' : "") + "><td>" + S.T.toFixed(2) + " K" +
+        (ix === iRef ? " (reference)" : "") + "</td>" +
+        '<td class="num">' + dT.toFixed(2) + "</td>" +
+        '<td class="num">' + shifts[ix].toFixed(4) + "</td>" +
+        '<td class="num">' + (isFinite(pred) ? pred.toFixed(4) : "&mdash;") + "</td>" +
+        '<td class="num">' + (isFinite(pred) ? (shifts[ix] - pred).toExponential(1) : "&mdash;") + "</td>" +
+        '<td class="num">' + (meta[ix] ? meta[ix].overlap : "&mdash;") + "</td></tr>";
+    }).join("");
+
+    $("tt-plot").innerHTML = plot(work, shifts, iRef);
+    $("tt-caption").textContent = "Master curve at T_ref = " + Tref.toFixed(2) +
+      " K. One colour per sweep; the reference is highlighted. If the colours lie on one line the material is " +
+      "thermorheologically simple over this range, and if they fan out it is not.";
+  }
+
+  $("tt-data").value = DEMO;
+  $("tt-data").addEventListener("input", function () { recalc(true); });
+  $("tt-unit").addEventListener("change", function () { recalc(true); });
+  $("tt-ref").addEventListener("change", function () { recalc(false); });
+  $("tt-vert").addEventListener("change", function () { recalc(false); });
+
+  recalc(true);
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
+}
+</script>
+
+</body>
+</html>
