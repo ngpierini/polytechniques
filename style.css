@@ -482,7 +482,20 @@ table.recipe.recipe-data td:not(:first-child), table.recipe.recipe-data th:not(:
    top to bottom with nothing hidden. Only applies to tables that nav.js has
    labelled (.recipe-stackable); anything it skipped keeps the scroller. */
 @media screen and (max-width: 600px) {
-  .table-scroll { overflow-x: visible; }
+  /* Only a wrapper around a STACKED table gives up its scroller. This used to
+     apply to every .table-scroll, so a table nav.js had left unstacked (two
+     columns, or rows that do not line up with the header) lost its scrollbar
+     and simply ran off the page. Where :has() is unsupported the wrapper keeps
+     overflow-x: auto, which is the safe way to fail. */
+  .table-scroll:has(> table.recipe-stackable) { overflow-x: visible; }
+  /* The desktop rule "table.recipe.recipe-data td:not(:first-child) { nowrap }"
+     keeps numeric columns tidy on a wide screen. Below 600px it is what made a
+     two-column table with a long header ("Conversion of A at the gel point")
+     wider than the phone, and it also beat the stacked-card rule below, whose
+     white-space: normal had lower specificity - so no stacked cell or label
+     could wrap either. Same specificity, later in the file, so this wins. */
+  table.recipe.recipe-data td:not(:first-child),
+  table.recipe.recipe-data th:not(:first-child) { white-space: normal; }
   table.recipe.recipe-stackable,
   table.recipe.recipe-stackable.recipe-data {
     display: block;
@@ -510,10 +523,7 @@ table.recipe.recipe-data td:not(:first-child), table.recipe.recipe-data th:not(:
   }
   table.recipe.recipe-stackable tbody tr:last-child { margin-bottom: 0; }
   table.recipe.recipe-stackable tbody td {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 14px;
+    display: flow-root;
     padding: 6px 0;
     border-bottom: 1px dashed var(--border);
     text-align: right;
@@ -523,7 +533,8 @@ table.recipe.recipe-data td:not(:first-child), table.recipe.recipe-data th:not(:
   table.recipe.recipe-stackable tbody td[data-stack-last] { border-bottom: none; }
   table.recipe.recipe-stackable tbody td::before {
     content: attr(data-label);
-    flex: 0 1 auto;
+    float: left;
+    margin-right: 14px;
     max-width: 45%;
     /* The cell rule sets overflow-wrap: break-word for long chemical names;
        inherited here it snapped labels mid-word ("TENDENC / Y"). */
@@ -1596,15 +1607,19 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   justify-content: center;
 }
 .dyn-row-remove:hover { border-color: var(--danger); color: var(--danger); }
+/* Sized exactly like .dyn-row below it, wrap included, so that on a narrow
+   screen the labels break into the same grid the inputs do instead of running
+   off the side. The padding lives on the spans (border-box) so the container
+   is the same width as a row of inputs. */
 .dyn-row-labels {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   font-size: var(--fs-2xs);
   color: var(--text-dim);
   font-weight: 600;
-  padding: 0 2px;
 }
-.dyn-row-labels span { flex: 1; min-width: 90px; }
+.dyn-row-labels span { flex: 1; min-width: 90px; padding-left: 2px; }
 .dyn-row-labels span.dyn-label-spacer { flex: 0 0 30px; min-width: 30px; }
 
 /* ---------------------------------------------------------------------
