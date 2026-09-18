@@ -130,7 +130,7 @@
     </p>
 
     <p class="guide-note">
-      <strong>Elastic strands are not the same as crosslinks.</strong> A junction only contributes to the modulus if at least three of its arms actually reach the infinite network; one with two attached arms is a chain extender and one with fewer is a dangling end. Near the gel point most junctions fail that test even though the material is technically a gel, which is why modulus rises so much more slowly than gel fraction just past the gel point. The elastic strand density this page reports counts only the junctions that qualify, and the M<sub>c</sub> it gives can be compared directly against the value the <a href="crosslink-density.html">crosslink density</a> page extracts from swelling or the rubbery plateau. If the formulation predicts a much tighter network than the measurement finds, the difference is loops, dangling ends and incomplete conversion &ndash; which is the usual result.
+      <strong>Elastic strands are not the same as crosslinks.</strong> A junction only contributes to the modulus if at least three of its arms actually reach the infinite network; one with two attached arms is a chain extender and one with fewer is a dangling end. Near the gel point most junctions fail that test even though the material is technically a gel, which is why modulus rises so much more slowly than gel fraction just past the gel point. The elastic strand density this page reports counts only the junctions that qualify, and the M<sub>c</sub> it gives can be compared directly against the value the <a href="crosslink-density.html">crosslink density</a> page extracts from swelling or the rubbery plateau. If the formulation predicts a much tighter network than the measurement finds &ndash; the usual result &ndash; the difference is not dangling ends, which the three-arm rule has already removed. It is intramolecular loops, which the theory assumes never form, or a real conversion lower than the one you entered.
     </p>
   </div>
 
@@ -364,8 +364,9 @@
       n.push("<strong>" + effJunctions.toFixed(3) + " mol of elastically effective junctions</strong> carrying " + nu.toFixed(3) +
         " mol of strands, for M<sub>c</sub> = " + fmt(Mc, 0) + "&nbsp;g/mol. A junction counts here only if three or more of its arms " +
         "reach the infinite network. Compare this against the M<sub>c</sub> the <a href=\"crosslink-density.html\">crosslink density</a> page " +
-        "gets from swelling or the plateau modulus: the measurement is almost always looser, and the gap is loops and dangling ends " +
-        "that this theory assumes away.");
+        "gets from swelling or the plateau modulus: the measurement is almost always looser. Dangling ends are already " +
+        "excluded here by the three-arm rule, so the usual gap is intramolecular loops, which this theory assumes never form, " +
+        "or a real conversion below the one entered.");
     }
     notes.innerHTML = n.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
 

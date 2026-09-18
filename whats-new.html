@@ -57,6 +57,19 @@
   </div>
 
   <div class="card">
+    <h3>📈 Five tools that work on distributions, phases and networks</h3>
+    <p class="guide-note">Every calculator here used to take a few numbers in and give a few numbers back. These five take your actual data, or return a whole curve, and between them they cover the two areas the site had nothing on at all: thermodynamics of mixing and viscoelasticity.</p>
+    <ul class="guide-list">
+      <li><a href="gpc-trace.html"><strong>GPC Trace Analyzer</strong></a> &ndash; paste the raw chromatogram and compute M<sub>n</sub>, M<sub>w</sub>, M<sub>z</sub> and &#272; yourself, with what the integration limits were worth shown next to the answer. Clipping always narrows a distribution: a sample that is truly &#272;&nbsp;=&nbsp;1.300 reads 1.244 when integrated to 10% of peak height.</li>
+      <li><a href="mwd-simulator.html"><strong>Distribution Simulator</strong></a> &ndash; the whole molecular weight distribution a controlled polymerization should give, the dead-chain tail, and what band broadening does to it. Terminating a tenth of the chains drops M<sub>n</sub> 8% and barely moves M<sub>w</sub>.</li>
+      <li><a href="flory-huggins.html"><strong>Flory&ndash;Huggins Phase Behaviour</strong></a> &ndash; binodal, spinodal and critical point for a blend or a solution, the cloud point from &chi;(T), and the order&ndash;disorder transition of a diblock.</li>
+      <li><a href="tts-master-curve.html"><strong>Time&ndash;Temperature Superposition</strong></a> &ndash; paste isothermal frequency sweeps and get a master curve, shift factors and WLF constants, plus why C&#8321; and C&#8322; mean nothing without their reference temperature.</li>
+      <li><a href="network-formation.html"><strong>Network Formation</strong></a> &ndash; gel point, sol fraction and elastic strand density for any mix of functionalities, by the Macosko&ndash;Miller recursive method.</li>
+    </ul>
+    <p class="guide-note">Each one loads with data generated from a known answer, so the worked example is a measurement of the tool rather than a claim about it, and every published number is re-derived by the site's automated checks on each change.</p>
+  </div>
+
+  <div class="card">
     <h3>📐 Chain Dimensions: how big is one chain?</h3>
     <p class="guide-note">A new tool for the other half of polymer characterisation: not what a chain is made of, but how it is shaped. Pick a polymer and a molar mass and it returns the <strong>persistence length</strong>, Kuhn length, contour length, end-to-end distance and radius of gyration, using the <strong>worm-like chain in its exact form</strong> rather than the Gaussian approximation, so it stays correct through the rod-to-coil crossover instead of only in the coil limit. A hundred base pairs of DNA comes back as a rod at 90% of its contour length; three kilobases comes back as a coil with a radius of gyration of 121&nbsp;nm.</p>
     <p class="guide-note">The point of the database is that <strong>persistence length is not a material constant</strong>. It belongs to a chain in a particular solvent at a particular temperature, and for a charged chain it moves with ionic strength too, so every one of the 25 measurements is quoted with the conditions it was made under and several polymers carry more than one. Single-stranded DNA is 1&nbsp;nm in high salt and 2.2&nbsp;nm when the phosphates stop being screened; cellulose reads 6.5 or 9&nbsp;nm depending on which aggressive solvent dissolved it. Where the values disagree, the disagreement is the data. The 19 entries span from poly(ethylene oxide) at 0.35&nbsp;nm to an actin filament at 17&nbsp;µm, close to five orders of magnitude.</p>

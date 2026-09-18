@@ -708,8 +708,9 @@ function ttsResid(A, B, sh) {
   for (const p of B) {
     const x = p[0] + sh;
     if (x < xs[0] || x > xs[xs.length - 1]) continue;
-    let i = 0;
-    while (i < xs.length - 2 && xs[i + 1] < x) i++;
+    let lo = 0, hi = xs.length - 1;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (xs[mid] <= x) lo = mid; else hi = mid; }
+    const i = lo;
     const d = xs[i + 1] - xs[i];
     const t = d === 0 ? 0 : (x - xs[i]) / d;
     acc += Math.pow(p[1] - (ys[i] + t * (ys[i + 1] - ys[i])), 2);
@@ -721,13 +722,15 @@ function ttsResid(A, B, sh) {
 function ttsPairShift(A, B) {
   const lo = A[0][0] - B[B.length - 1][0], hi = A[A.length - 1][0] - B[0][0];
   let best = null, bv = Infinity;
-  for (let i = 0; i <= 3000; i++) {
-    const sh = lo + (hi - lo) * i / 3000;
+  // Mirrors the page: a 400-step coarse pass, then ternary refinement.
+  const STEPS = 400;
+  for (let i = 0; i <= STEPS; i++) {
+    const sh = lo + (hi - lo) * i / STEPS;
     const v = ttsResid(A, B, sh);
     if (v < bv) { bv = v; best = sh; }
   }
   if (best === null || !isFinite(bv)) return null;
-  let a = best - (hi - lo) / 3000, b = best + (hi - lo) / 3000;
+  let a = best - (hi - lo) / STEPS, b = best + (hi - lo) / STEPS;
   for (let i = 0; i < 200; i++) {
     const m1 = a + (b - a) / 3, m2 = b - (b - a) / 3;
     if (ttsResid(A, B, m1) < ttsResid(A, B, m2)) b = m2; else a = m1;
@@ -819,6 +822,16 @@ ttsTable.forEach(([T, , , c1ex, c2ex]) => {
   check("apparent Ea at Tg+50", Ea(50), 300, 12, "kJ/mol");
   // The page's claim is the RATIO - a threefold fall over 50 K.
   check("Ea falls threefold over 50 K", Ea(0) / Ea(50), 3.0, 0.15, "x");
+}
+
+// The coarse pass was 3000 steps with a linear-scan interpolation, which cost
+// 569 ms per keystroke on a desktop. 400 steps with a binary search is 8 ms and
+// returns the same constants to the published precision. Require both halves
+// to stay, since either one alone would bring most of the lag back.
+if (ttsHtml.indexOf("var STEPS = 400;") === -1 || ttsHtml.indexOf("var mid = (lo + hi) >> 1;") === -1) {
+  failed++;
+  cases.push({ ok: false, name: "tts-master-curve.html lost the fast shift search (400-step pass + binary interpolation)",
+    actual: "not found", expected: "STEPS = 400 and binary search", tol: 0, unit: "" });
 }
 
 // CI runs its own copy of the shifting algorithm, so require the page to still

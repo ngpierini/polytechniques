@@ -275,8 +275,12 @@
     for (var j = 0; j < B.length; j++) {
       var x = B[j][0] + s;
       if (x < xs[0] || x > xs[xs.length - 1]) continue;
-      var i = 0;
-      while (i < xs.length - 2 && xs[i + 1] < x) i++;
+      // Binary search for the bracketing pair. This runs inside a search over
+      // candidate shifts, so a linear walk here made the whole page O(n^2) per
+      // candidate and cost over half a second a keystroke.
+      var lo = 0, hi = xs.length - 1;
+      while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (xs[mid] <= x) lo = mid; else hi = mid; }
+      var i = lo;
       var d = xs[i + 1] - xs[i];
       var t = d === 0 ? 0 : (x - xs[i]) / d;
       acc += Math.pow(B[j][1] - (ys[i] + t * (ys[i + 1] - ys[i])), 2);
@@ -292,13 +296,14 @@
     var lo = A[0][0] - B[B.length - 1][0], hi = A[A.length - 1][0] - B[0][0];
     if (!(hi > lo)) return null;
     var best = null, bv = Infinity, bn = 0, i;
-    for (i = 0; i <= 3000; i++) {
-      var s = lo + (hi - lo) * i / 3000;
+    var STEPS = 400;
+    for (i = 0; i <= STEPS; i++) {
+      var s = lo + (hi - lo) * i / STEPS;
       var r = residual(A, B, s);
       if (r.v < bv) { bv = r.v; best = s; bn = r.n; }
     }
     if (best === null || !isFinite(bv)) return null;
-    var a = best - (hi - lo) / 3000, b = best + (hi - lo) / 3000;
+    var a = best - (hi - lo) / STEPS, b = best + (hi - lo) / STEPS;
     for (i = 0; i < 200; i++) {
       var m1 = a + (b - a) / 3, m2 = b - (b - a) / 3;
       if (residual(A, B, m1).v < residual(A, B, m2).v) b = m2; else a = m1;
