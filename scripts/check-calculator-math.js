@@ -358,6 +358,165 @@ if (!(dAlpha > 2 * dK)) {
     actual: (dAlpha / dK).toFixed(2), expected: "> 2", tol: 0, unit: "x" });
 }
 
+// ---- Distribution simulator: mwd-simulator.html ----------------------------
+const mwdHtml = fs.readFileSync(path.join(__dirname, "..", "mwd-simulator.html"), "utf8");
+
+function lnGammaC(z) {
+  const L = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+    771.32342877765313, -176.61502916214059, 12.507343278686905,
+    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGammaC(1 - z);
+  z -= 1;
+  let x = L[0];
+  for (let i = 1; i < 9; i++) x += L[i] / (z + i);
+  const t = z + 7.5;
+  return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+}
+// Weight fraction per unit ln M, the form the page plots and integrates.
+function szW(M, Mn, k) {
+  if (!(M > 0)) return 0;
+  const y = k * M / Mn;
+  if (y > 700) return 0;
+  const lnw = (k + 1) * Math.log(y) - y - lnGammaC(k + 1);
+  return lnw < -700 ? 0 : Math.exp(lnw);
+}
+
+const MWD_DL = 0.01;
+const MWD_GRID = [];
+for (let l = Math.log(10); l <= Math.log(2e8); l += MWD_DL) MWD_GRID.push(Math.exp(l));
+
+function mwdMoments(w) {
+  let s0 = 0, sInv = 0, sM = 0, sM2 = 0;
+  for (let i = 0; i < MWD_GRID.length; i++) {
+    if (!(w[i] > 0)) continue;
+    const M = MWD_GRID[i], m = w[i] * MWD_DL;
+    s0 += m; sInv += m / M; sM += m * M; sM2 += m * M * M;
+  }
+  return { Mn: s0 / sInv, Mw: sM / s0, Mz: sM2 / sM, D: (sM / s0) / (s0 / sInv) };
+}
+
+// 1. k = 1/(D-1) must give back D. Three decades of dispersity.
+[1.02, 1.05, 1.30, 1.50].forEach((D) => {
+  const m = mwdMoments(MWD_GRID.map((M) => szW(M, 20024, 1 / (D - 1))));
+  check("Schulz-Zimm with k = 1/(D-1) returns D = " + D, m.D, D, 0.0005, "");
+});
+// k = 1 is the Flory most-probable distribution: D = 2 and Mz/Mw = 3/2 exactly.
+{
+  const m = mwdMoments(MWD_GRID.map((M) => szW(M, 20024, 1)));
+  check("Flory most-probable (k=1) has D = 2", m.D, 2, 0.001, "");
+  check("Flory most-probable (k=1) has Mz/Mw = 1.5", m.Mz / m.Mw, 1.5, 0.001, "");
+}
+
+// 2. Band broadening multiplies dispersity by exp(sigma^2), independent of the
+//    sample. That independence is the claim the page's table rests on, so it is
+//    checked ACROSS samples rather than at one.
+function mwdBroaden(w, sigma) {
+  const half = Math.ceil(4 * sigma / MWD_DL), kern = [];
+  let ks = 0;
+  for (let i = -half; i <= half; i++) {
+    const v = Math.exp(-(i * MWD_DL) * (i * MWD_DL) / (2 * sigma * sigma));
+    kern.push(v); ks += v;
+  }
+  return w.map((_, i) => {
+    let acc = 0;
+    for (let j = -half; j <= half; j++) {
+      const ix = i + j;
+      if (ix >= 0 && ix < w.length) acc += w[ix] * kern[j + half];
+    }
+    return acc / ks;
+  });
+}
+function logNormalW(D) {
+  const s2 = Math.log(D), muW = Math.log(20024) + s2 / 2;
+  return MWD_GRID.map((M) => Math.exp(-Math.pow(Math.log(M) - muW, 2) / (2 * s2)));
+}
+[0.10, 0.20].forEach((sig) => {
+  [1.02, 1.30, 2.00].forEach((Dt) => {
+    const m = mwdMoments(mwdBroaden(logNormalW(Dt), sig));
+    check("broadening sigma " + sig + " on D " + Dt + " gives D*exp(s^2)",
+      m.D / Dt, Math.exp(sig * sig), 0.002, "x");
+  });
+});
+
+// The published table, read out of the page rather than restated here.
+const mwdTable = [...mwdHtml.matchAll(
+  /<tr><td>(1\.\d\d|2\.00)<\/td><td class="num">(\d\.\d{3})<\/td><td class="num">[\d.]+<\/td><td class="num">[\d.]+<\/td><td class="num">(\d+)%<\/td><\/tr>/g
+)].map((m) => [Number(m[1]), Number(m[2]), Number(m[3])]);
+if (mwdTable.length !== 5) {
+  failed++;
+  cases.push({ ok: false, name: "mwd-simulator broadening table has 5 rows", actual: mwdTable.length, expected: 5, tol: 0, unit: "rows" });
+}
+const MWD_SIGMA = 0.20, MWD_FACTOR = Math.exp(MWD_SIGMA * MWD_SIGMA);
+mwdTable.forEach(([Dtrue, Dobs, infl]) => {
+  check("published D_obs for true D " + Dtrue, Dtrue * MWD_FACTOR, Dobs, 0.0006, "");
+  check("published excess inflation for true D " + Dtrue,
+    ((Dtrue * MWD_FACTOR - 1) / (Dtrue - 1) - 1) * 100, infl, 0.6, "%");
+});
+
+// 3. The dead-chain figures quoted in prose. The sweep is floored at one
+//    monomer unit; without that floor the number-average of the dead population
+//    diverges logarithmically and the answer moves with the grid, which is how
+//    the prose and the page disagreed the first time.
+function mwdWithDead(Dliving, fDead, dpn, M0, NX) {
+  const k = 1 / (Dliving - 1), Mn = M0 * dpn;
+  const live = MWD_GRID.map((M) => szW(M, Mn, k));
+  const dead = new Array(MWD_GRID.length).fill(0);
+  const xFloor = Math.min(0.5, 1 / dpn);
+  for (let j = 0; j < NX; j++) {
+    const x = xFloor + (1 - xFloor) * (j + 0.5) / NX;
+    for (let i = 0; i < MWD_GRID.length; i++) dead[i] += szW(MWD_GRID[i], Mn * x, k) / NX;
+  }
+  const num = (w) => {
+    const n = w.map((v, i) => v / MWD_GRID[i]);
+    let t = 0;
+    for (let i = 0; i < n.length; i++) t += n[i] * MWD_DL;
+    return n.map((v) => v / t);
+  };
+  const nl = num(live), nd = num(dead);
+  return {
+    live: mwdMoments(live),
+    total: mwdMoments(MWD_GRID.map((M, i) => ((1 - fDead) * nl[i] + fDead * nd[i]) * M)),
+  };
+}
+{
+  const r = mwdWithDead(1.05, 0.10, 200, 100.12, 120);
+  check("10% dead chains takes D from 1.05 to", r.total.D, 1.131, 0.001, "");
+  check("10% dead chains drops Mn by", (1 - r.total.Mn / r.live.Mn) * 100, 8.1, 0.15, "%");
+  check("10% dead chains barely touches Mw", (1 - r.total.Mw / r.live.Mw) * 100, 1.0, 0.15, "%");
+  // The floor is what makes that stable. Re-run with 4x the conversion slices:
+  // the answer must not move, or the model is reporting its own discretisation.
+  const fine = mwdWithDead(1.05, 0.10, 200, 100.12, 480);
+  check("dead-chain result is converged in NX", fine.total.D, r.total.D, 0.002, "");
+}
+
+// 4. The living-chain dispersity must still be the dispersity predictor's
+//    equation. Two pages describing one reaction have to describe it the same
+//    way; if they ever diverge, nobody can tell which is wrong from the outside.
+const dispHtml = fs.readFileSync(path.join(__dirname, "..", "dispersity-predictor.html"), "utf8");
+const sharedTerm = "C * (2 / p - 1)";
+if (dispHtml.indexOf(sharedTerm) === -1) {
+  failed++;
+  cases.push({ ok: false, name: "dispersity-predictor.html no longer contains the shared exchange term",
+    actual: "not found", expected: sharedTerm, tol: 0, unit: "" });
+}
+if (mwdHtml.indexOf("1 + 1 / dpn + C * (2 / p - 1)") === -1) {
+  failed++;
+  cases.push({ ok: false, name: "mwd-simulator.html no longer uses the predictor's dispersity equation",
+    actual: "not found", expected: "1 + 1 / dpn + C * (2 / p - 1)", tol: 0, unit: "" });
+}
+// The floor itself has to still be in the page. CI re-implements the sweep, so
+// deleting the floor there would leave these checks passing against a model the
+// page no longer runs - and the symptom would be a dispersity that quietly
+// depends on the grid again.
+if (mwdHtml.indexOf("var xFloor = Math.min(0.5, 1 / dpn);") === -1) {
+  failed++;
+  cases.push({ ok: false, name: "mwd-simulator.html lost the one-monomer floor on the dead-chain sweep",
+    actual: "not found", expected: "var xFloor = Math.min(0.5, 1 / dpn);", tol: 0, unit: "" });
+}
+
+// And numerically, at the page's own defaults.
+check("living D at DP 200, p 0.9, Cex 20", 1 + 1 / 180 + (1 / 20) * (2 / 0.9 - 1), 1.0667, 0.0002, "");
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume

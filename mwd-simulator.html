@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Molecular Weight Distribution Simulator: PolyTechniques</title>
+<meta name="description" content="Simulate the whole molecular weight distribution a controlled polymerization should produce - the living population, the dead-chain tail, and the trace your GPC would actually show after band broadening.">
+<link rel="canonical" href="https://getpolytechniques.com/mwd-simulator.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Molecular Weight Distribution Simulator: PolyTechniques">
+<meta property="og:description" content="Simulate the whole distribution, not just the dispersity: living chains, dead-chain tail, and what band broadening does to it.">
+<meta property="og:url" content="https://getpolytechniques.com/mwd-simulator.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Molecular Weight Distribution Simulator: PolyTechniques">
+<meta name="twitter:description" content="Simulate the whole molecular weight distribution, not just Đ.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Molecular Weight Distribution Simulator",
+  "url": "https://getpolytechniques.com/mwd-simulator.html",
+  "description": "Simulate the full molecular weight distribution of a controlled polymerization, including the dead-chain population and instrument band broadening.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js?v=1"></script>
+<script src="nav.js?v=27" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=103">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Distribution Simulator</h1>
+      <p class="subtitle">The whole molecular weight distribution your polymerization should produce, and the trace your GPC would show of it</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>Why a shape and not a number</h3>
+    <p class="guide-note">
+      The <a href="dispersity-predictor.html">dispersity predictor</a> tells you what &#272; a controlled polymerization should reach. That is the right number to design against, but it is a summary, and two very different reactions can summarize to the same one. A living population at &#272;&nbsp;=&nbsp;1.24 and a tight population at &#272;&nbsp;=&nbsp;1.05 carrying a fifth of its chains dead both read 1.24 on a report and look nothing alike on a trace. One is a slow-exchange problem you fix with a better RAFT agent; the other is a termination problem you fix with lower radical flux. The single number cannot tell you which you have. The shape can.
+    </p>
+    <p class="guide-note">
+      This page builds the distribution from three pieces, each with a closed form behind it, and then shows you what the instrument would do to it.
+    </p>
+    <ul class="guide-list">
+      <li><strong>The living chains</strong> as a Schulz&ndash;Zimm distribution of shape k&nbsp;=&nbsp;1/(&#272;&nbsp;&minus;&nbsp;1), which by construction has exactly the dispersity the predictor's equation gives. k&nbsp;=&nbsp;1 is the Flory most-probable distribution and &#272;&nbsp;=&nbsp;2; large k is nearly monodisperse.</li>
+      <li><strong>The dead chains.</strong> A chain that terminated at conversion x stopped growing there, so it carries M&nbsp;=&nbsp;M<sub>target</sub>&nbsp;&middot;&nbsp;x. Termination runs at a roughly steady rate through the reaction, so the dead population is that family swept across every conversion &ndash; a broad low-molecular-weight shoulder rather than a second peak.</li>
+      <li><strong>The instrument.</strong> Every column bank smears each slice, which in log molecular weight is a Gaussian convolution. You do not have to guess its width: run a narrow standard and read the &#272; it gives you.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Simulate a distribution</h3>
+
+    <div class="subsection">
+      <div class="subsection-title">The polymerization</div>
+      <div class="grid">
+        <div class="field">
+          <label for="md-m0">Monomer M<sub>0</sub> (g/mol)</label>
+          <input type="number" id="md-m0" value="100.12" step="any" min="1">
+        </div>
+        <div class="field">
+          <label for="md-dp">Target DP at full conversion</label>
+          <input type="number" id="md-dp" value="200" step="any" min="2">
+        </div>
+        <div class="field">
+          <label for="md-p">Conversion</label>
+          <input type="number" id="md-p" value="0.90" step="any" min="0.01" max="1">
+        </div>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label for="md-mech">Mechanism</label>
+          <select id="md-mech">
+            <option value="raft" selected>RAFT</option>
+            <option value="atrp">ATRP / NMP</option>
+            <option value="living">Ideal living (anionic)</option>
+            <option value="frp-comb">Conventional FRP, combination</option>
+            <option value="frp-disp">Conventional FRP, disproportionation</option>
+          </select>
+        </div>
+        <div class="field" id="md-f-cex">
+          <label for="md-cex">C<sub>ex</sub>, RAFT exchange constant</label>
+          <input type="number" id="md-cex" value="20" step="any" min="0.01">
+          <p class="hint">C in the equation is 1/C<sub>ex</sub>. Above ~20 gives &#272; near 1.05; below 1 means the agent is mismatched to the monomer.</p>
+        </div>
+        <div class="field" id="md-f-c" hidden>
+          <label for="md-c">C = k<sub>p</sub>[M] &divide; k<sub>deact</sub>[X]</label>
+          <input type="number" id="md-c" value="0.05" step="any" min="0">
+          <p class="hint">Monomer added per activation cycle, divided by the deactivation rate. Lower is better controlled.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">What went wrong, and what the instrument adds</div>
+      <div class="grid">
+        <div class="field">
+          <label for="md-dead">Chains that terminated (%)</label>
+          <input type="number" id="md-dead" value="0" step="any" min="0" max="60">
+          <p class="hint">As a fraction of all chains, not of mass. Dead chains are short, so they weigh far less than they count.</p>
+        </div>
+        <div class="field">
+          <label for="md-bb">A narrow standard on your GPC reads &#272; =</label>
+          <input type="number" id="md-bb" value="1.02" step="any" min="1" max="1.5">
+          <p class="hint">This is how you measure your own band broadening. A standard that is genuinely 1.00 would read 1.00 on a perfect instrument.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="md-plot" class="chart-wrap"></div>
+    <p class="diagram-caption" id="md-caption"></p>
+
+    <div class="stat-grid" id="md-stats" style="margin-top:16px;"></div>
+    <div id="md-notes"></div>
+
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">Hand it to the trace analyzer</div>
+      <p class="guide-note">
+        This converts the simulated distribution into the two-column chromatogram a GPC would have exported, using log&#8321;&#8320;M&nbsp;=&nbsp;10.5&nbsp;&minus;&nbsp;0.70&middot;V. Paste it into the <a href="gpc-trace.html">trace analyzer</a> to see what integrating it would have reported &ndash; which is the round trip: a distribution you know, turned into a trace, integrated back into numbers that no longer quite match.
+      </p>
+      <button type="button" id="md-export" class="copy-btn">Build the chromatogram</button>
+      <div class="field" id="md-f-out" hidden style="margin-top:10px;">
+        <label for="md-out">Two columns: retention volume (mL), detector response</label>
+        <textarea id="md-out" class="data-paste" rows="6" spellcheck="false" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Three things the shape tells you that &#272; does not</h3>
+
+    <p class="guide-note">
+      <strong>Termination hides from M<sub>w</sub>.</strong> Take a RAFT polymerization sitting at &#272;&nbsp;=&nbsp;1.05 and kill a tenth of its chains. &#272; goes to 1.131 and M&#8345; falls by 8.1% &ndash; but M<sub>w</sub> moves only 1.0%, because the dead chains are short and weigh almost nothing. If you are tracking a reaction by M<sub>w</sub>, a termination problem is close to invisible; it shows up in M&#8345; and in &#272;, which is a good reason to report all three rather than the one the instrument prints largest.
+    </p>
+
+    <p class="guide-note">
+      <strong>Band broadening multiplies &#272;.</strong> Convolving with a Gaussian in log molecular weight is exact for a log-normal distribution, and it gives a closed form: &#272;<sub>observed</sub>&nbsp;=&nbsp;&#272;<sub>true</sub>&nbsp;&middot;&nbsp;e<sup>&sigma;&sup2;</sup>, where &sigma; is the broadening width in ln&nbsp;M. The factor does not depend on the sample at all, which is why you can measure it once with a standard and apply it to everything. What it does to your conclusions, though, depends entirely on how narrow the sample is:
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>True &#272;</th><th class="num">Observed &#272;</th><th class="num">True &#272; &minus; 1</th><th class="num">Observed &#272; &minus; 1</th><th class="num">Excess inflated by</th></tr></thead>
+        <tbody>
+          <tr><td>1.02</td><td class="num">1.062</td><td class="num">0.020</td><td class="num">0.062</td><td class="num">208%</td></tr>
+          <tr><td>1.05</td><td class="num">1.093</td><td class="num">0.050</td><td class="num">0.093</td><td class="num">86%</td></tr>
+          <tr><td>1.10</td><td class="num">1.145</td><td class="num">0.100</td><td class="num">0.145</td><td class="num">45%</td></tr>
+          <tr><td>1.50</td><td class="num">1.561</td><td class="num">0.500</td><td class="num">0.561</td><td class="num">12%</td></tr>
+          <tr><td>2.00</td><td class="num">2.082</td><td class="num">1.000</td><td class="num">1.082</td><td class="num">8%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="guide-note">
+      That table uses &sigma;&nbsp;=&nbsp;0.20 in ln&nbsp;M, a middling bank. The dispersity itself is inflated by the same 4.1% in every row &ndash; but the quantity you reason about is the <em>excess</em> over 1, and that is inflated by 208% for a genuinely narrow polymer and 8% for a broad one. Band broadening is a narrow-sample problem. It is also why a commercial &#272;&nbsp;=&nbsp;1.02 standard is not really telling you the column is that good, and why chasing &#272; below about 1.05 by conventional calibration is chasing your own instrument.
+    </p>
+
+    <p class="guide-note">
+      <strong>A dead-chain tail and a broad living population are not the same distribution.</strong> Set the dispersity to 1.24 two ways &ndash; once by dropping C<sub>ex</sub> to about 4, once by killing 20% of the chains at C<sub>ex</sub>&nbsp;=&nbsp;20 &ndash; and the summary statistic is the same while the curves separate clearly: the first is a single symmetric peak that got wider, the second is a tight peak with a shoulder running down to low molecular weight. On a real trace that shoulder is the thing to look for, and it is the reason to keep the low-molecular-weight end inside your integration limits rather than clipping it off, which the <a href="gpc-trace.html">trace analyzer</a> shows the cost of.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>What this model does not include</h3>
+    <ul class="guide-list">
+      <li><strong>Slow initiation.</strong> Chains that start late are short at any given moment. This model starts every living chain at the same time, so it will under-predict the low-molecular-weight side for a system whose initiator is sluggish relative to propagation &ndash; a common problem with mismatched RAFT agents and one more reason a real trace can be broader than the equation says.</li>
+      <li><strong>Chain transfer to monomer, solvent or polymer.</strong> Transfer to small molecules makes a separate low-molecular-weight population; transfer to polymer makes branches, which elute early and are covered on the <a href="gpc-calibration.html">calibration page</a>.</li>
+      <li><strong>Coupling.</strong> Termination is treated as chain-stopping. If your chains terminate by combination instead, the dead population sits at roughly twice the molecular weight and appears as a high-side shoulder, which is the classic diagnostic for combination in a controlled system.</li>
+      <li><strong>Any claim about the absolute &#272;.</strong> The living-chain dispersity comes from the same equation as the dispersity predictor, with the same assumptions and the same caveats. This page changes what you can see, not how much the underlying model knows.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <ul class="guide-list">
+      <li><a href="dispersity-predictor.html">Dispersity predictor</a> &ndash; the equation behind the living-chain population, and what sets C for each mechanism.</li>
+      <li><a href="gpc-trace.html">GPC trace analyzer</a> &ndash; integrate the chromatogram this page exports, and see what the limits cost.</li>
+      <li><a href="calculator.html">Calculator</a> &ndash; set the target DP and the recipe that produces it.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>A model of a distribution, not a measurement of one. Use it to know what shape to expect and what a departure from it would mean.</p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+
+  // ---- Log-gamma, for the Schulz-Zimm normalisation -------------------------
+  // Lanczos. The distribution is evaluated in log space because k can be large
+  // (k = 1/(D-1) is 99 at D = 1.01) and M^k overflows a double long before the
+  // normalised value does anything interesting.
+  var LANCZOS = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+    771.32342877765313, -176.61502916214059, 12.507343278686905,
+    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  function lnGamma(z) {
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
+    z -= 1;
+    var x = LANCZOS[0];
+    for (var i = 1; i < 9; i++) x += LANCZOS[i] / (z + i);
+    var t = z + 7 + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+
+  // Weight fraction per unit ln M for a Schulz-Zimm of shape k, number-average
+  // Mn. Per ln M rather than per M because that is what both the plot and the
+  // chromatogram want: a GPC's x axis is logarithmic in molecular weight.
+  function szW(M, Mn, k) {
+    if (!(M > 0) || !(Mn > 0)) return 0;
+    var y = k * M / Mn;
+    if (y > 700) return 0;
+    var lnw = (k + 1) * Math.log(y) - y - lnGamma(k + 1);
+    return lnw < -700 ? 0 : Math.exp(lnw);
+  }
+
+  // ---- Grid -----------------------------------------------------------------
+  // Even in ln M, which makes the moment sums trivial and matches the axis.
+  var DL = 0.01;
+  var GRID = (function () {
+    var g = [];
+    for (var l = Math.log(10); l <= Math.log(2e8); l += DL) g.push(Math.exp(l));
+    return g;
+  })();
+
+  function moments(w) {
+    var s0 = 0, sInv = 0, sM = 0, sM2 = 0;
+    for (var i = 0; i < GRID.length; i++) {
+      var wi = w[i];
+      if (!(wi > 0)) continue;
+      var M = GRID[i], m = wi * DL;
+      s0 += m; sInv += m / M; sM += m * M; sM2 += m * M * M;
+    }
+    if (!(s0 > 0) || !(sInv > 0)) return null;
+    return { Mn: s0 / sInv, Mw: sM / s0, Mz: sM / s0 > 0 ? sM2 / sM : NaN, D: (sM / s0) / (s0 / sInv), area: s0 };
+  }
+
+  // Normalise a weight-per-lnM curve to unit NUMBER of chains, so two
+  // populations can be mixed by the fraction of chains in each - which is what
+  // "10% of chains terminated" means. Mixing them by mass instead would quietly
+  // make the dead fraction mean something different at every molecular weight.
+  function toNumber(w) {
+    var n = new Array(w.length), s = 0, i;
+    for (i = 0; i < w.length; i++) { n[i] = w[i] / GRID[i]; s += n[i] * DL; }
+    if (!(s > 0)) return null;
+    for (i = 0; i < n.length; i++) n[i] /= s;
+    return n;
+  }
+
+  // ---- Band broadening ------------------------------------------------------
+  // Gaussian convolution in ln M. For a log-normal this is exact and collapses
+  // to D_obs = D_true * exp(sigma^2); for anything else it is the same physics
+  // applied numerically.
+  function broaden(w, sigma) {
+    if (!(sigma > 0)) return w.slice();
+    var half = Math.ceil(4 * sigma / DL), kern = [], ks = 0, i, j;
+    for (i = -half; i <= half; i++) {
+      var v = Math.exp(-(i * DL) * (i * DL) / (2 * sigma * sigma));
+      kern.push(v); ks += v;
+    }
+    var out = new Array(w.length);
+    for (i = 0; i < w.length; i++) {
+      var s = 0;
+      for (j = -half; j <= half; j++) {
+        var ix = i + j;
+        if (ix >= 0 && ix < w.length) s += w[ix] * kern[j + half];
+      }
+      out[i] = s / ks;
+    }
+    return out;
+  }
+
+  // ---- The model ------------------------------------------------------------
+  // The living-chain dispersity is the dispersity predictor's equation, not a
+  // second one: D = 1 + 1/DPn + C*(2/p - 1). If these two pages ever disagreed
+  // about the same reaction, one of them would be wrong and nobody would know
+  // which, so they share the expression and CI checks that they still agree.
+  function exchangeC() {
+    var mech = $("md-mech").value;
+    if (mech === "raft") {
+      var cex = parseFloat($("md-cex").value);
+      return isFinite(cex) && cex > 0 ? 1 / cex : NaN;
+    }
+    if (mech === "atrp") {
+      var c = parseFloat($("md-c").value);
+      return isFinite(c) && c >= 0 ? c : NaN;
+    }
+    return 0;
+  }
+
+  function livingD(dpn, p) {
+    var mech = $("md-mech").value;
+    // A conventional free-radical polymerization is not living at all: its
+    // dispersity is set by the termination mode, and no amount of conversion
+    // narrows it. Treating it with the exchange equation would be nonsense.
+    if (mech === "frp-comb") return 1.5;
+    if (mech === "frp-disp") return 2.0;
+    var C = exchangeC();
+    if (!isFinite(C)) return NaN;
+    return 1 + 1 / dpn + C * (2 / p - 1);
+  }
+
+  var NX = 120;   // conversion slices for the dead-chain sweep
+
+  function build() {
+    var M0 = parseFloat($("md-m0").value);
+    var DP = parseFloat($("md-dp").value);
+    var p = parseFloat($("md-p").value);
+    var fDead = parseFloat($("md-dead").value) / 100;
+    var Dstd = parseFloat($("md-bb").value);
+    if (!isFinite(M0) || M0 <= 0 || !isFinite(DP) || DP < 2 || !isFinite(p) || p <= 0 || p > 1) return null;
+    if (!isFinite(fDead) || fDead < 0 || fDead >= 1) return null;
+    if (!isFinite(Dstd) || Dstd < 1) return null;
+
+    var dpn = DP * p;
+    var Mn = M0 * dpn;
+    var D = livingD(dpn, p);
+    if (!isFinite(D) || D <= 1) return null;
+    var k = 1 / (D - 1);
+
+    var live = GRID.map(function (M) { return szW(M, Mn, k); });
+    var total, dead = null;
+
+    if (fDead > 0) {
+      dead = new Array(GRID.length).fill(0);
+      // The sweep starts at one monomer unit, not at zero.
+      //
+      // A chain killed at conversion x carries M = Mn * x, so letting x run to
+      // zero lets chain length run to zero - and the number-average of that
+      // population, 1/<1/M>, diverges logarithmically there. Chains of no
+      // length weigh nothing and count fully. The symptom is that the answer
+      // moves with the grid: the same model gave D = 1.127 and 1.135 at two
+      // resolutions, neither of them a property of the chemistry.
+      //
+      // x >= 1/DPn is the missing physics rather than a numerical patch, and it
+      // makes the result stable to the third decimal over a 40x range of grid
+      // spacings and conversion slices.
+      var xFloor = Math.min(0.5, 1 / dpn);
+      for (var j = 0; j < NX; j++) {
+        var x = xFloor + (1 - xFloor) * (j + 0.5) / NX, MnX = Mn * x;
+        for (var i = 0; i < GRID.length; i++) dead[i] += szW(GRID[i], MnX, k) / NX;
+      }
+      var nl = toNumber(live), nd = toNumber(dead);
+      if (!nl || !nd) return null;
+      total = GRID.map(function (M, i) {
+        return ((1 - fDead) * nl[i] + fDead * nd[i]) * M;
+      });
+      // Keep the dead component on the same scale for the plot.
+      dead = GRID.map(function (M, i) { return fDead * nd[i] * M; });
+    } else {
+      total = live.slice();
+    }
+
+    var sigma = Dstd > 1 ? Math.sqrt(Math.log(Dstd)) : 0;
+    var obs = broaden(total, sigma);
+
+    return {
+      Mn: Mn, dpn: dpn, D: D, k: k, sigma: sigma,
+      live: live, dead: dead, total: total, obs: obs,
+      mTrue: moments(total), mObs: moments(obs), fDead: fDead
+    };
+  }
+
+  // ---- Plot -----------------------------------------------------------------
+  function plot(r) {
+    var W = 680, H = 316, Mg = { left: 30, right: 14, top: 12, bottom: 50 };
+    var pw = W - Mg.left - Mg.right, ph = H - Mg.top - Mg.bottom;
+
+    // Window the x range to where there is signal, so the peak is not a spike
+    // in the corner of four empty decades.
+    var peak = Math.max.apply(null, r.obs.concat(r.total));
+    var lo = 0, hi = GRID.length - 1, i;
+    for (i = 0; i < GRID.length; i++) { if (r.obs[i] > peak * 0.002 || r.total[i] > peak * 0.002) { lo = i; break; } }
+    for (i = GRID.length - 1; i >= 0; i--) { if (r.obs[i] > peak * 0.002 || r.total[i] > peak * 0.002) { hi = i; break; } }
+    var x0 = Math.log10(GRID[Math.max(0, lo - 20)]), x1 = Math.log10(GRID[Math.min(GRID.length - 1, hi + 20)]);
+    function sx(lm) { return Mg.left + ((lm - x0) / (x1 - x0)) * pw; }
+    function sy(v) { return Mg.top + (1 - v / peak) * ph; }
+
+    var s = "";
+    for (var d = Math.ceil(x0); d <= Math.floor(x1); d++) {
+      s += '<line x1="' + sx(d) + '" y1="' + Mg.top + '" x2="' + sx(d) + '" y2="' + (H - Mg.bottom) +
+        '" stroke="var(--border)" stroke-width="0.5" opacity="0.6"/>';
+      s += '<text x="' + sx(d) + '" y="' + (H - Mg.bottom + 15) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">10<tspan baseline-shift="super" font-size="8">' + d + '</tspan></text>';
+    }
+    s += '<line x1="' + Mg.left + '" y1="' + (H - Mg.bottom) + '" x2="' + (W - Mg.right) + '" y2="' + (H - Mg.bottom) +
+      '" stroke="var(--border)" stroke-width="1.5"/>';
+
+    function path(arr, from) {
+      var d = "", started = false;
+      for (var i2 = 0; i2 < GRID.length; i2++) {
+        var lm = Math.log10(GRID[i2]);
+        if (lm < x0 || lm > x1) continue;
+        d += (started ? " L " : "M ") + sx(lm) + " " + sy(arr[i2]);
+        started = true;
+      }
+      return d;
+    }
+
+    if (r.dead) {
+      s += '<path d="' + path(r.dead) + '" fill="none" stroke="var(--danger, #d9534f)" stroke-width="1.5" opacity="0.75" stroke-dasharray="5 3"/>';
+    }
+    s += '<path d="' + path(r.obs) + '" fill="none" stroke="var(--text-dim)" stroke-width="1.5" opacity="0.7"/>';
+    s += '<path d="' + path(r.total) + '" fill="none" stroke="var(--primary, #5b8def)" stroke-width="2.5"/>';
+
+    // Legend, bottom left, inside the plot.
+    var ly = H - 8;
+    var items = [["var(--primary, #5b8def)", "true distribution", false]];
+    items.push(["var(--text-dim)", "as the GPC would show it", false]);
+    if (r.dead) items.push(["var(--danger, #d9534f)", "dead chains", true]);
+    var lx = Mg.left;
+    items.forEach(function (it) {
+      s += '<line x1="' + lx + '" y1="' + (ly - 4) + '" x2="' + (lx + 16) + '" y2="' + (ly - 4) +
+        '" stroke="' + it[0] + '" stroke-width="2.5"' + (it[2] ? ' stroke-dasharray="5 3"' : '') + '/>';
+      s += '<text x="' + (lx + 21) + '" y="' + ly + '" font-size="10" fill="var(--text-dim)">' + it[1] + '</text>';
+      lx += 26 + it[1].length * 5.1;
+    });
+    s += '<text x="' + (W - Mg.right) + '" y="' + (H - Mg.bottom + 15) + '" text-anchor="end" font-size="10" fill="var(--text-dim)">molecular weight (g/mol)</text>';
+
+    return '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+      'aria-label="Weight distribution against log molecular weight, with the broadened curve the instrument would report.">' + s + '</svg>';
+  }
+
+  function fmt(n) {
+    if (!isFinite(n)) return "n/a";
+    if (n >= 1000) return Number(n.toPrecision(3)).toLocaleString();
+    return Number(n.toPrecision(3)).toString();
+  }
+
+  var last = null;
+
+  function recalc() {
+    var stats = $("md-stats"), notes = $("md-notes");
+    var r = build();
+    last = r;
+    if (!r || !r.mTrue || !r.mObs) {
+      stats.innerHTML = '<div class="error-msg">Check the inputs: conversion between 0 and 1, DP at least 2, and an exchange constant that gives a dispersity above 1.</div>';
+      notes.innerHTML = ""; $("md-plot").innerHTML = ""; $("md-caption").textContent = "";
+      return;
+    }
+
+    stats.innerHTML =
+      '<div class="stat stat--primary"><div class="label">M&#8345;</div><div class="value">' + fmt(r.mTrue.Mn) + '</div><div class="sub">g/mol, true</div></div>' +
+      '<div class="stat"><div class="label">M<sub>w</sub></div><div class="value">' + fmt(r.mTrue.Mw) + '</div><div class="sub">g/mol, true</div></div>' +
+      '<div class="stat"><div class="label">&#272; true</div><div class="value">' + r.mTrue.D.toFixed(3) + '</div><div class="sub">what you made</div></div>' +
+      '<div class="stat"><div class="label">&#272; observed</div><div class="value">' + r.mObs.D.toFixed(3) + '</div><div class="sub">what the GPC reports</div></div>' +
+      '<div class="stat"><div class="label">DP&#8345;</div><div class="value">' + fmt(r.dpn) + '</div><div class="sub">at this conversion</div></div>';
+
+    var n = [];
+    if (r.sigma > 0) {
+      n.push("<strong>Band broadening.</strong> A standard reading &#272; = " + parseFloat($("md-bb").value).toFixed(3) +
+        " puts your instrument's width at &sigma; = " + r.sigma.toFixed(3) + " in ln M, which multiplies every dispersity by e<sup>&sigma;&sup2;</sup> = " +
+        Math.exp(r.sigma * r.sigma).toFixed(4) + "&times;. Here that turns a true " + r.mTrue.D.toFixed(3) + " into a reported " +
+        r.mObs.D.toFixed(3) + ". The excess over 1 &ndash; the part you actually reason about &ndash; goes from " +
+        (r.mTrue.D - 1).toFixed(3) + " to " + (r.mObs.D - 1).toFixed(3) + ", an inflation of " +
+        (((r.mObs.D - 1) / (r.mTrue.D - 1) - 1) * 100).toFixed(0) + "%.");
+    }
+    if (r.fDead > 0) {
+      var liveOnly = moments(r.live);
+      n.push("<strong>What the dead chains cost.</strong> Without them this would be &#272; = " + liveOnly.D.toFixed(3) +
+        " at M&#8345; = " + fmt(liveOnly.Mn) + ". Killing " + (r.fDead * 100).toFixed(0) + "% of the chains takes &#272; to " +
+        r.mTrue.D.toFixed(3) + " and M&#8345; to " + fmt(r.mTrue.Mn) + " &ndash; a drop of " +
+        ((1 - r.mTrue.Mn / liveOnly.Mn) * 100).toFixed(1) + "% &ndash; while M<sub>w</sub> moves only " +
+        (Math.abs(1 - r.mTrue.Mw / liveOnly.Mw) * 100).toFixed(1) + "%. Short chains count but do not weigh, which is why termination is hard to see in M<sub>w</sub>.");
+    }
+    if (r.k < 1) {
+      n.push("<strong>This is broader than a conventional free-radical polymerization.</strong> The shape parameter k is " +
+        r.k.toFixed(2) + ", below the k = 1 of the Flory most-probable distribution. A controlled polymerization arriving here is not controlling anything; check the exchange constant against the monomer class.");
+    }
+    notes.innerHTML = n.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    $("md-plot").innerHTML = plot(r);
+    $("md-caption").textContent =
+      "Weight fraction per unit log molecular weight. Schulz-Zimm shape k = " + r.k.toFixed(2) +
+      " for the living chains" + (r.fDead > 0 ? ", swept across conversion for the dead ones" : "") + ".";
+    $("md-f-out").hidden = true;
+  }
+
+  // ---- Export as a chromatogram --------------------------------------------
+  // Same calibration the trace analyzer loads with, so the round trip needs no
+  // setting up: build here, paste there, integrate, compare.
+  $("md-export").addEventListener("click", function () {
+    if (!last) return;
+    var A = 10.5, B = 0.70, out = [];
+    for (var V = 6.0; V <= 12.0 + 1e-9; V += 0.025) {
+      var M = Math.pow(10, A - B * V);
+      // Nearest grid point in ln M; the grid is fine enough that interpolating
+      // would change the fourth digit of nothing.
+      var ix = Math.round((Math.log(M) - Math.log(GRID[0])) / DL);
+      var y = ix >= 0 && ix < GRID.length ? last.obs[ix] : 0;
+      out.push(V.toFixed(3) + "  " + y.toExponential(5));
+    }
+    $("md-out").value = out.join("\n");
+    $("md-f-out").hidden = false;
+    $("md-out").focus();
+    $("md-out").select();
+  });
+
+  function syncFields() {
+    var mech = $("md-mech").value;
+    $("md-f-cex").hidden = mech !== "raft";
+    $("md-f-c").hidden = mech !== "atrp";
+  }
+
+  ["md-m0", "md-dp", "md-p", "md-cex", "md-c", "md-dead", "md-bb"].forEach(function (id) {
+    $(id).addEventListener("input", recalc);
+  });
+  $("md-mech").addEventListener("change", function () { syncFields(); recalc(); });
+
+  syncFields();
+  recalc();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
+}
+</script>
+
+</body>
+</html>
