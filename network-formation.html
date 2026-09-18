@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Formation and Gel Point: PolyTechniques</title>
+<meta name="description" content="Gel point, sol fraction and elastically effective crosslink density for any mixture of functionalities, by the Macosko-Miller recursive method.">
+<link rel="canonical" href="https://getpolytechniques.com/network-formation.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Network Formation and Gel Point: PolyTechniques">
+<meta property="og:description" content="Gel point, sol fraction and crosslink density for arbitrary functionality mixtures and off-stoichiometry.">
+<meta property="og:url" content="https://getpolytechniques.com/network-formation.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Network Formation and Gel Point: PolyTechniques">
+<meta name="twitter:description" content="Gel point, sol fraction and elastic strand density from the formulation.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Network Formation and Gel Point",
+  "url": "https://getpolytechniques.com/network-formation.html",
+  "description": "Compute the gel point, sol fraction and elastically effective crosslink density of a step-growth network by the Macosko-Miller recursive method.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js?v=1"></script>
+<script src="nav.js?v=27" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=103">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Network Formation</h1>
+      <p class="subtitle">Gel point, sol fraction and elastic strand density for any mixture of functionalities, from the formulation</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>Past the single gel-point formula</h3>
+    <p class="guide-note">
+      The <a href="calculator.html#sg">step-growth calculator</a> gives the Flory&ndash;Stockmayer gel point, which answers the question for one functionality at one stoichiometry. Real formulations are rarely that tidy: a triol with a little diol in it, a diisocyanate with a trifunctional impurity, deliberate excess of one component to stop short of gelation, or a chain extender added to soften the network. Each of those changes the answer, and none of them fits the single formula.
+    </p>
+    <p class="guide-note">
+      The Macosko&ndash;Miller recursive method handles all of them with one idea. Stand on a reacted group and look <em>outward</em>: the material beyond is either finite or part of the infinite network. Call the probability that it is finite P<sup>out</sup>. Whatever is out there is reached through the monomer on the far side, so P<sup>out</sup> can be written in terms of itself:
+    </p>
+    <div class="guide-formula">
+      P<sub>A</sub><sup>out</sup> = (1 &minus; p<sub>A</sub>) + p<sub>A</sub> &middot; &Sigma;<sub>j</sub> &beta;<sub>j</sub> (P<sub>B</sub><sup>out</sup>)<sup>g<sub>j</sub>&minus;1</sup>
+      <br>
+      P<sub>B</sub><sup>out</sup> = (1 &minus; p<sub>B</sub>) + p<sub>B</sub> &middot; &Sigma;<sub>i</sub> &alpha;<sub>i</sub> (P<sub>A</sub><sup>out</sup>)<sup>f<sub>i</sub>&minus;1</sup>
+    </div>
+    <p class="guide-note">
+      An unreacted group leads nowhere, which is finite &ndash; that is the (1&nbsp;&minus;&nbsp;p) term. A reacted one leads into a monomer of functionality f, and everything beyond its other f&nbsp;&minus;&nbsp;1 groups must <em>also</em> be finite. The sums run over the functionalities present, weighted by &alpha;<sub>i</sub>, the fraction of all A groups sitting on monomers of functionality f<sub>i</sub>. Arbitrary mixtures come for free, because they are just more terms in a sum.
+    </p>
+    <p class="guide-note">
+      Everything else follows. The gel point is where a solution below 1 first appears, which happens when p<sub>A</sub>p<sub>B</sub>&middot;E[f&minus;1]&middot;E[g&minus;1]&nbsp;=&nbsp;1. The sol fraction is the weight of material all of whose arms lead nowhere. And a junction is elastically effective when at least three of its arms reach the infinite network, which turns the same probability into a crosslink density.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Build a network</h3>
+
+    <div class="subsection">
+      <div class="subsection-title">Components</div>
+      <div class="field">
+        <label for="nf-comp">One per line: name, group type (A or B), functionality, moles, molar mass. Anything after a <code>#</code> is ignored.</label>
+        <textarea id="nf-comp" class="data-paste" rows="6" spellcheck="false"></textarea>
+        <p class="hint" id="nf-comp-hint"></p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Extent of reaction</div>
+      <div class="grid">
+        <div class="field">
+          <label for="nf-p">Conversion of the limiting group</label>
+          <input type="number" id="nf-p" value="0.95" step="any" min="0" max="1">
+          <p class="hint">The other group's conversion follows from the stoichiometry: p<sub>A</sub>&middot;[A] = p<sub>B</sub>&middot;[B], because every reaction consumes one of each.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-grid" id="nf-stats" style="margin-top:16px;"></div>
+    <div id="nf-notes"></div>
+
+    <div id="nf-plot" class="chart-wrap"></div>
+    <p class="diagram-caption" id="nf-caption"></p>
+  </div>
+
+  <div class="card">
+    <h3>Three things that only show up when you can vary the formulation</h3>
+
+    <p class="guide-note">
+      <strong>Excess of one component can stop gelation entirely.</strong> A triol cured with a diisocyanate gels at 70.7% conversion when the groups are balanced. Run the isocyanate in excess &ndash; or, equivalently, leave hydroxyl short &ndash; and the gel point climbs, because the limiting group cannot reach the conversion the network needs. At a group ratio of exactly <strong>0.5</strong> the gel point lands precisely at full conversion, so below that ratio an A&#8323;&nbsp;+&nbsp;B&#8322; system never gels no matter how long you cook it. That is not a numerical curiosity; it is how you formulate a branched prepolymer that stays processable.
+    </p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data">
+        <thead><tr><th>A groups &divide; B groups</th><th class="num">Conversion of A at the gel point</th></tr></thead>
+        <tbody>
+          <tr><td>1.00 (balanced)</td><td class="num">0.7071</td></tr>
+          <tr><td>0.90</td><td class="num">0.7454</td></tr>
+          <tr><td>0.80</td><td class="num">0.7906</td></tr>
+          <tr><td>0.70</td><td class="num">0.8452</td></tr>
+          <tr><td>0.60</td><td class="num">0.9129</td></tr>
+          <tr><td>0.50</td><td class="num">1.0000 &mdash; the limit</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="guide-note">
+      <strong>The sol fraction collapses far faster than the conversion moves.</strong> Past the gel point a very small further extent of reaction pulls most of the remaining soluble material into the network. For the balanced triol system, going 1% past the gel point &ndash; conversion 0.707 to 0.714 &ndash; takes the sol fraction from 1 to 0.89; 5% past it, to 0.55; 20% past it, to 0.07. That steepness is why extraction is such a sensitive test of cure, and why a sample that still gives 10% extractables is not nearly cured, it is barely past gelling.
+    </p>
+
+    <p class="guide-note">
+      <strong>Elastic strands are not the same as crosslinks.</strong> A junction only contributes to the modulus if at least three of its arms actually reach the infinite network; one with two attached arms is a chain extender and one with fewer is a dangling end. Near the gel point most junctions fail that test even though the material is technically a gel, which is why modulus rises so much more slowly than gel fraction just past the gel point. The elastic strand density this page reports counts only the junctions that qualify, and the M<sub>c</sub> it gives can be compared directly against the value the <a href="crosslink-density.html">crosslink density</a> page extracts from swelling or the rubbery plateau. If the formulation predicts a much tighter network than the measurement finds, the difference is loops, dangling ends and incomplete conversion &ndash; which is the usual result.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>What the theory assumes, and where that bites</h3>
+    <ul class="guide-list">
+      <li><strong>No intramolecular reaction.</strong> Every bond is assumed to join two different molecules. Real systems form loops, especially in dilute conditions and with short flexible spacers, and every loop is a bond that consumed two groups without contributing to the network. The consequence is systematic and always in one direction: the real gel point is <em>later</em> than this page predicts, and the real modulus lower. Dilution makes it worse.</li>
+      <li><strong>Equal and independent reactivity.</strong> All groups of one type are assumed identical and unaffected by whether their neighbours have reacted. Substitution effects are real &ndash; the second hydroxyl of a diol often differs from the first, and steric hindrance grows as a junction fills &ndash; and they shift the gel point either way.</li>
+      <li><strong>One reaction.</strong> Side reactions that consume groups without linking (isocyanate with water, for instance) are not modelled. Subtract them from the functionality or the moles before you start, because the page cannot see them.</li>
+      <li><strong>A mean-field count, not a structure.</strong> This returns how much network there is, not how it is arranged. Two formulations with the same strand density and very different spatial heterogeneity will behave differently, and nothing here will tell you that.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <ul class="guide-list">
+      <li><a href="calculator.html#sg">Step-growth and gel point</a> &ndash; the single-formula version, and Carothers for the pre-gel molecular weight.</li>
+      <li><a href="crosslink-density.html">Crosslink density</a> &ndash; M<sub>c</sub> measured from swelling or the rubbery plateau, to compare against what the formulation predicts.</li>
+      <li><a href="polyurethane.html">Polyurethane calculator</a> &ndash; equivalent weights and index for the most common system this applies to.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Mean-field network theory with no intramolecular reaction. It gives an upper bound on how well a formulation can possibly cure, not a prediction of how it will.</p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+
+  var DEMO = [
+    "# name, group (A or B), functionality, moles, molar mass",
+    "Trimethylolpropane,  A, 3, 1.0, 134.17",
+    "Hexamethylene diisocyanate, B, 2, 1.5, 168.20"
+  ].join("\n");
+
+  function parse(text) {
+    var comps = [], errs = [];
+    text.split(/\r?\n/).forEach(function (line, ix) {
+      var t = line.replace(/#.*$/, "").trim();
+      if (!t) return;
+      var p = t.split(/\s*,\s*/);
+      if (p.length < 5) { errs.push("line " + (ix + 1) + ": needs five comma-separated fields"); return; }
+      var role = p[1].trim().toUpperCase();
+      var f = parseFloat(p[2]), n = parseFloat(p[3]), M = parseFloat(p[4]);
+      if (role !== "A" && role !== "B") { errs.push("line " + (ix + 1) + ': group must be A or B, got "' + p[1].trim() + '"'); return; }
+      if (!isFinite(f) || f < 1 || Math.abs(f - Math.round(f)) > 1e-9) { errs.push("line " + (ix + 1) + ": functionality must be a whole number of at least 1"); return; }
+      if (!isFinite(n) || n <= 0) { errs.push("line " + (ix + 1) + ": moles must be positive"); return; }
+      if (!isFinite(M) || M <= 0) { errs.push("line " + (ix + 1) + ": molar mass must be positive"); return; }
+      comps.push({ name: p[0].trim(), role: role, f: Math.round(f), n: n, M: M, groups: Math.round(f) * n });
+    });
+    return { comps: comps, errs: errs };
+  }
+
+  // E[f-1], averaged over GROUPS rather than over molecules. The recursion
+  // arrives through a group, so a trifunctional monomer gets three chances to
+  // be entered and a difunctional two - weighting by molecule would quietly
+  // under-count the branch points that matter most.
+  function expected(list) {
+    var tot = list.reduce(function (s, c) { return s + c.groups; }, 0);
+    if (!(tot > 0)) return null;
+    return list.reduce(function (s, c) { return s + (c.groups / tot) * (c.f - 1); }, 0);
+  }
+
+  // Smallest root of the coupled fixed point, by iteration from zero.
+  // P = 1 is always a solution (the pre-gel state); iterating up from zero
+  // finds the physical root, which is below 1 exactly when a gel exists.
+  function solveP(A, B, pA, pB) {
+    var aTot = A.reduce(function (s, c) { return s + c.groups; }, 0);
+    var bTot = B.reduce(function (s, c) { return s + c.groups; }, 0);
+    var PA = 0, PB = 0, i;
+    for (i = 0; i < 20000; i++) {
+      var nA = (1 - pA) + pA * B.reduce(function (s, c) { return s + (c.groups / bTot) * Math.pow(PB, c.f - 1); }, 0);
+      var nB = (1 - pB) + pB * A.reduce(function (s, c) { return s + (c.groups / aTot) * Math.pow(PA, c.f - 1); }, 0);
+      if (Math.abs(nA - PA) < 1e-15 && Math.abs(nB - PB) < 1e-15) { PA = nA; PB = nB; break; }
+      PA = nA; PB = nB;
+    }
+    return { PA: Math.min(1, PA), PB: Math.min(1, PB) };
+  }
+
+  function binom(n, k) {
+    if (k < 0 || k > n) return 0;
+    var r = 1;
+    for (var i = 0; i < k; i++) r = r * (n - i) / (i + 1);
+    return r;
+  }
+
+  function fmt(n, d) {
+    if (!isFinite(n)) return "n/a";
+    if (n >= 1e5) return Number(n.toPrecision(3)).toLocaleString();
+    return n.toFixed(d === undefined ? 4 : d);
+  }
+
+  function plotSol(A, B, rA, pGelA) {
+    var W = 680, H = 300, Mg = { left: 52, right: 14, top: 12, bottom: 42 };
+    var pw = W - Mg.left - Mg.right, ph = H - Mg.top - Mg.bottom;
+    function sx(p) { return Mg.left + p * pw; }
+    function sy(v) { return Mg.top + (1 - v) * ph; }
+    var s = "", d;
+    for (d = 0; d <= 5; d++) {
+      s += '<line x1="' + sx(d / 5) + '" y1="' + Mg.top + '" x2="' + sx(d / 5) + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="0.5" opacity="0.6"/>';
+      s += '<text x="' + sx(d / 5) + '" y="' + (H - Mg.bottom + 15) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">' + (d / 5).toFixed(1) + '</text>';
+      s += '<text x="' + (Mg.left - 7) + '" y="' + (sy(d / 5) + 3.5) + '" text-anchor="end" font-size="10.5" fill="var(--text-dim)">' + (d / 5).toFixed(1) + '</text>';
+    }
+    s += '<line x1="' + Mg.left + '" y1="' + (H - Mg.bottom) + '" x2="' + (W - Mg.right) + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    s += '<line x1="' + Mg.left + '" y1="' + Mg.top + '" x2="' + Mg.left + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+
+    var totMass = A.concat(B).reduce(function (s2, c) { return s2 + c.n * c.M; }, 0);
+    var dSol = "", dGel = "", started = false;
+    for (var i = 0; i <= 200; i++) {
+      var pA = i / 200;
+      var r = solveP(A, B, pA, pA * rA);
+      var sol = 0;
+      A.forEach(function (c) { sol += c.n * c.M * Math.pow(r.PA, c.f); });
+      B.forEach(function (c) { sol += c.n * c.M * Math.pow(r.PB, c.f); });
+      sol /= totMass;
+      dSol += (started ? " L " : "M ") + sx(pA) + " " + sy(sol);
+      dGel += (started ? " L " : "M ") + sx(pA) + " " + sy(1 - sol);
+      started = true;
+    }
+    if (isFinite(pGelA) && pGelA <= 1) {
+      s += '<line x1="' + sx(pGelA) + '" y1="' + Mg.top + '" x2="' + sx(pGelA) + '" y2="' + (H - Mg.bottom) +
+        '" stroke="var(--danger, #d9534f)" stroke-width="1.5" stroke-dasharray="4 3"/>';
+      s += '<text x="' + (sx(pGelA) + 5) + '" y="' + (Mg.top + 12) + '" font-size="10" fill="var(--danger, #d9534f)">gel point</text>';
+    }
+    s += '<path d="' + dSol + '" fill="none" stroke="var(--text-dim)" stroke-width="2"/>';
+    s += '<path d="' + dGel + '" fill="none" stroke="var(--primary, #5b8def)" stroke-width="2.5"/>';
+    var lx = Mg.left + 6, ly = H - Mg.bottom - 8;
+    [["var(--primary, #5b8def)", "gel fraction"], ["var(--text-dim)", "sol fraction"]].forEach(function (it) {
+      s += '<line x1="' + lx + '" y1="' + (ly - 4) + '" x2="' + (lx + 15) + '" y2="' + (ly - 4) + '" stroke="' + it[0] + '" stroke-width="2.5"/>';
+      s += '<text x="' + (lx + 20) + '" y="' + ly + '" font-size="10" fill="var(--text-dim)">' + it[1] + '</text>';
+      lx += 26 + it[1].length * 5.4;
+    });
+    s += '<text x="' + (W / 2) + '" y="' + (H - 4) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">conversion of the limiting group</text>';
+    return '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sol and gel fraction against conversion, with the gel point marked.">' + s + '</svg>';
+  }
+
+  function recalc() {
+    var parsed = parse($("nf-comp").value);
+    var stats = $("nf-stats"), notes = $("nf-notes");
+    var A = parsed.comps.filter(function (c) { return c.role === "A"; });
+    var B = parsed.comps.filter(function (c) { return c.role === "B"; });
+
+    $("nf-comp-hint").textContent = parsed.comps.length
+      ? parsed.comps.length + " components: " + A.length + " carrying A groups, " + B.length + " carrying B"
+      : "";
+
+    function fail(msg) {
+      stats.innerHTML = '<div class="error-msg">' + msg + '</div>';
+      notes.innerHTML = ""; $("nf-plot").innerHTML = ""; $("nf-caption").textContent = "";
+    }
+    if (parsed.errs.length) return fail(parsed.errs.slice(0, 4).join("<br>"));
+    if (!A.length || !B.length) return fail("Give at least one component carrying A groups and one carrying B groups.");
+
+    var aTot = A.reduce(function (s, c) { return s + c.groups; }, 0);
+    var bTot = B.reduce(function (s, c) { return s + c.groups; }, 0);
+    var Ef = expected(A), Eg = expected(B);
+    var prod = Ef * Eg;
+
+    // Conversions are tied: every bond consumes one A and one B.
+    var limitIsA = aTot <= bTot;
+    var rA = aTot / bTot;                   // pB = pA * rA
+    var pLim = parseFloat($("nf-p").value);
+    if (!isFinite(pLim) || pLim < 0 || pLim > 1) return fail("Conversion must be between 0 and 1.");
+    var pA = limitIsA ? pLim : pLim * (bTot / aTot);
+    var pB = pA * rA;
+
+    // Gel when pA*pB*E[f-1]*E[g-1] = 1, with pB = pA*rA.
+    var pGelA = prod > 0 ? Math.sqrt(1 / (prod * rA)) : Infinity;
+    var pGelLim = limitIsA ? pGelA : pGelA * rA;
+
+    var r = solveP(A, B, pA, pB);
+    var totMass = parsed.comps.reduce(function (s, c) { return s + c.n * c.M; }, 0);
+    var sol = 0;
+    A.forEach(function (c) { sol += c.n * c.M * Math.pow(r.PA, c.f); });
+    B.forEach(function (c) { sol += c.n * c.M * Math.pow(r.PB, c.f); });
+    sol /= totMass;
+
+    // Elastically effective strands: a junction counts only if at least three
+    // of its arms reach the infinite network. Two attached arms is a chain
+    // extender, fewer is a dangling end, and neither carries stress.
+    var nu = 0, effJunctions = 0;
+    parsed.comps.forEach(function (c) {
+      var pInf = 1 - (c.role === "A" ? r.PA : r.PB);
+      for (var k = 3; k <= c.f; k++) {
+        var mk = c.n * binom(c.f, k) * Math.pow(pInf, k) * Math.pow(1 - pInf, c.f - k);
+        nu += 0.5 * k * mk;
+        effJunctions += mk;
+      }
+    });
+    var Mc = nu > 0 ? totMass / nu : Infinity;
+
+    // A2 + B2 has E[f-1]E[g-1] = 1 exactly, so the gel formula returns p = 1 -
+    // but a linear chain at full conversion is not a gel, it is one very long
+    // molecule. The branching product, not the conversion, is what decides
+    // whether a gel point exists at all; without this the headline stat said
+    // "1.0000" while the note below it said the mixture cannot gel.
+    var canGel = prod > 1 && pGelLim <= 1;
+    var gelled = canGel && pA > pGelA + 1e-12;
+    stats.innerHTML =
+      '<div class="stat stat--primary"><div class="label">Gel point</div><div class="value">' +
+      (canGel ? fmt(pGelLim, 4) : "never") + '</div><div class="sub">' +
+      (canGel ? "conversion of the limiting group" : "this formulation cannot gel") + '</div></div>' +
+      '<div class="stat"><div class="label">State</div><div class="value" style="font-size:1.1rem;">' +
+      (gelled ? "Gelled" : "Sol") + '</div><div class="sub">at ' + fmt(pLim, 3) + ' conversion</div></div>' +
+      '<div class="stat"><div class="label">Sol fraction</div><div class="value">' + fmt(sol, 4) + '</div><div class="sub">extractable by weight</div></div>' +
+      '<div class="stat"><div class="label">M<sub>c</sub></div><div class="value">' + (isFinite(Mc) ? fmt(Mc, 0) : "&infin;") +
+      '</div><div class="sub">g/mol per elastic strand</div></div>' +
+      '<div class="stat"><div class="label">Group ratio</div><div class="value">' + fmt(Math.min(aTot, bTot) / Math.max(aTot, bTot), 4) +
+      '</div><div class="sub">' + fmt(aTot, 3) + ' A vs ' + fmt(bTot, 3) + ' B</div></div>';
+
+    var n = [];
+    if (prod <= 1) {
+      n.push("<strong>This mixture cannot gel at any conversion.</strong> E[f&minus;1]&middot;E[g&minus;1] = " + fmt(prod, 4) +
+        ", which is at or below 1. With that little branching the product is linear no matter how far the reaction runs " +
+        "&ndash; every A&#8322;&nbsp;+&nbsp;B&#8322; system is in this category.");
+    } else if (pGelLim > 1) {
+      n.push("<strong>Gelation is out of reach at this stoichiometry.</strong> The branching is sufficient " +
+        "(E[f&minus;1]&middot;E[g&minus;1] = " + fmt(prod, 3) + ") but the group ratio is not: the limiting group would have to " +
+        "exceed complete conversion. Move the ratio toward 1 to bring the gel point back below full conversion.");
+    } else {
+      n.push("<strong>Gel point at " + fmt(pGelLim, 4) + "</strong>, from p<sub>A</sub>p<sub>B</sub>&middot;E[f&minus;1]&middot;E[g&minus;1] = 1 with " +
+        "E[f&minus;1] = " + fmt(Ef, 3) + " and E[g&minus;1] = " + fmt(Eg, 3) + ". " +
+        (gelled ? "You are past it, and " + ((1 - sol) * 100).toFixed(1) + "% of the mass is in the network."
+          : "You are short of it by " + fmt(pGelLim - pLim, 4) + " in conversion, so the material is still soluble."));
+    }
+    if (gelled && isFinite(Mc)) {
+      n.push("<strong>" + effJunctions.toFixed(3) + " mol of elastically effective junctions</strong> carrying " + nu.toFixed(3) +
+        " mol of strands, for M<sub>c</sub> = " + fmt(Mc, 0) + "&nbsp;g/mol. A junction counts here only if three or more of its arms " +
+        "reach the infinite network. Compare this against the M<sub>c</sub> the <a href=\"crosslink-density.html\">crosslink density</a> page " +
+        "gets from swelling or the plateau modulus: the measurement is almost always looser, and the gap is loops and dangling ends " +
+        "that this theory assumes away.");
+    }
+    notes.innerHTML = n.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    $("nf-plot").innerHTML = plotSol(A, B, rA, limitIsA ? pGelA : pGelA * rA);
+    $("nf-caption").textContent = "Sol and gel fraction against the conversion of the limiting group. " +
+      "The steepness just past the gel point is why extraction is such a sensitive test of cure.";
+  }
+
+  $("nf-comp").value = DEMO;
+  ["nf-comp", "nf-p"].forEach(function (id) { $(id).addEventListener("input", recalc); });
+  recalc();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
+}
+</script>
+
+</body>
+</html>

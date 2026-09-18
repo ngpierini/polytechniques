@@ -831,6 +831,122 @@ if (ttsHtml.indexOf("pairShift(work[i + 1].pts, work[i].pts)") === -1 ||
     actual: "not found", expected: "pairwise shifting", tol: 0, unit: "" });
 }
 
+// ---- Network formation: network-formation.html -----------------------------
+const nfHtml = fs.readFileSync(path.join(__dirname, "..", "network-formation.html"), "utf8");
+
+// E[f-1] averaged over GROUPS, not molecules - the recursion arrives through a
+// group, so a trifunctional monomer gets three chances to be entered.
+const nfExpected = (list) => {
+  const tot = list.reduce((a, c) => a + c.groups, 0);
+  return list.reduce((a, c) => a + (c.groups / tot) * (c.f - 1), 0);
+};
+const nfComp = (f, n) => ({ f: f, n: n, groups: f * n, M: 100 });
+
+function nfSolve(A, B, pA, pB) {
+  const aTot = A.reduce((a, c) => a + c.groups, 0);
+  const bTot = B.reduce((a, c) => a + c.groups, 0);
+  let PA = 0, PB = 0;
+  for (let i = 0; i < 20000; i++) {
+    const nA = (1 - pA) + pA * B.reduce((a, c) => a + (c.groups / bTot) * Math.pow(PB, c.f - 1), 0);
+    const nB = (1 - pB) + pB * A.reduce((a, c) => a + (c.groups / aTot) * Math.pow(PA, c.f - 1), 0);
+    if (Math.abs(nA - PA) < 1e-15 && Math.abs(nB - PB) < 1e-15) { PA = nA; PB = nB; break; }
+    PA = nA; PB = nB;
+  }
+  return { PA: Math.min(1, PA), PB: Math.min(1, PB) };
+}
+
+// 1. Reduction to Flory-Stockmayer, balanced stoichiometry.
+[[3, 2], [4, 2], [5, 2], [3, 3], [4, 4], [6, 2]].forEach(([f, g]) => {
+  const A = [nfComp(f, 1)], B = [nfComp(g, f / g)];
+  const prod = nfExpected(A) * nfExpected(B);
+  const pc = Math.sqrt(1 / prod);
+  check("A" + f + "+B" + g + " gels at the Flory-Stockmayer point", pc, 1 / Math.sqrt((f - 1) * (g - 1)), 1e-12, "");
+});
+// A2 + B2 has a branching product of exactly 1: no gel at any conversion.
+{
+  const A = [nfComp(2, 1)], B = [nfComp(2, 1)];
+  check("A2+B2 branching product is exactly 1", nfExpected(A) * nfExpected(B), 1, 1e-15, "");
+}
+
+// 2. A MIXTURE of functionalities, which is the reason this page exists. Group
+//    weighting is what makes it right; molecule weighting would give a
+//    different and wrong answer, so both are computed and required to differ.
+{
+  // Two-thirds triol, one-third diol, by moles, cured with a diisocyanate.
+  const A = [nfComp(3, 2), nfComp(2, 1)];
+  const B = [nfComp(2, 4)];   // 8 A groups, 8 B groups
+  const byGroup = nfExpected(A);
+  const molTot = A.reduce((a, c) => a + c.n, 0);
+  const byMolecule = A.reduce((a, c) => a + (c.n / molTot) * (c.f - 1), 0);
+  // 6 of 8 A groups are on the triol: E[f-1] = 6/8*2 + 2/8*1 = 1.75
+  check("mixed functionality E[f-1] weighted by groups", byGroup, 1.75, 1e-12, "");
+  check("weighting by molecules instead would give", byMolecule, 5 / 3, 1e-12, "");
+  if (Math.abs(byGroup - byMolecule) < 1e-6) {
+    failed++;
+    cases.push({ ok: false, name: "the group/molecule weighting distinction collapsed - the test is not testing anything",
+      actual: byGroup, expected: "different from " + byMolecule, tol: 0, unit: "" });
+  }
+  check("mixed triol/diol network gels at", Math.sqrt(1 / (byGroup * nfExpected(B))), 0.7559, 0.0002, "");
+}
+
+// 3. Off-stoichiometry. A3 + B2 at a group ratio of 0.5 gels EXACTLY at full
+//    conversion, which is the boundary the page publishes a table around.
+[[1.0, 0.70711], [0.9, 0.74536], [0.8, 0.79057], [0.7, 0.84515], [0.6, 0.91287], [0.5, 1.0]].forEach(([r, expect]) => {
+  const A = [nfComp(3, r)], B = [nfComp(2, 1.5)];
+  const prod = nfExpected(A) * nfExpected(B);
+  // pB = pA * r, so pA^2 * r * prod = 1.
+  check("A3+B2 gel point at group ratio " + r, Math.sqrt(1 / (prod * r)), expect, 0.00002, "");
+});
+
+// The published off-stoichiometry table, read out of the page.
+const nfTable = [...nfHtml.matchAll(/<tr><td>(\d\.\d\d)[^<]*<\/td><td class="num">(\d\.\d{4})/g)]
+  .map((m) => [Number(m[1]), Number(m[2])]);
+if (nfTable.length !== 6) {
+  failed++;
+  cases.push({ ok: false, name: "network-formation stoichiometry table has 6 rows", actual: nfTable.length, expected: 6, tol: 0, unit: "rows" });
+}
+nfTable.forEach(([r, pub]) => {
+  const A = [nfComp(3, r)], B = [nfComp(2, 1.5)];
+  check("published gel point at group ratio " + r, Math.sqrt(1 / (nfExpected(A) * nfExpected(B) * r)), pub, 0.00006, "");
+});
+
+// 4. Sol fraction: exactly 1 at and below the gel point, monotonically falling
+//    past it. The published figures for the balanced triol system are checked
+//    against the recursion.
+{
+  const A = [nfComp(3, 1)], B = [nfComp(2, 1.5)];
+  const pc = Math.sqrt(1 / (nfExpected(A) * nfExpected(B)));
+  const solAt = (p) => {
+    const r = nfSolve(A, B, p, p);
+    const mass = 100 * 1 + 100 * 1.5;
+    return (100 * 1 * Math.pow(r.PA, 3) + 100 * 1.5 * Math.pow(r.PB, 2)) / mass;
+  };
+  check("sol fraction is 1 below the gel point", solAt(pc * 0.9), 1, 1e-9, "");
+  check("sol fraction 1% past the gel point", solAt(pc * 1.01), 0.890, 0.004, "");
+  check("sol fraction 5% past the gel point", solAt(pc * 1.05), 0.553, 0.004, "");
+  check("sol fraction 20% past the gel point", solAt(pc * 1.20), 0.070, 0.004, "");
+  let prev = 1.0000001;
+  for (let m = 1.0; m <= 1.4; m += 0.02) {
+    const v = solAt(Math.min(1, pc * m));
+    if (v > prev + 1e-9) {
+      failed++;
+      cases.push({ ok: false, name: "sol fraction must fall monotonically past the gel point",
+        actual: v.toFixed(6) + " after " + prev.toFixed(6), expected: "non-increasing", tol: 0, unit: "" });
+      break;
+    }
+    prev = v;
+  }
+}
+
+// 5. The page must still distinguish "cannot gel" from "gels at full
+//    conversion". A2+B2 returns p = 1 from the formula and is NOT a gel; the
+//    headline said 1.0000 while the note beneath said it could not gel.
+if (nfHtml.indexOf("var canGel = prod > 1 && pGelLim <= 1;") === -1) {
+  failed++;
+  cases.push({ ok: false, name: "network-formation.html lost the branching test that separates 'never gels' from 'gels at p=1'",
+    actual: "not found", expected: "canGel = prod > 1 && pGelLim <= 1", tol: 0, unit: "" });
+}
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume
