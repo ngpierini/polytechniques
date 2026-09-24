@@ -4378,6 +4378,8 @@ window.POLYMER_DB = [
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }],
     tacticity: "isotactic",
+    tm: "165 °C",
+    tmSource: "Odian, Principles of Polymerization, 4th ed., Sec. 8-2a-1 (\"a high-melting (165 C), strong, crystalline polymer\"). Independently carried at 165 °C in this site's thermal library, where the commercial peak range is 160-168 °C against an equilibrium 176-186 °C for perfect isotactic crystals.",
     note: "Every methyl group on the same side of the chain, which lets the polymer wind into a helix and crystallise - the form that made polypropylene a commodity rather than a curiosity, and the discovery that earned Natta a Nobel Prize. Melting near 165 C with high stiffness. The repeat unit is identical to any other polypropylene; what differs is the arrangement of successive units, which no single repeat unit can show. Searching this structure returns all four polypropylene entries together."
   },
   {
@@ -4388,6 +4390,8 @@ window.POLYMER_DB = [
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }],
     tacticity: "syndiotactic",
+    tm: "145 °C (about 20 °C below isotactic)",
+    tmSource: "Derived, not measured: Odian, Principles of Polymerization, 4th ed., Sec. 8-2a-1 gives syndiotactic polypropene \"a lower Tm by about 20 C\" than the isotactic 165 °C, after Youngman and Boor (1967). Quoted as an approximation because that is the form the source states it in.",
     note: "Methyl groups alternating regularly from side to side, which also crystallises but into a different lattice - and the result is clearer, tougher and more elastic than the isotactic form, if lower melting. It could not be made with useful control until metallocene catalysts arrived, which is why it is decades younger than its isotactic sibling despite being just as regular. Same repeat unit, same connectivity; the regularity is in how one unit follows the next."
   },
   {

@@ -1289,5 +1289,121 @@
     return out.length ? out : ["all-carbon"];
   }
 
-  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, deriveMonomer: deriveMonomer, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance, aromaticRingBonds: aromaticRingBonds, aromaticBlindHash: aromaticBlindHash, backboneLinkages: backboneLinkages };
+  // ---- can this polymer be tactic? ---------------------------------------
+  //
+  // Tacticity is the one identity the repeat unit cannot draw - it lives in the
+  // relationship between successive units, which is why the library declares it
+  // in a field and the search explains graph collisions with it. But WHETHER a
+  // polymer can have tacticity at all is a property of the single unit, and so
+  // it can be computed instead of declared.
+  //
+  // A backbone atom is a configurational stereocentre when its two non-backbone
+  // substituents differ. -CH2-CH(CH3)- has one, because a methyl is not a
+  // hydrogen, so polypropylene comes in three tacticities. -CH2-C(CH3)2- has
+  // none: swapping two identical methyls changes nothing, so polyisobutylene
+  // has no tacticity to have, and neither do polyethylene, PTFE or PVDF.
+  //
+  // Two details decide whether this is right or merely plausible. Adjacency
+  // comes from the CLOSED unit for the same reason backboneLinkages needs it:
+  // an atom sitting at the cut has lost a neighbour in the open drawing, and
+  // would be credited with an extra implicit hydrogen it does not have. And
+  // substituents are compared by hashing each branch rather than by comparing
+  // element labels, because "different" has to mean different all the way out -
+  // an ethyl and a methyl differ at the second atom, and a stereocentre test
+  // that stops at the first would miss poly(1-butene) entirely.
+  //
+  // Returns null when the unit cannot be judged (not two attachment points, no
+  // path between them, no closure). That is a third answer, not a "no": 175
+  // entries in the library are copolymers or blends drawn without a single
+  // two-ended repeat unit, and calling those "cannot be tactic" would be a
+  // claim the drawing does not support.
+  function stereocentres(atoms, bonds) {
+    var info = starAttachments(atoms, bonds);
+    if (!info) return null;
+    var core = coreOf(atoms, bonds);
+    var path = pathBetween(core, info.attach[0].at, info.attach[1].at);
+    if (!path) return null;
+    var closed = closeRepeatUnit(atoms, bonds);
+    if (!closed) return null;
+
+    var onPath = {};
+    path.forEach(function (id) { onPath[id] = 1; });
+
+    var byId = {}, adj = {};
+    closed.atoms.forEach(function (a) { byId[a.id] = a; adj[a.id] = []; });
+    closed.bonds.forEach(function (b) {
+      if (!adj[b.a] || !adj[b.b]) return;
+      adj[b.a].push(b); adj[b.b].push(b);
+    });
+    var other = function (b, id) { return b.a === id ? b.b : b.a; };
+
+    // Everything reachable from "start" without passing back through "root",
+    // hashed. Returns null if the branch loops back onto the backbone, which
+    // means the atom sits in a ring the chain runs through - a real case
+    // (polynorbornene, sugars) but not one this rule is entitled to judge.
+    function branchKey(root, start, order) {
+      var seen = {}, stack = [start], members = [], fused = false;
+      seen[root] = 1; seen[start] = 1;
+      while (stack.length) {
+        var cur = stack.pop();
+        members.push(cur);
+        var nb = adj[cur] || [];
+        for (var i = 0; i < nb.length; i++) {
+          var n = other(nb[i], cur);
+          if (n === root) continue;
+          if (onPath[n]) { fused = true; continue; }
+          if (seen[n]) continue;
+          seen[n] = 1; stack.push(n);
+        }
+      }
+      if (fused) return null;
+      var inSet = {};
+      members.forEach(function (id) { inSet[id] = 1; });
+      var subAtoms = members.map(function (id) {
+        return { id: id, el: byId[id].el, charge: byId[id].charge };
+      });
+      var subBonds = closed.bonds.filter(function (b) { return inSet[b.a] && inSet[b.b]; });
+      return String(order || 1) + ":" + wlHash(subAtoms, subBonds, null, false);
+    }
+
+    var centres = [], unsure = false;
+    for (var p = 0; p < path.length; p++) {
+      var id = path[p], a = byId[id];
+      if (!a || a.el === "*") continue;
+      var max = MAX_VALENCE[a.el];
+      if (!max) { unsure = true; continue; }
+      var bondsAt = adj[id] || [], used = 0, subs = [], bad = false, sp3 = true;
+      for (var i = 0; i < bondsAt.length; i++) {
+        if ((bondsAt[i].order || 1) > 1) sp3 = false;
+      }
+      for (i = 0; i < bondsAt.length; i++) {
+        var b = bondsAt[i];
+        used += (b.order || 1);
+        var nb = other(b, id);
+        if (onPath[nb]) continue;
+        var k = branchKey(id, nb, b.order);
+        if (k === null) { bad = true; break; }
+        subs.push(k);
+      }
+      // A branch that loops back onto the chain is a ring the backbone runs
+      // through. On an sp3 atom that is a real configurational question this
+      // rule cannot answer, so the entry is left unjudged. On an sp2 or
+      // aromatic atom it is not a question at all - a trigonal carbon has no
+      // pair of substituents to swap - so a para-phenylene in the chain is no
+      // reason to doubt the whole polymer. Without this, every aromatic
+      // polyester and polycarbonate came back "unknown" rather than "no".
+      if (bad) { if (sp3) unsure = true; continue; }
+      var h = max - used;
+      if (h < 0) { unsure = true; continue; }
+      for (var j = 0; j < h; j++) subs.push("1:H");
+      // Exactly two substituents is the sp3 backbone carbon this rule is about.
+      // Anything else - a carbonyl carbon, an ether oxygen, a ring atom - is
+      // not a configurational centre of the kind tacticity describes.
+      if (subs.length !== 2) continue;
+      if (subs[0] !== subs[1]) centres.push(id);
+    }
+    return { centres: centres, unsure: unsure };
+  }
+
+  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, deriveMonomer: deriveMonomer, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance, aromaticRingBonds: aromaticRingBonds, aromaticBlindHash: aromaticBlindHash, backboneLinkages: backboneLinkages, stereocentres: stereocentres };
 });

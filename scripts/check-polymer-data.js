@@ -23,7 +23,7 @@ function loadDb() {
 // WL-hash now comes from the shared, DOM-free polymer-graph.js module (the
 // same code the browser and the search-index build use) instead of a copy
 // kept in sync here by hand.
-const { wlHash, closedHash, inSameRing, deriveMonomer } = require("../polymer-graph.js");
+const { wlHash, closedHash, inSameRing, deriveMonomer, stereocentres } = require("../polymer-graph.js");
 
 // The declared stereo-sequence values. Anything outside this list is a typo,
 // not a new kind of polymer.
@@ -260,6 +260,76 @@ function checkThermalProvenance(entry, where, errors) {
     errors.push(where + ': has a "tm" but no "tmSource". A thermal value added now must cite ' +
       'a book with an edition and table/page, a DOI, or a datasheet.');
   }
+}
+
+
+// --- Tacticity capability, computed from the structure ----------------------
+// PG.stereocentres() decides whether a repeat unit has a configurational
+// stereocentre, which is what makes tacticity a question for that polymer at
+// all. The search shows it on every card, so it has to be right.
+const TACTICITY_KNOWN = {
+  // Has a stereocentre in every repeat unit.
+  "Polypropylene": true,
+  "Polystyrene": true,
+  "Poly(methyl methacrylate)": true,
+  "Poly(vinyl chloride)": true,
+  "Poly(vinyl alcohol)": true,
+  "Poly(vinyl acetate)": true,
+  "Polyacrylonitrile": true,
+  "Poly(1-butene)": true,
+  "Poly(4-methyl-1-pentene)": true,
+  "Isotactic polypropylene": true,
+  "Syndiotactic polypropylene": true,
+  "Atactic polypropylene": true,
+  // No stereocentre: the backbone atom carries two identical substituents, or
+  // none at all.
+  "Polyethylene": false,
+  "Polytetrafluoroethylene": false,
+  "Polyisobutylene": false,
+  "Poly(vinylidene fluoride)": false,
+  "Poly(vinylidene chloride)": false,
+  "Polyoxymethylene": false,
+  "Poly(dimethylsiloxane)": false,
+  "Poly(ethylene oxide)": false,
+  // Aromatic and amide backbones: "no", and specifically not "unknown".
+  "Poly(ethylene terephthalate)": false,
+  "Polycarbonate (bisphenol A)": false,
+  "Poly(ether ether ketone)": false,
+  "Nylon 6,6": false,
+};
+
+function checkTacticityRule(db, errors) {
+  if (typeof stereocentres !== "function") {
+    errors.push("polymer-graph.js no longer exports stereocentres(), which the search uses on every result card");
+    return;
+  }
+  Object.keys(TACTICITY_KNOWN).forEach(function (name) {
+    const e = db.find(function (x) { return x.name === name; });
+    if (!e) {
+      errors.push('tacticity check: "' + name + '" is no longer in the library, so the rule is being checked against less than it claims');
+      return;
+    }
+    const r = (e.atoms && e.bonds) ? stereocentres(e.atoms, e.bonds) : null;
+    if (!r) {
+      errors.push('tacticity check: "' + name + '" can no longer be judged at all (no structure, or not a two-ended repeat unit)');
+      return;
+    }
+    const state = r.centres.length ? "capable" : (r.unsure ? "unknown" : "no");
+    const want = TACTICITY_KNOWN[name] ? "capable" : "no";
+    if (state !== want) {
+      errors.push('tacticity check: "' + name + '" computes as "' + state + '", expected "' + want + '"');
+    }
+  });
+
+  // An entry that declares a tacticity had better have somewhere to put one.
+  db.forEach(function (e) {
+    if (!e.tacticity || !e.atoms || !e.bonds) return;
+    const r = stereocentres(e.atoms, e.bonds);
+    if (r && !r.centres.length && !r.unsure) {
+      errors.push('"' + e.name + '" declares tacticity "' + e.tacticity +
+        '" but its repeat unit has no stereocentre, so one of the two is wrong');
+    }
+  });
 }
 
 function checkEntry(entry, idx, errors) {
@@ -769,6 +839,7 @@ function main() {
   checkNoHoles(db, errors);
   checkNameNotAlias(db, errors);
   checkCasChecksum(db, errors);
+  checkTacticityRule(db, errors);
   const namesSeen = new Map();
   const casSeen = new Map();
   const hashSeen = new Map();

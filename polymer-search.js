@@ -3188,11 +3188,44 @@
         '<em>' + escapeHtml(t.source) + '</em></div>';
     }
 
+    // Can this polymer be tactic, and does the entry say which it is?
+    //
+    // Three answers, not two. "unknown" is for the entries whose drawing cannot
+    // settle it - copolymers and blends without a single two-ended repeat unit,
+    // and chains running through an sp3 ring - and calling those "no" would be
+    // a claim the structure does not support. Cached on the entry the same way
+    // the facet terms are, because a result page renders a card and asks for
+    // its facets in the same breath.
+    function tacticityState(p) {
+      if (p._tactic) return p._tactic;
+      var state = 'unknown';
+      if (p.atoms && p.atoms.length && p.bonds) {
+        try {
+          var st = PG.stereocentres(p.atoms, p.bonds);
+          if (st) state = st.centres.length ? 'capable' : (st.unsure ? 'unknown' : 'no');
+        } catch (e) { state = 'unknown'; }
+      }
+      try { Object.defineProperty(p, '_tactic', { value: state, enumerable: false }); } catch (e2) { p._tactic = state; }
+      return state;
+    }
+
+    // Said only where it changes what you would do: the chain has a stereocentre
+    // in every unit and the entry does not record which arrangement this is, so
+    // any Tm on the card belongs to some particular tacticity nobody has named.
+    function tacticityHtml(p) {
+      if (p.tacticity || tacticityState(p) !== 'capable') return '';
+      return '<div class="mol-result-note"><strong>Tacticity is a variable here.</strong> ' +
+        'Every repeat unit carries a stereocentre, so this chain has a tacticity and this entry does not record one. ' +
+        'It decides whether the polymer crystallises at all: isotactic polypropylene melts at 165&nbsp;&deg;C, and the ' +
+        'atactic form of the same chain has no melting point.</div>';
+    }
+
     function polymerCard(p) {
       var props = [];
       if (p.tg) props.push('T<sub>g</sub> ≈ ' + escapeHtml(p.tg));
       if (p.tm) props.push('T<sub>m</sub> ≈ ' + escapeHtml(p.tm));
       if (p.cas) props.push('CAS ' + escapeHtml(p.cas));
+      if (p.tacticity) props.push(escapeHtml(p.tacticity));
       return '<div class="mol-result-card">' +
         '<div class="mol-result-name">' + escapeHtml(p.name) + '</div>' +
         (p.aka && p.aka.length ? '<div class="mol-result-aka">' + escapeHtml(p.aka.join(', ')) + '</div>' : '') +
@@ -3200,6 +3233,7 @@
         (props.length ? '<div class="mol-result-props">' + props.join(' &nbsp;&middot;&nbsp; ') + '</div>' : '') +
         telechelicHtml(p) +
         (p.note ? '<div class="mol-result-note">' + escapeHtml(p.note) + '</div>' : '') +
+        tacticityHtml(p) +
         (canDrawEntry(p)
           ? '<div class="mol-result-actions">' +
               '<button type="button" class="mol-draw-btn" data-poly-name="' + escapeHtml(p.name) +
@@ -7184,6 +7218,14 @@
         var bb = null;
         try { bb = PG.backboneLinkages(p.atoms, p.bonds); } catch (e0) { bb = null; }
         (bb || []).forEach(function (k) { terms.push('backbone ' + k); });
+        // Capability is computed; the specific arrangement is declared. Both are
+        // worth indexing: "tactic" finds the 441 chains where the question even
+        // arises, "isotactic" finds the entries that answer it.
+        if (tacticityState(p) === 'capable') terms.push('can be tactic');
+      }
+      if (p.tacticity) {
+        terms.push(facetNorm(p.tacticity));
+        if (p.tacticity === 'isotactic' || p.tacticity === 'syndiotactic') terms.push('stereoregular');
       }
       try { Object.defineProperty(p, '_facets', { value: terms, enumerable: false }); } catch (e) { p._facets = terms; }
       return terms;
@@ -7203,6 +7245,7 @@
         classTerms(p.cls).forEach(function (t) { clsCount[t] = (clsCount[t] || 0) + 1; });
         facetTermsOf(p).forEach(function (t) {
           if (t.indexOf('backbone ') === 0) bbCount[t] = (bbCount[t] || 0) + 1;
+          if (t === 'can be tactic') bbCount[t] = (bbCount[t] || 0) + 1;
         });
       });
       function toList(obj) {
