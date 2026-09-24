@@ -3214,8 +3214,15 @@
     // any Tm on the card belongs to some particular tacticity nobody has named.
     function tacticityHtml(p) {
       if (p.tacticity || tacticityState(p) !== 'capable') return '';
+      // Only where it qualifies something the card is actually showing. 441
+      // entries are capable and 438 declare no tacticity, so an unconditional
+      // note would land on 45% of every result page - and on 411 of those the
+      // card carries no Tg or Tm at all, leaving a warning about numbers that
+      // are not there. Restricted to the 27 that display one, it qualifies a
+      // figure the reader can see.
+      if (!p.tg && !p.tm) return '';
       return '<div class="mol-result-note"><strong>Tacticity is a variable here.</strong> ' +
-        'Every repeat unit carries a stereocentre, so this chain has a tacticity and this entry does not record one. ' +
+        'Every repeat unit carries a stereocentre, and this entry does not say which arrangement the values above belong to. ' +
         'It decides whether the polymer crystallises at all: isotactic polypropylene melts at 165&nbsp;&deg;C, and the ' +
         'atactic form of the same chain has no melting point.</div>';
     }

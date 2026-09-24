@@ -120,6 +120,13 @@ window.MONOMER_DB = [
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1}]
   },
   {
+    name: "styrene", aka: ["styrene (Ziegler-Natta catalysis)"],
+    formula: "C8H8", mass: 104.15, role: "alkene", kind: "vinyl",
+    polymers: ["Expanded polystyrene","Isotactic polystyrene","Polystyrene","Syndiotactic polystyrene"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":3,"order":1}]
+  },
+  {
     name: "succinic acid", aka: [],
     formula: "C4H6O4", mass: 118.09, role: "diacid", kind: "condensation",
     polymers: ["Poly(butylene succinate)","Poly(ethylene succinate)","Poly(hexamethylene succinate)","Poly(propylene succinate)"],
@@ -237,13 +244,6 @@ window.MONOMER_DB = [
     polymers: ["Poly(gamma-glutamic acid)","Poly(gamma-glutamic acid) crosslinked hydrogel"],
     atoms: [{"id":2,"el":"N"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"O"},{"id":11,"el":"O"},{"id":"__cap0","el":"O"}],
     bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":2},{"a":3,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":6,"b":"__cap0","order":1}]
-  },
-  {
-    name: "styrene", aka: [],
-    formula: "C8H8", mass: 104.15, role: "alkene", kind: "vinyl",
-    polymers: ["Expanded polystyrene","Polystyrene"],
-    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"}],
-    bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":3,"order":1}]
   },
   {
     name: "tetradecanedioic acid", aka: [],
