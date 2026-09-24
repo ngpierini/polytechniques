@@ -6277,16 +6277,33 @@
     ];
     function tacticityNote(hits) {
       if (!hits || hits.length < 2) return '';
+      // Every discriminator present, not just the first one found. A group can
+      // use more than one: polystyrene, its two stereoregular forms and the
+      // expanded grade are four entries on one drawing, told apart by tacticity
+      // and by form. Reporting only tacticity there claimed all four differed
+      // by something two of them do not declare.
+      var parts = [];
       for (var f = 0; f < VARIANT_FIELDS.length; f++) {
         var field = VARIANT_FIELDS[f], vals = [];
         hits.forEach(function (p) {
-          if (p[field.key] && vals.indexOf(p[field.key]) === -1) vals.push(p[field.key]);
+          if (!p[field.key]) return;
+          if (vals.indexOf(p[field.key]) === -1) vals.push(p[field.key]);
         });
         if (!vals.length) continue;
-        return ' These ' + hits.length + ' entries share one repeat unit and differ by ' + field.what +
-          ' (' + vals.join('; ') + ') — ' + field.why + '.';
+        parts.push({ what: field.what, vals: vals, why: field.why });
       }
-      return '';
+      if (!parts.length) return '';
+      var lead = ' These ' + hits.length + ' entries share one repeat unit and are told apart by ';
+      var listed = parts.map(function (p) { return p.what + ' (' + p.vals.join('; ') + ')'; });
+      var tail = listed.length === 1
+        ? listed[0] + ' — ' + parts[0].why + '.'
+        : listed.slice(0, -1).join(', ') + ' and ' + listed[listed.length - 1] +
+          ', none of which one repeat unit can show.';
+      // Deliberately silent about entries that declare none of these. Calling
+      // them "the polymer as ordinarily made" is true for polystyrene and false
+      // for poly(ethylene oxide), whose drawing is shared by 38 entries of
+      // which 37 are telechelic derivatives told apart by their end groups.
+      return lead + tail;
     }
 
     // "cis" / "trans" if the entry declares double-bond geometry, else null.
