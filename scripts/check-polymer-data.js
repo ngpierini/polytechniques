@@ -221,7 +221,6 @@ const THERMAL_NO_SOURCE_LEGACY = new Set([
   "Poly(methacrylic acid)",
   "Poly(methacrylonitrile)",
   "Poly(methyl acrylate)",
-  "Poly(methyl methacrylate)",
   "Poly(p-phenylene sulfide)",
   "Poly(propylene oxide)",
   "Poly(tetrahydrofuran)",
@@ -245,8 +244,6 @@ const THERMAL_NO_SOURCE_LEGACY = new Set([
   "Polyisoprene (trans-1,4)",
   "Polyoxymethylene",
   "Polypropylene",
-  "Polystyrene",
-  "Polytetrafluoroethylene"
 ]);
 
 function checkThermalProvenance(entry, where, errors) {

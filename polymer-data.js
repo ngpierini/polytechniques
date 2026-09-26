@@ -57,7 +57,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §3-14b"
     },
     name: "Polystyrene", aka: ["PS"], monomer: "Styrene", cls: "Addition (vinyl)", cas: "9003-53-6",
-    tg: "100 °C", tags: ["commodity", "packaging"],
+    tg: "100 °C", tgSource: "Odian, Principles of Polymerization, 4th ed., Table 1-3 (p. 31), which tabulates Brandrup et al. (1999). Transcribed from the page image: a -layout text extraction of this table interleaves its rows and has already produced one wrong value here.", tags: ["commodity", "packaging"],
     note: "Ordinary atactic PS is amorphous, so only Tg applies. Odian's Table 1-3 lists a 250 °C melting point for polystyrene without saying which stereoregular form it means, while his Sec. 8-11f puts syndiotactic polystyrene at about 270 °C; both stereoregular forms are separate entries here, and the isotactic one deliberately carries no melting point.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" },
       { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -114,7 +114,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §3-14c-2"
     },
     name: "Poly(vinylidene chloride)", aka: ["PVDC", "Saran"], monomer: "Vinylidene chloride",
-    cls: "Addition (vinyl)", cas: "9002-85-1", tg: "-18 °C", tm: "190 °C",
+    cls: "Addition (vinyl)", cas: "9002-85-1", tg: "-18 °C", tgSource: "Odian, Principles of Polymerization, 4th ed., Table 1-3 (p. 31), which tabulates Brandrup et al. (1999). Transcribed from the page image: a -layout text extraction of this table interleaves its rows and has already produced one wrong value here.", tm: "190 °C",
     tags: ["vinyl-halide", "packaging"],
     note: "Odian's Table 1-3 gives 200 °C for the melt against the 190 °C here; the two glass transitions agree. PVDC decomposes close to its melting point, so measured values depend on how fast the scan was run.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "Cl" }, { id: 4, el: "Cl" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -128,7 +128,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §3-14e"
     },
     name: "Polytetrafluoroethylene", aka: ["PTFE", "Teflon"], monomer: "Tetrafluoroethylene",
-    cls: "Addition (vinyl)", cas: "9002-84-0", tm: "327 °C", tags: ["engineering", "fluoropolymer"],
+    cls: "Addition (vinyl)", cas: "9002-84-0", tm: "327 °C", tmSource: "Odian, Principles of Polymerization, 4th ed., Table 1-3 (p. 31), which tabulates Brandrup et al. (1999). Transcribed from the page image: a -layout text extraction of this table interleaves its rows and has already produced one wrong value here.", tags: ["engineering", "fluoropolymer"],
     note: "Multiple sub-ambient and near-ambient transitions are reported instead of a single clean Tg. Standard handbook tables (Brandrup, Odian's Table 1-3) nonetheless quote a Tg near 117 °C.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "F" }, { id: 4, el: "F" }, { id: 5, el: "F" }, { id: 6, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }, { a: 2, b: 5, order: 1 }, { a: 2, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }]
@@ -154,7 +154,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §3-14e"
     },
     name: "Poly(vinyl fluoride)", aka: ["PVF"], monomer: "Vinyl fluoride", cls: "Addition (vinyl)",
-    cas: "24981-14-4", tg: "-20 °C", tm: "200 °C", tags: ["fluoropolymer"],
+    cas: "24981-14-4", tg: "-20 °C", tm: "200 °C", tmSource: "Odian, Principles of Polymerization, 4th ed., Table 1-3 (p. 31), which tabulates Brandrup et al. (1999). Transcribed from the page image: a -layout text extraction of this table interleaves its rows and has already produced one wrong value here.", tags: ["fluoropolymer"],
     note: "Handbook values for the glass transition disagree sharply: Odian's Table 1-3 quotes 41 °C where this entry carries −20 °C. PVF is about half crystalline and shows more than one relaxation, so the two numbers come from different assignments rather than from one of them being wrong. Treat either as approximate and say which you used.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: "S1", order: 1 }]
@@ -168,6 +168,7 @@ window.POLYMER_DB = [
     },
     name: "Poly(vinyl acetate)", aka: ["PVAc"], monomer: "Vinyl acetate", cls: "Addition (vinyl)",
     cas: "9003-20-7", tg: "30 °C", tags: ["coating", "adhesive"],
+    note: "Odian's Table 1-3 gives Tg 32 °C, 2 K above the figure here, and lists no melting point - poly(vinyl acetate) is atactic and amorphous as ordinarily made.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "O" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
@@ -204,7 +205,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §3-14d-1"
     },
     name: "Poly(methyl methacrylate)", aka: ["PMMA", "acrylic glass", "Plexiglass"], monomer: "Methyl methacrylate",
-    cls: "Addition (methacrylate)", cas: "9011-14-7", tg: "105 °C", tags: ["acrylic", "methacrylate", "engineering"],
+    cls: "Addition (methacrylate)", cas: "9011-14-7", tg: "105 °C", tgSource: "Odian, Principles of Polymerization, 4th ed., Table 1-3 (p. 31), which tabulates Brandrup et al. (1999). Transcribed from the page image: a -layout text extraction of this table interleaves its rows and has already produced one wrong value here.", tags: ["acrylic", "methacrylate", "engineering"],
     note: "Commercial PMMA is atactic and amorphous (Tg only); the 220 °C melting point in Odian's Table 1-3 refers to the crystalline stereoregular form.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "O" }, { id: 6, el: "O" }, { id: 7, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }, { a: 4, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 2, b: "S1", order: 1 }]
@@ -292,7 +293,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §8-2a-2, §8-10b, §8-11g"
     },
     name: "Polyisoprene (cis-1,4)", aka: ["Natural rubber", "NR"], monomer: "Isoprene", cls: "Addition (diene)",
-    cas: "9003-31-0", tg: "-70 °C", tm: "28 °C", tags: ["elastomer"],
+    cas: "9003-31-0", tg: "-70 °C", tm: "28 °C", tmSource: "Odian, Principles of Polymerization, 4th ed., Table 1-3 (p. 31), which tabulates Brandrup et al. (1999). Transcribed from the page image: a -layout text extraction of this table interleaves its rows and has already produced one wrong value here.", tags: ["elastomer"],
     note: "Nearly amorphous at room temperature (crystalline Tm near 28 °C, Odian's Table 8-1). The trans-1,4 isomer, gutta-percha, is a harder, more crystalline, thermoplastic-like material (Tg near -58 °C, Tm near 74 °C).",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 2, stereo: "cis" }, { a: 4, b: 5, order: 1 }, { a: 5, b: "S1", order: 1 }]
@@ -327,6 +328,7 @@ window.POLYMER_DB = [
     },
     name: "Poly(ethylene oxide)", aka: ["PEO", "PEG", "polyethylene glycol"], monomer: "Ethylene oxide",
     cls: "Ring-opening", cas: "25322-68-3", tg: "-60 °C", tm: "65 °C", tags: ["polyether", "water-soluble", "biomedical"],
+    note: "Odian's Table 1-3 gives Tg −53 °C and Tm 66 °C; the figures here are 7 K and 1 K away from those and are not yet attributed to a source.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: "S1", order: 1 }]
   },
@@ -359,7 +361,7 @@ window.POLYMER_DB = [
     },
     name: "Poly(dimethylsiloxane)", aka: ["PDMS", "silicone rubber"], monomer: "Dimethylsiloxane / D4 or D3 cyclics",
     noScheme: "the monomer is a cyclic siloxane - D4, D3 or a substituted ring - and one repeat unit is only a quarter or a third of it, so closing this unit would draw a two-membered ring that does not exist rather than the cyclotetrasiloxane that was actually charged",
-    cls: "Ring-opening (silicone)", cas: "9016-00-6", tg: "-125 °C", tm: "-40 °C", tags: ["silicone", "elastomer"],
+    cls: "Ring-opening (silicone)", cas: "9016-00-6", tg: "-125 °C", tm: "-40 °C", tmSource: "Odian, Principles of Polymerization, 4th ed., Table 1-3 (p. 31), which tabulates Brandrup et al. (1999). Transcribed from the page image: a -layout text extraction of this table interleaves its rows and has already produced one wrong value here.", tags: ["silicone", "elastomer"],
     note: "Crystallizes only well below room temperature, so its melting point (Odian's Table 1-3) is far sub-ambient.",
     atoms: [{ id: 1, el: "Si" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
@@ -373,6 +375,7 @@ window.POLYMER_DB = [
     },
     name: "Nylon 6", aka: ["Polycaprolactam", "PA6"], monomer: "Caprolactam", cls: "Ring-opening (polyamide)",
     cas: "25038-54-4", tg: "47 °C", tm: "220 °C", tags: ["polyamide", "engineering", "fiber"],
+    note: "Odian's Table 1-3 gives Tg 40 °C and Tm 223 °C; the figures here are 7 K and 3 K away and are not yet attributed to a source.",
     atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: "S1", order: 1 }]
   },
@@ -384,7 +387,8 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §2-8"
     },
     name: "Nylon 6,6", aka: ["Polyhexamethylene adipamide", "PA66"], monomer: "Hexamethylenediamine + adipic acid",
-    cls: "Step-growth (polyamide)", cas: "32131-17-2", tg: "57 °C", tm: "265 °C", tags: ["polyamide", "engineering", "fiber"],
+    cls: "Step-growth (polyamide)", cas: "32131-17-2", tg: "57 °C", tm: "265 °C", tmSource: "Odian, Principles of Polymerization, 4th ed., Table 1-3 (p. 31), which tabulates Brandrup et al. (1999). Transcribed from the page image: a -layout text extraction of this table interleaves its rows and has already produced one wrong value here.", tags: ["polyamide", "engineering", "fiber"],
+    note: "Odian's Table 1-3 gives Tg 50 °C, 7 K below the figure here. The melting point here does match the table and now cites it.",
     atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
       { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" },
       { id: 15, el: "C" }, { id: 16, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -519,7 +523,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §3-14e"
     },
     name: "Poly(chlorotrifluoroethylene)", aka: ["PCTFE"], monomer: "chlorotrifluoroethylene",
-    cls: "Addition (vinyl)", cas: "9002-83-9", tg: "45 °C", tm: "220 °C",
+    cls: "Addition (vinyl)", cas: "9002-83-9", tg: "45 °C", tm: "220 °C", tmSource: "Odian, Principles of Polymerization, 4th ed., Table 1-3 (p. 31), which tabulates Brandrup et al. (1999). Transcribed from the page image: a -layout text extraction of this table interleaves its rows and has already produced one wrong value here.",
     tags: ["engineering", "fluoropolymer"],
     verified: false,
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "F" }, { id: 4, el: "Cl" }, { id: 5, el: "F" }, { id: 6, el: "F" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
