@@ -619,6 +619,40 @@ window.POLYMER_DB = [
     bonds: [{ a: "S0", b: 3, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 2, b: 9, order: 1 }, { a: 6, b: 10, order: 1 }, { a: 5, b: "S1", order: 1 }]
   },
   {
+    name: "Poly(L-lactide)", aka: ["PLLA", "poly(L-lactic acid)", "L-PLA"],
+    monomer: "L-lactide", cls: "Ring-opening", cas: null,
+    tags: ["biodegradable", "biomedical", "commodity"],
+    verified: true,
+    tacticity: "isotactic",
+    tm: "170-180 °C (homocrystal)",
+    tmSource: "Two independent open-access sources agree. Phuangthong et al., Polymers 16 (2024) 2129 (CC-BY, doi:10.3390/polym16152129): the stereocomplex melts near 230 °C, \"significantly higher than that of individual PLLA or PDLA\", with their neat PLLA/PDLA showing peaks near 170 °C (homocrystal) and 220 °C (stereocomplex). Srithep et al., Polymers 18 (2026) 1285 (CC-BY, doi:10.3390/polym18111285): homocrystal peaks ~160-180 °C, stereocomplex peaks ~220-230 °C.",
+    note: "All-L units, so every stereocentre points the same way and the chain crystallises - the form that makes polylactide a packaging and fibre material rather than a soft amorphous resin. Poly(D-lactide) is its mirror image with the same melting point. Blend the two 1:1 and the chains co-crystallise into a stereocomplex that melts some 50 °C higher than either parent.",
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 3, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 2, b: 9, order: 1 }, { a: 6, b: 10, order: 1 }, { a: 5, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(D,L-lactide)", aka: ["PDLLA", "poly(D,L-lactic acid)", "amorphous PLA", "racemic PLA"],
+    monomer: "D,L-lactide (racemic)", cls: "Ring-opening", cas: null,
+    tags: ["biodegradable", "biomedical"],
+    verified: true,
+    tacticity: "atactic",
+    note: "L and D units placed at random, so nothing packs and the polymer is amorphous with no melting point at all - which is the point of it. Resorbable sutures, screws and drug-delivery matrices use the atactic material because it degrades faster and more evenly than the crystalline L homopolymer, and because it has no crystallites to outlast the implant.",
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 3, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 2, b: 9, order: 1 }, { a: 6, b: 10, order: 1 }, { a: 5, b: "S1", order: 1 }]
+  },
+  {
+    name: "Poly(lactide) stereocomplex", aka: ["sc-PLA", "PLLA/PDLA stereocomplex", "stereocomplex PLA"],
+    monomer: "L-lactide + D-lactide (1:1)", cls: "Ring-opening", cas: null,
+    tags: ["biodegradable", "biomedical", "specialty"],
+    verified: true,
+    form: "1:1 blend of the L and D homopolymers",
+    tm: "220-230 °C",
+    tmSource: "Two independent open-access sources agree. Phuangthong et al., Polymers 16 (2024) 2129 (CC-BY, doi:10.3390/polym16152129): the stereocomplex melts near 230 °C, \"significantly higher than that of individual PLLA or PDLA\", with their neat PLLA/PDLA showing peaks near 170 °C (homocrystal) and 220 °C (stereocomplex). Srithep et al., Polymers 18 (2026) 1285 (CC-BY, doi:10.3390/polym18111285): homocrystal peaks ~160-180 °C, stereocomplex peaks ~220-230 °C.",
+    note: "Two chains of opposite handedness pack together more tightly than either can pack with itself, and the resulting crystal melts around 50 °C above the homocrystal. It is the cheapest available route to a polylactide with enough heat resistance for a hot-fill container or an autoclave, and it needs no new monomer - only the other enantiomer. The same repeat unit as every other polylactide here, which is why the search groups them: what differs is the arrangement between chains, not within one.",
+    atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: 9, el: "O" }, { id: 10, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
+    bonds: [{ a: "S0", b: 3, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: 9, order: 1 }, { a: 2, b: 9, order: 1 }, { a: 6, b: 10, order: 1 }, { a: 5, b: "S1", order: 1 }]
+  },
+  {
     // AUTO-GENERATED by scripts/discover-polymers.js (ring-opening (lactam/lactone/carbonate)) - verify structure before trusting
     name: "Poly(valerolactone)", aka: ["PVL"], monomer: "delta-valerolactone",
     cls: "Ring-opening", cas: "26354-94-9",

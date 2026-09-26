@@ -113,6 +113,13 @@ window.MONOMER_DB = [
     bonds: [{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":16,"b":11,"order":1},{"a":13,"b":17,"order":1},{"a":17,"b":18,"order":2},{"a":9,"b":"__cap0","order":1},{"a":17,"b":"__cap1","order":1}]
   },
   {
+    name: "lactide", aka: ["L-lactide","D,L-lactide (racemic)"],
+    formula: "C6H8O4", mass: 144.13, role: "other", kind: "ring",
+    polymers: ["Poly(D,L-lactide)","Poly(L-lactide)","Poly(lactide)","Poly(lactide) stereocomplex"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"O"},{"id":10,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":2,"b":9,"order":1},{"a":6,"b":10,"order":1},{"a":3,"b":5,"order":1}]
+  },
+  {
     name: "propylene", aka: [],
     formula: "C3H6", mass: 42.08, role: "alkene", kind: "vinyl",
     polymers: ["Atactic polypropylene","Isotactic polypropylene","Polypropylene","Syndiotactic polypropylene"],
@@ -1875,13 +1882,6 @@ window.MONOMER_DB = [
     polymers: ["Poly(malic acid)"],
     atoms: [{"id":2,"el":"O"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"O"},{"id":8,"el":"C"},{"id":9,"el":"O"},{"id":"__cap0","el":"O"}],
     bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":2},{"a":5,"b":7,"order":1},{"a":3,"b":8,"order":1},{"a":8,"b":9,"order":2},{"a":8,"b":"__cap0","order":1}]
-  },
-  {
-    name: "lactide", aka: [],
-    formula: "C6H8O4", mass: 144.13, role: "other", kind: "ring",
-    polymers: ["Poly(lactide)"],
-    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"O"},{"id":10,"el":"C"}],
-    bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":2,"b":9,"order":1},{"a":6,"b":10,"order":1},{"a":3,"b":5,"order":1}]
   },
   {
     name: "laurolactam", aka: [],
