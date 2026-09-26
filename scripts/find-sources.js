@@ -30,6 +30,10 @@
 //   --pattern RE  what to look for in the full text (default: numbers near the query words)
 //   --no-fetch    metadata and OA status only, download nothing
 //   --journals    comma-separated container-title filter, case-insensitive substring
+//   --fulltext    search Europe PMC's full text instead of Crossref metadata.
+//                 Use this when hunting a VALUE rather than a topic: the query
+//                 goes against the body of every open-access paper it holds.
+//                 Quote phrases, e.g. --fulltext '"loop fraction of" AND network'
 
 const fs = require('fs');
 const path = require('path');
@@ -61,6 +65,43 @@ function getJSON(url) {
     '-sL', '--max-time', '40', '-H', 'User-Agent: PolyTechniques/1.0 (mailto:' + CONTACT + ')', url,
   ], { maxBuffer: 32 * 1024 * 1024 }).toString();
   try { return JSON.parse(out); } catch (e) { return null; }
+}
+
+// Europe PMC full-text search. Returns the same shape as crossref() plus a
+// pmcid, which is a direct route to the body text with no publisher in the way.
+function europepmc() {
+  const url = 'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=' +
+    encodeURIComponent(query) + '&format=json&pageSize=' + rows + '&resultType=core';
+  const j = getJSON(url);
+  if (!j || !j.resultList) return [];
+  return (j.resultList.result || []).map((r) => ({
+    doi: r.doi || '',
+    title: r.title || '',
+    journal: ((r.journalInfo || {}).journal || {}).title || r.journalTitle || '',
+    year: (r.journalInfo || {}).yearOfPublication || r.pubYear,
+    author: (r.authorString || '').split(',')[0],
+    pmcid: r.pmcid || null,
+    vol: (r.journalInfo || {}).volume,
+    pages: r.pageInfo,
+  })).filter((r) => !journals.length || journals.some((j2) => (r.journal || '').toLowerCase().includes(j2)));
+}
+
+// Europe PMC hands back the body as XML. Stripping tags is enough for grepping
+// sentences, and it avoids the PDF round trip entirely.
+function pmcText(pmcid) {
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+  const txt = path.join(OUT_DIR, pmcid + '.txt');
+  if (fs.existsSync(txt)) return fs.readFileSync(txt, 'utf8');
+  try {
+    const xml = execFileSync('curl', ['-sL', '--max-time', '45',
+      '-H', 'User-Agent: PolyTechniques/1.0 (mailto:' + CONTACT + ')',
+      'https://www.ebi.ac.uk/europepmc/webservices/rest/' + pmcid + '/fullTextXML'],
+      { maxBuffer: 64 * 1024 * 1024 }).toString();
+    if (xml.length < 2000) return null;
+    const plain = xml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+    fs.writeFileSync(txt, plain);
+    return plain;
+  } catch (e) { return null; }
 }
 
 function crossref() {
@@ -123,7 +164,10 @@ function fetchText(locs, doi) {
 // needs to see; everything else is noise at this stage.
 function snippets(text, re) {
   const out = [];
-  const lines = text.split(/\r?\n/);
+  // Europe PMC returns the whole body as a single line, so a newline split
+  // finds one enormous "line" and matches nothing useful. Split on sentence
+  // ends too, which is the unit a reader wants to see anyway.
+  const lines = text.split(/\r?\n/).flatMap((l) => (l.length > 600 ? l.split(/(?<=\.)\s+(?=[A-Z])/) : [l]));
   for (let i = 0; i < lines.length && out.length < 6; i++) {
     const L = lines[i].trim();
     if (L.length < 25 || L.length > 400) continue;
@@ -136,25 +180,35 @@ const terms = query.split(/\s+/).filter((w) => w.length > 3).map((w) => w.replac
 const defaultRe = new RegExp('(' + terms.join('|') + ')[^.]{0,80}\\d', 'i');
 const re = pattern ? new RegExp(pattern, 'i') : defaultRe;
 
-const hits = crossref();
+const useFT = HAS('fulltext');
+const hits = useFT ? europepmc() : crossref();
 console.log('query: ' + query);
-console.log(hits.length + ' journal articles from Crossref' + (journals.length ? ' (filtered to ' + journals.join(', ') + ')' : '') + '\n');
+console.log(hits.length + ' articles from ' + (useFT ? "Europe PMC full text" : 'Crossref metadata') +
+  (journals.length ? ' (filtered to ' + journals.join(', ') + ')' : '') + '\n');
 
 let oaCount = 0, readCount = 0;
 hits.forEach((h) => {
-  const locs = oaLocations(h.doi);
+  let body = null, source = null;
+  if (h.pmcid) { body = pmcText(h.pmcid); if (body) source = 'Europe PMC ' + h.pmcid; }
+  const locs = body ? [] : oaLocations(h.doi);
   const oa = locs[0] || null;
-  const tag = oa ? 'OPEN (' + locs.length + ' location' + (locs.length === 1 ? '' : 's') + ', ' + oa.license + ')' : 'paywalled';
-  console.log('- ' + (h.author || '?') + ' ' + (h.year || '') + ', ' + (h.journal || '?'));
-  console.log('  ' + (h.title || '').slice(0, 110));
-  console.log('  ' + h.doi + '   ' + tag);
-  if (oa) oaCount++;
-  if (!oa || HAS('no-fetch')) { console.log(''); return; }
+  const tag = body ? 'OPEN (Europe PMC full text)'
+    : (oa ? 'OPEN (' + locs.length + ' location' + (locs.length === 1 ? '' : 's') + ', ' + oa.license + ')' : 'paywalled');
+  console.log('- ' + (h.author || '?') + ' ' + (h.year || '') + ', ' + (h.journal || '?') +
+    (h.vol ? ' ' + h.vol : '') + (h.pages ? ', ' + h.pages : ''));
+  console.log('  ' + (h.title || '').replace(/<[^>]+>/g, '').slice(0, 110));
+  console.log('  ' + (h.doi || '(no doi)') + '   ' + tag);
+  if (oa || body) oaCount++;
+  if ((!oa && !body) || HAS('no-fetch')) { console.log(''); return; }
   readCount++;
-  const got = fetchText(locs, h.doi);
-  if (!got) { console.log('  (open access, but no location served a readable PDF)\n'); return; }
-  console.log('  read from: ' + got.from);
-  const found = snippets(got.text, re);
+  let text = body;
+  if (!text) {
+    const got = fetchText(locs, h.doi);
+    if (!got) { console.log('  (open access, but no location served a readable PDF)\n'); return; }
+    text = got.text; source = got.from;
+  }
+  console.log('  read from: ' + source);
+  const found = snippets(text, re);
   if (!found.length) { console.log('  (full text read, nothing matched the pattern)\n'); return; }
   found.forEach((s) => console.log('    > ' + s.slice(0, 230)));
   console.log('');
