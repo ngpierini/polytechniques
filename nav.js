@@ -892,10 +892,14 @@
   }
 
   // ---- "On this page" sticky jump nav for the long guide pages ----
-  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html", "thermal-analysis.html"];
+  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html", "thermal-analysis.html", "end-group-analysis.html"];
 
   function buildSectionNav(current) {
-    if (TOC_PAGES.indexOf(current) === -1) return;
+    // Compare through pageKey. The list is written with ".html" for
+    // readability, but "current" has already had the extension stripped, so a
+    // direct indexOf never matched and this table of contents had never once
+    // rendered - on any page, since the feature was added.
+    if (TOC_PAGES.map(pageKey).indexOf(current) === -1) return;
     var main = document.getElementById("guide");
     if (!main) return;
     var headings = main.querySelectorAll(":scope > .card > h3");

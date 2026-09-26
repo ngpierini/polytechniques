@@ -32,7 +32,7 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=28" defer></script>
+<script src="nav.js?v=30" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
@@ -61,12 +61,37 @@
     </p>
     <ul class="guide-list">
       <li><strong>What is on the end?</strong> An identity question. Mass spectrometry answers it outright; infrared and NMR answer it if you already suspect what you are looking for.</li>
-      <li><strong>How many chains carry it?</strong> A fidelity question &ndash; the one that matters before a chain extension or a block. Needs a method that counts end groups against chains, not against mass.</li>
+      <li><strong>How many chains carry it?</strong> A fidelity question, and the one that matters before a chain extension or a block. Needs a method that counts end groups against chains, not against mass.</li>
       <li><strong>How long are the chains?</strong> A counting question. If every chain carries exactly one end group, counting end groups against repeat units gives M<sub>n</sub> directly, with no calibration and no standards. That is the great virtue of the method and the source of its limits.</li>
     </ul>
     <p class="guide-note">
-      Pendant groups raise the fourth question &ndash; <strong>what fraction of the repeat units carry the modification?</strong> &ndash; which is the same integration arithmetic pointed sideways instead of at the chain ends.
+      Pendant groups raise a fourth question. <strong>What fraction of the repeat units carry the modification?</strong> That is the same integration arithmetic pointed sideways instead of at the chain ends.
     </p>
+  </div>
+
+  <div class="card">
+    <h3>What the words refer to</h3>
+
+    <div class="chart-wrap">
+      <svg class="chart-svg" viewBox="0 0 680 210" preserveAspectRatio="xMidYMid meet" role="img"
+        aria-label="A polymer chain labelled with its alpha end group, repeat units, a pendant group and its omega end group.">
+        <polyline points="120,140 150,108 180,140 210,108 240,140 270,108 300,140 330,108 360,140 390,108 420,140 450,108 480,140 510,108 540,140" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-linejoin="round"/>
+        <circle cx="120" cy="140" r="10" fill="var(--primary, #5b8def)"/>
+        <circle cx="540" cy="140" r="10" fill="var(--primary, #5b8def)"/>
+        <text x="120" y="176" text-anchor="middle" font-size="11.5" fill="var(--text-dim)">&#945; end group</text>
+        <text x="120" y="191" text-anchor="middle" font-size="10" fill="var(--text-dim)">from the initiator</text>
+        <text x="540" y="176" text-anchor="middle" font-size="11.5" fill="var(--text-dim)">&#969; end group</text>
+        <text x="540" y="191" text-anchor="middle" font-size="10" fill="var(--text-dim)">from the terminating step</text>
+        <line x1="330" y1="108" x2="330" y2="62" stroke="var(--danger, #d9534f)" stroke-width="2"/>
+        <circle cx="330" cy="54" r="9" fill="var(--danger, #d9534f)"/>
+        <text x="330" y="34" text-anchor="middle" font-size="11.5" fill="var(--text-dim)">pendant group</text>
+        <path d="M 312 96 l -7 0 l 0 56 l 7 0" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <path d="M 372 96 l 7 0 l 0 56 l -7 0" fill="none" stroke="var(--text-dim)" stroke-width="1.5"/>
+        <text x="386" y="156" font-size="12" fill="var(--text-dim)" font-style="italic">n</text>
+        <text x="342" y="176" text-anchor="middle" font-size="11.5" fill="var(--text-dim)">repeat unit</text>
+      </svg>
+    </div>
+    <p class="diagram-caption">Two end groups per chain however long it is, and one pendant group per repeat unit. That asymmetry is the whole method, and its limit.</p>
   </div>
 
   <div class="card">
@@ -75,14 +100,14 @@
       <table class="recipe recipe-data">
         <thead><tr><th>Technique</th><th>Best at</th><th>Gives M<sub>n</sub>?</th><th>The catch</th></tr></thead>
         <tbody>
-          <tr><td><strong>&sup1;H NMR</strong></td><td>counting end groups and pendant groups against the backbone</td><td>Yes, absolute</td><td>The end-group signal shrinks as the chain grows; see the ceiling below. Needs a relaxation delay long enough to be quantitative &ndash; a routine delay set for speed under-integrates the slowest-relaxing protons, which are often exactly the end group.</td></tr>
+          <tr><td><strong>&sup1;H NMR</strong></td><td>counting end groups and pendant groups against the backbone</td><td>Yes, absolute</td><td>The end-group signal shrinks as the chain grows; see the ceiling below. Needs a relaxation delay long enough to be quantitative: a routine delay set for speed under-integrates the slowest-relaxing protons, which are often exactly the end group.</td></tr>
           <tr><td><strong>&sup1;&#8313;F NMR</strong></td><td>a fluorinated end group or label</td><td>Yes, absolute</td><td>Only if fluorine is there. When it is, the method is far better than &sup1;H: fluorine is 100% abundant, the chemical shift range is enormous so nothing overlaps, and there is no background from solvent or backbone.</td></tr>
           <tr><td><strong>&sup3;&sup1;P NMR</strong></td><td>telling hydroxyl types apart, and counting OH against COOH</td><td>Indirectly</td><td>The sample must be derivatised with a phosphitylating reagent first, so every group you want to see has to react quantitatively. Worth it when "how much OH" is not a single question.</td></tr>
           <tr><td><strong>FTIR</strong></td><td>is the group there, and has it been consumed</td><td>No</td><td>Band area depends on path length and concentration as much as on chemistry, so a number needs a calibration curve and an internal reference band. The exception is isocyanate: a strong, isolated band near 2270&nbsp;cm<sup>&minus;1</sup> with nothing else nearby, which is why polyurethane cure is tracked this way as a matter of routine.</td></tr>
           <tr><td><strong>Titration</strong></td><td>hydroxyl, acid, amine or isocyanate content by the gram</td><td>Yes, if you know the functionality</td><td>Returns an <em>equivalent weight</em>, not a molecular weight. Multiplying by the wrong functionality is the classic error. Needs a lot more sample than NMR and sees nothing about structure.</td></tr>
           <tr><td><strong>MALDI-TOF MS</strong></td><td>reading the actual end-group masses off the spectrum</td><td>Only for narrow samples</td><td>The definitive answer to "what is on the end", because you see the mass. But ionisation and detection favour some chain lengths over others, so averages from a broad sample are biased; treat it as an identity method first.</td></tr>
-          <tr><td><strong>UV-Vis</strong></td><td>a chromophoric end group, above all a RAFT agent</td><td>Yes, with an extinction coefficient</td><td>Needs &epsilon; for that group in that solvent, and it assumes the chromophore is intact. A thiocarbonylthio end group has a strong &pi;&rarr;&pi;* band near 300&nbsp;nm and a weak visible band &ndash; which is why RAFT polymers are coloured, and why fading is itself a report on end-group loss.</td></tr>
-          <tr><td><strong>Elemental analysis</strong></td><td>a heteroatom that only the end group carries</td><td>Yes, in principle</td><td>Sulfur from a RAFT agent or bromine from an ATRP initiator gives end-group content by mass. Blunt, and easily wrecked by residual catalyst, salt or solvent &ndash; it cannot tell a chain end from a contaminant containing the same element.</td></tr>
+          <tr><td><strong>UV-Vis</strong></td><td>a chromophoric end group, above all a RAFT agent</td><td>Yes, with an extinction coefficient</td><td>Needs &epsilon; for that group in that solvent, and it assumes the chromophore is intact. A thiocarbonylthio end group has a strong &pi;&rarr;&pi;* band near 300&nbsp;nm and a weak visible band, which is why RAFT polymers are coloured and why fading is itself a report on end-group loss.</td></tr>
+          <tr><td><strong>Elemental analysis</strong></td><td>a heteroatom that only the end group carries</td><td>Yes, in principle</td><td>Sulfur from a RAFT agent or bromine from an ATRP initiator gives end-group content by mass. Blunt, and easily wrecked by residual catalyst, salt or solvent, because it cannot tell a chain end from a contaminant containing the same element.</td></tr>
         </tbody>
       </table>
     </div>
@@ -124,7 +149,7 @@
       <div class="field">
         <label for="eg-mend">Total end-group mass (g/mol)</label>
         <input type="number" id="eg-mend" value="195.05" step="any" min="0">
-        <p class="hint">Both ends together &ndash; for ATRP, the initiator fragment plus the halogen.</p>
+        <p class="hint">Both ends together: for ATRP, the initiator fragment plus the halogen.</p>
       </div>
       <div class="field">
         <label for="eg-err">Integration error, % of the total spectrum</label>
@@ -133,6 +158,8 @@
       </div>
     </div>
     <div class="stat-grid" id="eg-stats" style="margin-top:16px;"></div>
+    <div id="eg-plot" class="chart-wrap"></div>
+    <p class="diagram-caption" id="eg-caption"></p>
     <div id="eg-notes"></div>
   </div>
 
@@ -142,7 +169,7 @@
       End-group NMR is usually said to run out somewhere around 20&nbsp;kg/mol. That is not a property of the spectrometer, it is arithmetic. The end-group signal is a fixed number of protons; the backbone grows with every unit added, so the end group's share of the spectrum falls as 1/DP. A baseline error that costs a fixed slice of the total integral therefore costs a <em>growing fraction of the end-group peak</em>, and that error lands directly on DP.
     </p>
     <p class="guide-note">
-      For PMMA made from ethyl 2-bromoisobutyrate &ndash; a 3H backbone singlet, a 6H end-group signal:
+      For PMMA made from ethyl 2-bromoisobutyrate, with a 3H backbone singlet and a 6H end-group signal:
     </p>
     <div class="table-scroll">
       <table class="recipe recipe-data">
@@ -158,10 +185,10 @@
       </table>
     </div>
     <p class="guide-note">
-      So the familiar ceiling is real and it has a number behind it: at M<sub>n</sub>&nbsp;=&nbsp;20&nbsp;kg/mol a 0.2% integration error is already a 20% error in M<sub>n</sub>, and at 40&nbsp;kg/mol it is 40%. Two consequences worth acting on. Choose the end-group signal with the <em>most</em> protons per chain, not the most convenient one &ndash; six protons instead of two moves the whole table by a factor of three. And above about 20&nbsp;kg/mol, stop treating an end-group M<sub>n</sub> as a measurement and start treating it as a check on something else.
+      So the familiar ceiling is real and it has a number behind it: at M<sub>n</sub>&nbsp;=&nbsp;20&nbsp;kg/mol a 0.2% integration error is already a 20% error in M<sub>n</sub>, and at 40&nbsp;kg/mol it is 40%. Two consequences worth acting on. Choose the end-group signal with the <em>most</em> protons per chain, not the most convenient one: six protons instead of two moves the whole table by a factor of three. And above about 20&nbsp;kg/mol, stop treating an end-group M<sub>n</sub> as a measurement and start treating it as a check on something else.
     </p>
     <p class="guide-note">
-      There is a second error the table does not show, and it runs one way. If some chains have lost their end group &ndash; termination, transfer, a failed initiation &ndash; the end-group integral is smaller than the chain count deserves, so DP and M<sub>n</sub> come out <strong>too high</strong>. An end-group M<sub>n</sub> above the target is therefore ambiguous in a way one below it is not: it can mean long chains, or it can mean dead ones. The <a href="mwd-simulator.html">distribution simulator</a> shows what a dead-chain population does to the whole distribution, and <a href="gpc-trace.html">GPC</a> sees it directly as a low-molecular-weight tail.
+      There is a second error the table does not show, and it runs one way. If some chains have lost their end group through termination, transfer or a failed initiation, the end-group integral is smaller than the chain count deserves, so DP and M<sub>n</sub> come out <strong>too high</strong>. An end-group M<sub>n</sub> above the target is therefore ambiguous in a way one below it is not: it can mean long chains, or it can mean dead ones. The <a href="mwd-simulator.html">distribution simulator</a> shows what a dead-chain population does to the whole distribution, and <a href="gpc-trace.html">GPC</a> sees it directly as a low-molecular-weight tail.
     </p>
   </div>
 
@@ -238,7 +265,7 @@
     <h3>When the answers disagree</h3>
     <ul class="guide-list">
       <li><strong>End-group M<sub>n</sub> above GPC M<sub>n</sub>.</strong> Usually not a contradiction at all. A conventional GPC number is a polystyrene-equivalent molecular weight and can be off by tens of percent for any other chemistry; the end-group number is absolute. Convert the GPC value first on the <a href="gpc-calibration.html">calibration converter</a>, then compare.</li>
-      <li><strong>End-group M<sub>n</sub> above the target.</strong> Suspect lost end groups before celebrating long chains &ndash; the arithmetic pushes M<sub>n</sub> up when chains stop carrying the group being counted.</li>
+      <li><strong>End-group M<sub>n</sub> above the target.</strong> Suspect lost end groups before celebrating long chains, because the arithmetic pushes M<sub>n</sub> up when chains stop carrying the group being counted.</li>
       <li><strong>Titration M<sub>n</sub> below NMR M<sub>n</sub>.</strong> Suspect the functionality. Any monofunctional impurity, or a chain that cyclised, changes groups per chain without changing the chemistry the titration sees.</li>
       <li><strong>Everything disagrees on a branched or star polymer.</strong> Each arm carries an end group, so end-group counting returns arm length rather than molecular weight, while GPC returns something smaller than the true mass because a branched chain is compact. The <a href="chain-dimensions.html">chain dimensions</a> page covers why.</li>
     </ul>
@@ -247,10 +274,10 @@
   <div class="card">
     <h3>Related tools</h3>
     <ul class="guide-list">
-      <li><a href="calculator.html">Calculator</a> &ndash; sets the target M<sub>n</sub> from the recipe, including the end-group term this page measures.</li>
-      <li><a href="gpc-trace.html">GPC trace analyzer</a> and <a href="gpc-calibration.html">calibration converter</a> &ndash; the other route to M<sub>n</sub>, and how to put the two on the same scale.</li>
-      <li><a href="polyurethane.html">Polyurethane calculator</a> &ndash; equivalent weights and index, where %NCO and hydroxyl value do their day job.</li>
-      <li><a href="conversion-monitoring.html">Conversion monitoring</a> &ndash; the same integration discipline applied to monomer consumption.</li>
+      <li><a href="calculator.html">Calculator</a>. Sets the target M<sub>n</sub> from the recipe, including the end-group term this page measures.</li>
+      <li><a href="gpc-trace.html">GPC trace analyzer</a> and <a href="gpc-calibration.html">calibration converter</a>. The other route to M<sub>n</sub>, and how to put the two on the same scale.</li>
+      <li><a href="polyurethane.html">Polyurethane calculator</a>. Equivalent weights and index, where %NCO and hydroxyl value do their day job.</li>
+      <li><a href="conversion-monitoring.html">Conversion monitoring</a>. The same integration discipline applied to monomer consumption.</li>
     </ul>
   </div>
 
@@ -271,6 +298,60 @@
     return Number(n.toPrecision(3)).toString();
   }
 
+
+  // The ceiling, drawn. The table below the calculator makes the same point in
+  // numbers for one polymer; this follows whatever chemistry is actually in the
+  // boxes, and puts the current answer on the curve.
+  function egPlot(Hb, He, M0, Mend, d, MnNow, errNow) {
+    var W = 680, H = 300, Mg = { left: 52, right: 16, top: 14, bottom: 46 };
+    var pw = W - Mg.left - Mg.right, ph = H - Mg.top - Mg.bottom;
+    var x0 = Math.log10(1000), x1 = Math.log10(200000);
+    var yMax = 60;
+    function sx(mn) { return Mg.left + ((Math.log10(mn) - x0) / (x1 - x0)) * pw; }
+    function sy(e) { return Mg.top + (1 - Math.min(e, yMax) / yMax) * ph; }
+    var s = "", i;
+
+    for (i = 0; i <= 6; i++) {
+      var yv = yMax * i / 6;
+      s += '<line x1="' + Mg.left + '" y1="' + sy(yv) + '" x2="' + (W - Mg.right) + '" y2="' + sy(yv) +
+        '" stroke="var(--border)" stroke-width="0.5" opacity="0.6"/>';
+      s += '<text x="' + (Mg.left - 7) + '" y="' + (sy(yv) + 3.5) + '" text-anchor="end" font-size="10.5" fill="var(--text-dim)">' + yv + '%</text>';
+    }
+    for (i = 3; i <= 5; i++) {
+      s += '<line x1="' + sx(Math.pow(10, i)) + '" y1="' + Mg.top + '" x2="' + sx(Math.pow(10, i)) + '" y2="' + (H - Mg.bottom) +
+        '" stroke="var(--border)" stroke-width="0.5" opacity="0.6"/>';
+      s += '<text x="' + sx(Math.pow(10, i)) + '" y="' + (H - Mg.bottom + 16) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">10<tspan baseline-shift="super" font-size="8">' + i + '</tspan></text>';
+    }
+
+    // A fifth of the answer being integration error is where this page stops
+    // calling the result a measurement, so the threshold is drawn.
+    s += '<line x1="' + Mg.left + '" y1="' + sy(20) + '" x2="' + (W - Mg.right) + '" y2="' + sy(20) +
+      '" stroke="var(--danger, #d9534f)" stroke-width="1.5" stroke-dasharray="5 4"/>';
+    s += '<text x="' + (W - Mg.right - 4) + '" y="' + (sy(20) - 6) + '" text-anchor="end" font-size="10.5" fill="var(--danger, #d9534f)">20%: past here it is a cross-check, not a measurement</text>';
+
+    var dpath = "";
+    for (i = 0; i <= 240; i++) {
+      var mn = Math.pow(10, x0 + (x1 - x0) * i / 240);
+      var DP = (mn - Mend) / M0;
+      if (DP <= 0) continue;
+      var share = He / (He + DP * Hb);
+      var err = (d / share) * (DP * M0) / mn * 100;
+      dpath += (dpath ? " L " : "M ") + sx(mn).toFixed(1) + " " + sy(err).toFixed(1);
+    }
+    s += '<path d="' + dpath + '" fill="none" stroke="var(--primary, #5b8def)" stroke-width="2.5"/>';
+
+    if (isFinite(MnNow) && MnNow > 0) {
+      var px = sx(Math.min(Math.max(MnNow, 1000), 200000)), py = sy(errNow * 100);
+      s += '<circle cx="' + px + '" cy="' + py + '" r="6" fill="none" stroke="var(--text)" stroke-width="2.5"/>';
+    }
+    s += '<line x1="' + Mg.left + '" y1="' + (H - Mg.bottom) + '" x2="' + (W - Mg.right) + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    s += '<line x1="' + Mg.left + '" y1="' + Mg.top + '" x2="' + Mg.left + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    s += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">M\u2099 (g/mol)</text>';
+    s += '<text x="13" y="' + (H / 2) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)" transform="rotate(-90 13 ' + (H / 2) + ')">uncertainty in M\u2099</text>';
+    return '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+      'aria-label="Uncertainty in Mn rising with Mn for end-group NMR, with the current result marked.">' + s + '</svg>';
+  }
+
   // ---- Mn from end-group integration ---------------------------------------
   function egCalc() {
     var Ibb = num("eg-ibb"), Hbb = num("eg-hbb"), Ieg = num("eg-ieg"), Heg = num("eg-heg");
@@ -279,6 +360,7 @@
     if (![Ibb, Hbb, Ieg, Heg, M0, Mend].every(isFinite) || Hbb <= 0 || Heg <= 0 || Ieg <= 0 || M0 <= 0) {
       stats.innerHTML = '<div class="error-msg">Enter positive integrals, proton counts and a repeat-unit mass.</div>';
       notes.innerHTML = "";
+      $("eg-plot").innerHTML = ""; $("eg-caption").textContent = "";
       return;
     }
     var DP = (Ibb / Hbb) / (Ieg / Heg);
@@ -304,7 +386,7 @@
     var n = [];
     n.push("<strong>Where that uncertainty comes from.</strong> The end group is " + (share * 100).toFixed(2) +
       "% of the proton signal, so an integration error worth " + errPct + "% of the whole spectrum is " +
-      (relDP * 100).toFixed(0) + "% of the end-group peak &ndash; and that error passes straight into DP. " +
+      (relDP * 100).toFixed(0) + "% of the end-group peak, and that error passes straight into DP. " +
       "M&#8345; sits between " + fmt(Mn * (1 - relMn)) + " and " + fmt(Mn * (1 + relMn)) + "&nbsp;g/mol.");
     if (relMn > 0.2) {
       n.push("<strong>This is past the useful range of the method.</strong> More than a fifth of the answer is integration error. " +
@@ -316,6 +398,11 @@
     n.push("<strong>One-way error.</strong> Chains that lost the end group are still counted as backbone but no longer counted as chains, " +
       "so DP and M&#8345; come out too high. An end-group M&#8345; <em>above</em> target is ambiguous; one below it is not.");
     notes.innerHTML = n.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    $("eg-plot").innerHTML = egPlot(Hbb, Heg, M0, Mend, d, Mn, relMn);
+    $("eg-caption").textContent =
+      "Uncertainty in Mn against Mn for this chemistry and a " + errPct + "% integration error, with the current answer ringed. " +
+      "The curve is the same 1/DP argument the table below makes, following whatever is in the boxes above.";
   }
 
   // ---- Degree of substitution ----------------------------------------------
@@ -338,7 +425,7 @@
     var n = [];
     if (DS > 1.02) {
       n.push("<strong>Over 100%.</strong> More modified units than units. Either the reference signal is not carried by every repeat unit, " +
-        "the proton counts are wrong, or the new signal overlaps something else &ndash; residual reagent and solvent are the usual culprits.");
+        "the proton counts are wrong, or the new signal overlaps something else. Residual reagent and solvent are the usual culprits.");
     }
     n.push("<strong>The reference signal has to survive the reaction.</strong> The denominator must come from a proton present on every unit " +
       "both before and after modification. Using a signal that the chemistry consumes turns a partial conversion into an apparent full one.");
