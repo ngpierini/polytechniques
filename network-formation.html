@@ -137,7 +137,8 @@
   <div class="card">
     <h3>What the theory assumes, and where that bites</h3>
     <ul class="guide-list">
-      <li><strong>No intramolecular reaction.</strong> Every bond is assumed to join two different molecules. Real systems form loops, especially in dilute conditions and with short flexible spacers, and every loop is a bond that consumed two groups without contributing to the network. The consequence is systematic and always in one direction: the real gel point is <em>later</em> than this page predicts, and the real modulus lower. Dilution makes it worse.</li>
+      <li><strong>No intramolecular reaction.</strong> Every bond is assumed to join two different molecules. Real systems form loops, especially in dilute conditions and with short flexible spacers, and every loop is a bond that consumed two groups without building network. The gel point therefore arrives <em>later</em> than this page predicts, and more so the more dilute the cure &ndash; simulations put the shift squarely on loop fraction (reviewed by Argun &amp; Statt, <em>ACS Eng. Au</em> <strong>4</strong> (2024) 351&ndash;358). For a network cured in bulk, though, loop fractions are small enough that they barely move a modulus prediction: Tsimouri <em>et al.</em> (<em>Macromolecules</em> <strong>57</strong> (2024) 4273&ndash;4284) found Miller&ndash;Macosko in good agreement with measured moduli for end-linked PDMS despite forbidding loops entirely.</li>
+      <li><strong>No entanglements &ndash; and for a bulk network that is the bigger omission.</strong> This page counts chemical strands. A long precursor chain also traps entanglements that act mechanically as crosslinks, and the same study concludes that the modulus of commonly used end-linked PDMS networks is <em>entanglement-dominated</em>, with good predictions coming only from Miller&ndash;Macosko plus an additive entanglement term. So the measured modulus of a bulk network is generally <em>higher</em> than the chemical strand count alone implies, not lower &ndash; which is the same thing the <a href="crosslink-density.html">crosslink density</a> page means when it says the modulus route returns a lower M<sub>c</sub> than swelling.</li>
       <li><strong>Equal and independent reactivity.</strong> All groups of one type are assumed identical and unaffected by whether their neighbours have reacted. Substitution effects are real &ndash; the second hydroxyl of a diol often differs from the first, and steric hindrance grows as a junction fills &ndash; and they shift the gel point either way.</li>
       <li><strong>One reaction.</strong> Side reactions that consume groups without linking (isocyanate with water, for instance) are not modelled. Subtract them from the functionality or the moles before you start, because the page cannot see them.</li>
       <li><strong>A mean-field count, not a structure.</strong> This returns how much network there is, not how it is arranged. Two formulations with the same strand density and very different spatial heterogeneity will behave differently, and nothing here will tell you that.</li>
@@ -364,9 +365,10 @@
       n.push("<strong>" + effJunctions.toFixed(3) + " mol of elastically effective junctions</strong> carrying " + nu.toFixed(3) +
         " mol of strands, for M<sub>c</sub> = " + fmt(Mc, 0) + "&nbsp;g/mol. A junction counts here only if three or more of its arms " +
         "reach the infinite network. Compare this against the M<sub>c</sub> the <a href=\"crosslink-density.html\">crosslink density</a> page " +
-        "gets from swelling or the plateau modulus: the measurement is almost always looser. Dangling ends are already " +
-        "excluded here by the three-arm rule, so the usual gap is intramolecular loops, which this theory assumes never form, " +
-        "or a real conversion below the one entered.");
+        "gets from swelling or the plateau modulus, and expect the two routes to miss in OPPOSITE directions. Dangling ends are " +
+        "already excluded here by the three-arm rule. Swelling tends to read looser than the recipe - intramolecular loops, which " +
+        "this theory assumes never form, and conversion below the figure entered. The plateau modulus tends to read tighter, because " +
+        "trapped entanglements carry load as though they were crosslinks and nothing here counts them.");
     }
     notes.innerHTML = n.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
 
