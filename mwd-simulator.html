@@ -63,7 +63,7 @@
       This page builds the distribution from three pieces, each with a closed form behind it, and then shows you what the instrument would do to it.
     </p>
     <ul class="guide-list">
-      <li><strong>The living chains</strong> as a Schulz&ndash;Zimm distribution of shape k&nbsp;=&nbsp;1/(&#272;&nbsp;&minus;&nbsp;1), which by construction has exactly the dispersity the predictor's equation gives. k&nbsp;=&nbsp;1 is the Flory most-probable distribution and &#272;&nbsp;=&nbsp;2; large k is nearly monodisperse.</li>
+      <li><strong>The living chains</strong> as a Schulz&ndash;Zimm distribution of shape k&nbsp;=&nbsp;1/(&#272;&nbsp;&minus;&nbsp;1), which by construction has exactly the dispersity the predictor's equation gives (Krys &amp; Matyjaszewski, <em>Eur. Polym. J.</em> <strong>89</strong> (2017) 482&ndash;523, Eq.&nbsp;6). k&nbsp;=&nbsp;1 is the Flory most-probable distribution and &#272;&nbsp;=&nbsp;2; large k is nearly monodisperse.</li>
       <li><strong>The dead chains.</strong> A chain that terminated at conversion x stopped growing there, so it carries M&nbsp;=&nbsp;M<sub>target</sub>&nbsp;&middot;&nbsp;x. Termination runs at a roughly steady rate through the reaction, so the dead population is that family swept across every conversion &ndash; a broad low-molecular-weight shoulder rather than a second peak.</li>
       <li><strong>The instrument.</strong> Every column bank smears each slice, which in log molecular weight is a Gaussian convolution. You do not have to guess its width: run a narrow standard and read the &#272; it gives you.</li>
     </ul>
@@ -105,9 +105,9 @@
           <p class="hint">C in the equation is 1/C<sub>ex</sub>. Above ~20 gives &#272; near 1.05; below 1 means the agent is mismatched to the monomer.</p>
         </div>
         <div class="field" id="md-f-c" hidden>
-          <label for="md-c">C = k<sub>p</sub>[M] &divide; k<sub>deact</sub>[X]</label>
+          <label for="md-c">C = k<sub>p</sub>[R-X]<sub>0</sub> &divide; (k<sub>deact</sub>[X-Cu<sup>II</sup>/L])</label>
           <input type="number" id="md-c" value="0.05" step="any" min="0">
-          <p class="hint">Monomer added per activation cycle, divided by the deactivation rate. Lower is better controlled.</p>
+          <p class="hint">[R-X]<sub>0</sub> is the initial <strong>dormant-chain</strong> concentration, not the monomer concentration &ndash; the two differ by orders of magnitude in a real recipe. More deactivator, or a faster-deactivating ligand, makes C small and the distribution narrow.</p>
         </div>
       </div>
     </div>
