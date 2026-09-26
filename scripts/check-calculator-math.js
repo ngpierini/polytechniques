@@ -1038,6 +1038,67 @@ if (ttsSplit && ttsParseSrc && gapMatch) {
   }
 }
 
+// ---- End-group analysis: end-group-analysis.html ---------------------------
+const egHtml = fs.readFileSync(path.join(__dirname, "..", "end-group-analysis.html"), "utf8");
+
+// DP = (Ibb/Hb) / (Ieg/He); Mn = DP*M0 + Mend.
+const egDP = (Ibb, Hb, Ieg, He) => (Ibb / Hb) / (Ieg / He);
+// The end group's share of the proton signal, which is what shrinks with DP.
+const egShare = (He, Hb, DP) => He / (He + DP * Hb);
+// A baseline error costing fraction d of the TOTAL integral costs d/share of
+// the end-group peak, and that lands on DP and so on the non-end-group part
+// of Mn.
+const egErr = (d, He, Hb, DP, M0, Mend) => (d / egShare(He, Hb, DP)) * (DP * M0) / (DP * M0 + Mend);
+
+// The page's own worked defaults: PMMA from ethyl 2-bromoisobutyrate.
+const EG_M0 = 100.12, EG_MEND = 195.05, EG_HB = 3, EG_HE = 6;
+check("end-group DP from the page's default integrals", egDP(300, 3, 6, 6), 100, 1e-9, "");
+check("end-group Mn at DP 100", egDP(300, 3, 6, 6) * EG_M0 + EG_MEND, 10207, 1, "g/mol");
+
+// The published ceiling table, read out of the page rather than restated.
+const egRows = [...egHtml.matchAll(
+  /<tr><td>(\d+)<\/td><td class="num">([\d,]+)<\/td><td class="num">([\d.]+)%<\/td><td class="num">(\d+)%<\/td><td class="num">(\d+)%<\/td><td class="num">(\d+)%<\/td><\/tr>/g
+)].map((m) => m.slice(1).map((v) => Number(String(v).replace(/,/g, ""))));
+
+if (egRows.length !== 6) {
+  failed++;
+  cases.push({ ok: false, name: "end-group ceiling table has 6 rows", actual: egRows.length, expected: 6, tol: 0, unit: "rows" });
+}
+egRows.forEach(([DP, mnPub, sharePub, e1, e2, e5]) => {
+  const Mn = DP * EG_M0 + EG_MEND;
+  // Mn is published rounded to 3 significant figures.
+  check("end-group table Mn at DP " + DP, Number(Mn.toPrecision(3)), mnPub, 0.5, "g/mol");
+  check("end-group table share at DP " + DP, egShare(EG_HE, EG_HB, DP) * 100, sharePub, 0.006, "%");
+  [[0.001, e1], [0.002, e2], [0.005, e5]].forEach(([d, pub]) => {
+    check("end-group error at DP " + DP + ", d=" + (d * 100) + "%", egErr(d, EG_HE, EG_HB, DP, EG_M0, EG_MEND) * 100, pub, 0.6, "%");
+  });
+});
+
+// The claim the whole section rests on: the share falls as 1/DP, so doubling
+// the chain length doubles the error. If that stopped holding, the argument
+// for a ceiling would go with it.
+{
+  const a = egErr(0.002, EG_HE, EG_HB, 200, EG_M0, EG_MEND);
+  const b = egErr(0.002, EG_HE, EG_HB, 400, EG_M0, EG_MEND);
+  check("doubling DP doubles the end-group Mn error", b / a, 2, 0.05, "x");
+}
+
+// Titration conversions are definitional, and getting either constant wrong
+// would silently rescale every molecular weight the page reports.
+check("hydroxyl value 56.1 gives EW 1000 g/eq", 56106 / 56.1, 1000, 1, "g/eq");
+check("a 2000 g/mol diol has hydroxyl value", 56106 / (2000 / 2), 56.1, 0.1, "mg KOH/g");
+check("%NCO 8.4 gives EW 500 g/eq", 4202 / 8.4, 500, 1, "g/eq");
+if (egHtml.indexOf("56106") === -1 || egHtml.indexOf("4202") === -1) {
+  failed++;
+  cases.push({ ok: false, name: "end-group page lost a titration constant (56106 mg/mol KOH, 4202 for %NCO)",
+    actual: "not found", expected: "both present", tol: 0, unit: "" });
+}
+
+// Degree of substitution is a ratio of normalised integrals, and 100% has to
+// mean every unit modified.
+check("degree of substitution, page defaults", ((42 / 2) / (100 / 1)) * 100, 21, 1e-9, "%");
+check("DS is 100% when both normalised integrals match", ((50 / 1) / (50 / 1)) * 100, 100, 1e-9, "%");
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume
