@@ -620,7 +620,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(L-lactide)", aka: ["PLLA", "poly(L-lactic acid)", "L-PLA"],
-    monomer: "L-lactide", cls: "Ring-opening", cas: null,
+    monomer: "L-lactide", cls: "Ring-opening", cas: "33135-50-1",
     tags: ["biodegradable", "biomedical", "commodity"],
     verified: true,
     tacticity: "isotactic",
