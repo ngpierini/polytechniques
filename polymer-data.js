@@ -844,8 +844,8 @@ window.POLYMER_DB = [
     },
     name: "Poly(ether ether ketone)", aka: ["PEEK"], monomer: "4,4'-Difluorobenzophenone + hydroquinone",
     noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
-    cas: "31694-16-3", tg: "143 °C", tgSource: "Odian, Principles of Polymerization, 4th ed., Sec. 2-14c (p. 150), which states that PEEK and PEK have glass transition temperatures of 143 and 165 °C respectively. The melting point here is not Odian's; see the note.", tm: "343 °C", tags: ["engineering"],
-    note: "High-performance semicrystalline thermoplastic; three aryl rings per repeat. Odian gives the melting point as 334 °C (Sec. 2-14c, p. 150), about 9 K below the 343 °C quoted here and by Victrex; the glass transition is cited to him, the melting point is not.",
+    cas: "31694-16-3", tg: "143 °C", tgSource: "Odian, Principles of Polymerization, 4th ed., Sec. 2-14c (p. 150), which states that PEEK and PEK have glass transition temperatures of 143 and 165 °C respectively. The melting point here is not Odian's; see the note.", tm: "343 °C", tmSource: "Victrex, VICTREX PEEK POLYMER 450G technical data sheet, Thermal: melting temperature 343 °C by ISO 11357-3, glass transition 143 °C onset / 150 °C midpoint by ISO 11357-2. Read from the rendered page, because the extraction shifts this table's values against their labels.", tags: ["engineering"],
+    note: "High-performance semicrystalline thermoplastic; three aryl rings per repeat. The two available sources disagree on the melting point: Odian prints 334 °C (Sec. 2-14c, p. 150) where Victrex, who invented the polymer, publishes 343 °C against ISO 11357-3. The datasheet figure is the one used here. Note also that its 143 °C glass transition is the DSC <em>onset</em>; the midpoint on the same sheet is 150 °C, which is worth knowing before comparing this number with someone else's.",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
       { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" },
       { id: 15, el: "C" }, { id: 16, el: "O" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -910,7 +910,7 @@ window.POLYMER_DB = [
     },
     name: "Poly(ether sulfone)", aka: ["PES", "PESU"], monomer: "4,4'-Dichlorodiphenyl sulfone + hydroquinone",
     noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
-    cas: "25608-63-3", tg: "225 °C", tags: ["engineering"],
+    cas: "25608-63-3", tg: "225 °C", tgSource: "BASF, Ultrason E, S, P (PESU, PSU, PPSU) Product Brochure, Thermal properties (p. 21), which gives glass transition temperatures of 187 °C for Ultrason S (PSU), 220 °C for Ultrason P (PPSU) and 225 °C for Ultrason E (PESU). A product-family figure, not a single grade.", tags: ["engineering"],
     note: "Amorphous, transparent high-temperature thermoplastic; the sulfone group stiffens the chain.",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
       { id: 8, el: "S" }, { id: 9, el: "O" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -1949,7 +1949,7 @@ window.POLYMER_DB = [
       detail: "Nucleophilic aromatic substitution between an aromatic dihalide and a bisphenolate salt. Aryl halides are not normally reactive towards nucleophilic substitution at all; the electron-withdrawing sulfone group is what makes it facile. The bisphenolate is formed in situ by adding the bisphenol together with sodium or another alkali metal carbonate or hydroxide. Polysulfones are made from aromatic dichlorides in a polar aprotic solvent such as 1-methyl-2-pyrrolidinone or dimethyl sulfoxide, which raises the nucleophilicity of the phenoxide by solvating the cation preferentially and not the anion. Reaction temperatures of 130–160 °C are used mainly because the diphenolate salt is poorly soluble. The system has to be dry: water hydrolyses the phenolate salt to sodium hydroxide, which then reacts with the aromatic dichloride and alters the stoichiometric ratio that a step polymerisation depends on. It is run in the absence of oxygen to keep the bisphenolate from oxidising. Molar mass is capped with an excess of a monohydric phenol or a monochloroalkane.",
       source: "Odian, Principles of Polymerization (4th ed.), §2-14c"
     },
-    name: "Polysulfone", aka: ["PSU", "polysulfone (bisphenol A)", "Udel"],
+    name: "Polysulfone", tg: "187 °C", tgSource: "BASF, Ultrason E, S, P (PESU, PSU, PPSU) Product Brochure, Thermal properties (p. 21), which gives glass transition temperatures of 187 °C for Ultrason S (PSU), 220 °C for Ultrason P (PPSU) and 225 °C for Ultrason E (PESU). A product-family figure, not a single grade.", aka: ["PSU", "polysulfone (bisphenol A)", "Udel"],
     noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "bisphenol A + 4,4'-dichlorodiphenyl sulfone", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
@@ -2978,7 +2978,7 @@ window.POLYMER_DB = [
     note: "One repeat is a whole bisphenol A dianhydride residue joined to one m-phenylenediamine residue, which is why it is so large: two phthalimide rings, the two ether oxygens that give the \"ether\" in the name, the bisphenol A bridge, and a meta-linked benzene. The ether links and the meta substitution are what make it processable at all - a fully para, ether-free polyimide of this kind does not melt below its decomposition point, and Ultem trades a little heat resistance for the ability to be injection moulded."
   },
   {
-    name: "Polyphenylsulfone", aka: ["PPSU", "Radel", "poly(phenyl sulfone)"],
+    name: "Polyphenylsulfone", tg: "220 °C", tgSource: "BASF, Ultrason E, S, P (PESU, PSU, PPSU) Product Brochure, Thermal properties (p. 21), which gives glass transition temperatures of 187 °C for Ultrason S (PSU), 220 °C for Ultrason P (PPSU) and 225 °C for Ultrason E (PESU). A product-family figure, not a single grade.", aka: ["PPSU", "Radel", "poly(phenyl sulfone)"],
     noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "4,4'-biphenol + 4,4'-dichlorodiphenyl sulfone", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],

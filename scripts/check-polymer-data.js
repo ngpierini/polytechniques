@@ -208,8 +208,6 @@ const THERMAL_NO_SOURCE_LEGACY = new Set([
   "Poly(cyclohexyl methacrylate)",
   "Poly(dimethylsiloxane)",
   "Poly(dioxanone)",
-  "Poly(ether ether ketone)",
-  "Poly(ether sulfone)",
   "Poly(ethyl methacrylate)",
   "Poly(ethylene adipate)",
   "Poly(ethylene disulfide)",
