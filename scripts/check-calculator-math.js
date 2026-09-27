@@ -1358,6 +1358,99 @@ check("MALDI comb spacing is the repeat unit", EG_M0, 100.12, 0.005, "Da");
   });
 }
 
+// ---- Hydrogel mesh size: hydrogel-mesh-size.html --------------------------
+const hgHtml = fs.readFileSync(path.join(__dirname, "..", "hydrogel-mesh-size.html"), "utf8");
+const HG_V1 = 18.05;
+
+// Swelling -> polymer volume fraction.
+const hgV2s = (md, ms, rhoP, rhoS) => (md / rhoP) / (md / rhoP + (ms - md) / rhoS);
+// Peppas-Merrill. v2r = 1 is Flory-Rehner.
+function hgMc(v2s, v2r, chi, rhoP, Mn) {
+  const vbar = 1 / rhoP;
+  const mix = Math.log(1 - v2s) + v2s + chi * v2s * v2s;
+  const r = v2s / v2r;
+  const elastic = v2r * (Math.pow(r, 1 / 3) - 0.5 * r);
+  const ends = Mn > 0 ? 2 / Mn : 0;
+  return 1 / (ends - (vbar / HG_V1) * mix / elastic);
+}
+// Canal-Peppas.
+const hgXi = (Mc, v2s, perRepeat, M0, bond, cInf) =>
+  Math.pow(v2s, -1 / 3) * bond * Math.sqrt(cInf * (perRepeat * Mc / M0));
+
+// The page's defaults: PEG crosslinked at 10% polymer, 0.100 g dry to 1.000 g
+// swollen, and the poly(ethylene oxide) geometry out of chain-data.js.
+const HG = { md: 0.100, ms: 1.000, rhoP: 1.20, rhoS: 0.997, v2r: 0.10, chi: 0.45, Mn: 50000 };
+const PEO = { perRepeat: 3, M0: 44.05, bond: 0.147, cInf: 4 };
+{
+  const v2s = hgV2s(HG.md, HG.ms, HG.rhoP, HG.rhoS);
+  const Mc = hgMc(v2s, HG.v2r, HG.chi, HG.rhoP, HG.Mn);
+  const xi = hgXi(Mc, v2s, PEO.perRepeat, PEO.M0, PEO.bond, PEO.cInf);
+  check("hydrogel default v2s", v2s, 0.0845, 5e-4, "");
+  check("hydrogel default swelling ratio Q", 1 / v2s, 11.8, 0.05, "x");
+  check("hydrogel default Mc", Mc, 1835, 5, "g/mol");
+  check("hydrogel default mesh size", xi, 7.49, 0.02, "nm");
+  check("hydrogel default strand length", PEO.perRepeat * Mc / PEO.M0, 125, 1, "bonds");
+
+  // Lustig-Peppas: obstruction times free volume, with Y = 1.
+  const rs = 1.8;
+  const obstruction = 1 - rs / xi;
+  const freeVol = Math.exp(-1 * v2s / (1 - v2s));
+  check("hydrogel default solute hindrance", obstruction * freeVol, 0.693, 2e-3, "Dgel/Dwater");
+  check("...and it is strictly the product of the two terms",
+    obstruction * freeVol - (1 - rs / xi) * Math.exp(-v2s / (1 - v2s)), 0, 1e-12, "");
+}
+
+// The claim that Peppas-Merrill collapses onto Flory-Rehner at v2r = 1.
+{
+  const v2s = 0.2, chi = 0.45, rhoP = 1.2;
+  const pm = hgMc(v2s, 1, chi, rhoP, 0);
+  // Flory-Rehner written out independently, with no v2r anywhere in it.
+  const mix = Math.log(1 - v2s) + v2s + chi * v2s * v2s;
+  const fr = 1 / (-(1 / rhoP / HG_V1) * mix / (Math.pow(v2s, 1 / 3) - 0.5 * v2s));
+  check("Peppas-Merrill at v2r = 1 is Flory-Rehner", pm / fr, 1, 1e-12, "x");
+  // And that it does NOT collapse when the gel was made in solution.
+  const solution = hgMc(v2s, 0.1, chi, rhoP, 0);
+  if (!(solution < fr * 0.9)) {
+    failed++;
+    cases.push({ ok: false, name: "a solution-crosslinked gel must give a smaller Mc than Flory-Rehner",
+      actual: solution, expected: "< " + (fr * 0.9).toFixed(0), tol: 0, unit: "g/mol" });
+  }
+}
+
+// Mesh size has to scale the way the page says: as the square root of Mc, and
+// with swelling through v2s^(-1/3).
+{
+  const v2s = 0.0845;
+  const a = hgXi(2000, v2s, PEO.perRepeat, PEO.M0, PEO.bond, PEO.cInf);
+  const b = hgXi(8000, v2s, PEO.perRepeat, PEO.M0, PEO.bond, PEO.cInf);
+  check("quadrupling Mc doubles the mesh size", b / a, 2, 1e-9, "x");
+  const c = hgXi(2000, v2s / 8, PEO.perRepeat, PEO.M0, PEO.bond, PEO.cInf);
+  check("an eightfold more dilute gel has twice the mesh", c / a, 2, 1e-9, "x");
+}
+
+// The geometry must come from chain-data.js, not be hard-coded on the page.
+// If someone pastes a literal C-infinity in, this fails.
+{
+  const cd = fs.readFileSync(path.join(__dirname, "..", "chain-data.js"), "utf8");
+  const w = {};
+  new Function("window", cd)(w);
+  const peo = (w.CHAIN_DATA || []).find((e) => /ethylene oxide/i.test(e.name));
+  if (!peo) {
+    failed++;
+    cases.push({ ok: false, name: "chain-data.js still carries poly(ethylene oxide)", actual: "missing", expected: "present", tol: 0, unit: "" });
+  } else {
+    check("chain-data PEO bonds per repeat", peo.geom.perRepeat, PEO.perRepeat, 0, "");
+    check("chain-data PEO bond length", peo.geom.bond, PEO.bond, 1e-9, "nm");
+    check("chain-data PEO characteristic ratio", peo.cInf, PEO.cInf, 1e-9, "");
+    check("chain-data PEO repeat mass", peo.M0, PEO.M0, 1e-9, "g/mol");
+  }
+  if (hgHtml.indexOf("window.CHAIN_DATA") === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the hydrogel page still reads its geometry from chain-data.js",
+      actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+}
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume

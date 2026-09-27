@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hydrogel Mesh Size: PolyTechniques</title>
+<meta name="description" content="Mesh size of a swollen hydrogel from an equilibrium swelling measurement, by Peppas-Merrill and Canal-Peppas, with what it means for whether a solute can get through.">
+<link rel="canonical" href="https://getpolytechniques.com/hydrogel-mesh-size.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Hydrogel Mesh Size: PolyTechniques">
+<meta property="og:description" content="Turn a swelling measurement into a mesh size, and a mesh size into whether your solute gets through.">
+<meta property="og:url" content="https://getpolytechniques.com/hydrogel-mesh-size.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hydrogel Mesh Size: PolyTechniques">
+<meta name="twitter:description" content="From swollen mass to mesh size to solute permeability, with the assumptions named.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Hydrogel Mesh Size",
+  "url": "https://getpolytechniques.com/hydrogel-mesh-size.html",
+  "description": "Mesh size of a swollen hydrogel from equilibrium swelling, and what it implies for solute transport.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js?v=1"></script>
+<script src="nav.js?v=32" defer></script>
+<script src="chain-data.js?v=1" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=109">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Hydrogel Mesh Size</h1>
+      <p class="subtitle">From a swollen mass on a balance to the size of the holes, and whether your solute fits through them</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>What the mesh size is</h3>
+    <p class="guide-note">
+      A hydrogel is specified by its mesh size more often than by its modulus. The mesh size &xi; is the average distance between consecutive crosslinks along the swollen network, and it is the length that decides transport: a solute much smaller than &xi; diffuses almost as it would in water, one comparable to &xi; is hindered, and one larger than &xi; does not get through at all. Drug release rate, protein exclusion, nutrient supply to encapsulated cells and the cut-off of a separation membrane are all the same number read four ways.
+    </p>
+    <p class="guide-note">
+      It is not measured directly. It is inferred, in two steps, from a swelling experiment you can do with a balance. First the swelling gives the molar mass between crosslinks; then the chain statistics turn that into an end-to-end distance, which the swelling stretches:
+    </p>
+    <div class="guide-formula">
+      &xi; = v<sub>2,s</sub><sup>&minus;1/3</sup> &middot; l &middot; (C<sub>n</sub> N)<sup>1/2</sup> &nbsp;&nbsp;&nbsp;&nbsp; N = (bonds per repeat) &middot; M<sub>c</sub> &divide; M<sub>0</sub>
+    </div>
+    <p class="guide-note">
+      The second factor is the unperturbed end-to-end distance of a strand of N backbone bonds, and the first is the isotropic expansion that swelling applies to it. Both halves of that need real chain data, which is why this page reads the bond length, the bonds per repeat unit and the characteristic ratio out of the site's <a href="chain-dimensions.html">chain dimensions</a> dataset rather than asking you to type them.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Mesh size from a swelling measurement</h3>
+
+    <div class="subsection">
+      <div class="subsection-title">The polymer</div>
+      <div class="grid">
+        <div class="field">
+          <label for="hg-poly">Network chemistry</label>
+          <select id="hg-poly"></select>
+          <p class="hint" id="hg-poly-hint"></p>
+        </div>
+        <div class="field">
+          <label for="hg-mn">M&#8345; of the uncrosslinked precursor (g/mol)</label>
+          <input type="number" id="hg-mn" value="50000" step="any" min="0">
+          <p class="hint">Sets the correction for chain ends, which are network defects. Leave it blank or very large if the chains were long enough that end effects do not matter.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">The swelling experiment</div>
+      <div class="grid">
+        <div class="field">
+          <label for="hg-mdry">Dry mass (g)</label>
+          <input type="number" id="hg-mdry" value="0.100" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="hg-mwet">Swollen mass at equilibrium (g)</label>
+          <input type="number" id="hg-mwet" value="1.000" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="hg-rhop">Polymer density (g/cm&sup3;)</label>
+          <input type="number" id="hg-rhop" value="1.20" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="hg-rhos">Water density (g/cm&sup3;)</label>
+          <input type="number" id="hg-rhos" value="0.997" step="any" min="0">
+        </div>
+      </div>
+      <p class="hint">Blot the surface, do not squeeze. Extract the sol fraction before drying, or the dry mass includes polymer that was never part of the network and every number below reads low.</p>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">The network as it was made</div>
+      <div class="grid">
+        <div class="field">
+          <label for="hg-v2r">Polymer volume fraction in the relaxed state, v<sub>2,r</sub></label>
+          <input type="number" id="hg-v2r" value="0.10" step="any" min="0.001" max="1">
+          <p class="hint">1 for a gel crosslinked in bulk and swollen afterwards. For one crosslinked in solution, which is how most hydrogels are made, this is the polymer volume fraction in the reaction mixture. The page opens on 0.10, a gel formed at 10% polymer. Getting this wrong is the commonest error here, and it is silent: the answer stays plausible.</p>
+        </div>
+        <div class="field">
+          <label for="hg-chi">Polymer-water interaction parameter &chi;</label>
+          <input type="number" id="hg-chi" value="0.45" step="any">
+          <p class="hint">Belongs to the polymer and water together, not to the polymer. See <a href="flory-huggins.html">Flory&ndash;Huggins</a>. Above 0.5 water is a poor solvent and the gel will not swell much whatever its crosslink density.</p>
+        </div>
+        <div class="field">
+          <label for="hg-rs">Solute radius (nm), optional</label>
+          <input type="number" id="hg-rs" value="1.8" step="any" min="0">
+          <p class="hint">A hydrodynamic radius, from Stokes&ndash;Einstein on a measured free diffusion coefficient. Leave it at 0 to skip the transport estimate.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-grid" id="hg-stats" style="margin-top:16px;"></div>
+    <div id="hg-warn"></div>
+    <div id="hg-plot" class="chart-wrap"></div>
+    <p class="diagram-caption" id="hg-caption"></p>
+    <div id="hg-notes"></div>
+  </div>
+
+  <div class="card">
+    <h3>Why the relaxed state matters</h3>
+    <p class="guide-note">
+      Flory and Rehner wrote their swelling relation for a network formed in bulk and swollen afterwards, so the dry, unswollen network is the reference state where the strands are unperturbed. A hydrogel is usually not made that way. It is crosslinked in water, already swollen, and the strands are stretched at the moment they are tied together. Treating that as the reference state counts the stretch twice.
+    </p>
+    <div class="guide-formula">
+      1&frasl;M<sub>c</sub> = 2&frasl;M&#8345; &minus; (v&#772;&frasl;V&#8321;)[ln(1&minus;v<sub>2,s</sub>) + v<sub>2,s</sub> + &chi;v<sub>2,s</sub><sup>2</sup>] &divide; v<sub>2,r</sub>[(v<sub>2,s</sub>&frasl;v<sub>2,r</sub>)<sup>1/3</sup> &minus; &frac12;(v<sub>2,s</sub>&frasl;v<sub>2,r</sub>)]
+    </div>
+    <p class="guide-note">
+      Peppas and Merrill's form carries v<sub>2,r</sub>, the polymer volume fraction in the relaxed state, and reduces to Flory&ndash;Rehner exactly when v<sub>2,r</sub> = 1. The 2&frasl;M&#8345; term is the chain-end correction: every chain has two ends that hang off the network and carry no load, so a network built from short precursor chains is looser than its crosslink count suggests. Set v<sub>2,r</sub> to 1 on a gel that was made at 10% polymer and the mesh size comes out wrong in a direction you will not notice, because it is still a plausible number.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>What this cannot tell you</h3>
+    <p class="guide-note">
+      <strong>&xi; is an average, and transport is decided by the small end.</strong> A real network has a distribution of strand lengths, and a solute finds the largest connected path rather than the mean one. Two gels with the same &xi; and different heterogeneity do not release at the same rate, and the more heterogeneous one leaks first.
+    </p>
+    <p class="guide-note">
+      <strong>The chain-end correction assumes you know M&#8345;.</strong> It is the molar mass of the precursor before crosslinking, not of the network, which has none. If the gel was made by copolymerising monomer with a crosslinker rather than by tying together preformed chains, there is no precursor M&#8345; to use and the term should be dropped.
+    </p>
+    <p class="guide-note">
+      <strong>&chi; carries the same weight here as on the <a href="crosslink-density.html">crosslink density</a> page.</strong> It sits against a logarithm, and moving it from 0.45 to 0.55 can change M<sub>c</sub> by a factor of two with nothing about the sample changing. If &chi; is a guess, &xi; is an order of magnitude.
+    </p>
+    <p class="guide-note">
+      <strong>Ionic gels are outside this model.</strong> A polyelectrolyte network swells because counterions are trapped inside it and pull water in osmotically, and that term is not in the expression above at all. For a charged hydrogel this page gives a lower bound on the swelling and therefore the wrong mesh size; the ionic contribution has to be added separately, and it moves with pH and ionic strength.
+    </p>
+    <p class="guide-note">
+      <strong>Nothing here counts loops.</strong> A strand that starts and ends at the same junction consumed two crosslink sites and holds no network, exactly as on the <a href="network-formation.html">network formation</a> page, and hydrogels crosslinked dilute are where loops are worst.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <ul class="guide-list">
+      <li><a href="crosslink-density.html">Crosslink density</a>. The same swelling measurement read as M<sub>c</sub> for an elastomer in an organic solvent, plus the modulus route.</li>
+      <li><a href="chain-dimensions.html">Chain dimensions</a>. Where the characteristic ratio and bond geometry on this page come from, and what they mean.</li>
+      <li><a href="flory-huggins.html">Flory&ndash;Huggins</a>. What &chi; is, and why 0.5 is the line between a solvent and a non-solvent.</li>
+      <li><a href="network-formation.html">Network formation</a>. Whether the network forms at all, and how much of it is elastically effective.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>A mesh size is an inference from a swelling measurement, not a measurement. Quote the &chi; and the relaxed state you assumed.</p>
+</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function num(id) { var v = parseFloat($(id).value); return isFinite(v) ? v : NaN; }
+  function fmt(x, d) {
+    if (!isFinite(x)) return "-";
+    if (d === undefined) d = Math.abs(x) >= 100 ? 0 : Math.abs(x) >= 10 ? 1 : 2;
+    return x.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+
+  var V1 = 18.05;   // cm3/mol, molar volume of water at 20 C
+
+  // Chain geometry comes from chain-data.js, which carries its own sources.
+  // Only entries with a characteristic ratio and a simple backbone geometry
+  // can drive the Canal-Peppas expression, so the rest are not offered.
+  function chains() {
+    var db = window.CHAIN_DATA || [];
+    return db.filter(function (e) {
+      return e.cInf && e.geom && e.geom.simple && e.geom.bond && e.geom.perRepeat && e.M0;
+    });
+  }
+
+  function fillPolymers() {
+    var sel = $("hg-poly"), list = chains();
+    if (!list.length) {
+      sel.innerHTML = '<option value="">chain-data.js did not load</option>';
+      return;
+    }
+    // Poly(ethylene oxide) is the hydrogel default if it is there.
+    var pref = list.findIndex(function (e) { return /ethylene oxide/i.test(e.name); });
+    sel.innerHTML = list.map(function (e, i) {
+      return '<option value="' + i + '"' + (i === (pref < 0 ? 0 : pref) ? " selected" : "") + ">" + e.name + "</option>";
+    }).join("");
+  }
+
+  function selected() {
+    var list = chains(), i = parseInt($("hg-poly").value, 10);
+    return list[isFinite(i) ? i : 0] || null;
+  }
+
+  // Peppas-Merrill. Reduces to Flory-Rehner at v2r = 1.
+  function mcFrom(v2s, v2r, chi, rhoP, Mn) {
+    var vbar = 1 / rhoP;                       // cm3/g
+    var mix = Math.log(1 - v2s) + v2s + chi * v2s * v2s;
+    var r = v2s / v2r;
+    var elastic = v2r * (Math.pow(r, 1 / 3) - 0.5 * r);
+    if (!isFinite(elastic) || elastic === 0) return NaN;
+    var ends = isFinite(Mn) && Mn > 0 ? 2 / Mn : 0;
+    var inv = ends - (vbar / V1) * mix / elastic;
+    return inv > 0 ? 1 / inv : NaN;
+  }
+
+  function meshFrom(Mc, v2s, e) {
+    var N = e.geom.perRepeat * Mc / e.M0;                    // backbone bonds per strand
+    var r0 = e.geom.bond * Math.sqrt(e.cInf * N);            // nm, unperturbed end to end
+    return { N: N, r0: r0, xi: Math.pow(v2s, -1 / 3) * r0 };
+  }
+
+  // Lustig-Peppas: the obstruction term times the free-volume term. Y is the
+  // ratio of the solute's critical volume to the free volume of water, and is
+  // taken as 1, which is what the original paper uses when nothing better is
+  // known.
+  function hindrance(rs, xi, v2s) {
+    if (!(rs > 0)) return null;
+    if (rs >= xi) return { ratio: 0, excluded: true };
+    var obstruction = 1 - rs / xi;
+    var freeVol = Math.exp(-1 * v2s / (1 - v2s));
+    return { ratio: obstruction * freeVol, excluded: false, obstruction: obstruction, freeVol: freeVol };
+  }
+
+  // xi against swelling, with the current point marked. Everything except the
+  // swollen mass is held where the boxes have it.
+  function plot(v2sNow, xiNow, e, v2r, chi, rhoP, Mn) {
+    var W = 680, H = 300, Mg = { left: 60, right: 18, top: 16, bottom: 46 };
+    var pw = W - Mg.left - Mg.right, ph = H - Mg.top - Mg.bottom;
+    var x0 = 0.02, x1 = 0.6;
+    var pts = [], i, maxXi = 0;
+    for (i = 0; i <= 260; i++) {
+      var v = x0 + (x1 - x0) * i / 260;
+      var mc = mcFrom(v, v2r, chi, rhoP, Mn);
+      if (!isFinite(mc) || mc <= 0) { pts.push(null); continue; }
+      var m = meshFrom(mc, v, e);
+      if (!isFinite(m.xi) || m.xi <= 0) { pts.push(null); continue; }
+      pts.push([v, m.xi]);
+      if (m.xi > maxXi) maxXi = m.xi;
+    }
+    if (!maxXi) return "";
+    var yMax = Math.min(maxXi * 1.1, (xiNow || 1) * 6);
+    function sx(v) { return Mg.left + ((v - x0) / (x1 - x0)) * pw; }
+    function sy(y) { return Mg.top + (1 - Math.min(y, yMax) / yMax) * ph; }
+    var s = "", t;
+
+    for (t = 0; t <= 5; t++) {
+      var yv = yMax * t / 5;
+      s += '<line x1="' + Mg.left + '" y1="' + sy(yv).toFixed(1) + '" x2="' + (W - Mg.right) + '" y2="' + sy(yv).toFixed(1) +
+        '" stroke="var(--border)" stroke-width="0.5" opacity="0.6"/>';
+      s += '<text x="' + (Mg.left - 7) + '" y="' + (sy(yv) + 3.5).toFixed(1) + '" text-anchor="end" font-size="10.5" fill="var(--text-dim)">' + yv.toFixed(1) + '</text>';
+    }
+    for (t = 0; t <= 5; t++) {
+      var xv = x0 + (x1 - x0) * t / 5;
+      s += '<text x="' + sx(xv).toFixed(1) + '" y="' + (H - Mg.bottom + 16) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">' + xv.toFixed(2) + '</text>';
+    }
+
+    var d = "", pen = true;
+    pts.forEach(function (p) {
+      if (!p) { pen = true; return; }
+      d += (pen ? "M " : " L ") + sx(p[0]).toFixed(1) + " " + sy(p[1]).toFixed(1);
+      pen = false;
+    });
+    s += '<path d="' + d + '" fill="none" stroke="var(--primary, #2563eb)" stroke-width="2.5"/>';
+
+    var rs = num("hg-rs");
+    if (rs > 0 && rs < yMax) {
+      s += '<line x1="' + Mg.left + '" y1="' + sy(rs).toFixed(1) + '" x2="' + (W - Mg.right) + '" y2="' + sy(rs).toFixed(1) +
+        '" stroke="var(--danger, #d64545)" stroke-width="1.5" stroke-dasharray="5 4"/>';
+      s += '<text x="' + (W - Mg.right - 4) + '" y="' + (sy(rs) - 6).toFixed(1) +
+        '" text-anchor="end" font-size="10.5" fill="var(--danger, #d64545)">your solute, ' + fmt(rs, 2) + '&#8202;nm: below this line it cannot pass</text>';
+    }
+
+    if (isFinite(v2sNow) && isFinite(xiNow)) {
+      s += '<circle cx="' + sx(v2sNow).toFixed(1) + '" cy="' + sy(xiNow).toFixed(1) +
+        '" r="6" fill="none" stroke="var(--text)" stroke-width="2.5"/>';
+    }
+    s += '<line x1="' + Mg.left + '" y1="' + (H - Mg.bottom) + '" x2="' + (W - Mg.right) + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    s += '<line x1="' + Mg.left + '" y1="' + Mg.top + '" x2="' + Mg.left + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    s += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">polymer volume fraction in the swollen gel, v\u2082,\u209b</text>';
+    s += '<text x="14" y="' + (H / 2) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)" transform="rotate(-90 14 ' + (H / 2) + ')">mesh size \u03be (nm)</text>';
+    return '<svg class="chart-svg chart-svg--wide" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+      'aria-label="Mesh size falling as the swollen gel becomes more concentrated, with the current measurement marked and the solute radius drawn as a cut-off.">' + s + '</svg>';
+  }
+
+  function recalc() {
+    var stats = $("hg-stats"), warn = $("hg-warn"), notes = $("hg-notes");
+    function fail(msg) {
+      stats.innerHTML = '<div class="error-msg">' + msg + "</div>";
+      warn.innerHTML = ""; notes.innerHTML = "";
+      $("hg-plot").innerHTML = ""; $("hg-caption").textContent = "";
+    }
+    var e = selected();
+    if (!e) return fail("Chain data has not loaded, so the chain geometry this needs is not available.");
+    $("hg-poly-hint").innerHTML = "C<sub>&infin;</sub> = " + e.cInf + ", backbone bond " + e.geom.bond +
+      "&#8202;nm, " + e.geom.perRepeat + " bonds per repeat, M<sub>0</sub> = " + e.M0 +
+      "&#8202;g/mol. From <a href=\"chain-dimensions.html\">chain-data</a>, which carries the source for each. " +
+      "The list is every polymer there with a characteristic ratio and a simple backbone, not a list of hydrogel formers: " +
+      "the chain statistics are the same whatever the network swells in, but only some of these swell in water.";
+
+    var md = num("hg-mdry"), ms = num("hg-mwet"), rhoP = num("hg-rhop"), rhoS = num("hg-rhos");
+    var v2r = num("hg-v2r"), chi = num("hg-chi"), Mn = num("hg-mn");
+    if (!(md > 0) || !(ms > 0) || !(rhoP > 0) || !(rhoS > 0)) return fail("Enter positive dry and swollen masses and densities.");
+    if (ms < md) return fail("The swollen mass is below the dry mass. Check which is which.");
+    if (!(v2r > 0) || v2r > 1) return fail("The relaxed-state volume fraction must be above 0 and at most 1.");
+    if (!isFinite(chi)) return fail("Enter an interaction parameter.");
+
+    var volP = md / rhoP, volS = (ms - md) / rhoS;
+    var v2s = volP / (volP + volS);
+    var Q = 1 / v2s;
+
+    var Mc = mcFrom(v2s, v2r, chi, rhoP, Mn);
+    if (!isFinite(Mc) || Mc <= 0) {
+      return fail("This combination gives no positive M<sub>c</sub>. That happens when the chain-end term is larger than the swelling term, which means the precursor was too short to build a network that swells this much, or &chi; is too high for the swelling you measured.");
+    }
+    var m = meshFrom(Mc, v2s, e);
+    var h = hindrance(num("hg-rs"), m.xi, v2s);
+
+    stats.innerHTML =
+      '<div class="stat stat--primary"><div class="label"><span class="keepcase">&xi;</span></div><div class="value">' + fmt(m.xi, 2) +
+        '</div><div class="sub">nm, mesh size</div></div>' +
+      '<div class="stat"><div class="label">M<sub>c</sub></div><div class="value">' + fmt(Mc, 0) +
+        '</div><div class="sub">g/mol between crosslinks</div></div>' +
+      '<div class="stat"><div class="label"><span class="keepcase">v<sub>2,s</sub></span></div><div class="value">' + fmt(v2s, 3) +
+        '</div><div class="sub">polymer by volume, Q = ' + fmt(Q, 1) + '</div></div>' +
+      '<div class="stat"><div class="label">Strand</div><div class="value">' + fmt(m.N, 0) +
+        '</div><div class="sub">backbone bonds, ' + fmt(m.r0, 2) + '&#8202;nm unperturbed</div></div>' +
+      (h ? '<div class="stat' + (h.excluded ? "" : " stat--muted") + '"><div class="label">Solute</div><div class="value">' +
+        (h.excluded ? "excluded" : fmt(h.ratio, 3)) + '</div><div class="sub">' +
+        (h.excluded ? "larger than the mesh" : "D<sub>gel</sub> &divide; D<sub>water</sub>") + "</div></div>" : "");
+
+    var w = [];
+    if (v2s > 0.5) {
+      w.push("<strong>At " + fmt(v2s * 100, 0) + "% polymer by volume this is barely a hydrogel.</strong> " +
+        "The Flory&ndash;Huggins terms behind M<sub>c</sub> are a dilute-network approximation, and above about half polymer they are being used well outside where they were derived.");
+    }
+    if (chi >= 0.5) {
+      w.push("<strong>&chi; is at or above 0.5, so water is formally a poor solvent for this polymer.</strong> " +
+        "A network that still swells substantially under that &chi; is telling you the &chi; is wrong, not that the network is unusual.");
+    }
+    if (v2r === 1 && Q > 5) {
+      w.push("<strong>You have left the relaxed state at v<sub>2,r</sub> = 1 while the gel swells to " + fmt(Q, 0) +
+        " times its dry volume.</strong> If this gel was crosslinked in solution rather than in bulk, that is the wrong reference state and M<sub>c</sub> is overestimated. Set v<sub>2,r</sub> to the polymer fraction in the reaction mixture.");
+    }
+    if (isFinite(Mn) && Mn > 0 && Mc > Mn / 2) {
+      w.push("<strong>M<sub>c</sub> has come out above half the precursor M&#8345;.</strong> " +
+        "That means fewer than two crosslinks per chain on average, which is below the gel point: the material should not be a network at all. Check the swelling, or the precursor molar mass.");
+    }
+    warn.innerHTML = w.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    $("hg-plot").innerHTML = plot(v2s, m.xi, e, v2r, chi, rhoP, Mn);
+    $("hg-caption").innerHTML = "Mesh size against how concentrated the swollen gel is, at the &chi;, relaxed state and precursor length in the boxes. " +
+      "The ring is your measurement. Mesh size falls as the gel holds less water, and it falls faster than the water content does because the strands contract as well as the network.";
+
+    var n = [];
+    n.push("<strong>The measurement is the swelling; everything after it is model.</strong> " +
+      "The balance gave v<sub>2,s</sub> = " + fmt(v2s, 3) + ", and that is the only number here that does not depend on &chi;, on the relaxed state, or on the chain statistics. " +
+      "M<sub>c</sub> and &xi; inherit every one of those assumptions.");
+    if (h && !h.excluded) {
+      n.push("<strong>A solute of " + fmt(num("hg-rs"), 2) + "&#8202;nm should diffuse at about " + fmt(h.ratio * 100, 0) +
+        "% of its free-water rate.</strong> That splits into an obstruction factor of " + fmt(h.obstruction, 2) +
+        " from the solute being a real fraction of the mesh, and " + fmt(h.freeVol, 2) +
+        " from the polymer taking up free volume the solute would otherwise move through. Both are needed: a gel can be open enough to admit a solute and still slow it down badly.");
+    } else if (h && h.excluded) {
+      n.push("<strong>A solute of " + fmt(num("hg-rs"), 2) + "&#8202;nm is larger than the mesh, so this model releases none of it.</strong> " +
+        "In practice a real gel does release such solutes slowly, through the tail of its strand-length distribution and through defects, which is exactly the heterogeneity &xi; averages away. Treat complete exclusion as a design target, not a prediction.");
+    }
+    notes.innerHTML = n.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+  }
+
+  function boot() {
+    fillPolymers();
+    ["hg-mdry", "hg-mwet", "hg-rhop", "hg-rhos", "hg-v2r", "hg-chi", "hg-mn", "hg-rs"].forEach(function (id) {
+      $(id).addEventListener("input", recalc);
+    });
+    $("hg-poly").addEventListener("change", recalc);
+    recalc();
+  }
+
+  // chain-data.js is deferred, so wait for it rather than racing it.
+  if (window.CHAIN_DATA) boot();
+  else window.addEventListener("DOMContentLoaded", boot);
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
+}
+</script>
+
+</body>
+</html>

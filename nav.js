@@ -27,6 +27,7 @@
     ["chain-dimensions.html", "📐 Chain Size"],
     ["calculator.html#sg", "🔗 Step-Growth"],
     ["crosslink-density.html", "🕸️ Crosslinks"],
+    ["hydrogel-mesh-size.html", "💧 Hydrogel Mesh"],
     ["radical-kinetics.html", "⚡ FRP Kinetics"],
     ["glossary.html", "📖 Glossary"]
   ];
@@ -119,6 +120,7 @@
     ["thermal-analysis.html", "Thermal Analysis (DSC, TGA, DMA)", "dsc tga dma thermal thermogravimetric differential scanning calorimetry dynamic mechanical analysis glass transition tg melting tm crystallinity char yield decomposition onset storage loss modulus tan delta crosslink density"],
     ["calculator.html#sg", "Step-Growth & Gel Point", "carothers gel point flory stockmayer functionality stoichiometry conversion xn thermoset network cure polyester polyamide endcapper"],
     ["crosslink-density.html", "Crosslink Density", "flory rehner swelling mc molar mass between crosslinks network rubber elasticity plateau modulus chi swelling ratio"],
+    ["hydrogel-mesh-size.html", "Hydrogel Mesh Size", "hydrogel mesh size correlation length peppas merrill canal peppas swelling ratio solute diffusion release drug delivery pore size exclusion mc water content v2s"],
     ["radical-kinetics.html", "Free-Radical Kinetics", "rp rate of polymerization kinetic chain length dpn kp kt kd initiator efficiency chain transfer mayo trommsdorff half life"],
     ["glossary.html", "Glossary", "terms definitions dispersity dp cta"],
     ["polymer-chain-game.html", "Build a Polymer Chain", "game maze fun"],
@@ -899,7 +901,7 @@
   }
 
   // ---- "On this page" sticky jump nav for the long guide pages ----
-  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html", "thermal-analysis.html", "end-group-analysis.html"];
+  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html", "thermal-analysis.html", "end-group-analysis.html", "hydrogel-mesh-size.html"];
 
   function buildSectionNav(current) {
     // Compare through pageKey. The list is written with ".html" for
