@@ -1405,5 +1405,179 @@
     return { centres: centres, unsure: unsure };
   }
 
-  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, deriveMonomer: deriveMonomer, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance, aromaticRingBonds: aromaticRingBonds, aromaticBlindHash: aromaticBlindHash, backboneLinkages: backboneLinkages, stereocentres: stereocentres };
+
+  // ---- Substructure matching ------------------------------------------------
+  // Backtracking subgraph isomorphism, in the VF2 style but without the full
+  // machinery: at this size (a query of two to eight atoms against a repeat
+  // unit of under fifty) the win from VF2's cutting rules is not worth the
+  // code, and a plain ordered backtrack is something you can read and trust.
+  //
+  // A query atom matches a host atom when the element agrees, and a query bond
+  // matches when its order agrees. Star atoms are the join to the next repeat
+  // unit rather than real chemistry, so they are excluded from both sides:
+  // a fragment is asked for WITHIN one unit. Hydrogens are implicit in the
+  // stored graphs and so play no part.
+  //
+  // Query atoms may set el:"*" to mean "any heavy atom", and a bond may set
+  // order:0 to mean "any order". Both are useful for asking about a skeleton
+  // without committing to its saturation.
+  function subAdjacency(atoms, bonds) {
+    var ids = {}, adj = {};
+    atoms.forEach(function (a) { ids[a.id] = a; adj[a.id] = []; });
+    bonds.forEach(function (b) {
+      if (!(b.a in ids) || !(b.b in ids)) return;
+      var o = b.order || 1;
+      adj[b.a].push({ to: b.b, order: o });
+      adj[b.b].push({ to: b.a, order: o });
+    });
+    return { ids: ids, adj: adj };
+  }
+
+  function heavyOnly(atoms, bonds) {
+    var keep = atoms.filter(function (a) { return a.el !== "*"; });
+    var set = {};
+    keep.forEach(function (a) { set[a.id] = true; });
+    return {
+      atoms: keep,
+      bonds: bonds.filter(function (b) { return set[b.a] && set[b.b]; })
+    };
+  }
+
+  function elMatches(q, h) { return q === "*" || q === h; }
+  function orderMatches(q, h) { return !q || q === h; }
+
+  // Returns the first mapping found as {queryId: hostId}, or null.
+  // The host is matched on its CLOSED repeat unit by default. A polymer is a
+  // chain, so a main-chain group that straddles the drawn bracket is really
+  // there: poly(ethylene oxide) is an ether and bisphenol-A polycarbonate is a
+  // carbonate, but neither fragment fits inside the unit as it is drawn, and
+  // matching the open graph misses both. Closing the unit is the same trick
+  // the hashing uses to be framing-invariant. Pass openOnly to defeat it.
+  function substructureMatch(hostAtoms, hostBonds, queryAtoms, queryBonds, openOnly) {
+    if (!queryAtoms || !queryAtoms.length) return null;
+    var closed = openOnly ? null : closeRepeatUnit(hostAtoms || [], hostBonds || []);
+    if (closed) { hostAtoms = closed.atoms; hostBonds = closed.bonds; }
+    var H = heavyOnly(hostAtoms || [], hostBonds || []);
+    var Q = heavyOnly(queryAtoms, queryBonds || []);
+    if (!Q.atoms.length || Q.atoms.length > H.atoms.length) return null;
+
+    var hg = subAdjacency(H.atoms, H.bonds);
+    var qg = subAdjacency(Q.atoms, Q.bonds);
+
+    // Order the query so each atom after the first is adjacent to one already
+    // placed. That keeps the search connected and prunes early; a disconnected
+    // query still works, it just restarts from an unconstrained atom.
+    var order = [], placed = {};
+    while (order.length < Q.atoms.length) {
+      var next = null;
+      for (var i = 0; i < Q.atoms.length; i++) {
+        var id = Q.atoms[i].id;
+        if (placed[id]) continue;
+        if (!order.length) { next = id; break; }
+        var touches = qg.adj[id].some(function (e) { return placed[e.to]; });
+        if (touches) { next = id; break; }
+        if (next === null) next = id;
+      }
+      placed[next] = true;
+      order.push(next);
+    }
+
+    var map = {}, used = {};
+    function fits(qid, hid) {
+      if (used[hid]) return false;
+      if (!elMatches(qg.ids[qid].el, hg.ids[hid].el)) return false;
+      // Every query bond to an already-placed atom must exist in the host,
+      // with a compatible order.
+      var ok = true;
+      qg.adj[qid].forEach(function (qe) {
+        if (!ok) return;
+        var partner = map[qe.to];
+        if (partner === undefined) return;
+        var found = hg.adj[hid].some(function (he) {
+          return he.to === partner && orderMatches(qe.order, he.order);
+        });
+        if (!found) ok = false;
+      });
+      return ok;
+    }
+    function step(k) {
+      if (k === order.length) return true;
+      var qid = order[k];
+      for (var i = 0; i < H.atoms.length; i++) {
+        var hid = H.atoms[i].id;
+        if (!fits(qid, hid)) continue;
+        map[qid] = hid; used[hid] = true;
+        if (step(k + 1)) return true;
+        delete map[qid]; delete used[hid];
+      }
+      return false;
+    }
+    return step(0) ? map : null;
+  }
+
+  function hasSubstructure(hostAtoms, hostBonds, queryAtoms, queryBonds, openOnly) {
+    return substructureMatch(hostAtoms, hostBonds, queryAtoms, queryBonds, openOnly) !== null;
+  }
+
+  // A small library of fragments, written in the same shape the polymers are.
+  // These are structural definitions, not claims about any polymer, so they
+  // need no source; what they find is checkable by looking at the hit list.
+  function frag(atoms, bonds) { return { atoms: atoms, bonds: bonds }; }
+  var FRAGMENTS = {
+    "ester": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: 3, el: "O" }],
+      [{ a: 1, b: 2, order: 2 }, { a: 1, b: 3, order: 1 }]),
+    "amide": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: 3, el: "N" }],
+      [{ a: 1, b: 2, order: 2 }, { a: 1, b: 3, order: 1 }]),
+    "ether": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: 3, el: "C" }],
+      [{ a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }]),
+    "carbonate": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: 3, el: "O" }, { id: 4, el: "O" }],
+      [{ a: 1, b: 2, order: 2 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }]),
+    "urethane": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: 3, el: "O" }, { id: 4, el: "N" }],
+      [{ a: 1, b: 2, order: 2 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }]),
+    "urea": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: 3, el: "N" }, { id: 4, el: "N" }],
+      [{ a: 1, b: 2, order: 2 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }]),
+    "nitrile": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "N" }],
+      [{ a: 1, b: 2, order: 3 }]),
+    "siloxane": frag(
+      [{ id: 1, el: "Si" }, { id: 2, el: "O" }],
+      [{ a: 1, b: 2, order: 1 }]),
+    "sulfone": frag(
+      [{ id: 1, el: "S" }, { id: 2, el: "O" }, { id: 3, el: "O" }],
+      [{ a: 1, b: 2, order: 2 }, { a: 1, b: 3, order: 2 }]),
+    "sulfide": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "S" }, { id: 3, el: "C" }],
+      [{ a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }]),
+    "ketone": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }],
+      [{ a: 1, b: 2, order: 2 }, { a: 1, b: 3, order: 1 }, { a: 1, b: 4, order: 1 }]),
+    "benzene ring": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" },
+       { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }],
+      [{ a: 1, b: 2, order: 2 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 },
+       { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 1, order: 1 }]),
+    "difluoromethylene": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "F" }, { id: 3, el: "F" }],
+      [{ a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }]),
+    "backbone C=C": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "C" }],
+      [{ a: 1, b: 2, order: 2 }]),
+    "quaternary carbon": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" },
+       { id: 4, el: "C" }, { id: 5, el: "C" }],
+      [{ a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 },
+       { a: 1, b: 4, order: 1 }, { a: 1, b: 5, order: 1 }])
+  };
+
+  return { wlHash: wlHash, closeRepeatUnit: closeRepeatUnit, closedHash: closedHash, blindHash: blindHash, hasUnsetStereo: hasUnsetStereo, inSameRing: inSameRing, foldRepeatUnit: foldRepeatUnit, chainCopies: chainCopies, MAX_VALENCE: MAX_VALENCE, overValentAtoms: overValentAtoms, deriveMonomer: deriveMonomer, repeatUnitFramings: repeatUnitFramings, elementProfile: elementProfile, profileDistance: profileDistance, aromaticRingBonds: aromaticRingBonds, aromaticBlindHash: aromaticBlindHash, backboneLinkages: backboneLinkages, stereocentres: stereocentres,
+    substructureMatch: substructureMatch,
+    hasSubstructure: hasSubstructure,
+    FRAGMENTS: FRAGMENTS
+  };
 });

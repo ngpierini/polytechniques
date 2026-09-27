@@ -23,7 +23,8 @@ function loadDb() {
 // WL-hash now comes from the shared, DOM-free polymer-graph.js module (the
 // same code the browser and the search-index build use) instead of a copy
 // kept in sync here by hand.
-const { wlHash, closedHash, inSameRing, deriveMonomer, stereocentres } = require("../polymer-graph.js");
+const { wlHash, closedHash, inSameRing, deriveMonomer, stereocentres,
+        hasSubstructure, FRAGMENTS } = require("../polymer-graph.js");
 
 // The declared stereo-sequence values. Anything outside this list is a typo,
 // not a new kind of polymer.
@@ -240,6 +241,105 @@ const THERMAL_NO_SOURCE_LEGACY = new Set([
   "Polyoxymethylene",
   "Polypropylene",
 ]);
+
+// --- No duplicate function declarations in polymer-graph.js ------------------
+// Adding substructure matching introduced a second function named adjacency(),
+// which hoisted over the one already there and silently changed the CLOSED
+// hash for 13 polymers. Nothing threw; it surfaced only because search-index
+// .json is generated and checked. A function name used twice in that file is
+// always a bug, so it is now always caught.
+function checkNoDuplicateGraphFns(errors) {
+  const src = fs.readFileSync(path.join(__dirname, "..", "polymer-graph.js"), "utf8");
+  const seen = {};
+  const re = /function\s+([A-Za-z_$][\w$]*)\s*\(/g;
+  let m;
+  while ((m = re.exec(src)) !== null) seen[m[1]] = (seen[m[1]] || 0) + 1;
+  Object.keys(seen).forEach(function (name) {
+    if (seen[name] > 1) {
+      errors.push("polymer-graph.js declares function " + name + "() " + seen[name] +
+        " times. Declarations hoist, so the last one silently replaces the others.");
+    }
+  });
+}
+
+// --- Substructure matching --------------------------------------------------
+// hasSubstructure answers "does this repeat unit contain this group". The
+// library is searchable by it, so a regression here silently mis-files
+// hundreds of polymers rather than throwing.
+const SUBSTRUCTURE_CASES = [
+  // [polymer, fragment, should it match]
+  ["Poly(ethylene terephthalate)", "ester", true],
+  ["Poly(ethylene terephthalate)", "benzene ring", true],
+  ["Poly(ethylene terephthalate)", "amide", false],
+  ["Nylon 6,6", "amide", true],
+  ["Nylon 6,6", "ester", false],
+  ["Polyethylene", "ester", false],
+  ["Polyethylene", "ether", false],
+  ["Polyethylene", "backbone C=C", false],
+  ["Polyethylene", "difluoromethylene", false],
+  ["Polystyrene", "benzene ring", true],
+  ["Polystyrene", "ester", false],
+  ["Polytetrafluoroethylene", "difluoromethylene", true],
+  ["Poly(vinylidene fluoride)", "difluoromethylene", true],
+  ["Polyacrylonitrile", "nitrile", true],
+  ["Poly(dimethylsiloxane)", "siloxane", true],
+  ["Poly(ether sulfone)", "sulfone", true],
+  ["Poly(methyl methacrylate)", "ester", true],
+  ["Polybutadiene (cis-1,4)", "backbone C=C", true],
+  ["Poly(vinyl alcohol)", "ether", false],
+  // These two only match on the CLOSED repeat unit. They are the regression
+  // test for the bug that matching the open graph misses every main-chain
+  // linkage that happens to sit where the bracket was drawn.
+  ["Poly(ethylene oxide)", "ether", true],
+  ["Polycarbonate (bisphenol A)", "carbonate", true],
+];
+
+function checkSubstructures(entries, errors) {
+  if (!hasSubstructure || !FRAGMENTS) {
+    errors.push("polymer-graph.js no longer exports hasSubstructure/FRAGMENTS, " +
+      "which the structural search depends on.");
+    return;
+  }
+  const byName = {};
+  entries.forEach((e) => { if (e && e.name) byName[e.name] = e; });
+  SUBSTRUCTURE_CASES.forEach(([name, fragName, want]) => {
+    const e = byName[name];
+    const q = FRAGMENTS[fragName];
+    if (!q) { errors.push('substructure: no fragment named "' + fragName + '"'); return; }
+    if (!e || !e.atoms || !e.bonds) {
+      errors.push('substructure: "' + name + '" has no structure to match against');
+      return;
+    }
+    const got = hasSubstructure(e.atoms, e.bonds, q.atoms, q.bonds);
+    if (got !== want) {
+      errors.push('substructure: "' + name + '" ' + (want ? "should" : "should NOT") +
+        ' contain ' + fragName + ", but hasSubstructure returned " + got + ".");
+    }
+  });
+
+  // Structural containment: a fragment built by adding atoms to another can
+  // never match more polymers than the one it contains.
+  const hits = {};
+  Object.keys(FRAGMENTS).forEach((k) => {
+    const q = FRAGMENTS[k];
+    hits[k] = new Set(entries.filter((e) => e && e.atoms && e.bonds &&
+      hasSubstructure(e.atoms, e.bonds, q.atoms, q.bonds)).map((e) => e.name));
+  });
+  [["carbonate", "ester"], ["urethane", "ester"], ["urea", "amide"]].forEach(([inner, outer]) => {
+    const stray = [...hits[inner]].filter((n) => !hits[outer].has(n));
+    if (stray.length) {
+      errors.push("substructure: every " + inner + " contains a " + outer +
+        " skeleton, but " + stray.length + " matched the first and not the second (" +
+        stray.slice(0, 3).join(", ") + ").");
+    }
+  });
+
+  // An empty query must not match everything, which is the classic way a
+  // matcher like this fails open.
+  if (hasSubstructure([{ id: 1, el: "C" }], [], [], [])) {
+    errors.push("substructure: an empty query matched, which would make every filter return the whole library.");
+  }
+}
 
 function checkThermalProvenance(entry, where, errors) {
   if (!entry.tg && !entry.tm) return;
@@ -987,6 +1087,10 @@ function main() {
       }
     }
   });
+
+  // Whole-library checks, after the per-entry pass.
+  checkNoDuplicateGraphFns(errors);
+  checkSubstructures(db, errors);
 
   if (errors.length) {
     console.error("polymer-data.js failed integrity check (" + errors.length + " issue" + (errors.length === 1 ? "" : "s") + "):\n");
