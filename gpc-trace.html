@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GPC Trace Analyzer: PolyTechniques</title>
-<meta name="description" content="Paste a raw GPC chromatogram and a calibration, and compute Mn, Mw, Mz and dispersity slice by slice - including how much those numbers move when you move the integration limits.">
+<meta name="description" content="Paste a raw GPC chromatogram and a calibration, and compute Mn, Mw, Mz and dispersity slice by slice, including how much those numbers move when you move the integration limits.">
 <link rel="canonical" href="https://getpolytechniques.com/gpc-trace.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="PolyTechniques">
@@ -89,7 +89,7 @@
             <option value="3">4</option>
             <option value="4">5</option>
           </select>
-          <p class="hint">Column 1 is always the x axis. Choose the concentration detector &ndash; usually RI. The slice sums assume the signal is proportional to mass, which a UV channel is only for a homopolymer with a constant chromophore, and a light-scattering channel is not at all.</p>
+          <p class="hint">Column 1 is always the x axis. Choose the concentration detector, usually RI. The slice sums assume the signal is proportional to mass, which a UV channel is only for a homopolymer with a constant chromophore, and a light-scattering channel is not at all.</p>
         </div>
       </div>
     </div>
@@ -205,10 +205,10 @@
       Two things fall out of that table, and both are worth carrying to a real sample.
     </p>
     <p class="guide-note">
-      <strong>The error only ever runs one way.</strong> Integration limits discard tail, and a distribution with its tails clipped is narrower than the one you injected. So &#272; is always reported <em>low</em> and M&#8345; always <em>high</em>, never the reverse. A sample integrated at 10% of peak height reads &#272;&nbsp;=&nbsp;1.244 when it is really 1.300 &ndash; and there is nothing in the chromatogram to tell you that, because the trace looks perfectly clean. This is the mechanism behind the well-known observation that two analysts integrating one raw file disagree: they are not making random errors in opposite directions, they are both clipping, by different amounts.
+      <strong>The error only ever runs one way.</strong> Integration limits discard tail, and a distribution with its tails clipped is narrower than the one you injected. So &#272; is always reported <em>low</em> and M&#8345; always <em>high</em>, never the reverse. A sample integrated at 10% of peak height reads &#272;&nbsp;=&nbsp;1.244 when it is really 1.300, and nothing in the chromatogram tells you that, because the trace looks perfectly clean. This is the mechanism behind the well-known observation that two analysts integrating one raw file disagree: they are not making random errors in opposite directions, they are both clipping, by different amounts.
     </p>
     <p class="guide-note">
-      <strong>&#272; is about twice as sensitive as M&#8345;.</strong> At every row above, the dispersity error is roughly double the M&#8345; error, because &#272; is a ratio of two moments that move in opposite directions when you clip &ndash; M&#8345; rises as the low-M tail goes, M<sub>w</sub> falls as the high-M tail goes, and the ratio takes both hits. If you are comparing dispersities between samples, matching integration limits matters more than anything else you could do to the method.
+      <strong>&#272; is about twice as sensitive as M&#8345;.</strong> At every row above, the dispersity error is roughly double the M&#8345; error, because &#272; is a ratio of two moments that move in opposite directions when you clip: M&#8345; rises as the low-M tail goes, M<sub>w</sub> falls as the high-M tail goes, and the ratio takes both hits. If you are comparing dispersities between samples, matching integration limits matters more than anything else you could do to the method.
     </p>
     <p class="guide-note">
       It is worth putting that next to the opposite result from the <a href="gpc-calibration.html">calibration converter</a>. There, &#272; is the <em>robust</em> number: converting between polymer scales transforms it as &#272;<sub>true</sub>&nbsp;=&nbsp;&#272;<sub>apparent</sub><sup>(1+&alpha;<sub>std</sub>)/(1+&alpha;<sub>sample</sub>)</sup>, which contains no K at all, so a badly chosen calibration constant leaves dispersity untouched. Here it is the fragile one. The two are not in tension: dispersity survives a wrong <em>molecular weight axis</em> and does not survive a wrong <em>integration window</em>, because the first rescales the axis and the second throws material away.
@@ -219,7 +219,7 @@
     <h3>What this cannot do for you</h3>
     <ul class="guide-list">
       <li><strong>It cannot fix a calibration that was never measured where you are reading.</strong> If your peak runs past the last standard you injected, the molecular weight out there is an extrapolation of a polynomial, not a measurement, and a cubic fit can bend hard beyond its data. The page reports how much of your peak area sits outside the standards' range; treat anything above a few percent as a reason to run more standards rather than a number to report.</li>
-      <li><strong>It cannot separate band broadening from the real distribution.</strong> Every column adds spreading, so a measured trace is the true distribution convolved with the instrument's response. That inflates &#272; &ndash; in the opposite direction from the clipping above, which is why a narrow standard reads &#272;&nbsp;&asymp;&nbsp;1.02 rather than 1.00. Deconvolving it needs a measured broadening function for your bank. For a sense of scale, Silva <em>et al.</em> compared SEC against diffusion-ordered NMR on the same samples and found the NMR values running about 10% below SEC for M<sub>w</sub>, M<sub>n</sub> and &#272; alike; they stop short of calling SEC wrong, but suggest it may be overestimating all three systematically (<em>Macromol. Rapid Commun.</em> <strong>46</strong> (2025) e00303, open access).</li>
+      <li><strong>It cannot separate band broadening from the real distribution.</strong> Every column adds spreading, so a measured trace is the true distribution convolved with the instrument's response. That inflates &#272;, in the opposite direction from the clipping above, which is why a narrow standard reads &#272;&nbsp;&asymp;&nbsp;1.02 rather than 1.00. Deconvolving it needs a measured broadening function for your bank. For a sense of scale, Silva <em>et al.</em> compared SEC against diffusion-ordered NMR on the same samples and found the NMR values running about 10% below SEC for M<sub>w</sub>, M<sub>n</sub> and &#272; alike; they stop short of calling SEC wrong, but suggest it may be overestimating all three systematically (<em>Macromol. Rapid Commun.</em> <strong>46</strong> (2025) e00303, open access).</li>
       <li><strong>It assumes the detector response is proportional to mass.</strong> That is a fair assumption for RI on a homopolymer well above oligomer molecular weights. It fails for a UV detector on a copolymer whose composition drifts across the peak, and it fails near the oligomer end where end groups change dn/dc per unit mass.</li>
       <li><strong>It cannot see coelution.</strong> Anything past the exclusion limit stacks at one volume, and this page will faithfully integrate that stack as though it were separated. The <a href="gpc-peak-interpretation.html">peak interpretation page</a> covers what those artifacts look like.</li>
     </ul>
@@ -228,9 +228,9 @@
   <div class="card">
     <h3>Related tools</h3>
     <ul class="guide-list">
-      <li><a href="gpc-peak-interpretation.html">GPC peak interpretation</a> &ndash; what the shape of the trace is telling you, and how to plan a method for a given polymer.</li>
-      <li><a href="gpc-calibration.html">GPC calibration converter</a> &ndash; turn a polystyrene-equivalent molecular weight into a true one.</li>
-      <li><a href="dispersity-predictor.html">Dispersity predictor</a> &ndash; what &#272; your polymerization should have produced, to compare against what you just integrated.</li>
+      <li><a href="gpc-peak-interpretation.html">GPC peak interpretation</a>. What the shape of the trace is telling you, and how to plan a method for a given polymer.</li>
+      <li><a href="gpc-calibration.html">GPC calibration converter</a>. Turn a polystyrene-equivalent molecular weight into a true one.</li>
+      <li><a href="dispersity-predictor.html">Dispersity predictor</a>. What &#272; your polymerization should have produced, to compare against what you just integrated.</li>
     </ul>
   </div>
 
@@ -608,7 +608,7 @@
       var lim = limitsAt(rows, provisional, parseFloat($("tr-thresh").value));
       lo = lim[0]; hi = lim[1];
     }
-    if (hi - lo < 3) return fail("That window contains fewer than four points. Lower the threshold or widen the limits &ndash; or check the response column, since a column with no peak in it produces exactly this.");
+    if (hi - lo < 3) return fail("That window contains fewer than four points. Lower the threshold, widen the limits, or check the response column, since a column with no peak in it produces exactly this.");
 
     var base = baselineFn(rows, mode, lo, hi);
     var r = analyse(rows, lo, hi, cal.M, base);
@@ -628,7 +628,7 @@
     var w = [];
     if (r.negSlices) {
       w.push("<strong>" + r.negSlices + " slice(s) inside the limits fall below the baseline.</strong> " +
-        "They were left out of the sums rather than subtracted, because a negative mass is not a small mass - " +
+        "They were left out of the sums rather than subtracted, because a negative mass is not a small mass, and " +
         "it means the baseline is sitting above the signal. Check the baseline mode before reading anything else here.");
     }
     if (isFinite(cal.loV)) {
@@ -698,7 +698,7 @@
       var dD = (loose.r.D - tight.r.D) / tight.r.D;
       var dMn = (loose.r.Mn - tight.r.Mn) / tight.r.Mn;
       $("tr-sens-note").innerHTML =
-        "Nothing about the sample changes down this table &ndash; only where the integration stops. Moving from " +
+        "Nothing about the sample changes down this table, only where the integration stops. Moving from " +
         (tight.f * 100) + "% of peak height to " + (loose.f * 100) + "% moves &#272; by " +
         "<strong>" + pct(Math.abs(dD)) + "</strong> and M&#8345; by <strong>" + pct(Math.abs(dMn)) + "</strong>. " +
         "Clipping always narrows a distribution, so the tighter limits report the lower &#272; and the higher M&#8345;, " +

@@ -68,7 +68,7 @@
       P<sub>B</sub><sup>out</sup> = (1 &minus; p<sub>B</sub>) + p<sub>B</sub> &middot; &Sigma;<sub>i</sub> &alpha;<sub>i</sub> (P<sub>A</sub><sup>out</sup>)<sup>f<sub>i</sub>&minus;1</sup>
     </div>
     <p class="guide-note">
-      An unreacted group leads nowhere, which is finite &ndash; that is the (1&nbsp;&minus;&nbsp;p) term. A reacted one leads into a monomer of functionality f, and everything beyond its other f&nbsp;&minus;&nbsp;1 groups must <em>also</em> be finite. The sums run over the functionalities present, weighted by &alpha;<sub>i</sub>, the fraction of all A groups sitting on monomers of functionality f<sub>i</sub>. Arbitrary mixtures come for free, because they are just more terms in a sum.
+      An unreacted group leads nowhere, which is finite: that is the (1&nbsp;&minus;&nbsp;p) term. A reacted one leads into a monomer of functionality f, and everything beyond its other f&nbsp;&minus;&nbsp;1 groups must <em>also</em> be finite. The sums run over the functionalities present, weighted by &alpha;<sub>i</sub>, the fraction of all A groups sitting on monomers of functionality f<sub>i</sub>. Arbitrary mixtures come for free, because they are just more terms in a sum.
     </p>
     <p class="guide-note">
       Everything else follows. The gel point is where a solution below 1 first appears, which happens when p<sub>A</sub>p<sub>B</sub>&middot;E[f&minus;1]&middot;E[g&minus;1]&nbsp;=&nbsp;1. The sol fraction is the weight of material all of whose arms lead nowhere. And a junction is elastically effective when at least three of its arms reach the infinite network, which turns the same probability into a crosslink density.
@@ -109,7 +109,7 @@
     <h3>Three things that only show up when you can vary the formulation</h3>
 
     <p class="guide-note">
-      <strong>Excess of one component can stop gelation entirely.</strong> A triol cured with a diisocyanate gels at 70.7% conversion when the groups are balanced. Run the isocyanate in excess &ndash; or, equivalently, leave hydroxyl short &ndash; and the gel point climbs, because the limiting group cannot reach the conversion the network needs. At a group ratio of exactly <strong>0.5</strong> the gel point lands precisely at full conversion, so below that ratio an A&#8323;&nbsp;+&nbsp;B&#8322; system never gels no matter how long you cook it. That is not a numerical curiosity; it is how you formulate a branched prepolymer that stays processable.
+      <strong>Excess of one component can stop gelation entirely.</strong> A triol cured with a diisocyanate gels at 70.7% conversion when the groups are balanced. Run the isocyanate in excess, or equivalently leave hydroxyl short, and the gel point climbs, because the limiting group cannot reach the conversion the network needs. At a group ratio of exactly <strong>0.5</strong> the gel point lands precisely at full conversion, so below that ratio an A&#8323;&nbsp;+&nbsp;B&#8322; system never gels no matter how long you cook it. That is not a numerical curiosity; it is how you formulate a branched prepolymer that stays processable.
     </p>
     <div class="table-scroll">
       <table class="recipe recipe-data">
@@ -120,26 +120,26 @@
           <tr><td>0.80</td><td class="num">0.7906</td></tr>
           <tr><td>0.70</td><td class="num">0.8452</td></tr>
           <tr><td>0.60</td><td class="num">0.9129</td></tr>
-          <tr><td>0.50</td><td class="num">1.0000 &mdash; the limit</td></tr>
+          <tr><td>0.50</td><td class="num">1.0000 (the limit)</td></tr>
         </tbody>
       </table>
     </div>
 
     <p class="guide-note">
-      <strong>The sol fraction collapses far faster than the conversion moves.</strong> Past the gel point a very small further extent of reaction pulls most of the remaining soluble material into the network. For the balanced triol system, going 1% past the gel point &ndash; conversion 0.707 to 0.714 &ndash; takes the sol fraction from 1 to 0.89; 5% past it, to 0.55; 20% past it, to 0.07. That steepness is why extraction is such a sensitive test of cure, and why a sample that still gives 10% extractables is not nearly cured, it is barely past gelling.
+      <strong>The sol fraction collapses far faster than the conversion moves.</strong> Past the gel point a very small further extent of reaction pulls most of the remaining soluble material into the network. For the balanced triol system, going 1% past the gel point, from conversion 0.707 to 0.714, takes the sol fraction from 1 to 0.89; 5% past it, to 0.55; 20% past it, to 0.07. That steepness is why extraction is such a sensitive test of cure, and why a sample that still gives 10% extractables is not nearly cured, it is barely past gelling.
     </p>
 
     <p class="guide-note">
-      <strong>Elastic strands are not the same as crosslinks.</strong> A junction only contributes to the modulus if at least three of its arms actually reach the infinite network; one with two attached arms is a chain extender and one with fewer is a dangling end. Near the gel point most junctions fail that test even though the material is technically a gel, which is why modulus rises so much more slowly than gel fraction just past the gel point. The elastic strand density this page reports counts only the junctions that qualify, and the M<sub>c</sub> it gives can be compared directly against the value the <a href="crosslink-density.html">crosslink density</a> page extracts from swelling or the rubbery plateau. If the formulation predicts a much tighter network than the measurement finds &ndash; the usual result &ndash; the difference is not dangling ends, which the three-arm rule has already removed. It is intramolecular loops, which the theory assumes never form, or a real conversion lower than the one you entered.
+      <strong>Elastic strands are not the same as crosslinks.</strong> A junction only contributes to the modulus if at least three of its arms actually reach the infinite network; one with two attached arms is a chain extender and one with fewer is a dangling end. Near the gel point most junctions fail that test even though the material is technically a gel, which is why modulus rises so much more slowly than gel fraction just past the gel point. The elastic strand density this page reports counts only the junctions that qualify, and the M<sub>c</sub> it gives can be compared directly against the value the <a href="crosslink-density.html">crosslink density</a> page extracts from swelling or the rubbery plateau. If the formulation predicts a much tighter network than the measurement finds, which is the usual result, the difference is not dangling ends, which the three-arm rule has already removed. It is intramolecular loops, which the theory assumes never form, or a real conversion lower than the one you entered.
     </p>
   </div>
 
   <div class="card">
     <h3>What the theory assumes, and where that bites</h3>
     <ul class="guide-list">
-      <li><strong>No intramolecular reaction.</strong> Every bond is assumed to join two different molecules. Real systems form loops, especially in dilute conditions and with short flexible spacers, and every loop is a bond that consumed two groups without building network. The gel point therefore arrives <em>later</em> than this page predicts, and more so the more dilute the cure &ndash; simulations put the shift squarely on loop fraction (reviewed by Argun &amp; Statt, <em>ACS Eng. Au</em> <strong>4</strong> (2024) 351&ndash;358). For a network cured in bulk, though, loop fractions are small enough that they barely move a modulus prediction: Tsimouri <em>et al.</em> (<em>Macromolecules</em> <strong>57</strong> (2024) 4273&ndash;4284) found Miller&ndash;Macosko in good agreement with measured moduli for end-linked PDMS despite forbidding loops entirely.</li>
-      <li><strong>No entanglements &ndash; and for a bulk network that is the bigger omission.</strong> This page counts chemical strands. A long precursor chain also traps entanglements that act mechanically as crosslinks, and the same study concludes that the modulus of commonly used end-linked PDMS networks is <em>entanglement-dominated</em>, with good predictions coming only from Miller&ndash;Macosko plus an additive entanglement term. So the measured modulus of a bulk network is generally <em>higher</em> than the chemical strand count alone implies, not lower &ndash; which is the same thing the <a href="crosslink-density.html">crosslink density</a> page means when it says the modulus route returns a lower M<sub>c</sub> than swelling.</li>
-      <li><strong>Equal and independent reactivity.</strong> All groups of one type are assumed identical and unaffected by whether their neighbours have reacted. Substitution effects are real &ndash; the second hydroxyl of a diol often differs from the first, and steric hindrance grows as a junction fills &ndash; and they shift the gel point either way.</li>
+      <li><strong>No intramolecular reaction.</strong> Every bond is assumed to join two different molecules. Real systems form loops, especially in dilute conditions and with short flexible spacers, and every loop is a bond that consumed two groups without building network. The gel point therefore arrives <em>later</em> than this page predicts, the more so the more dilute the cure, and simulations put the shift squarely on loop fraction (reviewed by Argun &amp; Statt, <em>ACS Eng. Au</em> <strong>4</strong> (2024) 351&ndash;358). For a network cured in bulk, though, loop fractions are small enough that they barely move a modulus prediction: Tsimouri <em>et al.</em> (<em>Macromolecules</em> <strong>57</strong> (2024) 4273&ndash;4284) found Miller&ndash;Macosko in good agreement with measured moduli for end-linked PDMS despite forbidding loops entirely.</li>
+      <li><strong>No entanglements, and for a bulk network that is the bigger omission.</strong> This page counts chemical strands. A long precursor chain also traps entanglements that act mechanically as crosslinks, and the same study concludes that the modulus of commonly used end-linked PDMS networks is <em>entanglement-dominated</em>, with good predictions coming only from Miller&ndash;Macosko plus an additive entanglement term. So the measured modulus of a bulk network is generally <em>higher</em> than the chemical strand count alone implies, not lower, which is the same thing the <a href="crosslink-density.html">crosslink density</a> page means when it says the modulus route returns a lower M<sub>c</sub> than swelling.</li>
+      <li><strong>Equal and independent reactivity.</strong> All groups of one type are assumed identical and unaffected by whether their neighbours have reacted. Substitution effects are real: the second hydroxyl of a diol often differs from the first, and steric hindrance grows as a junction fills. Either one shifts the gel point, in either direction.</li>
       <li><strong>One reaction.</strong> Side reactions that consume groups without linking (isocyanate with water, for instance) are not modelled. Subtract them from the functionality or the moles before you start, because the page cannot see them.</li>
       <li><strong>A mean-field count, not a structure.</strong> This returns how much network there is, not how it is arranged. Two formulations with the same strand density and very different spatial heterogeneity will behave differently, and nothing here will tell you that.</li>
     </ul>
@@ -148,9 +148,9 @@
   <div class="card">
     <h3>Related tools</h3>
     <ul class="guide-list">
-      <li><a href="calculator.html#sg">Step-growth and gel point</a> &ndash; the single-formula version, and Carothers for the pre-gel molecular weight.</li>
-      <li><a href="crosslink-density.html">Crosslink density</a> &ndash; M<sub>c</sub> measured from swelling or the rubbery plateau, to compare against what the formulation predicts.</li>
-      <li><a href="polyurethane.html">Polyurethane calculator</a> &ndash; equivalent weights and index for the most common system this applies to.</li>
+      <li><a href="calculator.html#sg">Step-growth and gel point</a>. The single-formula version, and Carothers for the pre-gel molecular weight.</li>
+      <li><a href="crosslink-density.html">Crosslink density</a>. M<sub>c</sub> measured from swelling or the rubbery plateau, to compare against what the formulation predicts.</li>
+      <li><a href="polyurethane.html">Polyurethane calculator</a>. Equivalent weights and index for the most common system this applies to.</li>
     </ul>
   </div>
 
@@ -366,7 +366,7 @@
         " mol of strands, for M<sub>c</sub> = " + fmt(Mc, 0) + "&nbsp;g/mol. A junction counts here only if three or more of its arms " +
         "reach the infinite network. Compare this against the M<sub>c</sub> the <a href=\"crosslink-density.html\">crosslink density</a> page " +
         "gets from swelling or the plateau modulus, and expect the two routes to miss in OPPOSITE directions. Dangling ends are " +
-        "already excluded here by the three-arm rule. Swelling tends to read looser than the recipe - intramolecular loops, which " +
+        "already excluded here by the three-arm rule. Swelling tends to read looser than the recipe, because of intramolecular loops, which " +
         "this theory assumes never form, and conversion below the figure entered. The plateau modulus tends to read tighter, because " +
         "trapped entanglements carry load as though they were crosslinks and nothing here counts them.");
     }

@@ -114,7 +114,7 @@
         <div class="field">
           <label for="fh-b">B (K)</label>
           <input type="number" id="fh-b" value="" step="any" placeholder="optional">
-          <p class="hint">Give both and the page reports the temperature at which your composition reaches the binodal &ndash; the cloud point. B&nbsp;&gt;&nbsp;0 is ordinary UCST behaviour: cooling drives separation.</p>
+          <p class="hint">Give both and the page reports the temperature at which your composition reaches the binodal, the cloud point. B&nbsp;&gt;&nbsp;0 is ordinary UCST behaviour: cooling drives separation.</p>
         </div>
       </div>
     </div>
@@ -143,7 +143,7 @@
       </table>
     </div>
     <p class="guide-note">
-      Typical &chi; between two chemically distinct polymers runs from about 0.01 to well above 0.1. Compare that with the 0.002 a pair of N&nbsp;=&nbsp;1000 chains is allowed, and the rule follows: <strong>polymer blends are immiscible unless the two polymers are nearly the same molecule, or something other than contact enthalpy is paying for the mixing</strong> &ndash; hydrogen bonding, a specific interaction, or a copolymer engineered to sit between them. This is why compatibilisers exist as an industry, and why "alloy" in a polymer datasheet usually means a controlled two-phase morphology rather than a solution.
+      Typical &chi; between two chemically distinct polymers runs from about 0.01 to well above 0.1. Compare that with the 0.002 a pair of N&nbsp;=&nbsp;1000 chains is allowed, and the rule follows: <strong>polymer blends are immiscible unless the two polymers are nearly the same molecule, or something other than contact enthalpy is paying for the mixing</strong>, such as hydrogen bonding, a specific interaction, or a copolymer engineered to sit between them. This is why compatibilisers exist as an industry, and why "alloy" in a polymer datasheet usually means a controlled two-phase morphology rather than a solution.
     </p>
     <p class="guide-note">
       It also runs the other way, and that is the useful direction: the same 1/N is why a polymer dissolves at all. A solvent has N&nbsp;=&nbsp;1 and keeps its full mixing entropy, so it can tolerate &chi; up to about &frac12;. Solvency is not a property of the polymer, it is the solvent's entropy doing the work.
@@ -153,7 +153,7 @@
   <div class="card">
     <h3>The same two blocks, joined</h3>
     <p class="guide-note">
-      Tie the two polymers together at one end and they cannot separate macroscopically &ndash; the junction will not let a chain leave its partner. What is left is separation on the scale of the chain itself, and mean-field theory puts the order&ndash;disorder transition for a symmetric diblock at <strong>&chi;N&nbsp;=&nbsp;10.495</strong>, where N is the total degree of polymerization.
+      Tie the two polymers together at one end and they cannot separate macroscopically, because the junction will not let a chain leave its partner. What is left is separation on the scale of the chain itself, and mean-field theory puts the order&ndash;disorder transition for a symmetric diblock at <strong>&chi;N&nbsp;=&nbsp;10.495</strong>, where N is the total degree of polymerization.
     </p>
     <div class="grid">
       <div class="field">
@@ -167,10 +167,10 @@
     </div>
     <div class="stat-grid" id="fh-diblock" style="margin-top:14px;"></div>
     <p class="guide-note">
-      The contrast with the blend is the point. A symmetric <em>blend</em> of the same two polymers, each of length N/2, demixes once &chi;N exceeds 4 &ndash; that is &chi;<sub>c</sub>&nbsp;=&nbsp;2/(N/2). The diblock needs &chi;N&nbsp;&gt;&nbsp;10.495, a factor of <strong>2.6&times;</strong> more incompatibility, and even then it orders into domains of tens of nanometres instead of separating into two layers. The covalent bond is worth that much frustration, and it is the entire reason block copolymers are useful: they are held permanently at a length scale that a blend would race past on its way to two macroscopic phases.
+      The contrast with the blend is the point. A symmetric <em>blend</em> of the same two polymers, each of length N/2, demixes once &chi;N exceeds 4, which is &chi;<sub>c</sub>&nbsp;=&nbsp;2/(N/2). The diblock needs &chi;N&nbsp;&gt;&nbsp;10.495, a factor of <strong>2.6&times;</strong> more incompatibility, and even then it orders into domains of tens of nanometres instead of separating into two layers. The covalent bond is worth that much frustration, and it is the entire reason block copolymers are useful: they are held permanently at a length scale that a blend would race past on its way to two macroscopic phases.
     </p>
     <p class="guide-note">
-      Two cautions. 10.495 is the mean-field value for a symmetric diblock; composition asymmetry raises it, and fluctuation corrections raise it further for short chains, so a real transition sits above this number rather than on it. And &chi; here must be defined on the same reference volume as the N you typed &ndash; a &chi; quoted per repeat unit and an N counted in repeat units of a different size do not multiply.
+      Two cautions. 10.495 is the mean-field value for a symmetric diblock; composition asymmetry raises it, and fluctuation corrections raise it further for short chains, so a real transition sits above this number rather than on it. And &chi; here must be defined on the same reference volume as the N you typed. A &chi; quoted per repeat unit and an N counted in repeat units of a different size do not multiply.
     </p>
   </div>
 
@@ -179,7 +179,7 @@
     <ul class="guide-list">
       <li><strong>Outside the binodal</strong> the mixture is stable: one phase, and it stays one phase.</li>
       <li><strong>Between binodal and spinodal</strong> it is metastable. It wants to separate but has to nucleate a droplet of the other phase first, and the barrier can hold for a long time. Separation here is nucleation and growth: discrete droplets that coarsen, with a well-defined size distribution.</li>
-      <li><strong>Inside the spinodal</strong> there is no barrier at all &ndash; the free energy curves the wrong way, so any composition fluctuation grows rather than decays. That is spinodal decomposition, and it produces the characteristic co-continuous, interpenetrating morphology instead of droplets. If you have ever seen a blend with two interlocking phases rather than spheres in a matrix, it was quenched into this region.</li>
+      <li><strong>Inside the spinodal</strong> there is no barrier at all: the free energy curves the wrong way, so any composition fluctuation grows rather than decays. That is spinodal decomposition, and it produces the characteristic co-continuous, interpenetrating morphology instead of droplets. If you have ever seen a blend with two interlocking phases rather than spheres in a matrix, it was quenched into this region.</li>
       <li><strong>The tie-line ends</strong> are the compositions of the two phases you actually get, and they do not depend on where you started between them. Only the <em>amounts</em> change, by the lever rule, which the calculator reports.</li>
     </ul>
   </div>
@@ -189,7 +189,7 @@
     <ul class="guide-list">
       <li><strong>&chi; is not a constant.</strong> It is treated here as one number, but a measured &chi; varies with composition and with molecular weight, and the temperature dependence is rarely exactly A&nbsp;+&nbsp;B/T. A &chi; taken from one composition and applied across the whole diagram is an approximation the diagram cannot show you the error of.</li>
       <li><strong>No volume change on mixing, and no equation of state.</strong> The lattice is incompressible by construction, which is why plain Flory&ndash;Huggins cannot produce LCST behaviour from an entirely enthalpic &chi;. Real polymer solutions that phase separate <em>on heating</em> need free volume, which needs a compressible theory.</li>
-      <li><strong>Mean field.</strong> Concentration fluctuations are ignored, which matters most near the critical point and for short chains &ndash; exactly where the numbers look most precise.</li>
+      <li><strong>Mean field.</strong> Concentration fluctuations are ignored, which matters most near the critical point and for short chains, which is exactly where the numbers look most precise.</li>
       <li><strong>Monodisperse chains.</strong> A real N is a distribution, and polydispersity broadens the coexistence region and shifts the cloud point away from the binodal computed here.</li>
     </ul>
   </div>
@@ -197,9 +197,9 @@
   <div class="card">
     <h3>Related tools</h3>
     <ul class="guide-list">
-      <li><a href="crosslink-density.html">Crosslink density</a> &ndash; uses the same &chi; in the Flory&ndash;Rehner swelling equation, and shows how much the value you pick is worth.</li>
-      <li><a href="block-copolymers.html">Block copolymers</a> &ndash; the chemistry of the chains this page treats as two numbers.</li>
-      <li><a href="chain-dimensions.html">Chain dimensions</a> &ndash; how big a coil is, which sets the domain spacing a diblock orders into.</li>
+      <li><a href="crosslink-density.html">Crosslink density</a>. Uses the same &chi; in the Flory&ndash;Rehner swelling equation, and shows how much the value you pick is worth.</li>
+      <li><a href="block-copolymers.html">Block copolymers</a>. The chemistry of the chains this page treats as two numbers.</li>
+      <li><a href="chain-dimensions.html">Chain dimensions</a>. How big a coil is, which sets the domain spacing a diblock orders into.</li>
     </ul>
   </div>
 
