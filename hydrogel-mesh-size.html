@@ -136,6 +136,8 @@
 
     <div class="stat-grid" id="hg-stats" style="margin-top:16px;"></div>
     <div id="hg-warn"></div>
+    <div id="hg-mesh" class="chart-wrap"></div>
+    <p class="diagram-caption" id="hg-mesh-caption"></p>
     <div id="hg-plot" class="chart-wrap"></div>
     <p class="diagram-caption" id="hg-caption"></p>
     <div id="hg-notes"></div>
@@ -320,12 +322,122 @@
       'aria-label="Mesh size falling as the swollen gel becomes more concentrated, with the current measurement marked and the solute radius drawn as a cut-off.">' + s + '</svg>';
   }
 
+  // A mesh opening is drawn at a fixed size whatever xi is, and the solute is
+  // scaled against it. So the picture always fills the frame and the only
+  // thing that moves is the ratio the reader is being asked about.
+  function meshFigure(xi, rs, v2s) {
+    var W = 700, H = 320, S = 88;          // S px on screen = xi nm
+    var nmToPx = S / xi;
+    // Deterministic jitter: the same gel always draws the same network.
+    var seed = 20260927;
+    function rnd() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+    var cols = Math.ceil(W / S) + 2, rows = Math.ceil(H / S) + 2;
+    var J = [], r, c;
+    for (r = 0; r < rows; r++) {
+      J.push([]);
+      for (c = 0; c < cols; c++) {
+        J[r].push({
+          x: (c - 0.5) * S + (rnd() - 0.5) * S * 0.34,
+          y: (r - 0.5) * S + (rnd() - 0.5) * S * 0.34
+        });
+      }
+    }
+    var out = "";
+    // Strands, bowed slightly so they read as chains and not as a lattice.
+    function strand(a, b) {
+      var mx = (a.x + b.x) / 2 + (rnd() - 0.5) * S * 0.3;
+      var my = (a.y + b.y) / 2 + (rnd() - 0.5) * S * 0.3;
+      return "M " + a.x.toFixed(1) + " " + a.y.toFixed(1) + " Q " + mx.toFixed(1) + " " + my.toFixed(1) +
+        " " + b.x.toFixed(1) + " " + b.y.toFixed(1);
+    }
+    var d = "";
+    for (r = 0; r < rows; r++) {
+      for (c = 0; c < cols; c++) {
+        if (c + 1 < cols) d += strand(J[r][c], J[r][c + 1]) + " ";
+        if (r + 1 < rows) d += strand(J[r][c], J[r + 1][c]) + " ";
+      }
+    }
+    out += '<path d="' + d.trim() + '" fill="none" stroke="var(--text-dim)" stroke-width="1.6" ' +
+      'stroke-linecap="round" opacity="0.55"/>';
+
+    // One opening, picked near the middle, is the one we measure and fill.
+    // Pick the opening nearest the middle of the VIEWBOX, not the middle of
+    // the generated grid: the grid is deliberately larger than the frame so
+    // strands run off the edges, so its centre sits low and the solute label
+    // then has no room beneath it.
+    var rr = 0, cc = 0, bestD = Infinity;
+    for (r = 0; r + 1 < rows; r++) {
+      for (c = 0; c + 1 < cols; c++) {
+        var ox = (J[r][c].x + J[r + 1][c + 1].x) / 2, oy = (J[r][c].y + J[r + 1][c + 1].y) / 2;
+        var dd = Math.pow(ox - W / 2, 2) + Math.pow(oy - H * 0.42, 2);
+        if (dd < bestD) { bestD = dd; rr = r; cc = c; }
+      }
+    }
+    var q = [J[rr][cc], J[rr][cc + 1], J[rr + 1][cc + 1], J[rr + 1][cc]];
+    out += '<path d="M ' + q.map(function (p) { return p.x.toFixed(1) + " " + p.y.toFixed(1); }).join(" L ") +
+      ' Z" fill="var(--primary, #2563eb)" opacity="0.07"/>';
+
+    // Junctions over the strands.
+    for (r = 0; r < rows; r++) {
+      for (c = 0; c < cols; c++) {
+        out += '<circle cx="' + J[r][c].x.toFixed(1) + '" cy="' + J[r][c].y.toFixed(1) +
+          '" r="3.4" fill="var(--primary, #2563eb)" opacity="0.85"/>';
+      }
+    }
+
+    // The solute, at the same scale as everything else.
+    var cx = (q[0].x + q[1].x + q[2].x + q[3].x) / 4;
+    var cy = (q[0].y + q[1].y + q[2].y + q[3].y) / 4;
+    if (rs > 0) {
+      var pr = rs * nmToPx;
+      var fits = rs < xi;
+      var col = fits ? "var(--accent, #0e9f6e)" : "var(--danger, #d64545)";
+      out += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + pr.toFixed(1) +
+        '" fill="' + col + '" opacity="0.28"/>';
+      out += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + pr.toFixed(1) +
+        '" fill="none" stroke="' + col + '" stroke-width="2"' + (fits ? "" : ' stroke-dasharray="6 4"') + '/>';
+      // Tether the label under the circle while that stays inside the frame
+      // and clear of the scale bar; otherwise pin it top-left, where it is
+      // always visible however far the circle runs off the edge.
+      var label = fits ? "solute, " + rs.toFixed(2) + "\u2009nm"
+        : "solute " + rs.toFixed(2) + "\u2009nm: larger than the mesh, so nothing gets through";
+      var ly = cy + pr + 16, tethered = ly < H - 46 && pr < 90;
+      if (tethered) {
+        out += '<text x="' + cx.toFixed(1) + '" y="' + ly.toFixed(1) +
+          '" text-anchor="middle" font-size="11" fill="' + col + '" font-weight="600">' + label + "</text>";
+      } else {
+        out += '<rect x="10" y="10" width="' + (label.length * 6.1 + 16).toFixed(0) +
+          '" height="22" rx="4" fill="var(--card-bg)" opacity="0.88"/>';
+        out += '<text x="18" y="25" font-size="11" fill="' + col + '" font-weight="600">' + label + "</text>";
+      }
+    }
+
+    // The scale: one mesh opening, labelled, so the picture carries its units.
+    var by = H - 26, bx = 26;
+    out += '<line x1="' + bx + '" y1="' + by + '" x2="' + (bx + S) + '" y2="' + by +
+      '" stroke="var(--text)" stroke-width="2"/>';
+    [bx, bx + S].forEach(function (x) {
+      out += '<line x1="' + x + '" y1="' + (by - 5) + '" x2="' + x + '" y2="' + (by + 5) +
+        '" stroke="var(--text)" stroke-width="2"/>';
+    });
+    out += '<text x="' + (bx + S / 2) + '" y="' + (by - 10) + '" text-anchor="middle" font-size="11.5" ' +
+      'fill="var(--text)" font-weight="600">\u03be = ' + fmt(xi, 2) + '\u2009nm</text>';
+    out += '<text x="' + (bx + S + 14) + '" y="' + (by + 4) + '" font-size="10.5" fill="var(--text-dim)">' +
+      'one mesh opening, and everything here is drawn to it</text>';
+
+    return '<svg class="chart-svg chart-svg--wide" viewBox="0 0 ' + W + ' ' + H +
+      '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+      'aria-label="A swollen network with junctions and strands, one mesh opening shaded, and the solute drawn as a circle at the same scale so the two can be compared by eye.">' +
+      out + '</svg>';
+  }
+
   function recalc() {
     var stats = $("hg-stats"), warn = $("hg-warn"), notes = $("hg-notes");
     function fail(msg) {
       stats.innerHTML = '<div class="error-msg">' + msg + "</div>";
       warn.innerHTML = ""; notes.innerHTML = "";
       $("hg-plot").innerHTML = ""; $("hg-caption").textContent = "";
+      $("hg-mesh").innerHTML = ""; $("hg-mesh-caption").textContent = "";
     }
     var e = selected();
     if (!e) return fail("Chain data has not loaded, so the chain geometry this needs is not available.");
@@ -385,6 +497,14 @@
     }
     warn.innerHTML = w.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
 
+    var rsNow = num("hg-rs");
+    $("hg-mesh").innerHTML = meshFigure(m.xi, rsNow > 0 ? rsNow : 0, v2s);
+    $("hg-mesh-caption").innerHTML = rsNow > 0
+      ? "The network at the mesh size computed above, with your " + fmt(rsNow, 2) + "&#8202;nm solute drawn at the same scale. " +
+        "The junctions are crosslinks and the strands between them average " + fmt(m.N, 0) + " backbone bonds. " +
+        "A schematic: a real network is three-dimensional and its openings are not all this one size, which is the whole limitation of quoting a single &xi;."
+      : "The network at the mesh size computed above. The junctions are crosslinks and the strands between them average " + fmt(m.N, 0) + " backbone bonds. " +
+        "Enter a solute radius to see it drawn against the opening. A schematic: a real network is three-dimensional and its openings are not all this one size.";
     $("hg-plot").innerHTML = plot(v2s, m.xi, e, v2r, chi, rhoP, Mn);
     $("hg-caption").innerHTML = "Mesh size against how concentrated the swollen gel is, at the &chi;, relaxed state and precursor length in the boxes. " +
       "The ring is your measurement. Mesh size falls as the gel holds less water, and it falls faster than the water content does because the strands contract as well as the network.";

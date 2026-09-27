@@ -1451,6 +1451,53 @@ const PEO = { perRepeat: 3, M0: 44.05, bond: 0.147, cInf: 4 };
   }
 }
 
+// ---- The hydrogel mesh figure ---------------------------------------------
+{
+  // One mesh opening is S px on screen whatever xi is, so a solute of radius
+  // rs nm must be drawn at rs * S / xi px. That single line is the figure's
+  // entire claim to being to scale.
+  const S = 88;
+  const meshPx = (rs, xi) => rs * (S / xi);
+  check("a 1.8 nm solute in a 7.49 nm mesh draws at", meshPx(1.8, 7.49), 21.2, 0.1, "px");
+  check("a solute exactly the mesh size draws one opening wide", meshPx(7.49, 7.49), S, 1e-9, "px");
+  check("doubling the solute doubles the circle", meshPx(3.6, 7.49) / meshPx(1.8, 7.49), 2, 1e-12, "x");
+  // And a tighter gel must draw the same solute bigger, because the opening
+  // it is drawn against is the thing being held constant.
+  if (!(meshPx(1.8, 4) > meshPx(1.8, 7.49))) {
+    failed++;
+    cases.push({ ok: false, name: "the same solute draws larger in a tighter mesh",
+      actual: meshPx(1.8, 4), expected: "> " + meshPx(1.8, 7.49).toFixed(1), tol: 0, unit: "px" });
+  }
+
+  // Determinism: a figure that reshuffles on every keystroke reads as noise,
+  // and nothing about it could be checked. Math.random here would be a bug.
+  if (hgHtml.indexOf("var seed = 20260927;") === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the mesh figure still uses a fixed seed", actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+  const meshFn = hgHtml.slice(hgHtml.indexOf("function meshFigure"), hgHtml.indexOf("function recalc"));
+  if (meshFn.indexOf("Math.random") !== -1) {
+    failed++;
+    cases.push({ ok: false, name: "the mesh figure must not use Math.random", actual: "found", expected: "absent", tol: 0, unit: "" });
+  }
+  // The scale bar has to be exactly one opening, or the figure lies about
+  // its own units.
+  if (meshFn.indexOf('x2="\' + (bx + S) + \'"') === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the scale bar is still exactly one mesh opening wide",
+      actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+  // A solute too large to fit must still be able to say so: the label falls
+  // back to a pinned position instead of being drawn off the bottom.
+  ["var ly = cy + pr + 16, tethered =", "larger than the mesh"].forEach((frag) => {
+    if (meshFn.indexOf(frag) === -1) {
+      failed++;
+      cases.push({ ok: false, name: "the mesh figure keeps its unclippable solute label (" + frag.slice(0, 26) + ")",
+        actual: "not found", expected: "present", tol: 0, unit: "" });
+    }
+  });
+}
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume
