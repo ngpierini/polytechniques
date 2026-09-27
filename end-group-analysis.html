@@ -369,6 +369,8 @@
       </div>
     </div>
     <div class="stat-grid" id="tt-stats" style="margin-top:16px;"></div>
+    <div id="tt-plot" class="chart-wrap"></div>
+    <p class="diagram-caption" id="tt-caption"></p>
     <div id="tt-notes"></div>
   </div>
 
@@ -550,24 +552,101 @@
   var KOH_MG = 56106;   // 56.106 g/mol expressed as mg/mol
   var NCO_MG = 4202;    // 42.02 g/mol, times 100 for the percent
 
+  // One equivalent weight is one block. The molecular weight you report is
+  // however many blocks you claim, which is why the error comes in whole
+  // blocks and not in percent.
+  function ttPlot(EW, fSel) {
+    var FS = [1, 2, 3, 4, 6];
+    var W = 700, H = 250, Mg = { left: 74, right: 108, top: 16, bottom: 34 };
+    var pw = W - Mg.left - Mg.right, ph = H - Mg.top - Mg.bottom;
+    var fMax = Math.max(FS[FS.length - 1], fSel);
+    var xUnit = pw / fMax;                       // px per equivalent weight
+    var rows = FS.slice();
+    if (FS.indexOf(fSel) === -1 && isFinite(fSel) && fSel > 0) {
+      rows.push(fSel);
+      rows.sort(function (a, b) { return a - b; });
+    }
+    var rh = ph / rows.length, bh = Math.min(26, rh - 9);
+    var s = "", i, k;
+
+    for (k = 0; k < rows.length; k++) {
+      var f = rows[k];
+      var y = Mg.top + k * rh + (rh - bh) / 2;
+      var sel = Math.abs(f - fSel) < 1e-9;
+      var col = sel ? "var(--primary, #2563eb)" : "var(--text-dim)";
+      var op = sel ? 1 : 0.28;
+
+      // f whole blocks of one equivalent weight, drawn as blocks.
+      var whole = Math.floor(f + 1e-9), frac = f - whole;
+      for (i = 0; i < whole; i++) {
+        s += '<rect x="' + (Mg.left + i * xUnit + 1).toFixed(1) + '" y="' + y.toFixed(1) +
+          '" width="' + (xUnit - 2).toFixed(1) + '" height="' + bh.toFixed(1) +
+          '" rx="2.5" fill="' + col + '" opacity="' + (op * (sel ? 0.85 : 0.5)) + '"/>';
+      }
+      if (frac > 0.01) {
+        s += '<rect x="' + (Mg.left + whole * xUnit + 1).toFixed(1) + '" y="' + y.toFixed(1) +
+          '" width="' + Math.max(0, frac * xUnit - 2).toFixed(1) + '" height="' + bh.toFixed(1) +
+          '" rx="2.5" fill="' + col + '" opacity="' + (op * 0.85) + '" stroke="' + col +
+          '" stroke-width="1" stroke-dasharray="3 2"/>';
+      }
+
+      s += '<text x="' + (Mg.left - 10) + '" y="' + (y + bh / 2 + 4).toFixed(1) +
+        '" text-anchor="end" font-size="11.5" fill="' + (sel ? "var(--text)" : "var(--text-dim)") +
+        '" font-weight="' + (sel ? 700 : 400) + '">f = ' + (Math.round(f * 100) / 100) + '</text>';
+      s += '<text x="' + (W - Mg.right + 10) + '" y="' + (y + bh / 2 + 4).toFixed(1) +
+        '" font-size="11.5" fill="' + (sel ? "var(--text)" : "var(--text-dim)") +
+        '" font-weight="' + (sel ? 700 : 400) + '">' + fmt(f * EW) + (sel ? " \u2190" : "") + '</text>';
+    }
+
+    // The measurement itself: the width of one block, which never moves.
+    var yTop = Mg.top - 4, yBot = H - Mg.bottom + 2;
+    s += '<line x1="' + Mg.left + '" y1="' + yTop + '" x2="' + Mg.left + '" y2="' + yBot +
+      '" stroke="var(--text-dim)" stroke-width="1"/>';
+    s += '<line x1="' + (Mg.left + xUnit).toFixed(1) + '" y1="' + yTop + '" x2="' + (Mg.left + xUnit).toFixed(1) +
+      '" y2="' + yBot + '" stroke="var(--accent, #0e9f6e)" stroke-width="1.5" stroke-dasharray="4 3"/>';
+    s += '<text x="' + (Mg.left + xUnit + 6).toFixed(1) + '" y="' + (H - Mg.bottom + 16) +
+      '" font-size="10.5" fill="var(--accent, #0e9f6e)" font-weight="600">one equivalent weight, ' + fmt(EW) + '&#8202;g/eq</text>';
+    s += '<text x="' + (Mg.left - 10) + '" y="' + (H - Mg.bottom + 16) +
+      '" text-anchor="end" font-size="10.5" fill="var(--text-dim)">measured</text>';
+    s += '<text x="' + (W - Mg.right + 10) + '" y="' + (Mg.top - 4) +
+      '" font-size="10" fill="var(--text-dim)" font-weight="600">M\u2099 REPORTED</text>';
+
+    return '<svg class="chart-svg chart-svg--wide" viewBox="0 0 ' + W + ' ' + H +
+      '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+      'aria-label="One measured equivalent weight turned into a different molecular weight for each assumed functionality, drawn as that many identical blocks.">' +
+      s + '</svg>';
+  }
+
   function ttCalc() {
     var mode = $("tt-mode").value, v = num("tt-val"), f = num("tt-f");
     var stats = $("tt-stats"), notes = $("tt-notes");
     if (!isFinite(v) || v <= 0 || !isFinite(f) || f <= 0) {
       stats.innerHTML = '<div class="error-msg">Enter a positive measured value and functionality.</div>';
-      notes.innerHTML = "";
+      notes.innerHTML = ""; $("tt-plot").innerHTML = ""; $("tt-caption").textContent = "";
       return;
     }
     var EW = mode === "nco" ? NCO_MG / v : KOH_MG / v;
     var Mn = f * EW;
     var label = { oh: "hydroxyl value", acid: "acid value", amine: "amine value", nco: "%NCO" }[mode];
+    // "A amine value" and "A %NCO" both read wrong, so the article travels
+    // with the label rather than being hard-coded in the sentence.
+    // %NCO is read aloud as "percent NCO", so it takes A, not An.
+    var article = /^[aeiou]/i.test(label) ? "An" : "A";
     stats.innerHTML =
       '<div class="stat stat--primary"><div class="label">Equivalent weight</div><div class="value">' + fmt(EW) + '</div><div class="sub">g per reactive group</div></div>' +
       '<div class="stat"><div class="label">M&#8345;</div><div class="value">' + fmt(Mn) + '</div><div class="sub">g/mol at f = ' + f + '</div></div>';
+    $("tt-plot").innerHTML = ttPlot(EW, f);
+    $("tt-caption").innerHTML = "The same titration, read against five different assumptions about functionality. " +
+      "Each block is one equivalent weight, " + fmt(EW) + "&#8202;g/eq, and that block is the only thing the experiment " +
+      "measured. Everything to the right of it is a claim about how many reactive groups a chain carries.";
     var n = [];
-    n.push("<strong>The equivalent weight is the measurement; M&#8345; is an inference.</strong> A " + label + " of " + v +
+    n.push("<strong>The equivalent weight is the measurement; M&#8345; is an inference.</strong> " + article + " " + label + " of " + v +
       " fixes one reactive group per " + fmt(EW) + "&nbsp;g of sample and says nothing about how those groups are distributed. " +
       "Everything after that rests on f = " + f + ".");
+    n.push("<strong>The error comes in whole blocks.</strong> Read a diol as a triol and M&#8345; goes from " +
+      fmt(2 * EW) + " to " + fmt(3 * EW) + ", which is 50% high, and nothing in the titration will tell you. " +
+      "Functionality comes from the synthesis: what initiated the chain, and whether every arm actually grew. " +
+      "A nominally trifunctional polyol with one dead arm titrates exactly like a diol of the same equivalent weight.");
     if (mode === "amine") {
       n.push("<strong>Amines count twice.</strong> A primary amine carries two N&ndash;H hydrogens, so its hydrogen equivalent weight is half " +
         "the amine equivalent weight. Epoxy formulation uses the N&ndash;H figure (AHEW); mixing the two up doubles or halves the hardener.");

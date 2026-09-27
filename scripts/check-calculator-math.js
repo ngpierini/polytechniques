@@ -1327,6 +1327,37 @@ check("MALDI comb spacing is the repeat unit", EG_M0, 100.12, 0.005, "Da");
   }
 }
 
+// ---- The functionality fan ------------------------------------------------
+// Mn = f x EW, and the figure draws f blocks of one EW. Both halves of that
+// are worth pinning, because the whole card is about getting f wrong.
+{
+  const EW_OH = 56106 / 56.1;
+  check("the fan's default block is one equivalent weight", EW_OH, 1000, 1, "g/eq");
+  [1, 2, 3, 4, 6].forEach((f) => {
+    check("Mn at f = " + f + " is f blocks of EW", f * EW_OH, f * 1000, f, "g/mol");
+  });
+  // "Read a diol as a triol and Mn goes ... which is 50% high".
+  check("a diol read as a triol reports Mn high by", (3 - 2) / 2 * 100, 50, 0.001, "%");
+  if (egHtml.indexOf("which is 50% high") === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the fan prose still quotes the 50% diol/triol error",
+      actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+  // The fan is drawn from these two, and the rest of the card from the same
+  // pair, so a drift in either silently rescales every bar.
+  check("hydroxyl constant still gives EW from a hydroxyl value", 56106 / 112.2, 500, 1, "g/eq");
+  check("isocyanate constant still gives EW from %NCO", 4202 / 8.4, 500, 1, "g/eq");
+  // The blocks are whole because functionality is a count; a fractional f is
+  // drawn as a part block, so the renderer has to keep both paths.
+  ["var whole = Math.floor(f + 1e-9), frac = f - whole;", "stroke-dasharray=\"3 2\""].forEach((frag) => {
+    if (egHtml.indexOf(frag) === -1) {
+      failed++;
+      cases.push({ ok: false, name: "the fan still draws whole and part blocks (" + frag.slice(0, 30) + ")",
+        actual: "not found", expected: "present", tol: 0, unit: "" });
+    }
+  });
+}
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume
