@@ -1177,6 +1177,24 @@ check("a wider bed costs dispersity: MIXED-A over MIXED-D", gtRow("mixed-a") / g
   check("doubling the bank halves the excess the columns add", (one * one) / (two * two), 2, 1e-9, "x");
 }
 
+// The worked caveat: correcting the demo trace with the default MIXED-C bank
+// moves D from 1.284 to 1.276, which is AWAY from the 1.300 it was generated
+// from, because a synthetic trace carries no broadening to remove. The page
+// says so in as many words, and both figures are checked here.
+{
+  const gtReported = 1.2844;   // the 2%-of-peak row of the page's own table
+  const corrected = gtReported / gtFactor(gtSigma(gtN(50000), GT_B, GT_VR));
+  check("demo trace corrected for the default bank", corrected, 1.276, 5e-4, "D");
+  check("the correction moves away from the generated 1.300",
+    Math.abs(corrected - 1.3) > Math.abs(gtReported - 1.3) ? 1 : 0, 1, 0, "");
+  ["1.284 down to 1.276", "1.300"].forEach((frag) => {
+    if (gtHtml.indexOf(frag) === -1) {
+      failed++;
+      cases.push({ ok: false, name: "gpc-trace caveat still quotes " + frag, actual: "not found", expected: "present", tol: 0, unit: "" });
+    }
+  });
+}
+
 // The two formulae the page states have to be the two the page runs.
 ["Math.LN10 * B * Vr / Math.sqrt(N)", "Math.exp(sigma * sigma)"].forEach((frag) => {
   if (gtHtml.indexOf(frag) === -1) {
