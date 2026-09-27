@@ -1269,6 +1269,64 @@ if (egfPanels.length !== 3) {
   check("two techniques give an absolute Mn on their own", cards.filter((c) => c === "yes").length, 2, 0, "cards");
 }
 
+// ---- The MALDI figure -----------------------------------------------------
+const MALDI_NA = 22.99, MALDI_BR = 79.904, MALDI_H = 1.008, MALDI_N = 22;
+
+// The worked peak, built from the page's own constants rather than restated.
+const maldiPeak = MALDI_N * EG_M0 + EG_MEND + MALDI_NA;
+check("MALDI worked peak m/z", maldiPeak, 2420.7, 0.05, "m/z");
+// The step the prose asks the reader to do: strip the repeat units and what
+// is left has to be the ends plus the cation.
+check("stripping 22 repeat units leaves the ends plus sodium",
+  maldiPeak - MALDI_N * EG_M0, 218.0, 0.05, "Da");
+check("...which is Mend plus Na", EG_MEND + MALDI_NA, 218.04, 0.01, "Da");
+
+// The second series is one bromine down, traded for a hydrogen.
+check("the minor series offset is a bromine for a hydrogen", MALDI_BR - MALDI_H, 78.9, 0.01, "Da");
+
+// The spacing IS the repeat unit; if these ever diverge the figure is lying.
+check("MALDI comb spacing is the repeat unit", EG_M0, 100.12, 0.005, "Da");
+
+// The figure and the prose both print these, so a drift in either shows up.
+[["2420.7", "the worked peak"], ["100.12", "the repeat unit"], ["195.05", "the end groups"],
+ ["22.99", "sodium"], ["78.9", "the bromine offset"], ["218.0", "the stripped remainder"]].forEach(([frag, what]) => {
+  if (egHtml.indexOf(frag) === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the MALDI section still quotes " + frag + " for " + what,
+      actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+});
+
+// Both combs have to be drawn where the arithmetic puts them. The figure is
+// a line per peak, so read the x of one peak from each series and check the
+// gap against the mass offset through the figure's own x scale.
+{
+  const mFig = egHtml.match(/viewBox="0 0 700 288"[\s\S]*?<\/svg>/);
+  if (!mFig) {
+    failed++;
+    cases.push({ ok: false, name: "the MALDI figure is still on the page", actual: "not found", expected: "present", tol: 0, unit: "" });
+  } else {
+    const lines = [...mFig[0].matchAll(/<line x1="([\d.]+)" y1="230" x2="[\d.]+" y2="([\d.]+)" stroke="var\(--(primary|danger)[^"]*"/g)]
+      .map((m) => ({ x: Number(m[1]), col: m[3] }));
+    const br = lines.filter((l) => l.col === "primary").map((l) => l.x).sort((a, b) => a - b);
+    const h = lines.filter((l) => l.col === "danger").map((l) => l.x).sort((a, b) => a - b);
+    check("the main comb has seven peaks in the window", br.length, 7, 0, "peaks");
+    check("the minor comb has seven peaks in the window", h.length, 7, 0, "peaks");
+    // x = 70 + (m - 1990) * 605/710
+    const perDa = 605 / 710;
+    if (br.length > 1) {
+      check("drawn comb spacing equals the repeat unit", (br[1] - br[0]) / perDa, EG_M0, 0.2, "Da");
+    }
+    if (br.length === 7 && h.length === 7) {
+      // Series B at n is 78.9 below series A at the same n; both combs start
+      // at a different n in this window, so compare the highest peak of each.
+      const gap = (br[br.length - 1] - h[h.length - 1]) / perDa;
+      check("the two combs are offset by one bromine, or one repeat unit less",
+        Math.min(Math.abs(gap - (MALDI_BR - MALDI_H)), Math.abs(gap + EG_M0 - (MALDI_BR - MALDI_H))), 0, 0.3, "Da");
+    }
+  }
+}
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume
