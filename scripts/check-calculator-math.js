@@ -1099,6 +1099,92 @@ if (egHtml.indexOf("56106") === -1 || egHtml.indexOf("4202") === -1) {
 check("degree of substitution, page defaults", ((42 / 2) / (100 / 1)) * 100, 21, 1e-9, "%");
 check("DS is 100% when both normalised integrals match", ((50 / 1) / (50 / 1)) * 100, 100, 1e-9, "%");
 
+// ---- Column series and band broadening: gpc-trace.html --------------------
+const gtHtml = fs.readFileSync(path.join(__dirname, "..", "gpc-trace.html"), "utf8");
+
+// sigma_V = V_R/sqrt(N); the calibration slope turns it into a width in ln M.
+const gtSigma = (N, B, Vr) => Math.LN10 * B * Vr / Math.sqrt(N);
+// A Gaussian of width sigma in ln M multiplies dispersity by exp(sigma^2).
+const gtFactor = (sigma) => Math.exp(sigma * sigma);
+
+// The specifications are Agilent's, and the page is the only place they are
+// written down, so read them back rather than keeping a second copy.
+const gtCols = [...gtHtml.matchAll(
+  /\{ id: "(mixed-[a-e])", name: "([^"]+)", lo: (\d+|null), hi: (\d+), pm: (\d+) \}/g
+)].map((m) => ({ id: m[1], name: m[2], lo: m[3] === "null" ? null : Number(m[3]), hi: Number(m[4]), pm: Number(m[5]) }));
+
+if (gtCols.length !== 5) {
+  failed++;
+  cases.push({ ok: false, name: "gpc-trace carries all five PLgel MIXED grades", actual: gtCols.length, expected: 5, tol: 0, unit: "rows" });
+}
+const gtExpect = {
+  "mixed-a": { lo: 2000, hi: 40000000, pm: 18000 },
+  "mixed-b": { lo: 500, hi: 10000000, pm: 35000 },
+  "mixed-c": { lo: 200, hi: 2000000, pm: 50000 },
+  "mixed-d": { lo: 200, hi: 400000, pm: 50000 },
+  "mixed-e": { lo: null, hi: 30000, pm: 80000 },
+};
+gtCols.forEach((c) => {
+  const e = gtExpect[c.id];
+  if (!e) {
+    failed++;
+    cases.push({ ok: false, name: "unknown column series " + c.id, actual: c.id, expected: "a PLgel MIXED grade", tol: 0, unit: "" });
+    return;
+  }
+  check("column spec " + c.id + " upper range", c.hi, e.hi, 0, "g/mol");
+  check("column spec " + c.id + " efficiency", c.pm, e.pm, 0, "p/m");
+  if (e.lo === null) {
+    if (c.lo !== null) {
+      failed++;
+      cases.push({ ok: false, name: "column spec " + c.id + " must not invent a lower bound", actual: c.lo, expected: "null", tol: 0, unit: "" });
+    }
+  } else {
+    check("column spec " + c.id + " lower range", c.lo, e.lo, 0, "g/mol");
+  }
+});
+
+// The page's own defaults: 2 x 300 mm PLgel 5 um MIXED-C, the demo trace's
+// log-linear calibration, and the peak where that trace puts it.
+const GT_B = 0.70, GT_VR = 8.775, GT_L = 0.6;
+const gtN = (pm) => pm * GT_L;
+check("MIXED-C bank plate count", gtN(50000), 30000, 0, "plates");
+check("MIXED-C sigma on the demo trace", gtSigma(gtN(50000), GT_B, GT_VR), 0.0816, 5e-4, "in ln M");
+check("MIXED-C dispersity inflation", gtFactor(gtSigma(gtN(50000), GT_B, GT_VR)), 1.00668, 5e-5, "x");
+
+// Wider range, same geometry: the slope scales with the decades the series has
+// to cover. This is the whole argument of the section, so it gets checked at
+// the numbers the page prints.
+const gtDecades = (c) => Math.log10(c.hi / c.lo);
+const gtRow = (id) => {
+  const c = gtCols.find((x) => x.id === id);
+  const ref = gtCols.find((x) => x.id === "mixed-c");
+  const B = GT_B * gtDecades(c) / gtDecades(ref);
+  return gtSigma(gtN(c.pm), B, GT_VR);
+};
+check("MIXED-A and MIXED-B span the same decades", gtDecades(gtCols.find((c) => c.id === "mixed-a")) - gtDecades(gtCols.find((c) => c.id === "mixed-b")), 0, 1e-12, "decades");
+check("MIXED-A sigma, same bank", gtRow("mixed-a"), 0.1463, 5e-4, "in ln M");
+check("MIXED-B sigma, same bank", gtRow("mixed-b"), 0.1049, 5e-4, "in ln M");
+check("MIXED-D sigma, same bank", gtRow("mixed-d"), 0.0674, 5e-4, "in ln M");
+
+// The claims made in prose, as claims.
+check("a wider bed costs dispersity: MIXED-A over MIXED-D", gtRow("mixed-a") / gtRow("mixed-d"), 2.17, 0.02, "x");
+{
+  // Doubling the bank: N doubles, V_R doubles, and the same range now spreads
+  // over twice the volume so B halves. Net, sigma falls by root two.
+  const one = gtSigma(50000 * 0.3, GT_B, GT_VR);
+  const two = gtSigma(50000 * 0.6, GT_B / 2, GT_VR * 2);
+  check("doubling the bank cuts sigma by root two", one / two, Math.SQRT2, 1e-9, "x");
+  check("doubling the bank halves the excess the columns add", (one * one) / (two * two), 2, 1e-9, "x");
+}
+
+// The two formulae the page states have to be the two the page runs.
+["Math.LN10 * B * Vr / Math.sqrt(N)", "Math.exp(sigma * sigma)"].forEach((frag) => {
+  if (gtHtml.indexOf(frag) === -1) {
+    failed++;
+    cases.push({ ok: false, name: "gpc-trace still computes " + frag, actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+});
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume

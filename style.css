@@ -547,6 +547,11 @@ table.recipe.recipe-data td:not(:first-child), table.recipe.recipe-data th:not(:
     letter-spacing: 0.02em;
     text-align: left;
   }
+  /* A header marked .keepcase carries a symbol, not a word: uppercasing a
+     lower-case sigma or chi changes which character it is. */
+  table.recipe.recipe-stackable tbody td[data-label-keepcase]::before {
+    text-transform: none;
+  }
   /* The first column names the row, so it reads as the card's title rather
      than as another label/value pair. */
   table.recipe.recipe-stackable tbody td:first-child {

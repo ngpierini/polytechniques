@@ -707,8 +707,13 @@
       // Two columns already fit a 375px screen, and stacking them would turn
       // a scannable lookup (the Tg reference list) into a column of cards.
       if (ths.length < 3) continue;
-      var heads = [];
-      for (var h = 0; h < ths.length; h++) heads.push(ths[h].textContent.trim());
+      var heads = [], keepCase = [];
+      for (var h = 0; h < ths.length; h++) {
+        heads.push(ths[h].textContent.trim());
+        // A header that opted out of the uppercase treatment means it: the
+        // stacked label is the same text and a capital sigma is not a sigma.
+        keepCase.push(!!ths[h].querySelector(".keepcase") || ths[h].classList.contains("keepcase"));
+      }
       var rows = table.querySelectorAll("tbody tr");
       var labelled = 0;
       for (var r = 0; r < rows.length; r++) {
@@ -724,6 +729,8 @@
         for (var c = 0; c < cells.length; c++) {
           var cell = cells[c];
           if (heads[c] && !cell.hasAttribute("data-label")) cell.setAttribute("data-label", heads[c]);
+          if (keepCase[c]) cell.setAttribute("data-label-keepcase", "");
+          else cell.removeAttribute("data-label-keepcase");
           cell.removeAttribute("data-stack-last");
           var text = cell.textContent.trim().toLowerCase();
           if (c > 0 && (text === "" || text === "n/a")) cell.setAttribute("data-stack-skip", "");
