@@ -1203,6 +1203,72 @@ check("a wider bed costs dispersity: MIXED-A over MIXED-D", gtRow("mixed-a") / g
   }
 });
 
+// ---- The end-group spectrum figure ----------------------------------------
+// The figure uses the 2H ester quartet; the table below it uses the 6H signal.
+const EGF_HE = 2, EGF_D = 0.002;
+const egfShare = (DP, He) => He / (He + DP * EG_HB);
+const egfMn = (DP) => DP * EG_M0 + EG_MEND;
+const egfErr = (DP, He) => (EGF_D / egfShare(DP, He)) * (DP * EG_M0) / egfMn(DP);
+
+// Each panel writes "DP n", then its Mn, then its uncertainty, in that order.
+const egfPanels = [...egHtml.matchAll(
+  /DP (\d+)<\/text><text[^>]*>M\u2099 ([\d,]+)<\/text><text[^>]*>&plusmn;([\d.]+)%<\/text>/g
+)].map((m) => ({ DP: Number(m[1]), Mn: Number(m[2].replace(/,/g, "")), err: Number(m[3]) }));
+
+if (egfPanels.length !== 3) {
+  failed++;
+  cases.push({ ok: false, name: "the end-group spectrum figure still has three panels", actual: egfPanels.length, expected: 3, tol: 0, unit: "panels" });
+}
+[25, 100, 400].forEach((DP, i) => {
+  const p = egfPanels[i];
+  if (!p) return;
+  check("spectrum panel " + (i + 1) + " is DP " + DP, p.DP, DP, 0, "");
+  check("spectrum figure Mn at DP " + DP, p.Mn, Math.round(egfMn(DP)), 0.5, "g/mol");
+  const want = egfErr(DP, EGF_HE) * 100;
+  check("spectrum figure uncertainty at DP " + DP, p.err, Number(want.toFixed(want < 100 ? 1 : 0)), 0.05, "%");
+});
+
+// The prose under the figure quotes the end group's share of that window.
+[[25, "2.6%", 1], [100, "0.66%", 2], [400, "0.17%", 2]].forEach(([DP, quoted, dp]) => {
+  const want = egfShare(DP, EGF_HE) * 100;
+  check("spectrum share at DP " + DP + " rounds to " + quoted, Number(want.toFixed(dp)), parseFloat(quoted), 0, "%");
+  if (egHtml.indexOf(quoted + " of this window") === -1 && egHtml.indexOf(quoted + " at DP " + DP) === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the figure prose still quotes " + quoted + " at DP " + DP, actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+});
+
+// "about 20 kg/mol on the 6H signal, about 7 kg/mol on the 2H one" is a
+// derived claim: the Mn at which a 0.2% baseline error becomes a 20% error.
+{
+  const ceiling = (He) => {
+    let lo = 200, hi = 400000;
+    for (let i = 0; i < 80; i++) {
+      const mid = (lo + hi) / 2;
+      const DP = (mid - EG_MEND) / EG_M0;
+      if (egfErr(DP, He) < 0.2) lo = mid; else hi = mid;
+    }
+    return lo;
+  };
+  check("end-group ceiling on a 6H signal", ceiling(6) / 1000, 20, 1, "kg/mol");
+  check("end-group ceiling on a 2H signal", ceiling(2) / 1000, 7, 1, "kg/mol");
+  // Not exactly threefold: share is He/(He + Hb*DP), so it only tracks He
+  // once Hb*DP dominates, and Mn carries Mend on top. Pin what it is.
+  check("a 6H signal buys most of a threefold ceiling, not all of it", ceiling(6) / ceiling(2), 2.89, 0.03, "x");
+}
+
+// ---- The technique grid ---------------------------------------------------
+// It replaced a table, and a card that loses its verdict pill loses the one
+// thing the grid is scanned for.
+{
+  const cards = [...egHtml.matchAll(/<div class="tech-card tech-card--(yes|part|no)">/g)].map((m) => m[1]);
+  const pills = (egHtml.match(/<span class="tech-verdict">/g) || []).length;
+  check("the technique grid still carries eight techniques", cards.length, 8, 0, "cards");
+  check("every technique card carries a verdict", pills, cards.length, 0, "pills");
+  check("exactly one technique gives no molecular weight at all", cards.filter((c) => c === "no").length, 1, 0, "cards");
+  check("two techniques give an absolute Mn on their own", cards.filter((c) => c === "yes").length, 2, 0, "cards");
+}
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume

@@ -1639,6 +1639,10 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   overflow-x: auto;
 }
 .chart-svg { display: block; width: 100%; height: auto; min-width: 320px; }
+/* For figures whose annotation does not survive being scaled to a phone.
+   .chart-wrap already scrolls, so this trades a shrunken whole for a
+   legible part the reader can pan across. */
+.chart-svg--wide { min-width: 560px; }
 .chart-svg .axis { stroke: var(--text-dim); stroke-width: 1; }
 .chart-svg .grid { stroke: var(--border); stroke-width: 1; }
 .chart-svg .tick-label { fill: var(--text-dim); font-size: var(--fs-4xs); }
@@ -1652,6 +1656,93 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 .chart-svg .area-included { fill: color-mix(in srgb, var(--primary) 38%, transparent); }
 .chart-svg .area-excluded { fill: var(--text-dim); opacity: 0.22; }
 .chart-svg .bound-line { stroke: var(--danger); stroke-width: 1.5; stroke-dasharray: 4,3; }
+
+/* ---------------------------------------------------------------------
+   Technique comparison cards
+--------------------------------------------------------------------- */
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.tech-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px 16px 15px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  /* The stripe is the scannable part: colour says what the technique costs
+     you before you have read a word of it. */
+  border-left: 3px solid var(--tech-accent, var(--primary));
+}
+.tech-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tech-eyebrow {
+  display: block;
+  font-size: var(--fs-4xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 3px;
+}
+.tech-name {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+}
+.tech-verdict {
+  flex-shrink: 0;
+  align-self: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: var(--fs-4xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: var(--tech-accent, var(--primary));
+  background: color-mix(in srgb, var(--tech-accent, var(--primary)) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tech-accent, var(--primary)) 32%, transparent);
+}
+.tech-best {
+  font-size: var(--fs-sm);
+  color: var(--text);
+  line-height: 1.5;
+}
+.tech-best b {
+  display: block;
+  font-size: var(--fs-4xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+.tech-catch {
+  font-size: var(--fs-xs);
+  color: var(--text-dim);
+  line-height: 1.55;
+  margin: 0;
+  padding-top: 9px;
+  border-top: 1px dashed var(--border);
+}
+.tech-catch b {
+  color: var(--text);
+  font-weight: 700;
+}
+.tech-card--yes { --tech-accent: var(--accent); }
+.tech-card--part { --tech-accent: var(--primary); }
+.tech-card--no { --tech-accent: var(--danger); }
 
 .stat-group-label {
   font-size: var(--fs-2xs);
