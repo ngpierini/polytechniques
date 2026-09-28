@@ -312,6 +312,12 @@
         <button type="button" class="mol-example-btn copy-btn" data-example="nylon6">Nylon 6</button>
       </div>
       <div class="mol-tool-cluster">
+        <span class="mol-toolbar-label" title="These draw a group rather than a whole repeat unit, which is what the Contains fragment button is for">Fragments</span>
+        <button type="button" class="mol-example-btn copy-btn" data-example="frag-ester">Ester</button>
+        <button type="button" class="mol-example-btn copy-btn" data-example="frag-amide">Amide</button>
+        <button type="button" class="mol-example-btn copy-btn" data-example="frag-benzene">Benzene</button>
+      </div>
+      <div class="mol-tool-cluster">
         <button type="button" id="mol-photo-btn" class="copy-btn" hidden title="Upload a photo of a structure (from a paper, label, or hand drawing) and have it read into the editor">&#128247; From photo</button>
         <input type="file" id="mol-photo-input" accept="image/*,application/pdf,image/heic,image/heif,.pdf,.heic,.heif" hidden>
       </div>
@@ -440,7 +446,7 @@
 <script src="bracket-geometry.js?v=1"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=213"></script>
+<script src="polymer-search.js?v=214"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

@@ -8403,6 +8403,16 @@
       var rad = angleDeg * Math.PI / 180;
       return { x: anchor.x + BOND_LEN * Math.cos(rad), y: anchor.y + BOND_LEN * Math.sin(rad) };
     }
+    // Whatever loadExample does after drawing - history, redraw, fit - the
+    // fragment branches need too, so they call this instead of duplicating it.
+    function finishExample() {
+      draw();
+      var statusEl = document.getElementById('mol-status');
+      if (statusEl) statusEl.textContent =
+        'Fragment loaded. Click "Contains fragment" to find every polymer whose repeat unit has it.';
+      renderResults([]);
+    }
+
     function loadExample(key) {
       snapshot();
       atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
@@ -8410,6 +8420,43 @@
       // Each example draws a stub atom just outside the bracket on both ends,
       // standing in for the neighboring repeat units, so the two bonds that
       // cross the bracket edge are real (matching what the extractor needs).
+      // Fragment examples: no stubs, no bracket. These pair with "Contains
+      // fragment", where a whole repeat unit is the wrong question to ask.
+      if (key === 'frag-ester') {
+        var e0 = addAtom('C', cx - 90, cy + 20);
+        var e1 = addAtom('C', cx - 30, cy - 10);          // the carbonyl carbon
+        var eO = addAtom('O', cx - 30, cy - 75);          // =O, straight up
+        var eE = addAtom('O', cx + 30, cy + 20);          // the ester oxygen
+        var e2 = addAtom('C', cx + 90, cy - 10);
+        addBond(e0.id, e1.id, 1);
+        addBond(e1.id, eO.id, 2);
+        addBond(e1.id, eE.id, 1);
+        addBond(eE.id, e2.id, 1);
+        return finishExample();
+      }
+      if (key === 'frag-amide') {
+        var a0 = addAtom('C', cx - 90, cy + 20);
+        var a1 = addAtom('C', cx - 30, cy - 10);
+        var aO = addAtom('O', cx - 30, cy - 75);
+        var aN = addAtom('N', cx + 30, cy + 20);
+        var a2 = addAtom('C', cx + 90, cy - 10);
+        addBond(a0.id, a1.id, 1);
+        addBond(a1.id, aO.id, 2);
+        addBond(a1.id, aN.id, 1);
+        addBond(aN.id, a2.id, 1);
+        return finishExample();
+      }
+      if (key === 'frag-benzene') {
+        // A plain Kekule hexagon. Either alternation finds the same rings,
+        // because the matcher is free to rotate the mapping round the ring.
+        var ring = [], k;
+        for (k = 0; k < 6; k++) {
+          var ang = (Math.PI / 180) * (60 * k - 90);
+          ring.push(addAtom('C', cx + Math.cos(ang) * BOND_LEN, cy + Math.sin(ang) * BOND_LEN));
+        }
+        for (k = 0; k < 6; k++) addBond(ring[k].id, ring[(k + 1) % 6].id, k % 2 === 0 ? 2 : 1);
+        return finishExample();
+      }
       if (key === 'pe') {
         var p0 = { x: cx - 130, y: cy + 10 };
         var stubA = addAtom('C', p0.x, p0.y);
