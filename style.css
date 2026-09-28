@@ -3526,6 +3526,34 @@ p, li, .guide-note, .hint {
 .smap-count { font-variant-numeric: tabular-nums; opacity: 0.7; }
 @media (pointer: coarse) { .smap-key-item { min-height: 44px; } }
 
+/* Form controls on a touch screen. Measured at 375px with pointer: coarse
+   matching: the buttons beside these were already 44px while the inputs
+   themselves were 36 and the selects 37. On a calculator the input IS the
+   interaction, so it should not be the smallest target on the page.
+
+   Scoped to coarse pointers so nothing changes on a desktop, where a 36px
+   field with a mouse is fine and taller fields would just spread the form
+   out. */
+@media (pointer: coarse) {
+  #guide input[type="number"],
+  #guide input[type="text"],
+  #guide input[type="search"],
+  #guide select,
+  #calc-guide input[type="number"],
+  #calc-guide input[type="text"],
+  #calc-guide select,
+  .calc-grid input,
+  .calc-grid select,
+  .field input,
+  .field select {
+    min-height: 44px;
+  }
+  .theme-toggle-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 /* The HTML "hidden" attribute is styled by the UA sheet at the lowest
    possible specificity, so ANY class rule that sets display beats it and the
    element stays on screen. That had already been patched five times here, once
