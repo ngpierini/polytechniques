@@ -93,6 +93,22 @@ jobs:
       - name: Internal links (no orphans, no broken links)
         run: node scripts/check-internal-links.js
 
+      # Three checks that existed in the repo but were never wired in here, so
+      # they only ever ran when someone thought to run them by hand.
+      #
+      # The bracket bars and the ring templates are both geometry: they can be
+      # wrong on screen while every structural check passes, because a bracket
+      # drawn beside a molecule and a ring with stretched bonds both still have
+      # the right formula, valence and ring count.
+      - name: Bracket bars still cross the bonds they cut
+        run: node scripts/check-bracket-geometry.js
+
+      - name: Ring templates are all drawn with the same bond length
+        run: node scripts/check-ring-geometry.js
+
+      - name: Trivia questions still agree with the polymer library
+        run: node scripts/check-trivia.js
+
       # Fails if the AdSense publisher number stops matching between ads.txt,
       # nav.js and the page heads - a mismatch stops serving without any
       # visible error on the site itself.

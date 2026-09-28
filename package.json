@@ -20,7 +20,8 @@
     "check-math": "node scripts/check-calculator-math.js",
     "build-map": "node scripts/build-structure-map.js",
     "check-map": "node scripts/build-structure-map.js --check",
-    "check-links": "node scripts/check-internal-links.js"
+    "check-links": "node scripts/check-internal-links.js",
+    "check-rings": "node scripts/check-ring-geometry.js"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"

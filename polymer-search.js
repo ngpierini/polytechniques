@@ -191,6 +191,16 @@
     var BOND_HIT = 7;
     var BOND_LEN = 42;
     var SNAP_STEP = Math.PI / 6; // 30 degrees, matching standard skeletal-formula bond angles
+    // Circumradius of an n-ring drawn with the same bond length as benzene.
+    // BOND_LEN * 0.72 is that radius for a hexagon, whose side is therefore
+    // 2 * 0.72 * sin(30 deg) = 0.72 * BOND_LEN; hold that side fixed and
+    // solve for the rest. Before this, every template shared the hexagon
+    // radius, so only the 6-rings were right: a cyclopropane came out with
+    // bonds 73% too long and a cyclooctane 23% too short, both plainly
+    // visible next to a benzene on the same canvas.
+    function ringRadius(n) {
+      return (BOND_LEN * 0.72) / (2 * Math.sin(Math.PI / n));
+    }
 
     // Snap a new atom to the nearest 30-degree increment at a fixed bond length
     // from its anchor, so chains come out as proper zigzags (like a real
@@ -390,7 +400,7 @@
     // Stamp a freestanding ring centered at a point (empty-canvas click).
     function stampRingAt(center, n, aromatic) {
       snapshot();
-      var r = BOND_LEN * 0.72; // match the ring radius used everywhere else (attached, fused, worked examples)
+      var r = ringRadius(n); // same bond length as every other ring size
       var startAngle = -Math.PI / 2 + ringRotationSteps * SNAP_STEP;
       var ids = [];
       for (var i = 0; i < n; i++) {
@@ -411,7 +421,7 @@
     // ipso vertex, so the ring bulges away from the attachment atom instead
     // of folding back over it and crossing the bond leading into it.
     function ringVertexPositions(atom, snappedRad, n) {
-      var r = BOND_LEN * 0.72;
+      var r = ringRadius(n);
       var ipso = { x: atom.x + BOND_LEN * Math.cos(snappedRad), y: atom.y + BOND_LEN * Math.sin(snappedRad) };
       var center = { x: ipso.x + r * Math.cos(snappedRad), y: ipso.y + r * Math.sin(snappedRad) };
       var ipsoAngleDeg = snappedRad * 180 / Math.PI + 180;
@@ -438,7 +448,7 @@
     // at a given angle. position[0] is always exactly the atom's own
     // position, so it never moves - only the other n-1 vertices are new.
     function spiroRingVertexPositions(atom, snappedRad, n) {
-      var r = BOND_LEN * 0.72;
+      var r = ringRadius(n);
       var center = { x: atom.x + r * Math.cos(snappedRad), y: atom.y + r * Math.sin(snappedRad) };
       var atomAngleDeg = snappedRad * 180 / Math.PI + 180;
       var positions = [];
@@ -475,7 +485,7 @@
       snapshot();
       var chosen = pickRingAngle(atom, n);
       var positions = spiroRingVertexPositions(atom, chosen, n);
-      var ringR = BOND_LEN * 0.72;
+      var ringR = ringRadius(n);
       var ringCenter = { x: atom.x + ringR * Math.cos(chosen), y: atom.y + ringR * Math.sin(chosen) };
       var ids = [atom.id];
       for (var i = 1; i < n; i++) ids.push(addAtom('C', positions[i].x, positions[i].y).id);
@@ -1315,7 +1325,7 @@
         positions = [];
         for (var i = 0; i < n; i++) {
           var ang = startAngle + (i * 2 * Math.PI / n);
-          positions.push({ x: ringHoverPos.x + (BOND_LEN * 0.72) * Math.cos(ang), y: ringHoverPos.y + (BOND_LEN * 0.72) * Math.sin(ang) });
+          positions.push({ x: ringHoverPos.x + ringRadius(n) * Math.cos(ang), y: ringHoverPos.y + ringRadius(n) * Math.sin(ang) });
         }
       }
       ctx.save();
@@ -8502,7 +8512,7 @@
         // give it room to fit inside the bracket.
         var psAngle = Math.PI / 2;
         var ringPositions = ringVertexPositions(b2, psAngle, 6);
-        var ringR = BOND_LEN * 0.72;
+        var ringR = ringRadius(6);
         var ringIpso = { x: b2.x + BOND_LEN * Math.cos(psAngle), y: b2.y + BOND_LEN * Math.sin(psAngle) };
         var psRingCenter = { x: ringIpso.x + ringR * Math.cos(psAngle), y: ringIpso.y + ringR * Math.sin(psAngle) };
         var ids = ringPositions.map(function (p) { return addAtom('C', p.x, p.y).id; });
