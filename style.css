@@ -877,13 +877,54 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   font-size: var(--fs-3xs);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--card-accent, var(--primary));
+  color: var(--card-accent-ink, var(--card-accent, var(--primary)));
   font-weight: 700;
   margin-bottom: 8px;
 }
 .home-card h2, .home-card h3 { margin: 0 0 8px; font-size: 1.15rem; }
 .home-card p { margin: 0; color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.5; }
-.home-card-arrow { display: block; margin-top: 16px; font-size: var(--fs-sm); font-weight: 600; color: var(--card-accent, var(--primary)); }
+.home-card-arrow { display: block; margin-top: 16px; font-size: var(--fs-sm); font-weight: 600; color: var(--card-accent-ink, var(--card-accent, var(--primary))); }
+
+/* Home-page accents, one class per colour. Each is used three ways: the 3px
+   stripe, the 16% icon tint, and the eyebrow and arrow text. The bright
+   values are tuned for the dark card and measure 5.12 to 9.24:1 as text
+   there. On white they are 1.79 to 3.23:1, and these are small labels, so
+   4.5:1 applies.
+
+   Stripe and tint stay bright - decoration, and what tells the cards apart.
+   Only the text darkens, and only in light appearance. Each ink is the
+   lightest shade of its own hue that clears the bar, so blue barely moves
+   and yellow moves most; one shared darkening factor would have had to
+   satisfy yellow and would have taken blue to 7.22:1, flattening the
+   palette to fix a problem blue hardly had. */
+.accent-blue { --card-accent: #5b8def; }
+.accent-violet { --card-accent: #a78bfa; }
+.accent-teal { --card-accent: #4fd1c5; }
+.accent-yellow { --card-accent: #f2b84b; }
+.accent-mint { --card-accent: #37c98f; }
+.accent-pink { --card-accent: #f472b6; }
+
+/* Text defaults to the bright accent, which is correct on a dark card. */
+.accent-blue, .accent-violet, .accent-teal, .accent-yellow, .accent-mint, .accent-pink { --card-accent-ink: var(--card-accent); }
+
+/* Light appearance: the no-attribute default and an explicit light. */
+:root:not([data-theme="dark"]) .accent-blue { --card-accent-ink: #4b74c4; }
+:root:not([data-theme="dark"]) .accent-violet { --card-accent-ink: #7d68bc; }
+:root:not([data-theme="dark"]) .accent-teal { --card-accent-ink: #31827a; }
+:root:not([data-theme="dark"]) .accent-yellow { --card-accent-ink: #916e2d; }
+:root:not([data-theme="dark"]) .accent-mint { --card-accent-ink: #24855e; }
+:root:not([data-theme="dark"]) .accent-pink { --card-accent-ink: #b55487; }
+
+/* A dark OS with no explicit choice is dark appearance, so the bright
+   accent is right again and the override above has to be undone. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .accent-blue,
+  :root:not([data-theme="light"]) .accent-violet,
+  :root:not([data-theme="light"]) .accent-teal,
+  :root:not([data-theme="light"]) .accent-yellow,
+  :root:not([data-theme="light"]) .accent-mint,
+  :root:not([data-theme="light"]) .accent-pink { --card-accent-ink: var(--card-accent); }
+}
 
 /* The one card that is the point of the site: laid out across the full
    width so it reads as the primary action rather than one tile of many. */
