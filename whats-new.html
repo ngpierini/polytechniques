@@ -57,7 +57,7 @@
   </div>
 
   <div class="card">
-    <h3>&#9881;&#65039; Four fixes to the structure drawing canvas</h3>
+    <h3>&#9881;&#65039; Five changes to the structure drawing canvas</h3>
     <p class="guide-note">
       <strong>Ring templates other than benzene were the wrong size.</strong> The ring tool stamps any ring from three to eight atoms, and all seven buttons shared a single radius &mdash; the one that is correct for a hexagon. A cyclopropane came out with bonds 73% too long and a cyclooctane 23% too short, which is why a three-ring drawn beside a benzene measured exactly the same width across. Every size now uses the bond length benzene has always had. Benzene and cyclohexane are unchanged, so nothing you drew before has moved.
     </p>
@@ -72,6 +72,9 @@
     </p>
     <p class="guide-note">
       The set colours had a quieter version of the same problem: one fixed palette was being used on both a white and a dark background, and not one of the eleven met the 4.5:1 standard on both. Bright hues wash out on white and dark ones vanish on the dark card. Sulfur&rsquo;s yellow measured 1.92:1 on white, which is the default theme. Each theme now gets its own lightness for those colours with the hue left alone, so oxygen still reads red and sulfur still reads yellow, and every element clears 4.5:1 either way. Exported images are unaffected: they force a white background on purpose and take the colours that suit it, whichever theme you export from.
+    </p>
+    <p class="guide-note">
+      <strong>Ring sizes are on the number keys.</strong> The number keys did nothing before, so 3 through 8 now pick the ring of that many atoms and Shift+6 picks benzene. The rule is just &ldquo;N gives an N-membered ring&rdquo;; benzene is the aromatic form of the same ring, so it sits on a modifier of the same key rather than getting one of its own. Each ring button&rsquo;s tooltip names its shortcut. Typing in a text box is unaffected.
     </p>
   </div>
   <div class="card">

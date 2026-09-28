@@ -2793,6 +2793,40 @@
       }
       if (typing) return;
 
+      // Ring sizes on the number keys. The digits were completely unbound:
+      // the element hotkeys below only accept single letters, and only while
+      // an atom is hovered, so nothing collides. Seven ring buttons is a lot
+      // of trips to the toolbar when drawing a page of structures.
+      //
+      // A plain digit gives the plain ring of that size, so the rule is "N
+      // gives an N-membered ring" with nothing to remember. Benzene sits on
+      // Shift+6 - the same ring, aromatic - read from evt.code, because a
+      // shifted 6 arrives as "^" on a US layout and as something else
+      // elsewhere, while the physical key is what the shortcut means.
+      if (!evt.ctrlKey && !evt.metaKey && !evt.altKey && editorInView()) {
+        var ringDigit = /^Digit([3-8])$/.exec(evt.code || "");
+        if (ringDigit) {
+          var wantN = ringDigit[1];
+          var wantAromatic = evt.shiftKey && wantN === "6";
+          // Shift on any other digit is not a shortcut; leave it alone.
+          if (!evt.shiftKey || wantAromatic) {
+            var ringBtn = null;
+            document.querySelectorAll("[data-ring-n]").forEach(function (b) {
+              if (b.getAttribute("data-ring-n") !== wantN) return;
+              if ((b.getAttribute("data-ring-aromatic") === "true") === wantAromatic) ringBtn = b;
+            });
+            if (ringBtn) {
+              evt.preventDefault();
+              // Click the button rather than setting the mode here, so the
+              // pending ring, the active-button styling and anything else
+              // that handler does all stay in one place.
+              ringBtn.click();
+              return;
+            }
+          }
+        }
+      }
+
       // Delete/Backspace clears the selection. Without it, removing a group
       // means switching to the erase tool and clicking every atom in turn.
       // Handled here because the element-hotkey path below only accepts
