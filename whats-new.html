@@ -57,14 +57,60 @@
   </div>
 
   <div class="card">
+    <h3>🔎 Search the library by what a repeat unit contains</h3>
+    <p class="guide-note">
+      The reference library stores a drawn structure for 751 polymers, and until now the only structural questions it could answer were about a whole repeat unit: is this the same polymer, how similar is it, where does it sit on the map. It can now be asked what a unit <em>contains</em>. Twenty-three groups are built in, from ester and amide to imide, anhydride, epoxide and difluoromethylene, and each one is a chip on the search page with the count beside it.
+    </p>
+    <p class="guide-note">
+      Put next to the row above it, which says what the <em>chain</em> is made of, the two together draw a distinction no tag could: <strong>288 polymers contain an ester and 56 have one in the backbone</strong>; 160 contain an amide against 65. The gap is every pendant ester on an acrylate and every amide hanging off a polyacrylamide. Nothing here is declared in the data. It is all read off the structure.
+    </p>
+    <p class="guide-note">
+      Two details that took some care. A linkage sitting where the repeat bracket happens to be drawn is still in the polymer, so matching runs on the closed unit, which is what lets poly(ethylene oxide) be found as an ether. Rings are the exact opposite: closing a short unit <em>manufactures</em> one, and poly(ethylene oxide) closed is a three-membered ring, so ring groups are matched on the drawn unit instead. Getting that backwards had PEO listed as containing an epoxide, which it is merely made from.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>💧 Hydrogel Mesh Size</h3>
+    <p class="guide-note">
+      A hydrogel is specified by its mesh size more often than by its modulus, because that length decides what can diffuse through it. <a href="hydrogel-mesh-size.html"><strong>The new page</strong></a> gets one from a swelling measurement you can make on a balance: dry mass and swollen mass give the polymer volume fraction, Peppas and Merrill's relation gives the molar mass between crosslinks, and Canal and Peppas turn that into the mesh. Give it a solute radius and it estimates what fraction of its free-water diffusion rate that solute keeps, or tells you it does not fit at all.
+    </p>
+    <p class="guide-note">
+      The reason it is not a card on the crosslink density page is the reference state. A gel crosslinked in water is already swollen when its strands are tied together, so the dry network is not unperturbed and the Flory and Rehner form counts the stretch twice. The relaxed-state volume fraction is an input here, and it is the commonest thing to get wrong, because getting it wrong leaves the answer looking perfectly plausible.
+    </p>
+    <p class="guide-note">
+      The network is drawn to scale beside your solute, so whether it fits stops being arithmetic. No chain constants are typed into the page: the bond length, bonds per repeat and characteristic ratio come from the <a href="chain-dimensions.html">chain dimensions</a> dataset, which carries a source for each.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🧪 End Group &amp; Pendant Group Analysis</h3>
+    <p class="guide-note">
+      Three different questions get called end-group analysis, and picking the wrong instrument is the usual reason an answer disappoints: what is on the end, how many chains carry it, and how long the chains are. <a href="end-group-analysis.html"><strong>The new guide</strong></a> lays eight techniques out as cards, each saying what it is best at and what it costs you to get a molecular weight out of it, with calculators for M<sub>n</sub> by NMR integration, degree of substitution, and titration equivalent weight.
+    </p>
+    <p class="guide-note">
+      The familiar ceiling around 20 kg/mol is drawn rather than asserted: the same spectrum window at DP 25, 100 and 400, each normalised to its backbone peak, with the end-group signal at forty times vertical expansion in all three so the collapse you are watching is real and not a change of scale. A MALDI figure does the other half, where the peak spacing names the monomer and the offset names the ends. The titration card draws the functionality trap as what it is: M<sub>n</sub> is that many identical blocks, so reading a diol as a triol is a 50% error, not a 5% one.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>📉 The GPC trace analyzer now says where its error comes from</h3>
+    <p class="guide-note">
+      Band broadening is usually treated as an instrument constant you measure once. It is, but the constant is set by two numbers on the column datasheet, and you chose them when you bought the columns. <a href="gpc-trace.html"><strong>The trace analyzer</strong></a> now takes a column series, bank size and length, and reports how much of the dispersity it printed belongs to the columns rather than the polymer.
+    </p>
+    <p class="guide-note">
+      Two results fall out that are worth knowing before the next purchase order. <strong>Range you do not need is not free</strong>: a series sold as covering more decades fits them into the same separation volume, which is a steeper calibration, and the wide-range grades are also the low-efficiency ones, so the same injection through a 20&nbsp;&micro;m mixed bed carries more than twice the broadening of a narrow one. And <strong>doubling the bank buys back exactly &radic;2</strong>, which is the familiar square-root-of-length result arrived at from the dispersity side, and why the fourth column is a much worse buy than the second.
+    </p>
+  </div>
+
+  <div class="card">
     <h3>📈 Five tools that work on distributions, phases and networks</h3>
     <p class="guide-note">Every calculator here used to take a few numbers in and give a few numbers back. These five take your actual data, or return a whole curve, and between them they cover the two areas the site had nothing on at all: thermodynamics of mixing and viscoelasticity.</p>
     <ul class="guide-list">
-      <li><a href="gpc-trace.html"><strong>GPC Trace Analyzer</strong></a> &ndash; paste the raw chromatogram and compute M<sub>n</sub>, M<sub>w</sub>, M<sub>z</sub> and &#272; yourself, with what the integration limits were worth shown next to the answer. Clipping always narrows a distribution: a sample that is truly &#272;&nbsp;=&nbsp;1.300 reads 1.244 when integrated to 10% of peak height.</li>
-      <li><a href="mwd-simulator.html"><strong>Distribution Simulator</strong></a> &ndash; the whole molecular weight distribution a controlled polymerization should give, the dead-chain tail, and what band broadening does to it. Terminating a tenth of the chains drops M<sub>n</sub> 8% and barely moves M<sub>w</sub>.</li>
-      <li><a href="flory-huggins.html"><strong>Flory&ndash;Huggins Phase Behaviour</strong></a> &ndash; binodal, spinodal and critical point for a blend or a solution, the cloud point from &chi;(T), and the order&ndash;disorder transition of a diblock.</li>
-      <li><a href="tts-master-curve.html"><strong>Time&ndash;Temperature Superposition</strong></a> &ndash; paste isothermal frequency sweeps and get a master curve, shift factors and WLF constants, plus why C&#8321; and C&#8322; mean nothing without their reference temperature.</li>
-      <li><a href="network-formation.html"><strong>Network Formation</strong></a> &ndash; gel point, sol fraction and elastic strand density for any mix of functionalities, by the Macosko&ndash;Miller recursive method.</li>
+      <li><a href="gpc-trace.html"><strong>GPC Trace Analyzer</strong></a>. Paste the raw chromatogram and compute M<sub>n</sub>, M<sub>w</sub>, M<sub>z</sub> and &#272; yourself, with what the integration limits were worth shown next to the answer. Clipping always narrows a distribution: a sample that is truly &#272;&nbsp;=&nbsp;1.300 reads 1.244 when integrated to 10% of peak height.</li>
+      <li><a href="mwd-simulator.html"><strong>Distribution Simulator</strong></a>. The whole molecular weight distribution a controlled polymerization should give, the dead-chain tail, and what band broadening does to it. Terminating a tenth of the chains drops M<sub>n</sub> 8% and barely moves M<sub>w</sub>.</li>
+      <li><a href="flory-huggins.html"><strong>Flory&ndash;Huggins Phase Behaviour</strong></a>. Binodal, spinodal and critical point for a blend or a solution, the cloud point from &chi;(T), and the order&ndash;disorder transition of a diblock.</li>
+      <li><a href="tts-master-curve.html"><strong>Time&ndash;Temperature Superposition</strong></a>. Paste isothermal frequency sweeps and get a master curve, shift factors and WLF constants, plus why C&#8321; and C&#8322; mean nothing without their reference temperature.</li>
+      <li><a href="network-formation.html"><strong>Network Formation</strong></a>. Gel point, sol fraction and elastic strand density for any mix of functionalities, by the Macosko&ndash;Miller recursive method.</li>
     </ul>
     <p class="guide-note">Each one loads with data generated from a known answer, so the worked example is a measurement of the tool rather than a claim about it, and every published number is re-derived by the site's automated checks on each change.</p>
   </div>
