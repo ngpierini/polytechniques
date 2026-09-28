@@ -81,7 +81,10 @@
 
    Scoped deliberately. Several components are themselves anchors - .home-card
    wraps an entire card in one - and the nav strips style their own links, so a
-   bare element selector would repaint all of them. */
+   bare element selector would repaint all of them. Which means the list is
+   load-bearing: a prose container nobody added here keeps the default blue,
+   and five of them did until an audit of all 46 pages in both themes turned
+   them up. Add to it when a new prose container appears. */
 .guide-note a,
 .hint a,
 .diagram-caption a,
@@ -93,6 +96,12 @@
 #guide li a,
 #calc-guide p a,
 #calc-guide li a,
+#guide dd a,
+#app p a,
+#app li a,
+#app .sub a,
+.home-footnote a,
+.footer-legal a,
 .footer a {
   color: var(--primary);
   text-decoration-color: color-mix(in srgb, var(--primary) 45%, transparent);
@@ -110,6 +119,12 @@
 #guide li a:hover,
 #calc-guide p a:hover,
 #calc-guide li a:hover,
+#guide dd a:hover,
+#app p a:hover,
+#app li a:hover,
+#app .sub a:hover,
+.home-footnote a:hover,
+.footer-legal a:hover,
 .footer a:hover {
   text-decoration-color: currentColor;
 }
