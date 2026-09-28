@@ -41,7 +41,7 @@
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=116">
+<link rel="stylesheet" href="style.css?v=117">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 <style>
   /* ---- Arcade band ----
@@ -413,7 +413,9 @@
   var CACHE_KEY = 'polytechniques_hot_papers_v3';
   var PAGE_SIZE = 6;
   var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-  var ACCENTS = ['#5b8def', '#37c98f', '#f2b84b', '#ef6a6a', '#a78bfa', '#4fd1c5'];
+  // Accent class per card, cycled. The colours themselves live in style.css
+  // so the light-theme ink for each hue travels with them.
+  var ACCENTS = ['accent-blue', 'accent-mint', 'accent-yellow', 'accent-salmon', 'accent-violet', 'accent-teal'];
 
   var FALLBACK_PAPERS = [
     {
@@ -540,7 +542,7 @@
           ? '<span class="paper-cites">🔥 ' + p.cites + (p.cites === 1 ? ' citation' : ' citations') + '</span>'
           : '<span class="paper-cites paper-cites-new">✨ just released</span>';
       }
-      return '<a class="paper-card" style="--paper-accent:' + accent + '; animation-delay:' + (i * 0.06).toFixed(2) + 's" ' +
+      return '<a class="paper-card ' + accent + '" style="animation-delay:' + (i * 0.06).toFixed(2) + 's" ' +
         'href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener">' +
         '<div class="paper-top-row">' +
         (p.journal ? '<span class="paper-journal" title="' + escapeHtml(p.journal) + '">' + escapeHtml(p.journal) + '</span>' : '<span></span>') +

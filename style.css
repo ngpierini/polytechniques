@@ -899,35 +899,42 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 .home-card p { margin: 0; color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.5; }
 .home-card-arrow { display: block; margin-top: 16px; font-size: var(--fs-sm); font-weight: 600; color: var(--card-accent-ink, var(--card-accent, var(--primary))); }
 
-/* Home-page accents, one class per colour. Each is used three ways: the 3px
-   stripe, the 16% icon tint, and the eyebrow and arrow text. The bright
-   values are tuned for the dark card and measure 5.12 to 9.24:1 as text
-   there. On white they are 1.79 to 3.23:1, and these are small labels, so
-   4.5:1 applies.
+/* Accent colours, one class per hue, shared by the home cards, the home
+   rows and the recent-papers cards. Each is used four ways: a 3px stripe,
+   a 14-18% tint, and two kinds of text - the card eyebrow and arrow, and
+   the paper journal pill and its Read hint.
 
-   Stripe and tint stay bright - decoration, and what tells the cards apart.
-   Only the text darkens, and only in light appearance. Each ink is the
-   lightest shade of its own hue that clears the bar, so blue barely moves
-   and yellow moves most; one shared darkening factor would have had to
-   satisfy yellow and would have taken blue to 7.22:1, flattening the
-   palette to fix a problem blue hardly had. */
+   The bright values are tuned for a dark card, where they run 5.12 to
+   9.24:1 as text. On white the same colours are 1.79 to 3.23:1, and all of
+   these are small labels, so the bar is 4.5:1.
+
+   Stripes and tints keep the bright colour: they are decoration, and they
+   are what tells the cards apart. Only text darkens, and only in light
+   appearance. Each ink is the lightest shade of its own hue that clears
+   4.55:1 on white AND on a 14% tint of itself, because the journal pill
+   sits on exactly that - inks picked against white alone came out at 3.96
+   to 4.34:1 on the tint. One shared darkening factor instead would have
+   had to satisfy yellow and would have taken blue to 7.22:1, flattening
+   the palette to fix a problem blue hardly had. */
 .accent-blue { --card-accent: #5b8def; }
 .accent-violet { --card-accent: #a78bfa; }
 .accent-teal { --card-accent: #4fd1c5; }
 .accent-yellow { --card-accent: #f2b84b; }
 .accent-mint { --card-accent: #37c98f; }
+.accent-salmon { --card-accent: #ef6a6a; }
 .accent-pink { --card-accent: #f472b6; }
 
 /* Text defaults to the bright accent, which is correct on a dark card. */
-.accent-blue, .accent-violet, .accent-teal, .accent-yellow, .accent-mint, .accent-pink { --card-accent-ink: var(--card-accent); }
+.accent-blue, .accent-violet, .accent-teal, .accent-yellow, .accent-mint, .accent-salmon, .accent-pink { --card-accent-ink: var(--card-accent); }
 
 /* Light appearance: the no-attribute default and an explicit light. */
-:root:not([data-theme="dark"]) .accent-blue { --card-accent-ink: #4b74c4; }
-:root:not([data-theme="dark"]) .accent-violet { --card-accent-ink: #7d68bc; }
-:root:not([data-theme="dark"]) .accent-teal { --card-accent-ink: #31827a; }
-:root:not([data-theme="dark"]) .accent-yellow { --card-accent-ink: #916e2d; }
-:root:not([data-theme="dark"]) .accent-mint { --card-accent-ink: #24855e; }
-:root:not([data-theme="dark"]) .accent-pink { --card-accent-ink: #b55487; }
+:root:not([data-theme="dark"]) .accent-blue { --card-accent-ink: #446ab3; }
+:root:not([data-theme="dark"]) .accent-violet { --card-accent-ink: #7360ad; }
+:root:not([data-theme="dark"]) .accent-teal { --card-accent-ink: #2f7b74; }
+:root:not([data-theme="dark"]) .accent-yellow { --card-accent-ink: #8c6b2c; }
+:root:not([data-theme="dark"]) .accent-mint { --card-accent-ink: #227d59; }
+:root:not([data-theme="dark"]) .accent-salmon { --card-accent-ink: #ac4c4c; }
+:root:not([data-theme="dark"]) .accent-pink { --card-accent-ink: #a64e7c; }
 
 /* A dark OS with no explicit choice is dark appearance, so the bright
    accent is right again and the override above has to be undone. */
@@ -937,6 +944,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   :root:not([data-theme="light"]) .accent-teal,
   :root:not([data-theme="light"]) .accent-yellow,
   :root:not([data-theme="light"]) .accent-mint,
+  :root:not([data-theme="light"]) .accent-salmon,
   :root:not([data-theme="light"]) .accent-pink { --card-accent-ink: var(--card-accent); }
 }
 
@@ -1400,7 +1408,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   display: block;
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-left: 4px solid var(--paper-accent, var(--primary));
+  border-left: 4px solid var(--card-accent, var(--primary));
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 16px 18px;
@@ -1436,8 +1444,8 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--paper-accent, var(--primary));
-  background: color-mix(in srgb, var(--paper-accent, var(--primary)) 14%, transparent);
+  color: var(--card-accent-ink, var(--card-accent, var(--primary)));
+  background: color-mix(in srgb, var(--card-accent, var(--primary)) 14%, transparent);
   padding: 3px 8px;
   border-radius: 999px;
 }
@@ -1471,7 +1479,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 }
 .paper-link-hint {
   font-weight: 600;
-  color: var(--paper-accent, var(--primary));
+  color: var(--card-accent-ink, var(--card-accent, var(--primary)));
 }
 
 .hot-papers-loading, .hot-papers-error {
