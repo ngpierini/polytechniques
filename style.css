@@ -3335,6 +3335,60 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 .fam-index a:hover { border-color: var(--primary); }
 /* Anchored headings must clear the sticky topbar when jumped to. */
 .fam-entry, #guide .card[id^="letter-"] { scroll-margin-top: 80px; }
+/* Landing on an anchor needs to say which row you landed on. The scroll-margin
+   above gets you there clear of the header; this is the part that tells you
+   you have arrived, which matters most on the family pages where 210 entries
+   look alike. Fades from a strong tint to a quiet one so it is obvious on
+   arrival and not a permanent highlight afterwards. */
+.fam-entry:target,
+#guide > .card:target {
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+  box-shadow: inset 3px 0 0 var(--primary);
+  border-radius: 6px;
+  padding-left: 14px;
+  margin-left: -14px;
+  animation: pt-target-settle 1.8s ease-out 1;
+}
+@keyframes pt-target-settle {
+  from { background: color-mix(in srgb, var(--primary) 22%, transparent); }
+  to   { background: color-mix(in srgb, var(--primary) 6%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fam-entry:target, #guide > .card:target { animation: none; }
+}
+
+/* Headings are short and shaped; balance stops the last word dropping alone
+   onto a second line. pretty does the same for the last line of a paragraph.
+   Both are ignored where unsupported, which leaves today's wrapping. */
+h1, h2, h3, h4, .subtitle, .diagram-caption, .tech-name {
+  text-wrap: balance;
+}
+p, li, .guide-note, .hint {
+  text-wrap: pretty;
+}
+
+/* The palette keeps borders and secondary text deliberately quiet. That is the
+   right default and the wrong one for anybody who has asked the operating
+   system for more contrast, so honour the ask rather than overriding it. */
+@media (prefers-contrast: more) {
+  :root {
+    --border: #b3aca2;
+    --text-dim: #4a4f59;
+  }
+  :root[data-theme="dark"] {
+    --border: #625d70;
+    --text-dim: #c6c2ce;
+  }
+  .card, .tech-card, .chart-wrap, .diagram-panel { border-width: 1.5px; }
+}
+@media (prefers-color-scheme: dark) and (prefers-contrast: more) {
+  :root:not([data-theme="light"]) {
+    --border: #625d70;
+    --text-dim: #c6c2ce;
+  }
+}
+
+
 
 /* The ask box. Visually subordinate to the name search above it - that one is
    the fast path and should stay the obvious one - but full width, because a
