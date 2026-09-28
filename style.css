@@ -36,7 +36,7 @@
      that clear 4.55:1 on every background each one lands on. The dark
      palette below is untouched: it was already 7.81 and 6.25:1. */
   --accent: #0b7954;
-  --danger: #c13e3e;
+  --danger: #b83b3b;
   --radius: 10px;
   /* Near-flat. A hairline border already separates a card from the ground;
      a drop shadow on top of it is the second answer to a question that was
@@ -91,7 +91,7 @@
   --amber-ink: #88672a;
   --primary-dim: #f0f4fd;
   --accent: #0b7954;
-  --danger: #c13e3e;
+  --danger: #b83b3b;
   --shadow: none;
 }
 
@@ -907,51 +907,56 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 .home-card-arrow { display: block; margin-top: 16px; font-size: var(--fs-sm); font-weight: 600; color: var(--card-accent-ink, var(--card-accent, var(--primary))); }
 
 /* Accent colours, one class per hue, shared by the home cards, the home
-   rows and the recent-papers cards. Each is used four ways: a 3px stripe,
-   a 14-18% tint, and two kinds of text - the card eyebrow and arrow, and
-   the paper journal pill and its Read hint.
+   rows, the recent-papers cards and the game HUD. Each is used four ways: a
+   3px stripe, a 14-18% tint, and two kinds of text - the card eyebrow and
+   arrow, and the paper journal pill with its Read hint.
 
-   The bright values are tuned for a dark card, where they run 5.12 to
-   9.24:1 as text. On white the same colours are 1.79 to 3.23:1, and all of
-   these are small labels, so the bar is 4.5:1.
+   Each hue declares three values: the bright colour, and an ink for each
+   appearance. The bright values are tuned for a dark card. On white they run
+   1.79 to 3.23:1, and all of this is small text, so the bar is 4.5:1.
 
    Stripes and tints keep the bright colour: they are decoration, and they
-   are what tells the cards apart. Only text darkens, and only in light
-   appearance. Each ink is the lightest shade of its own hue that clears
-   4.55:1 on white AND on a 14% tint of itself, because the journal pill
-   sits on exactly that - inks picked against white alone came out at 3.96
-   to 4.34:1 on the tint. One shared darkening factor instead would have
-   had to satisfy yellow and would have taken blue to 7.22:1, flattening
-   the palette to fix a problem blue hardly had. */
-.accent-blue { --card-accent: #5b8def; }
-.accent-violet { --card-accent: #a78bfa; }
-.accent-teal { --card-accent: #4fd1c5; }
-.accent-yellow { --card-accent: #f2b84b; }
-.accent-mint { --card-accent: #37c98f; }
-.accent-salmon { --card-accent: #ef6a6a; }
-.accent-pink { --card-accent: #f472b6; }
+   are what tells the cards apart. Only text takes an ink.
 
-/* Paint any text with its accent class's per-theme ink. For places that
-   want the accent as a colour and nothing else - a game HUD readout, a
-   status value - without the card chrome around it. */
-/* The class is repeated to make this two classes rather than one: a plain
-   .accent-ink loses to ".stat .value", which sets color from --primary, and
-   a utility that can be outweighed by ordinary component CSS is no use. */
-.accent-ink.accent-ink { color: var(--card-accent-ink, var(--card-accent, var(--primary))); }
-/* Text defaults to the bright accent, which is correct on a dark card. */
-.accent-blue, .accent-violet, .accent-teal, .accent-yellow, .accent-mint, .accent-salmon, .accent-pink { --card-accent-ink: var(--card-accent); }
+   Both inks are checked against two surfaces - the card, and a 14% tint of
+   the hue itself, which is what the journal pill sits on. That second
+   surface is why the dark ink is listed rather than assumed equal to the
+   bright colour: on its own tint, bright blue is 4.20:1 and bright salmon
+   4.49:1, so those two lighten a shade while the other five stand. The light
+   inks are each the lightest shade of their hue that clears both surfaces,
+   so blue moves least and yellow most; one shared darkening factor would
+   have had to satisfy yellow and would have taken blue to 7.22:1, flattening
+   the palette to fix a problem blue hardly had. */
+.accent-blue { --accent-bright: #5b8def; --accent-ink-dark: #6094fb; --accent-ink-light: #446ab3; }
+.accent-violet { --accent-bright: #a78bfa; --accent-ink-dark: #a78bfa; --accent-ink-light: #7360ad; }
+.accent-teal { --accent-bright: #4fd1c5; --accent-ink-dark: #4fd1c5; --accent-ink-light: #2f7b74; }
+.accent-yellow { --accent-bright: #f2b84b; --accent-ink-dark: #f2b84b; --accent-ink-light: #8c6b2c; }
+.accent-mint { --accent-bright: #37c98f; --accent-ink-dark: #37c98f; --accent-ink-light: #227d59; }
+.accent-salmon { --accent-bright: #ef6a6a; --accent-ink-dark: #f16b6b; --accent-ink-light: #ac4c4c; }
+.accent-pink { --accent-bright: #f472b6; --accent-ink-dark: #f472b6; --accent-ink-light: #a64e7c; }
+
+/* Dark appearance is the default here, matching the bright values. */
+.accent-blue,
+.accent-violet,
+.accent-teal,
+.accent-yellow,
+.accent-mint,
+.accent-salmon,
+.accent-pink
+{ --card-accent: var(--accent-bright); --card-accent-ink: var(--accent-ink-dark); }
 
 /* Light appearance: the no-attribute default and an explicit light. */
-:root:not([data-theme="dark"]) .accent-blue { --card-accent-ink: #446ab3; }
-:root:not([data-theme="dark"]) .accent-violet { --card-accent-ink: #7360ad; }
-:root:not([data-theme="dark"]) .accent-teal { --card-accent-ink: #2f7b74; }
-:root:not([data-theme="dark"]) .accent-yellow { --card-accent-ink: #8c6b2c; }
-:root:not([data-theme="dark"]) .accent-mint { --card-accent-ink: #227d59; }
-:root:not([data-theme="dark"]) .accent-salmon { --card-accent-ink: #ac4c4c; }
-:root:not([data-theme="dark"]) .accent-pink { --card-accent-ink: #a64e7c; }
+:root:not([data-theme="dark"]) .accent-blue,
+:root:not([data-theme="dark"]) .accent-violet,
+:root:not([data-theme="dark"]) .accent-teal,
+:root:not([data-theme="dark"]) .accent-yellow,
+:root:not([data-theme="dark"]) .accent-mint,
+:root:not([data-theme="dark"]) .accent-salmon,
+:root:not([data-theme="dark"]) .accent-pink
+{ --card-accent-ink: var(--accent-ink-light); }
 
-/* A dark OS with no explicit choice is dark appearance, so the bright
-   accent is right again and the override above has to be undone. */
+/* A dark OS with no explicit choice is dark appearance, so the rule above
+   has to be undone. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .accent-blue,
   :root:not([data-theme="light"]) .accent-violet,
@@ -959,7 +964,8 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   :root:not([data-theme="light"]) .accent-yellow,
   :root:not([data-theme="light"]) .accent-mint,
   :root:not([data-theme="light"]) .accent-salmon,
-  :root:not([data-theme="light"]) .accent-pink { --card-accent-ink: var(--card-accent); }
+  :root:not([data-theme="light"]) .accent-pink
+  { --card-accent-ink: var(--accent-ink-dark); }
 }
 
 /* The one card that is the point of the site: laid out across the full

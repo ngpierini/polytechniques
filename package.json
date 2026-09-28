@@ -23,7 +23,8 @@
     "check-links": "node scripts/check-internal-links.js",
     "check-rings": "node scripts/check-ring-geometry.js",
     "check-contrast": "node scripts/check-canvas-contrast.js",
-    "check-svg": "node scripts/check-svg-labels.js"
+    "check-svg": "node scripts/check-svg-labels.js",
+    "check-theme": "node scripts/check-theme-contrast.js"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"

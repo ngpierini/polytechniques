@@ -118,6 +118,13 @@ jobs:
       - name: SVG figure labels are inside their viewBox
         run: node scripts/check-svg-labels.js
 
+      # An audit of all 46 pages in both themes found 89 contrast failures in
+      # light and 36 in dark, nearly all from a colour chosen against one theme
+      # and then used in both. That audit needs a browser; the arithmetic on the
+      # token definitions, which is where the fixes live, does not.
+      - name: Theme colours clear 4.5:1 on the surfaces they are used on
+        run: node scripts/check-theme-contrast.js
+
       - name: Trivia questions still agree with the polymer library
         run: node scripts/check-trivia.js
 

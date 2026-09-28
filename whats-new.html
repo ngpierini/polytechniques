@@ -34,7 +34,7 @@
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=119">
+<link rel="stylesheet" href="style.css?v=120">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -56,6 +56,24 @@
     </p>
   </div>
 
+  <div class="card">
+    <h3>&#127912; Every colour on the site is now readable in both themes</h3>
+    <p class="guide-note">
+      Text needs to stand out from what is behind it by a measurable amount &mdash; 4.5 to 1 for ordinary type, which is the standard the accessibility guidelines set. I measured every page instead of trusting my eye: each of the 46 pages loaded in turn, every element carrying its own text compared against the colour actually painted behind it, in light mode and in dark. It came back with 89 failures in light and 36 in dark. There are now none.
+    </p>
+    <p class="guide-note">
+      Almost all of it came from one habit: a colour picked while looking at one theme and then used in both. The site has a light and a dark palette for text and backgrounds, but a good number of individual colours were written as fixed values, so whichever theme they were chosen against was the only one they suited.
+    </p>
+    <p class="guide-note">
+      The worst cases were invisible rather than merely faint. Tin, sodium, zinc, aluminium &mdash; any element in the <a href="polymer-search.html">structure drawing canvas</a> outside the eleven that have a set colour &mdash; were drawn in near-black on the dark card, a ratio of 1.14 to 1. The symbol was there and could not be read. The lives indicator in the <a href="polymer-chain-game.html">chain game</a> was mint green on a light panel at 1.09 to 1. And links in five places, including the glossary definitions and the footer, had never been given a colour at all, so they fell back to the browser default blue: fine on white, 1.76 to 1 on a dark card.
+    </p>
+    <p class="guide-note">
+      Where a colour carries meaning it was kept and only its lightness changed, separately per theme. Oxygen still reads red and sulfur still yellow in a drawn structure; sulfur was simply 1.92 to 1 on white before, which is not a readable yellow. The coloured stripes and tints on the home page cards are untouched, because they are decoration and they are what tells the cards apart &mdash; only the small text took a deeper shade of the same hue. The one place a colour had to move properly is the red arcade button, which is 13% darker: its yellow lettering was 2.97 to 1 while hovered, and no lettering colour at all, white included, clears the bar on the red it used to lighten to.
+    </p>
+    <p class="guide-note">
+      Several of these had been sitting there since the pages were first written. None of them would show up in testing, because nothing errors and every page still looks broadly right &mdash; you have to be in the other theme, on that page, looking at that one label.
+    </p>
+  </div>
   <div class="card">
     <h3>&#9881;&#65039; Five changes to the structure drawing canvas</h3>
     <p class="guide-note">
