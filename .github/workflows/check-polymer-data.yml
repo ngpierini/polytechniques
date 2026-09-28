@@ -112,6 +112,12 @@ jobs:
       - name: Canvas element labels are legible on both themes
         run: node scripts/check-canvas-contrast.js
 
+      # An SVG clips to its viewport, so a label placed outside the viewBox just
+      # is not there - no error, and the figure still looks plausible. Two
+      # figures shipped that way and both were noticed by eye.
+      - name: SVG figure labels are inside their viewBox
+        run: node scripts/check-svg-labels.js
+
       - name: Trivia questions still agree with the polymer library
         run: node scripts/check-trivia.js
 
