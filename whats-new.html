@@ -57,6 +57,24 @@
   </div>
 
   <div class="card">
+    <h3>&#9881;&#65039; Four fixes to the structure drawing canvas</h3>
+    <p class="guide-note">
+      <strong>Ring templates other than benzene were the wrong size.</strong> The ring tool stamps any ring from three to eight atoms, and all seven buttons shared a single radius &mdash; the one that is correct for a hexagon. A cyclopropane came out with bonds 73% too long and a cyclooctane 23% too short, which is why a three-ring drawn beside a benzene measured exactly the same width across. Every size now uses the bond length benzene has always had. Benzene and cyclohexane are unchanged, so nothing you drew before has moved.
+    </p>
+    <p class="guide-note">
+      <strong>Loading a worked example could drop it off the screen.</strong> The examples are laid out around the middle of the canvas, but the view stayed wherever the previous drawing had been zoomed to. Zoom in, click a <a href="polymer-search.html">load example</a> button, and the structure arrived running off all four edges. Loading an example now returns the view to the one it was drawn for.
+    </p>
+    <p class="guide-note">
+      <strong>There is a Fit button.</strong> Next to the zoom controls: it brings the whole drawing into view and centres it, counting brackets, reaction arrows and text labels as well as atoms. Until now a drawing that had grown past the window had to be chased around with the arrow keys or the middle mouse button. It will enlarge a small structure a little, but not without limit &mdash; fitting a two-atom fragment to the full canvas would give it bonds a quarter of the screen wide.
+    </p>
+    <p class="guide-note">
+      <strong>Element symbols were unreadable in dark mode.</strong> Eleven elements have a set colour, the ones a chemist reads as chemistry: oxygen red, nitrogen blue, sulfur yellow. Everything else &mdash; tin, sodium, zinc, aluminium, lithium, anything picked out of the periodic table &mdash; was drawn in near-black, which on the dark card is a contrast ratio of 1.14 to 1. The symbol was being painted and could not be read.
+    </p>
+    <p class="guide-note">
+      The set colours had a quieter version of the same problem: one fixed palette was being used on both a white and a dark background, and not one of the eleven met the 4.5:1 standard on both. Bright hues wash out on white and dark ones vanish on the dark card. Sulfur&rsquo;s yellow measured 1.92:1 on white, which is the default theme. Each theme now gets its own lightness for those colours with the hue left alone, so oxygen still reads red and sulfur still reads yellow, and every element clears 4.5:1 either way. Exported images are unaffected: they force a white background on purpose and take the colours that suit it, whichever theme you export from.
+    </p>
+  </div>
+  <div class="card">
     <h3>🔗 Six calculators now have shareable links</h3>
     <p class="guide-note">
       The Copy results button has always pasted the page address underneath the numbers it copies, which rather implies the link reproduces them. It did not: the address carried none of the inputs, so whoever you sent it to opened the page on its defaults and saw different numbers under your figures.
