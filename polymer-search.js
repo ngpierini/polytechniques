@@ -6823,6 +6823,47 @@
     // atoms and explicit H are stripped from the query (containment shouldn't
     // care about drawn chain ends), while the library targets KEEP their
     // dummies, which act as repeat-unit boundary walls.
+    // Boolean containment over the library, with no engine to download.
+    // Stars and explicit hydrogens come off first, the same way the RDKit path
+    // prepares its query, so the two are asking the same question.
+    function nativeSubstructScan(frag) {
+      if (!PG.hasSubstructure || !frag.atoms.length) return null;
+      var db = window.POLYMER_DB || [];
+      var out = [];
+      for (var i = 0; i < db.length; i++) {
+        var p = db[i];
+        if (!p.atoms || !p.atoms.length || !p.bonds) continue;
+        try {
+          if (PG.hasSubstructure(p.atoms, p.bonds, frag.atoms, frag.bonds)) out.push(p);
+        } catch (e) { /* a unit this matcher cannot read is not a match */ }
+      }
+      return out;
+    }
+
+    // The provisional list. Deliberately plain: no shading, no occurrence
+    // count, no coverage, because those are the things only RDKit knows and
+    // promising them here then changing them would be worse than waiting.
+    function renderNativeSubstructPreview(list, statusEl) {
+      var resultsEl = document.getElementById('mol-results');
+      if (!resultsEl) return;
+      var idEl = document.getElementById('mol-identify');
+      if (idEl) { idEl.hidden = true; idEl.innerHTML = ''; }
+      resultsEl.innerHTML = list.map(function (p) {
+        return '<div class="mol-sim-item">' + polymerCard(p) + '</div>';
+      }).join('');
+      // Deliberately 'candidates', not an answer. This pass ignores hydrogen
+      // counts and matches the closed repeat unit, so it casts a wider net than
+      // the chemical match that is about to replace it: the styrene example
+      // gives 10 here and 5 once RDKit lands. Claiming the larger number as a
+      // result and then halving it would read as a bug.
+      statusEl.innerHTML = list.length
+        ? list.length + ' candidate' + (list.length === 1 ? '' : 's') +
+          ' from an exact structure-graph match, shown while the chemistry engine loads. ' +
+          '<em>The chemical match is stricter and will usually narrow this.</em>'
+        : 'Nothing matches on an exact structure-graph pass. ' +
+          '<em>Loading the chemistry engine, which matches more loosely and may still find something&hellip;</em>';
+    }
+
     function runSubstructureSearch() {
       var statusEl = document.getElementById('mol-status');
       if (!statusEl) return;
@@ -6831,8 +6872,24 @@
         renderResults([]);
         return;
       }
-      statusEl.textContent = rdkitPromise ? 'Searching for polymers containing this fragment…'
-        : 'Loading the structure-matching engine (about 7 MB, one time; it stays cached)…';
+      // Prepare the query once, here, so the instant pass and RDKit both see
+      // the same fragment rather than two slightly different preparations.
+      var preEx = expandSuperatoms(atoms, bonds);
+      var preSt = stripStars(preEx.atoms, preEx.bonds);
+      var preH = {};
+      preSt.atoms.forEach(function (a) { if (a.el === 'H') preH[a.id] = 1; });
+      var preFrag = {
+        atoms: preSt.atoms.filter(function (a) { return !preH[a.id]; }),
+        bonds: preSt.bonds.filter(function (b) { return !preH[b.a] && !preH[b.b]; })
+      };
+      var alreadyLoaded = !!rdkitPromise;
+      if (!alreadyLoaded) {
+        var quick = nativeSubstructScan(preFrag);
+        if (quick) renderNativeSubstructPreview(quick, statusEl);
+        else statusEl.textContent = 'Loading the structure-matching engine (about 7 MB, one time; it stays cached)…';
+      } else {
+        statusEl.textContent = 'Searching for polymers containing this fragment…';
+      }
       ensureRDKit().then(function (RDKit) {
         var ex = expandSuperatoms(atoms, bonds);
         var st = stripStars(ex.atoms, ex.bonds);
