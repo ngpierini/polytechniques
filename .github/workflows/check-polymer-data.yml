@@ -106,6 +106,12 @@ jobs:
       - name: Ring templates are all drawn with the same bond length
         run: node scripts/check-ring-geometry.js
 
+      # The canvas paints element symbols in its own palette, so no stylesheet
+      # governs them and no CSS review would ever look at them. Both a 1.14:1
+      # fallback colour and a 1.92:1 sulfur yellow shipped this way.
+      - name: Canvas element labels are legible on both themes
+        run: node scripts/check-canvas-contrast.js
+
       - name: Trivia questions still agree with the polymer library
         run: node scripts/check-trivia.js
 
