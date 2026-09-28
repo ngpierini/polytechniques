@@ -720,9 +720,20 @@
       return toWorld(p.x, p.y);
     }
 
-    function elColor(el) {
+    // The CPK-ish colours are deliberately fixed: a chemist reads O as red and
+    // S as yellow, and those should not move with the page theme. Anything NOT
+    // in the table is a different matter, and used to fall back to a hardcoded
+    // #111 - which on the dark theme's #1f1e24 card measures 1.14:1, so the
+    // label was painted and unreadable. Everything reachable from the periodic
+    // table but missing here (Sn, Na, Zn, Al, Li, ...) hit that.
+    //
+    // The fallback is the caller's text colour rather than a constant because
+    // drawStructure also renders exports, and those force black-on-white on
+    // purpose. So this stays correct in both: the live --text on screen, and
+    // EXPORT_TEXT against an export's white background.
+    function elColor(el, fallback) {
       var colors = { N: '#3b82f6', NO2: '#3b82f6', O: '#ef4444', S: '#eab308', F: '#22c55e', Cl: '#22c55e', Br: '#a16207', I: '#7c3aed', Si: '#f97316', P: '#f97316', B: '#f97316' };
-      return colors[el] || '#111';
+      return colors[el] || fallback || '#111';
     }
 
     // Just the molecule itself - bonds, atom labels, charges, the repeat-unit
@@ -769,7 +780,7 @@
           var wSub = h > 1 ? ctx.measureText(String(h)).width : 0;
           ctx.fillStyle = bgColor;
           ctx.fillRect(a.x - wEl / 2 - 3, a.y - 9, wEl + wH + wSub + 6, 18);
-          ctx.fillStyle = elColor(a.el);
+          ctx.fillStyle = elColor(a.el, textColor);
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
           var lx = a.x - wEl / 2;
