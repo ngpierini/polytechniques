@@ -98,7 +98,11 @@
   /* The same NES menu block as the button on the game's own title screen. */
   .arcade-btn {
     display: inline-block;
-    background: #d13b2e; color: #ffe14d;
+    /* #b63328 rather than the original #d13b2e: the lightest red that gets
+       this yellow to 4.62:1. On the old red the label was 3.69:1, and
+       2.97:1 while hovered - and no label colour at all clears 4.5 on that
+       hover red, not even white, so the face had to darken. */
+    background: #b63328; color: #ffe14d;
     font-weight: 800; font-size:var(--fs-sm); letter-spacing: 0.08em;
     text-transform: uppercase;
     padding: 12px 20px 14px;
@@ -109,7 +113,16 @@
       0 6px 0 0 #0b0e17;
     margin-bottom: 6px;
   }
-  .arcade:hover .arcade-btn { background: #e8492f; }
+  /* Hover brightens the bevel highlight rather than the face. Lightening the
+     red is what dropped the label to 2.97:1, and any red light enough to
+     read as lit-up does that again. */
+  .arcade:hover .arcade-btn {
+    box-shadow:
+      inset 4px 4px 0 0 #ffb9a4,
+      inset -4px -4px 0 0 #8f1f12,
+      0 0 0 4px #0b0e17,
+      0 6px 0 0 #0b0e17;
+  }
   .arcade:active .arcade-btn { transform: translateY(3px); box-shadow: inset 4px 4px 0 0 #ff8f73, inset -4px -4px 0 0 #7d1a10, 0 0 0 4px #0b0e17, 0 3px 0 0 #0b0e17; }
 
   @media (max-width: 760px) {
