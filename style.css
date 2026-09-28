@@ -20,8 +20,14 @@
   --border: #e6e2dc;
   --primary: #2563eb;
   --primary-dim: #f0f4fd;
-  --accent: #0e9f6e;
-  --danger: #d64545;
+  /* Darkened from #0e9f6e and #d64545, which read as 3.39:1 and 4.38:1 on
+     white and worse on the 10-15% tints they are paired with - and those
+     tints are hardcoded rgba of the old colours, so they do not lighten
+     when the token does. These are the lightest shades of the same hues
+     that clear 4.55:1 on every background each one lands on. The dark
+     palette below is untouched: it was already 7.81 and 6.25:1. */
+  --accent: #0b7954;
+  --danger: #c13e3e;
   --radius: 10px;
   /* Near-flat. A hairline border already separates a card from the ground;
      a drop shadow on top of it is the second answer to a question that was
@@ -69,8 +75,8 @@
   --border: #e6e2dc;
   --primary: #2563eb;
   --primary-dim: #f0f4fd;
-  --accent: #0e9f6e;
-  --danger: #d64545;
+  --accent: #0b7954;
+  --danger: #c13e3e;
   --shadow: none;
 }
 
