@@ -7246,6 +7246,20 @@
         // worth indexing: "tactic" finds the 441 chains where the question even
         // arises, "isotactic" finds the entries that answer it.
         if (tacticityState(p) === 'capable') terms.push('can be tactic');
+        // What the unit CONTAINS, anywhere in it, which is a different
+        // question from what the backbone is made of and deliberately worded
+        // so the two chips cannot be confused: polyacrylamide contains an
+        // amide and has no backbone amide, nylon 6,6 has both. Matched on the
+        // closed repeat unit, so a linkage that straddles the drawn bracket
+        // still counts.
+        if (PG.FRAGMENTS && PG.hasSubstructure) {
+          Object.keys(PG.FRAGMENTS).forEach(function (k) {
+            var q = PG.FRAGMENTS[k];
+            try {
+              if (PG.hasSubstructure(p.atoms, p.bonds, q.atoms, q.bonds)) terms.push('contains ' + k);
+            } catch (e1) { /* a malformed unit is not a match */ }
+          });
+        }
       }
       if (p.tacticity) {
         terms.push(facetNorm(p.tacticity));

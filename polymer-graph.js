@@ -1453,8 +1453,34 @@
   // carbonate, but neither fragment fits inside the unit as it is drawn, and
   // matching the open graph misses both. Closing the unit is the same trick
   // the hashing uses to be framing-invariant. Pass openOnly to defeat it.
+  // A necessary-condition screen before the backtrack: the host cannot contain
+  // the query unless it has at least as many of every element the query names.
+  // A polymer with no fluorine is not going to contain a CF2 however long you
+  // search it. This cannot change an answer, only reach it sooner, which is
+  // why the fragment hit counts are identical with and without it.
+  function elementScreen(hostAtoms, queryAtoms) {
+    var need = {}, i, el;
+    for (i = 0; i < queryAtoms.length; i++) {
+      el = queryAtoms[i].el;
+      if (el === "*") continue;
+      need[el] = (need[el] || 0) + 1;
+    }
+    var have = {};
+    for (i = 0; i < hostAtoms.length; i++) {
+      el = hostAtoms[i].el;
+      if (el === "*") continue;
+      have[el] = (have[el] || 0) + 1;
+    }
+    for (el in need) {
+      if (!Object.prototype.hasOwnProperty.call(need, el)) continue;
+      if ((have[el] || 0) < need[el]) return false;
+    }
+    return true;
+  }
+
   function substructureMatch(hostAtoms, hostBonds, queryAtoms, queryBonds, openOnly) {
     if (!queryAtoms || !queryAtoms.length) return null;
+    if (!elementScreen(hostAtoms || [], queryAtoms)) return null;
     var closed = openOnly ? null : closeRepeatUnit(hostAtoms || [], hostBonds || []);
     if (closed) { hostAtoms = closed.atoms; hostBonds = closed.bonds; }
     var H = heavyOnly(hostAtoms || [], hostBonds || []);
