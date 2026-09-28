@@ -38,7 +38,7 @@
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=117">
+<link rel="stylesheet" href="style.css?v=119">
 <style>
   /* The canvas has a fixed 494x390 internal resolution; let it scale down to
      fit narrow screens while keeping its aspect ratio and crisp 8-bit pixels. */
@@ -323,7 +323,7 @@
       </div>
       <div class="stat">
         <div class="label">Lives</div>
-        <div class="value" id="game-lives" style="color:#8fffe0;letter-spacing:2px;">&#9679;&#9679;&#9679;</div>
+        <div class="value accent-mint accent-ink" id="game-lives" style="letter-spacing:2px;">&#9679;&#9679;&#9679;</div>
       </div>
       <div class="stat">
         <div class="label">Chains</div>
@@ -876,7 +876,13 @@
     if (el) {
       el.textContent = st.d == null ? "&mdash;" : st.d.toFixed(3);
       el.innerHTML = st.d == null ? "&mdash;" : st.d.toFixed(3);
-      el.style.color = st.d == null ? "" : (st.d < 1.2 ? "#8fffe0" : st.d < 1.8 ? "#f2b84b" : "#ef6a6a");
+      // Narrow, middling or broad, in the shared accent hues so the colour
+      // follows the theme instead of staying tuned for the dark field.
+      el.classList.remove("accent-mint", "accent-yellow", "accent-salmon");
+      el.classList.toggle("accent-ink", st.d != null);
+      if (st.d != null) {
+        el.classList.add(st.d < 1.2 ? "accent-mint" : st.d < 1.8 ? "accent-yellow" : "accent-salmon");
+      }
     }
     var cEl = $("game-chains");
     if (cEl) cEl.textContent = String(st.n || (chainUnits > 0 ? 1 : 0));

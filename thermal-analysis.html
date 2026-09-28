@@ -38,7 +38,7 @@
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=117">
+<link rel="stylesheet" href="style.css?v=119">
 <style>
   /* Page-scoped styles for the interactive thermal-analysis charts. Colours are
      pulled from the site's CSS variables so light/dark both work; the extra
@@ -73,7 +73,7 @@
   }
   select.ta-select:hover { border-color: var(--primary); }
   .ta-conf { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size:var(--fs-3xs); font-weight: 600;
-             background: rgba(242,184,75,0.18); color: #c98a1e; margin-left: 6px; vertical-align: middle; }
+             background: rgba(242,184,75,0.18); color: var(--amber-ink); margin-left: 6px; vertical-align: middle; }
   .ta-matnote { font-size:var(--fs-sm); color: var(--text-dim); margin: 2px 0 10px; line-height: 1.45; }
   .ta-export { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 0; }
   .ta-export-btn { font: inherit; font-size:var(--fs-xs); padding: 5px 11px; cursor: pointer;
@@ -113,7 +113,7 @@
   .ta-na { padding: 14px; border: 1px dashed var(--border); border-radius: var(--radius); color: var(--text-dim); font-size:var(--fs-sm); }
   .ta-verdict { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size:var(--fs-xs); font-weight: 700; }
   .ta-verdict-ok { background: rgba(14,159,110,0.16); color: var(--accent); }
-  .ta-verdict-warn { background: rgba(242,184,75,0.20); color: #c98a1e; }
+  .ta-verdict-warn { background: rgba(242,184,75,0.20); color: var(--amber-ink); }
   .ta-verdict-bad { background: rgba(214,69,69,0.16); color: var(--danger); }
   .ta-chart .ta-fill { opacity: 0.10; }
   .ta-chart .ta-fill-endo { fill: var(--primary); }

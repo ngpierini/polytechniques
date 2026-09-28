@@ -24,6 +24,10 @@
      dark flips to a near-black ink at 5.62:1 rather than dulling the fill
      that marks an active tab. */
   --on-primary: #ffffff;
+  /* Ink for the amber caveat pills, whose background is an 18-22% amber
+     tint over the card and so follows the theme. Light takes a deep amber,
+     dark takes the bright amber the tint itself is made of. */
+  --amber-ink: #88672a;
   --primary-dim: #f0f4fd;
   /* Darkened from #0e9f6e and #d64545, which read as 3.39:1 and 4.38:1 on
      white and worse on the 10-15% tints they are paired with - and those
@@ -49,6 +53,7 @@
     --border: #322f39;
     --primary: #5b8def;
   --on-primary: #16151a;
+  --amber-ink: #f2b84b;
     --primary-dim: #232130;
     --accent: #37c98f;
     --danger: #ef6a6a;
@@ -65,6 +70,7 @@
   --border: #322f39;
   --primary: #5b8def;
   --on-primary: #16151a;
+  --amber-ink: #f2b84b;
   --primary-dim: #232130;
   --accent: #37c98f;
   --danger: #ef6a6a;
@@ -82,6 +88,7 @@
   --border: #e6e2dc;
   --primary: #2563eb;
   --on-primary: #ffffff;
+  --amber-ink: #88672a;
   --primary-dim: #f0f4fd;
   --accent: #0b7954;
   --danger: #c13e3e;
@@ -924,6 +931,13 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 .accent-salmon { --card-accent: #ef6a6a; }
 .accent-pink { --card-accent: #f472b6; }
 
+/* Paint any text with its accent class's per-theme ink. For places that
+   want the accent as a colour and nothing else - a game HUD readout, a
+   status value - without the card chrome around it. */
+/* The class is repeated to make this two classes rather than one: a plain
+   .accent-ink loses to ".stat .value", which sets color from --primary, and
+   a utility that can be outweighed by ordinary component CSS is no use. */
+.accent-ink.accent-ink { color: var(--card-accent-ink, var(--card-accent, var(--primary))); }
 /* Text defaults to the bright accent, which is correct on a dark card. */
 .accent-blue, .accent-violet, .accent-teal, .accent-yellow, .accent-mint, .accent-salmon, .accent-pink { --card-accent-ink: var(--card-accent); }
 
@@ -1453,7 +1467,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   display: inline-block;
   font-size: var(--fs-3xs);
   font-weight: 700;
-  color: #b45309;
+  color: var(--amber-ink);
   background: color-mix(in srgb, #f2b84b 22%, transparent);
   padding: 3px 8px;
   border-radius: 999px;
