@@ -7256,7 +7256,7 @@
           Object.keys(PG.FRAGMENTS).forEach(function (k) {
             var q = PG.FRAGMENTS[k];
             try {
-              if (PG.hasSubstructure(p.atoms, p.bonds, q.atoms, q.bonds)) terms.push(facetNorm('contains ' + k));
+              if (PG.hasSubstructure(p.atoms, p.bonds, q.atoms, q.bonds, q.openOnly)) terms.push(facetNorm('contains ' + k));
             } catch (e1) { /* a malformed unit is not a match */ }
           });
         }

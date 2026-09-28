@@ -1519,6 +1519,10 @@
     function fits(qid, hid) {
       if (used[hid]) return false;
       if (!elMatches(qg.ids[qid].el, hg.ids[hid].el)) return false;
+      // An exact heavy-atom degree, which is how a terminal oxygen (hydroxyl,
+      // acid) is told from a bridging one (ether, ester).
+      var wantDeg = qg.ids[qid].deg;
+      if (wantDeg !== undefined && hg.adj[hid].length !== wantDeg) return false;
       // Every query bond to an already-placed atom must exist in the host,
       // with a compatible order.
       var ok = true;
@@ -1557,7 +1561,12 @@
   // A small library of fragments, written in the same shape the polymers are.
   // These are structural definitions, not claims about any polymer, so they
   // need no source; what they find is checkable by looking at the hit list.
-  function frag(atoms, bonds) { return { atoms: atoms, bonds: bonds }; }
+  // openOnly marks a fragment that must NOT be matched on the closed unit,
+  // because closing a short repeat unit manufactures a ring that is not in
+  // the polymer. Every ring fragment sets it.
+  function frag(atoms, bonds, openOnly) {
+    return { atoms: atoms, bonds: bonds, openOnly: !!openOnly };
+  }
   var FRAGMENTS = {
     "ester": frag(
       [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: 3, el: "O" }],
@@ -1596,7 +1605,7 @@
       [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" },
        { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }],
       [{ a: 1, b: 2, order: 2 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 },
-       { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 1, order: 1 }]),
+       { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 1, order: 1 }], true),
     "difluoromethylene": frag(
       [{ id: 1, el: "C" }, { id: 2, el: "F" }, { id: 3, el: "F" }],
       [{ a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }]),
@@ -1604,6 +1613,42 @@
     "aliphatic alkene": frag(
       [{ id: 1, el: "C" }, { id: 2, el: "C" }],
       [{ a: 1, b: 2, order: 2, notAromatic: true }]),
+    // The pairs that only a degree constraint can separate.
+    "hydroxyl": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "O", deg: 1 }],
+      [{ a: 1, b: 2, order: 1 }]),
+    "carboxylic acid": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: 3, el: "O", deg: 1 }],
+      [{ a: 1, b: 2, order: 2 }, { a: 1, b: 3, order: 1 }]),
+    "primary amine": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "N", deg: 1 }],
+      [{ a: 1, b: 2, order: 1 }]),
+    // Two carbonyls on one nitrogen: the imide of a polyimide.
+    "imide": frag(
+      [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "O" },
+       { id: 4, el: "C" }, { id: 5, el: "O" }],
+      [{ a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2 },
+       { a: 1, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }]),
+    "anhydride": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: 3, el: "O" },
+       { id: 4, el: "C" }, { id: 5, el: "O" }],
+      [{ a: 1, b: 2, order: 2 }, { a: 1, b: 3, order: 1 },
+       { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 2 }]),
+    // A three-membered C-O-C ring. The ring is the whole point: an epoxide
+    // is strained, an ether is not.
+    "epoxide": frag(
+      [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "O" }],
+      [{ a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 1, order: 1 }], true),
+    "thiophene ring": frag(
+      [{ id: 1, el: "S" }, { id: 2, el: "C" }, { id: 3, el: "C" },
+       { id: 4, el: "C" }, { id: 5, el: "C" }],
+      [{ a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2 }, { a: 3, b: 4, order: 1 },
+       { a: 4, b: 5, order: 2 }, { a: 5, b: 1, order: 1 }], true),
+    "pyridine ring": frag(
+      [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" },
+       { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }],
+      [{ a: 1, b: 2, order: 2 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 },
+       { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 2 }, { a: 6, b: 1, order: 1 }], true),
     "quaternary carbon": frag(
       [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" },
        { id: 4, el: "C" }, { id: 5, el: "C" }],

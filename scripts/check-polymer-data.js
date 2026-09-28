@@ -291,6 +291,27 @@ const SUBSTRUCTURE_CASES = [
   ["Polystyrene", "aliphatic alkene", false],
   ["Poly(ethylene terephthalate)", "aliphatic alkene", false],
   ["Polychloroprene", "aliphatic alkene", true],
+  // Degree constraints: a hydroxyl is a C-O whose oxygen goes nowhere else,
+  // an ether is the same two atoms where it does. Without the constraint
+  // every polyester answers to hydroxyl.
+  ["Poly(vinyl alcohol)", "hydroxyl", true],
+  ["Poly(ethylene oxide)", "hydroxyl", false],
+  ["Poly(methyl methacrylate)", "hydroxyl", false],
+  ["Poly(acrylic acid)", "carboxylic acid", true],
+  ["Poly(methyl methacrylate)", "carboxylic acid", false],
+  ["Poly(vinyl alcohol)", "carboxylic acid", false],
+  // Ring fragments match the OPEN unit. Closing a short unit manufactures a
+  // ring: poly(ethylene oxide) closed is a three-membered C-C-O, which read
+  // as an epoxide, and poly(p-phenylene sulfide) closed read as a thiophene.
+  // Both are the polymer LEFT AFTER that ring opened, not a polymer
+  // containing one.
+  ["Poly(ethylene oxide)", "epoxide", false],
+  ["Poly(propylene oxide)", "epoxide", false],
+  ["Poly(glycidyl methacrylate)", "epoxide", true],
+  ["Poly(p-phenylene sulfide)", "thiophene ring", false],
+  ["Polythiophene", "thiophene ring", true],
+  ["Poly(4-vinylpyridine)", "pyridine ring", true],
+  ["Polystyrene", "pyridine ring", false],
   ["Poly(vinyl alcohol)", "ether", false],
   // These two only match on the CLOSED repeat unit. They are the regression
   // test for the bug that matching the open graph misses every main-chain
@@ -315,7 +336,7 @@ function checkSubstructures(entries, errors) {
       errors.push('substructure: "' + name + '" has no structure to match against');
       return;
     }
-    const got = hasSubstructure(e.atoms, e.bonds, q.atoms, q.bonds);
+    const got = hasSubstructure(e.atoms, e.bonds, q.atoms, q.bonds, q.openOnly);
     if (got !== want) {
       errors.push('substructure: "' + name + '" ' + (want ? "should" : "should NOT") +
         ' contain ' + fragName + ", but hasSubstructure returned " + got + ".");
@@ -328,7 +349,7 @@ function checkSubstructures(entries, errors) {
   Object.keys(FRAGMENTS).forEach((k) => {
     const q = FRAGMENTS[k];
     hits[k] = new Set(entries.filter((e) => e && e.atoms && e.bonds &&
-      hasSubstructure(e.atoms, e.bonds, q.atoms, q.bonds)).map((e) => e.name));
+      hasSubstructure(e.atoms, e.bonds, q.atoms, q.bonds, q.openOnly)).map((e) => e.name));
   });
   [["carbonate", "ester"], ["urethane", "ester"], ["urea", "amide"]].forEach(([inner, outer]) => {
     const stray = [...hits[inner]].filter((n) => !hits[outer].has(n));
