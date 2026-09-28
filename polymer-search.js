@@ -720,10 +720,32 @@
       return toWorld(p.x, p.y);
     }
 
-    // The CPK-ish colours are deliberately fixed: a chemist reads O as red and
-    // S as yellow, and those should not move with the page theme. Anything NOT
-    // in the table is a different matter, and used to fall back to a hardcoded
-    // #111 - which on the dark theme's #1f1e24 card measures 1.14:1, so the
+    // Is the surface being drawn on a dark one? Answered from the colour the
+    // caller passed rather than from data-theme, because an export forces a
+    // white background whatever the page theme is, and its labels have to stay
+    // readable against that. Falls back to "light" for anything unparseable,
+    // which is the safer guess: the light palette is the darker of the two.
+    function bgIsDark(colour) {
+      var c = String(colour || '').trim();
+      var r, g, b, m;
+      if ((m = /^#([0-9a-f]{3})$/i.exec(c))) {
+        r = parseInt(m[1][0] + m[1][0], 16); g = parseInt(m[1][1] + m[1][1], 16); b = parseInt(m[1][2] + m[1][2], 16);
+      } else if ((m = /^#([0-9a-f]{6})$/i.exec(c))) {
+        r = parseInt(m[1].slice(0, 2), 16); g = parseInt(m[1].slice(2, 4), 16); b = parseInt(m[1].slice(4, 6), 16);
+      } else if ((m = /^rgba?[(]([^)]+)[)]$/i.exec(c))) {
+        var n = m[1].split(',').map(function (v) { return parseFloat(v); });
+        r = n[0]; g = n[1]; b = n[2];
+      } else {
+        return false;
+      }
+      if (!isFinite(r) || !isFinite(g) || !isFinite(b)) return false;
+      var f = function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+      return (0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)) < 0.18;
+    }
+    // The CPK hues are fixed: a chemist reads O as red and S as yellow, so the
+    // HUE never moves. Only its lightness does, and only where the fixed colour
+    // failed 4.5:1 on the background in hand. Anything NOT in the table fell
+    // back to a hardcoded #111, which on the dark card measures 1.14:1 - so the
     // label was painted and unreadable. Everything reachable from the periodic
     // table but missing here (Sn, Na, Zn, Al, Li, ...) hit that.
     //
@@ -731,8 +753,13 @@
     // drawStructure also renders exports, and those force black-on-white on
     // purpose. So this stays correct in both: the live --text on screen, and
     // EXPORT_TEXT against an export's white background.
-    function elColor(el, fallback) {
-      var colors = { N: '#3b82f6', NO2: '#3b82f6', O: '#ef4444', S: '#eab308', F: '#22c55e', Cl: '#22c55e', Br: '#a16207', I: '#7c3aed', Si: '#f97316', P: '#f97316', B: '#f97316' };
+    function elColor(el, fallback, dark) {
+      // Same hues, same saturation, different lightness: the only entries that
+      // move are the ones that failed 4.5:1 on that background. Br and I are
+      // untouched on light; S, F/Cl and Si/P/B are untouched on dark.
+      var colors = dark
+        ? { N: '#4085f6', NO2: '#4085f6', O: '#f04e4e', S: '#eab308', F: '#22c55e', Cl: '#22c55e', Br: '#c37608', I: '#9e6df2', Si: '#f97316', P: '#f97316', B: '#f97316' }
+        : { N: '#196cf4', NO2: '#196cf4', O: '#e71414', S: '#916f05', F: '#178640', Cl: '#178640', Br: '#a16207', I: '#7c3aed', Si: '#c25205', P: '#c25205', B: '#c25205' };
       return colors[el] || fallback || '#111';
     }
 
@@ -743,6 +770,8 @@
     // swapped-in offscreen or SVG-recording context so the exported file
     // always matches what's on screen pixel-for-pixel (line for line).
     function drawStructure(textColor, bgColor) {
+      // Decided once per draw, not per atom.
+      var darkBg = bgIsDark(bgColor);
       var styles = getComputedStyle(document.body);
       var primary = (styles.getPropertyValue('--primary') || '#2563eb').trim() || '#2563eb';
       arrows.forEach(function (ar) { drawArrow(ar, textColor); });
@@ -780,7 +809,7 @@
           var wSub = h > 1 ? ctx.measureText(String(h)).width : 0;
           ctx.fillStyle = bgColor;
           ctx.fillRect(a.x - wEl / 2 - 3, a.y - 9, wEl + wH + wSub + 6, 18);
-          ctx.fillStyle = elColor(a.el, textColor);
+          ctx.fillStyle = elColor(a.el, textColor, darkBg);
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
           var lx = a.x - wEl / 2;
