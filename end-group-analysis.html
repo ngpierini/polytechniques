@@ -659,14 +659,43 @@
     notes.innerHTML = n.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
   }
 
-  ["eg-ibb", "eg-hbb", "eg-ieg", "eg-heg", "eg-m0", "eg-mend", "eg-err"].forEach(function (id) {
-    $(id).addEventListener("input", egCalc);
-  });
-  ["ds-inew", "ds-hnew", "ds-iref", "ds-href", "ds-m0", "ds-dm"].forEach(function (id) {
-    $(id).addEventListener("input", dsCalc);
-  });
-  ["tt-val", "tt-f"].forEach(function (id) { $(id).addEventListener("input", ttCalc); });
-  $("tt-mode").addEventListener("change", ttCalc);
+  // nav.js is deferred, so wait for it before asking for the helper.
+  function wireShared() {
+  var share = window.PolyTechniques && window.PolyTechniques.shareState;
+  if (share) {
+    share([
+      { key: "ibb", id: "eg-ibb", min: 0 }, { key: "hbb", id: "eg-hbb", min: 0.0001 },
+      { key: "ieg", id: "eg-ieg", min: 0 }, { key: "heg", id: "eg-heg", min: 0.0001 },
+      { key: "m0", id: "eg-m0", min: 1 }, { key: "mend", id: "eg-mend", min: 0 },
+      { key: "err", id: "eg-err", min: 0, max: 10 }
+    ], egCalc);
+    share([
+      { key: "dsin", id: "ds-inew", min: 0 }, { key: "dshn", id: "ds-hnew", min: 0.0001 },
+      { key: "dsir", id: "ds-iref", min: 0 }, { key: "dshr", id: "ds-href", min: 0.0001 },
+      { key: "dsm0", id: "ds-m0", min: 1 }, { key: "dsdm", id: "ds-dm" }
+    ], dsCalc);
+    share([
+      { key: "ttmode", id: "tt-mode", kind: "select" },
+      { key: "ttval", id: "tt-val", min: 0.0001 },
+      { key: "ttf", id: "tt-f", min: 0.01 }
+    ], ttCalc);
+  } else {
+    ["eg-ibb", "eg-hbb", "eg-ieg", "eg-heg", "eg-m0", "eg-mend", "eg-err"].forEach(function (id) {
+      $(id).addEventListener("input", egCalc);
+    });
+    ["ds-inew", "ds-hnew", "ds-iref", "ds-href", "ds-m0", "ds-dm"].forEach(function (id) {
+      $(id).addEventListener("input", dsCalc);
+    });
+    ["tt-val", "tt-f"].forEach(function (id) { $(id).addEventListener("input", ttCalc); });
+    $("tt-mode").addEventListener("change", ttCalc);
+  }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wireShared);
+  } else {
+    wireShared();
+  }
+
 
   egCalc(); dsCalc(); ttCalc();
 })();

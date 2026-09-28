@@ -522,10 +522,33 @@
     $("md-f-c").hidden = mech !== "atrp";
   }
 
-  ["md-m0", "md-dp", "md-p", "md-cex", "md-c", "md-dead", "md-bb"].forEach(function (id) {
-    $(id).addEventListener("input", recalc);
-  });
-  $("md-mech").addEventListener("change", function () { syncFields(); recalc(); });
+  // nav.js is deferred, so wait for it before asking for the helper.
+  function wireShared() {
+  var share = window.PolyTechniques && window.PolyTechniques.shareState;
+  if (share) {
+    share([
+      { key: "mech", id: "md-mech", kind: "select" },
+      { key: "m0", id: "md-m0", min: 1 },
+      { key: "dp", id: "md-dp", min: 1 },
+      { key: "p", id: "md-p", min: 0, max: 1 },
+      { key: "cex", id: "md-cex", min: 0 },
+      { key: "c", id: "md-c", min: 0 },
+      { key: "dead", id: "md-dead", min: 0, max: 100 },
+      { key: "bb", id: "md-bb", min: 1 }
+    ], function () { syncFields(); recalc(); });
+  } else {
+    ["md-m0", "md-dp", "md-p", "md-cex", "md-c", "md-dead", "md-bb"].forEach(function (id) {
+      $(id).addEventListener("input", recalc);
+    });
+    $("md-mech").addEventListener("change", function () { syncFields(); recalc(); });
+  }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wireShared);
+  } else {
+    wireShared();
+  }
+
 
   syncFields();
   recalc();
