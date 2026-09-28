@@ -19,6 +19,11 @@
   --text-dim: #5f6470;
   --border: #e6e2dc;
   --primary: #2563eb;
+  /* Label colour for a filled --primary surface. White is 5.17:1 on the
+     light #2563eb but only 3.23:1 on the lighter dark-theme #5b8def, so
+     dark flips to a near-black ink at 5.62:1 rather than dulling the fill
+     that marks an active tab. */
+  --on-primary: #ffffff;
   --primary-dim: #f0f4fd;
   /* Darkened from #0e9f6e and #d64545, which read as 3.39:1 and 4.38:1 on
      white and worse on the 10-15% tints they are paired with - and those
@@ -43,6 +48,7 @@
     --text-dim: #a19da8;
     --border: #322f39;
     --primary: #5b8def;
+  --on-primary: #16151a;
     --primary-dim: #232130;
     --accent: #37c98f;
     --danger: #ef6a6a;
@@ -58,6 +64,7 @@
   --text-dim: #a19da8;
   --border: #322f39;
   --primary: #5b8def;
+  --on-primary: #16151a;
   --primary-dim: #232130;
   --accent: #37c98f;
   --danger: #ef6a6a;
@@ -74,6 +81,7 @@
   --text-dim: #5f6470;
   --border: #e6e2dc;
   --primary: #2563eb;
+  --on-primary: #ffffff;
   --primary-dim: #f0f4fd;
   --accent: #0b7954;
   --danger: #c13e3e;
@@ -224,7 +232,7 @@ body {
   transition: background 0.12s, color 0.12s, border-color 0.12s;
 }
 .tab-btn:hover { border-color: var(--primary); color: var(--text); }
-.tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.tab-btn.active { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
 
 /* Eleven tabs wrap to four rows on a phone - 162px of an 812px viewport spent
    on navigation before any content. One scrolling row costs 44px instead, and
@@ -1270,7 +1278,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   margin-top: 14px;
   padding: 10px 24px;
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 700;
   font-size: var(--fs-base);
   border-radius: 999px;
@@ -1941,7 +1949,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 .game-overlay button {
   border: none;
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   padding: 10px 20px;
   border-radius: 8px;
   font-size: var(--fs-base);
@@ -2211,7 +2219,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
   font: inherit;
   font-size: var(--fs-xs);
   font-weight: 600;
-  color: #fff;
+  color: var(--on-primary);
   background: var(--primary);
   border: 1px solid var(--primary);
   border-radius: 8px;
@@ -2279,7 +2287,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
-.mol-suggest-chip:hover { border-color: var(--primary); background: var(--primary); color: #fff; }
+.mol-suggest-chip:hover { border-color: var(--primary); background: var(--primary); color: var(--on-primary); }
 .mol-sim-weak { margin-top: 12px; }
 .mol-sim-weak > summary {
   cursor: pointer;
@@ -2319,7 +2327,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
 .mol-pub-range.active {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 600;
 }
 .mol-pub-refresh {
@@ -2335,7 +2343,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
-.mol-pub-refresh:hover { border-color: var(--primary); background: var(--primary); color: #fff; }
+.mol-pub-refresh:hover { border-color: var(--primary); background: var(--primary); color: var(--on-primary); }
 .mol-pub-paper {
   display: block;
   text-decoration: none;
@@ -2521,7 +2529,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
 .mol-have-chip.active {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
 }
 
 .mol-result-card:focus { outline: none; }
@@ -2904,7 +2912,7 @@ input.input-invalid {
 .mol-facet-chip.is-on {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 600;
 }
 .mol-more-btn { display: block; margin: 14px auto 0; }
@@ -3007,7 +3015,7 @@ input.input-invalid {
 .install-banner-yes {
   border: none;
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   border-radius: 7px;
   padding: 7px 14px;
   font-weight: 700;
