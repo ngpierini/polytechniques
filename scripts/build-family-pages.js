@@ -411,11 +411,21 @@ function pageHtml(fam, entries) {
   });
   if (lastLetter !== null) h += "  </div>\n\n";
 
-  // Cross-links.
+  // Cross-links: the ones this family declares, then every other family and
+  // the hub. Without those a family page was a dead end, and the hub had one
+  // inbound link in the whole site.
   h += '  <div class="card">\n    <h3>Related</h3>\n    <ul>\n';
   fam.related.forEach(([href, label]) => {
     h += '      <li><a href="' + href + '">' + label + "</a></li>\n";
   });
+  const declaredHrefs = new Set(fam.related.map(([href]) => href));
+  const siblings = FAMILIES
+    .filter((f) => f.slug !== fam.slug && !declaredHrefs.has(f.slug + ".html"))
+    .map((f) => '<a href="' + f.slug + '.html">' + f.title.toLowerCase() + "</a>");
+  if (siblings.length) {
+    h += "      <li>The other families: " + siblings.join(", ") + ".</li>\n";
+  }
+  h += '      <li><a href="polymer-families.html">All polymer families</a>, the hub that indexes every one of them.</li>\n';
   h += "    </ul>\n  </div>\n\n";
 
   h += "</main>\n\n";

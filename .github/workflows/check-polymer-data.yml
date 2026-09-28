@@ -90,6 +90,9 @@ jobs:
       # hand-maintained and had silently dropped one of the main tools.
       - run: node scripts/check-sitemap.js
 
+      - name: Internal links (no orphans, no broken links)
+        run: node scripts/check-internal-links.js
+
       # Fails if the AdSense publisher number stops matching between ads.txt,
       # nav.js and the page heads - a mismatch stops serving without any
       # visible error on the site itself.

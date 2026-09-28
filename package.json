@@ -19,7 +19,8 @@
     "check-families": "node scripts/build-family-pages.js --check",
     "check-math": "node scripts/check-calculator-math.js",
     "build-map": "node scripts/build-structure-map.js",
-    "check-map": "node scripts/build-structure-map.js --check"
+    "check-map": "node scripts/build-structure-map.js --check",
+    "check-links": "node scripts/check-internal-links.js"
   },
   "dependencies": {
     "openchemlib": "^8.11.0"
