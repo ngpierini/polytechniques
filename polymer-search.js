@@ -2527,6 +2527,9 @@
     // Panning is on the middle button and on space-drag, so it works in every
     // tool without stealing the left button from drawing.
     var panning = false, panFrom = null, spaceHeld = false;
+    // Drawing is a strong signal that a structure search is coming, so start
+    // warming the engine now rather than when the button is pressed.
+    canvas.addEventListener('pointerdown', prefetchRDKit, { once: true });
     canvas.addEventListener('mousedown', function (evt) {
       if (evt.button === 1 || (evt.button === 0 && spaceHeld)) {
         evt.preventDefault();
@@ -3368,6 +3371,19 @@
     var rdkitPromise = null;
     var rdkitLib = null;
     var FP_OPTS = JSON.stringify({ radius: 2, nBits: 1024 });
+
+    // See the note above ensureRDKit: this only warms it, it never blocks.
+    var rdkitPrefetched = false;
+    function prefetchRDKit() {
+      if (rdkitPrefetched || rdkitPromise) return;
+      rdkitPrefetched = true;
+      // Respect a metered or slow connection, and an explicit data-saver.
+      var c = navigator.connection;
+      if (c && (c.saveData || /^(slow-)?2g$/.test(c.effectiveType || ''))) return;
+      var go = function () { try { ensureRDKit(); } catch (e) {} };
+      if (typeof requestIdleCallback === 'function') requestIdleCallback(go, { timeout: 3000 });
+      else setTimeout(go, 1200);
+    }
 
     function ensureRDKit() {
       if (rdkitPromise) return rdkitPromise;
@@ -8551,7 +8567,7 @@
       renderResults([]);
     }
     document.querySelectorAll('.mol-example-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () { loadExample(btn.getAttribute('data-example')); });
+      btn.addEventListener('click', function () { prefetchRDKit(); loadExample(btn.getAttribute('data-example')); });
     });
 
     new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
