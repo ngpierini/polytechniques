@@ -653,6 +653,46 @@
     // enough to lay a whole reaction scheme out end to end.
     var VIEW_MIN = 0.15, VIEW_MAX = 6;
     function resetView() { viewScale = 1; viewX = 0; viewY = 0; }
+    // Bring everything drawn into view, centred, without moving anything that
+    // is drawn. resetView() above only returns to 1:1, which is no help to a
+    // drawing that has grown past the window - the case the arrow-key panning
+    // further down names as the thing it solves. This is the direct answer,
+    // and it is what View > Fit to Window does in every other editor.
+    //
+    // Zooming IN is capped. Fitting a two-atom fragment to a 970px canvas
+    // would hand it 300px bonds, which stops reading as a chemical drawing.
+    var FIT_PAD = 0.86;        // margin, so an element letter is not flush to the edge
+    var FIT_MAX_ZOOM = 1.6;
+    function contentBounds() {
+      var xs = [], ys = [];
+      function put(x, y) {
+        // Brackets carry extra fields depending on their role, so take only
+        // real numbers rather than trusting every entry to be a rectangle.
+        if (typeof x === "number" && isFinite(x)) xs.push(x);
+        if (typeof y === "number" && isFinite(y)) ys.push(y);
+      }
+      atoms.forEach(function (a) { put(a.x, a.y); });
+      labels.forEach(function (l) { put(l.x, l.y); });
+      brackets.concat(arrows).forEach(function (r) { put(r.x1, r.y1); put(r.x2, r.y2); });
+      if (!xs.length || !ys.length) return null;
+      // An atom is a point, but its element letter and the bond stroke reach
+      // past it, so grow the box instead of fitting the bare coordinates.
+      var pad = BOND_LEN * 0.45;
+      return {
+        x1: Math.min.apply(null, xs) - pad, y1: Math.min.apply(null, ys) - pad,
+        x2: Math.max.apply(null, xs) + pad, y2: Math.max.apply(null, ys) + pad
+      };
+    }
+    function fitToContent() {
+      var b = contentBounds();
+      if (!b) { resetView(); return; }
+      var bw = Math.max(1, b.x2 - b.x1), bh = Math.max(1, b.y2 - b.y1);
+      var s = Math.min(canvas.width / bw, canvas.height / bh) * FIT_PAD;
+      s = Math.max(VIEW_MIN, Math.min(Math.min(VIEW_MAX, FIT_MAX_ZOOM), s));
+      viewScale = s;
+      viewX = canvas.width / 2 - ((b.x1 + b.x2) / 2) * s;
+      viewY = canvas.height / 2 - ((b.y1 + b.y2) / 2) * s;
+    }
     // canvas pixel -> world
     function toWorld(px, py) { return { x: (px - viewX) / viewScale, y: (py - viewY) / viewScale }; }
     function zoomAbout(px, py, factor) {
@@ -2991,6 +3031,8 @@
     if (zoomOutBtn) zoomOutBtn.addEventListener('click', function () { zoomAbout(canvas.width / 2, canvas.height / 2, 1 / 1.25); });
     var zoomResetBtn = document.getElementById('mol-zoom-reset');
     if (zoomResetBtn) zoomResetBtn.addEventListener('click', function () { resetView(); draw(); });
+    var zoomFitBtn = document.getElementById('mol-zoom-fit');
+    if (zoomFitBtn) zoomFitBtn.addEventListener('click', function () { fitToContent(); draw(); });
 
     // ---------- Repeat-unit extraction + search ----------
     // otherRects (optional): the other blocks' brackets in a copolymer. A pendant
@@ -8571,6 +8613,10 @@
         var chainYs = chain.map(function (a) { return a.y; }).concat([oAtom.y]);
         brackets = [{ x1: n1.x - 20, y1: Math.min.apply(null, chainYs) - 15, x2: carbonyl.x + 20, y2: Math.max.apply(null, chainYs) + 15 }];
       }
+      // The example is laid out at fixed coordinates around the canvas centre,
+      // so a zoom or pan left from the previous drawing crops it - the same
+      // reason the SMILES import resets the view before placing its atoms.
+      resetView();
       draw();
       var statusEl = document.getElementById('mol-status');
       if (statusEl) statusEl.textContent = 'Example loaded. Click "Search this structure" to see it matched.';
