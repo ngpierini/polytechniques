@@ -32,7 +32,7 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=32" defer></script>
+<script src="nav.js?v=34" defer></script>
 <script src="chain-data.js?v=1" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
@@ -525,75 +525,30 @@
     notes.innerHTML = n.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
   }
 
-  // ---- Shareable state ------------------------------------------------------
-  // The inputs this page is worth sharing with, each with the id it lives in
-  // and how to sanity-check it coming back off a URL somebody could have typed.
-  var URL_FIELDS = [
-    { key: "mdry", id: "hg-mdry", min: 0 },
-    { key: "mwet", id: "hg-mwet", min: 0 },
-    { key: "rhop", id: "hg-rhop", min: 0 },
-    { key: "rhos", id: "hg-rhos", min: 0 },
-    { key: "v2r", id: "hg-v2r", min: 0.001, max: 1 },
-    { key: "chi", id: "hg-chi" },
-    { key: "mn", id: "hg-mn", min: 0 },
-    { key: "rs", id: "hg-rs", min: 0 }
-  ];
-  var URL_DEFAULTS = {};
-
-  function rememberDefaults() {
-    URL_FIELDS.forEach(function (f) { URL_DEFAULTS[f.key] = $(f.id).value; });
-    URL_DEFAULTS.poly = $("hg-poly").value;
-  }
-
-  function applyUrlState() {
-    try {
-      var q = new URLSearchParams(location.search);
-      URL_FIELDS.forEach(function (f) {
-        var raw = q.get(f.key);
-        if (raw === null) return;
-        var v = parseFloat(raw);
-        if (!isFinite(v)) return;
-        if (f.min !== undefined) v = Math.max(f.min, v);
-        if (f.max !== undefined) v = Math.min(f.max, v);
-        $(f.id).value = v;
-      });
-      // The polymer travels by name, not by index: an index would point at a
-      // different chain the moment chain-data.js gains an entry.
-      var want = (q.get("poly") || "").toLowerCase();
-      if (want) {
-        var list = chains(), i;
-        for (i = 0; i < list.length; i++) {
-          if (list[i].name.toLowerCase().replace(/[^a-z0-9]+/g, "-") === want) { $("hg-poly").value = i; break; }
-        }
-      }
-    } catch (e) { /* a malformed URL is not worth a broken page */ }
-  }
-
-  function writeUrlState() {
-    try {
-      var q = new URLSearchParams();
-      URL_FIELDS.forEach(function (f) {
-        var v = $(f.id).value;
-        if (v !== "" && v !== URL_DEFAULTS[f.key]) q.set(f.key, v);
-      });
-      if ($("hg-poly").value !== URL_DEFAULTS.poly) {
-        var e = selected();
-        if (e) q.set("poly", e.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
-      }
-      var qs = q.toString();
-      history.replaceState(null, "", qs ? location.pathname + "?" + qs : location.pathname);
-    } catch (e) { /* replaceState can throw on a file:// origin */ }
-  }
-
   function boot() {
     fillPolymers();
-    rememberDefaults();
-    applyUrlState();
-    function onChange() { recalc(); writeUrlState(); }
-    ["hg-mdry", "hg-mwet", "hg-rhop", "hg-rhos", "hg-v2r", "hg-chi", "hg-mn", "hg-rs"].forEach(function (id) {
-      $(id).addEventListener("input", onChange);
-    });
-    $("hg-poly").addEventListener("change", onChange);
+    // The polymer travels by name: an index would point at a different
+    // chain the moment chain-data.js gains an entry.
+    var share = window.PolyTechniques && window.PolyTechniques.shareState;
+    if (share) {
+      share([
+        { key: "poly", id: "hg-poly", kind: "optionText" },
+        { key: "mdry", id: "hg-mdry", min: 0 },
+        { key: "mwet", id: "hg-mwet", min: 0 },
+        { key: "rhop", id: "hg-rhop", min: 0 },
+        { key: "rhos", id: "hg-rhos", min: 0 },
+        { key: "v2r", id: "hg-v2r", min: 0.001, max: 1 },
+        { key: "chi", id: "hg-chi" },
+        { key: "mn", id: "hg-mn", min: 0 },
+        { key: "rs", id: "hg-rs", min: 0 }
+      ], recalc);
+    } else {
+      // nav.js absent: the page still has to work, it just cannot be shared.
+      ["hg-mdry", "hg-mwet", "hg-rhop", "hg-rhos", "hg-v2r", "hg-chi", "hg-mn", "hg-rs"].forEach(function (id) {
+        $(id).addEventListener("input", recalc);
+      });
+      $("hg-poly").addEventListener("change", recalc);
+    }
     recalc();
   }
 

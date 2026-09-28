@@ -954,4 +954,99 @@
       links.forEach(function (l) { observer.observe(l.card); });
     }
   }
+
+  // ---- Shareable calculator state -------------------------------------------
+  // Opt-in. A page hands over the inputs worth sharing and gets two things:
+  // its values restored from the query string on load, and the query string
+  // rewritten as they change, so the URL that "Copy results" pastes underneath
+  // the numbers actually reproduces them.
+  //
+  // Only values that differ from the ones the page shipped with are written,
+  // so an untouched page keeps a clean URL. replaceState rather than pushState,
+  // because nudging a number should not fill the back button.
+  //
+  // Field kinds:
+  //   number (default)  min/max clamp a value that arrived off a URL
+  //   select            matched on the option's value
+  //   optionText        matched on a slug of the option's TEXT, for a list
+  //                     built at run time where the index is not stable
+  function shareState(fields, onChange) {
+    var defaults = {};
+    function el(f) { return document.getElementById(f.id); }
+    function slug(t) { return String(t).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+
+    fields.forEach(function (f) {
+      var e = el(f);
+      if (e) defaults[f.key] = e.value;
+    });
+
+    function apply() {
+      var touched = false;
+      try {
+        var q = new URLSearchParams(location.search);
+        fields.forEach(function (f) {
+          var raw = q.get(f.key), e = el(f);
+          if (raw === null || !e) return;
+          if (f.kind === "select") {
+            for (var i = 0; i < e.options.length; i++) {
+              if (e.options[i].value === raw) { e.value = raw; touched = true; return; }
+            }
+            return;
+          }
+          if (f.kind === "optionText") {
+            for (var j = 0; j < e.options.length; j++) {
+              if (slug(e.options[j].textContent) === slug(raw)) { e.selectedIndex = j; touched = true; return; }
+            }
+            return;
+          }
+          var v = parseFloat(raw);
+          if (!isFinite(v)) return;                       // junk in a URL is not a value
+          if (f.min !== undefined) v = Math.max(f.min, v);
+          if (f.max !== undefined) v = Math.min(f.max, v);
+          e.value = v;
+          touched = true;
+        });
+      } catch (e) { /* a malformed URL is not worth a broken page */ }
+      return touched;
+    }
+
+    function write() {
+      try {
+        var q = new URLSearchParams();
+        fields.forEach(function (f) {
+          var e = el(f);
+          if (!e) return;
+          if (e.value === "" || e.value === defaults[f.key]) return;
+          if (f.kind === "optionText") {
+            var opt = e.options[e.selectedIndex];
+            if (opt) q.set(f.key, slug(opt.textContent));
+            return;
+          }
+          q.set(f.key, e.value);
+        });
+        var qs = q.toString();
+        history.replaceState(null, "", qs ? location.pathname + "?" + qs : location.pathname);
+      } catch (e) { /* replaceState throws on a file:// origin */ }
+    }
+
+    // apply() only fills the inputs. If it changed anything the page must
+    // recompute, or it renders its defaults under restored values - which is
+    // worse than not restoring at all, because the numbers look authoritative
+    // and belong to different inputs.
+    var restored = apply();
+    if (restored && typeof onChange === "function") onChange();
+    fields.forEach(function (f) {
+      var e = el(f);
+      if (!e) return;
+      e.addEventListener(e.tagName === "SELECT" ? "change" : "input", function () {
+        if (typeof onChange === "function") onChange();
+        write();
+      });
+    });
+    return { write: write, apply: apply };
+  }
+
+  window.PolyTechniques = window.PolyTechniques || {};
+  window.PolyTechniques.shareState = shareState;
+
 })();

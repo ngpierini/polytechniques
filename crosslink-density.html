@@ -32,7 +32,7 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=32" defer></script>
+<script src="nav.js?v=34" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
@@ -384,13 +384,42 @@
       "<strong>Modulus:</strong> M<sub>c</sub> = " + Math.round(lastMod.Mc).toLocaleString() + " g/mol<br>" + msg;
   }
 
-  ["xl-mdry", "xl-mswell", "xl-rhop", "xl-rhos", "xl-v1", "xl-chi"].forEach(function (id) {
-    $(id).addEventListener("input", recalcSwell);
-  });
-  ["xl-mod", "xl-temp", "xl-rhop2"].forEach(function (id) {
-    $(id).addEventListener("input", recalcMod);
-  });
-  $("xl-mod-unit").addEventListener("change", recalcMod);
+  // nav.js is deferred, so it has not run yet when this inline script does.
+  // Wait for the document to be ready or the helper is always missing.
+  function wireInputs() {
+  // Shared state: both routes, so the disagreement between them travels too.
+  var share = window.PolyTechniques && window.PolyTechniques.shareState;
+  if (share) {
+    share([
+      { key: "mdry", id: "xl-mdry", min: 0 },
+      { key: "mswell", id: "xl-mswell", min: 0 },
+      { key: "rhop", id: "xl-rhop", min: 0 },
+      { key: "rhos", id: "xl-rhos", min: 0 },
+      { key: "v1", id: "xl-v1", min: 0 },
+      { key: "chi", id: "xl-chi" }
+    ], recalcSwell);
+    share([
+      { key: "mod", id: "xl-mod", min: 0 },
+      { key: "temp", id: "xl-temp" },
+      { key: "rhop2", id: "xl-rhop2", min: 0 },
+      { key: "unit", id: "xl-mod-unit", kind: "select" }
+    ], recalcMod);
+  } else {
+    ["xl-mdry", "xl-mswell", "xl-rhop", "xl-rhos", "xl-v1", "xl-chi"].forEach(function (id) {
+      $(id).addEventListener("input", recalcSwell);
+    });
+    ["xl-mod", "xl-temp", "xl-rhop2"].forEach(function (id) {
+      $(id).addEventListener("input", recalcMod);
+    });
+    $("xl-mod-unit").addEventListener("change", recalcMod);
+  }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wireInputs);
+  } else {
+    wireInputs();
+  }
+
   $("xl-solv-btn").addEventListener("click", function () {
     document.querySelector("#xl-solv-table").scrollIntoView({ behavior: "smooth", block: "center" });
   });

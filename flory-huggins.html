@@ -32,7 +32,7 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=32" defer></script>
+<script src="nav.js?v=34" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
@@ -486,10 +486,37 @@
       (ODT / blendCrit).toFixed(2) + '&times; easier than the diblock</div></div>';
   }
 
-  ["fh-n1", "fh-n2", "fh-chi", "fh-phi", "fh-a", "fh-b"].forEach(function (id) {
-    $(id).addEventListener("input", recalc);
-  });
-  ["fh-dn", "fh-dchi"].forEach(function (id) { $(id).addEventListener("input", diblock); });
+  // nav.js is deferred, so it has not run yet when this inline script does.
+  // Wait for the document to be ready or the helper is always missing.
+  function wireInputs() {
+  // Shared state, so a phase diagram can be sent to someone as a link.
+  var share = window.PolyTechniques && window.PolyTechniques.shareState;
+  if (share) {
+    share([
+      { key: "n1", id: "fh-n1", min: 1 },
+      { key: "n2", id: "fh-n2", min: 1 },
+      { key: "chi", id: "fh-chi" },
+      { key: "phi", id: "fh-phi", min: 0, max: 1 },
+      { key: "a", id: "fh-a" },
+      { key: "b", id: "fh-b" }
+    ], recalc);
+    share([
+      { key: "dn", id: "fh-dn", min: 1 },
+      { key: "dchi", id: "fh-dchi" }
+    ], diblock);
+  } else {
+    ["fh-n1", "fh-n2", "fh-chi", "fh-phi", "fh-a", "fh-b"].forEach(function (id) {
+      $(id).addEventListener("input", recalc);
+    });
+    ["fh-dn", "fh-dchi"].forEach(function (id) { $(id).addEventListener("input", diblock); });
+  }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wireInputs);
+  } else {
+    wireInputs();
+  }
+
 
   recalc();
   diblock();

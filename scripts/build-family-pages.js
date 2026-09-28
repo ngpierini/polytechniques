@@ -359,7 +359,7 @@ function pageHtml(fam, entries) {
     publisher: { "@type": "Organization", name: "PolyTechniques" },
   }, null, 2) + "\n<\/script>\n";
   h += '<script src="theme.js?v=1"><\/script>\n';
-  h += '<script src="nav.js?v=32" defer><\/script>\n';
+  h += '<script src="nav.js?v=34" defer><\/script>\n';
   h += '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n';
   h += '<link rel="manifest" href="manifest.json">\n';
   h += '<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">\n';
@@ -468,7 +468,7 @@ function hubHtml(groups) {
   h += '<meta name="twitter:image" content="' + SITE + 'og-image.png">\n';
   h += '<script src="structure-map.js?v=2" defer><\/script>\n';
   h += '<script src="theme.js?v=1"><\/script>\n';
-  h += '<script src="nav.js?v=32" defer><\/script>\n';
+  h += '<script src="nav.js?v=34" defer><\/script>\n';
   h += '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n';
   h += '<link rel="manifest" href="manifest.json">\n';
   h += '<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">\n';
