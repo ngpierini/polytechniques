@@ -275,7 +275,7 @@ const SUBSTRUCTURE_CASES = [
   ["Nylon 6,6", "ester", false],
   ["Polyethylene", "ester", false],
   ["Polyethylene", "ether", false],
-  ["Polyethylene", "backbone C=C", false],
+  ["Polyethylene", "aliphatic alkene", false],
   ["Polyethylene", "difluoromethylene", false],
   ["Polystyrene", "benzene ring", true],
   ["Polystyrene", "ester", false],
@@ -285,7 +285,12 @@ const SUBSTRUCTURE_CASES = [
   ["Poly(dimethylsiloxane)", "siloxane", true],
   ["Poly(ether sulfone)", "sulfone", true],
   ["Poly(methyl methacrylate)", "ester", true],
-  ["Polybutadiene (cis-1,4)", "backbone C=C", true],
+  ["Polybutadiene (cis-1,4)", "aliphatic alkene", true],
+  // A bare C=C matches the alternating bonds of a benzene ring, so these two
+  // are what stops the unsaturation fragment from returning every aromatic.
+  ["Polystyrene", "aliphatic alkene", false],
+  ["Poly(ethylene terephthalate)", "aliphatic alkene", false],
+  ["Polychloroprene", "aliphatic alkene", true],
   ["Poly(vinyl alcohol)", "ether", false],
   // These two only match on the CLOSED repeat unit. They are the regression
   // test for the bug that matching the open graph misses every main-chain

@@ -1427,8 +1427,8 @@
     bonds.forEach(function (b) {
       if (!(b.a in ids) || !(b.b in ids)) return;
       var o = b.order || 1;
-      adj[b.a].push({ to: b.b, order: o });
-      adj[b.b].push({ to: b.a, order: o });
+      adj[b.a].push({ to: b.b, order: o, notAromatic: !!b.notAromatic });
+      adj[b.b].push({ to: b.a, order: o, notAromatic: !!b.notAromatic });
     });
     return { ids: ids, adj: adj };
   }
@@ -1489,6 +1489,13 @@
 
     var hg = subAdjacency(H.atoms, H.bonds);
     var qg = subAdjacency(Q.atoms, Q.bonds);
+    // Only pay for ring perception when a query actually asks about it.
+    var wantsAromatic = (Q.bonds || []).some(function (b) { return b.notAromatic; });
+    var aromaticMap = null;
+    if (wantsAromatic) {
+      try { aromaticMap = aromaticRingBonds(H.atoms, H.bonds) || {}; } catch (e) { aromaticMap = {}; }
+    }
+    function aromaticKey(x, y) { return [String(x), String(y)].sort().join("|"); }
 
     // Order the query so each atom after the first is adjacent to one already
     // placed. That keeps the search connected and prunes early; a disconnected
@@ -1520,7 +1527,9 @@
         var partner = map[qe.to];
         if (partner === undefined) return;
         var found = hg.adj[hid].some(function (he) {
-          return he.to === partner && orderMatches(qe.order, he.order);
+          if (he.to !== partner || !orderMatches(qe.order, he.order)) return false;
+          if (qe.notAromatic && aromaticMap && aromaticMap[aromaticKey(hid, partner)]) return false;
+          return true;
         });
         if (!found) ok = false;
       });
@@ -1591,9 +1600,10 @@
     "difluoromethylene": frag(
       [{ id: 1, el: "C" }, { id: 2, el: "F" }, { id: 3, el: "F" }],
       [{ a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }]),
-    "backbone C=C": frag(
+    // notAromatic, or every benzene ring in the library answers to this.
+    "aliphatic alkene": frag(
       [{ id: 1, el: "C" }, { id: 2, el: "C" }],
-      [{ a: 1, b: 2, order: 2 }]),
+      [{ a: 1, b: 2, order: 2, notAromatic: true }]),
     "quaternary carbon": frag(
       [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" },
        { id: 4, el: "C" }, { id: 5, el: "C" }],

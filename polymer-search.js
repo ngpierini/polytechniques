@@ -7256,7 +7256,7 @@
           Object.keys(PG.FRAGMENTS).forEach(function (k) {
             var q = PG.FRAGMENTS[k];
             try {
-              if (PG.hasSubstructure(p.atoms, p.bonds, q.atoms, q.bonds)) terms.push('contains ' + k);
+              if (PG.hasSubstructure(p.atoms, p.bonds, q.atoms, q.bonds)) terms.push(facetNorm('contains ' + k));
             } catch (e1) { /* a malformed unit is not a match */ }
           });
         }
@@ -7274,7 +7274,7 @@
     function facetIndex() {
       if (facetIndexCache) return facetIndexCache;
       var db = window.POLYMER_DB || [];
-      var tagCount = {}, clsCount = {}, bbCount = {};
+      var tagCount = {}, clsCount = {}, bbCount = {}, hasCount = {};
       db.forEach(function (p) {
         (p.tags || []).forEach(function (t) {
           var k = facetNorm(t);
@@ -7284,13 +7284,15 @@
         facetTermsOf(p).forEach(function (t) {
           if (t.indexOf('backbone ') === 0) bbCount[t] = (bbCount[t] || 0) + 1;
           if (t === 'can be tactic') bbCount[t] = (bbCount[t] || 0) + 1;
+          if (t.indexOf('contains ') === 0) hasCount[t] = (hasCount[t] || 0) + 1;
         });
       });
       function toList(obj) {
         return Object.keys(obj).map(function (k) { return { term: k, n: obj[k] }; })
           .sort(function (a, b) { return b.n - a.n || (a.term < b.term ? -1 : 1); });
       }
-      facetIndexCache = { tags: toList(tagCount), classes: toList(clsCount), backbone: toList(bbCount) };
+      facetIndexCache = { tags: toList(tagCount), classes: toList(clsCount),
+        backbone: toList(bbCount), contains: toList(hasCount) };
       return facetIndexCache;
     }
 
@@ -7637,11 +7639,23 @@
         return activeFacets.every(function (t) { return termMatches(p, t); });
       });
       renderFacetBar();
+      // "288 polymers are Contains ester" is not a sentence. A facet that
+      // already carries its own verb reads as one when the template stops
+      // supplying a second: "288 polymers contain ester".
+      var allContains = activeFacets.length &&
+        activeFacets.every(function (t) { return t.indexOf('contains ') === 0; });
+      var facetPhrase = allContains
+        ? activeFacets.map(function (t) { return facetLabel(t.replace(/^contains /, '')); }).join(' + ')
+        : activeFacets.map(facetLabel).join(' + ');
       renderFacetResults(list, statusEl,
         list.length
-          ? list.length + ' ' + (list.length === 1 ? 'polymer is' : 'polymers are') + ' ' +
-            activeFacets.map(facetLabel).join(' + ') + ':'
-          : 'Nothing is ' + activeFacets.map(facetLabel).join(' + ') + '. Remove a filter to widen it.');
+          ? list.length + ' ' +
+            (allContains
+              ? (list.length === 1 ? 'polymer contains' : 'polymers contain')
+              : (list.length === 1 ? 'polymer is' : 'polymers are')) +
+            ' ' + facetPhrase + ':'
+          : (allContains ? 'Nothing contains ' : 'Nothing is ') + facetPhrase +
+            '. Remove a filter to widen it.');
     }
 
     function chipButton(term, count, on) {
@@ -7711,6 +7725,28 @@
           bbRow.appendChild(chip);
         });
         wrap.appendChild(bbRow);
+      }
+
+      // A neighbouring question to the one above, and deliberately not the
+      // same row: the backbone chips say what the chain is made OF, these say
+      // what the repeat unit HAS anywhere in it, backbone or hanging off.
+      // Both are read off the structure; neither is declared anywhere.
+      var hasList = (idx.contains || []).filter(function (b) { return b.n >= 5; });
+      if (hasList.length) {
+        var hasRow = document.createElement("div");
+        hasRow.className = "mol-facet-row";
+        var hasLab = document.createElement("span");
+        hasLab.className = "mol-recent-label";
+        hasLab.textContent = "Groups anywhere in the unit:";
+        hasRow.appendChild(hasLab);
+        hasList.forEach(function (f) {
+          var chip = chipButton(f.term, f.n, activeFacets.indexOf(f.term) !== -1);
+          chip.textContent = facetLabel(f.term.replace(/^contains /, "")) + " " + f.n;
+          chip.title = f.n + " polymers contain this group somewhere in the repeat unit, " +
+            "found by matching the structure rather than by any tag";
+          hasRow.appendChild(chip);
+        });
+        wrap.appendChild(hasRow);
       }
 
       var more = document.createElement('button');
