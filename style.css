@@ -74,6 +74,47 @@
   --shadow: none;
 }
 
+/* Prose links. There was no rule for these at all, so they rendered in the
+   browser default blue: 1.76:1 against a dark card, where 4.5:1 is the bar for
+   body text. var(--primary) is 5.12:1 dark and 5.17:1 light, and is already
+   the colour this site uses for anything you can act on.
+
+   Scoped deliberately. Several components are themselves anchors - .home-card
+   wraps an entire card in one - and the nav strips style their own links, so a
+   bare element selector would repaint all of them. */
+.guide-note a,
+.hint a,
+.diagram-caption a,
+.guide-list a,
+.fam-entry a,
+.tech-catch a,
+.tech-best a,
+#guide p a,
+#guide li a,
+#calc-guide p a,
+#calc-guide li a,
+.footer a {
+  color: var(--primary);
+  text-decoration-color: color-mix(in srgb, var(--primary) 45%, transparent);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.12s;
+}
+.guide-note a:hover,
+.hint a:hover,
+.diagram-caption a:hover,
+.guide-list a:hover,
+.fam-entry a:hover,
+.tech-catch a:hover,
+.tech-best a:hover,
+#guide p a:hover,
+#guide li a:hover,
+#calc-guide p a:hover,
+#calc-guide li a:hover,
+.footer a:hover {
+  text-decoration-color: currentColor;
+}
+
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 
