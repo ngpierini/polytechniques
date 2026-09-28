@@ -19,6 +19,7 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 const MIN_INBOUND = 2;
+const MIN_OUTBOUND = 2;
 
 // A page that is allowed to be reached only from the nav, because that is what
 // it is for. Everything else has to earn a link from prose.
@@ -51,7 +52,8 @@ function main() {
   const exists = new Set(files);
 
   const inbound = {};
-  indexable.forEach((f) => { inbound[f] = new Set(); });
+  const outbound = {};
+  indexable.forEach((f) => { inbound[f] = new Set(); outbound[f] = new Set(); });
 
   const errors = [];
   const broken = [];
@@ -70,6 +72,7 @@ function main() {
       }
       if (target === from) continue;
       if (inbound[target] && !WEAK_SOURCES.has(from)) inbound[target].add(from);
+      if (outbound[from] && !NAV_ONLY.has(target)) outbound[from].add(target);
     }
   });
 
@@ -79,6 +82,14 @@ function main() {
 
   indexable.forEach((f) => {
     if (NAV_ONLY.has(f)) return;
+    // A page nobody can leave. Every tool here is one step of a longer job, so
+    // the page that gives you a number should say what the next number is.
+    const out = outbound[f].size;
+    if (out < MIN_OUTBOUND) {
+      errors.push('"' + f + '" links onward to ' + out + " other page" +
+        (out === 1 ? "" : "s") + ". A tool page is a dead end below " +
+        MIN_OUTBOUND + ": say where the reader goes next, in prose or a related-tools card.");
+    }
     const n = inbound[f].size;
     if (n < MIN_INBOUND) {
       errors.push('"' + f + '" has ' + n + " inbound link" + (n === 1 ? "" : "s") +
@@ -96,10 +107,12 @@ function main() {
     process.exit(1);
   }
 
-  const counts = indexable.filter((f) => !NAV_ONLY.has(f))
-    .map((f) => inbound[f].size).sort((a, b) => a - b);
+  const tools = indexable.filter((f) => !NAV_ONLY.has(f));
+  const inMin = Math.min.apply(null, tools.map((f) => inbound[f].size));
+  const outMin = Math.min.apply(null, tools.map((f) => outbound[f].size));
   console.log("internal links OK - " + indexable.length + " indexable pages, no broken links, " +
-    "every tool page has at least " + MIN_INBOUND + " inbound (thinnest: " + counts[0] + ").");
+    tools.length + " tool pages all at least " + MIN_INBOUND + " inbound (thinnest: " + inMin +
+    ") and " + MIN_OUTBOUND + " outbound (thinnest: " + outMin + ").");
 }
 
 main();
