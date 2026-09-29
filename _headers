@@ -58,27 +58,50 @@
 # carries ?v=N, so a change to the file is always a change to the URL. Path
 # matching here ignores the query string, which is what makes this work: the
 # rule applies to whichever ?v= is current.
+#
+# Each one clears Cache-Control first. Rules in this file do NOT override one
+# another - Cloudflare joins repeated headers with a comma - so without the
+# "!" these came back as "no-cache, public, max-age=31536000, immutable",
+# inheriting no-cache from /* above, and no-cache beats max-age. They then
+# revalidated on every use, which is the opposite of the point.
+#
+# This was invisible until 29 Sep 2026. The zone's Browser Cache TTL had been
+# rewriting Cache-Control wholesale, and since a year is longer than the four
+# hours it imposed, these assets came back with a clean immutable value.
+# Setting the zone to "Respect Existing Headers" - which is what makes the
+# /sw.js rule below work at all - stopped the rewrite and exposed the join.
 /style.css
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 /nav.js
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 /app.js
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 /polymer-calc-core.js
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 /polymer-data.js
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 /polymer-graph.js
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 /polymer-search.js
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 /superatoms.js
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 /ocr-decoders.js
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 /thermal-library.js
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 /chain-data.js
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 
 # The vendored RDKit build (6.9 MB of WebAssembly, the largest thing served
