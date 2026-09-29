@@ -7519,24 +7519,43 @@
       var query = facetNorm(q);
       if (query.length < 3) return null;
       var db = window.POLYMER_DB || [];
+      // Categories are indexed in the singular, and the match is a substring
+      // test in the wrong direction: "elastomer" is inside "elastomers", not
+      // the reverse. So asking in the plural - which is how anyone asks -
+      // found nothing at all. Retry a word without its trailing s, and keep
+      // the singular only if it actually matches, so "glass" is never quietly
+      // read as "glas": nothing matches that, and the word still fails.
+      function singularOf(w) {
+        return (w.length > 3 && /s$/.test(w) && !/ss$/.test(w)) ? w.slice(0, -1) : null;
+      }
+      function someEntryHas(term) {
+        for (var k = 0; k < db.length; k++) if (termMatches(db[k], term)) return true;
+        return false;
+      }
+
       var whole = db.filter(function (p) { return facetTermsOf(p).indexOf(query) !== -1; });
       if (whole.length) return { list: whole, terms: [query], exact: true };
+      var wholeSing = singularOf(query);
+      if (wholeSing) {
+        var whole2 = db.filter(function (p) { return facetTermsOf(p).indexOf(wholeSing) !== -1; });
+        if (whole2.length) return { list: whole2, terms: [wholeSing], exact: true };
+      }
 
       var words = query.split(' ').filter(function (w) { return w.length >= 3; });
       if (!words.length) return null;
       // Every word has to land on something, or "polyester recipe" would quietly
       // answer as if you had only typed "polyester".
+      var resolved = [];
       for (var i = 0; i < words.length; i++) {
-        var anyHit = false;
-        for (var j = 0; j < db.length; j++) {
-          if (termMatches(db[j], words[i])) { anyHit = true; break; }
-        }
-        if (!anyHit) return null;
+        if (someEntryHas(words[i])) { resolved.push(words[i]); continue; }
+        var sing = singularOf(words[i]);
+        if (sing && someEntryHas(sing)) { resolved.push(sing); continue; }
+        return null;
       }
       var list = db.filter(function (p) {
-        return words.every(function (w) { return termMatches(p, w); });
+        return resolved.every(function (w) { return termMatches(p, w); });
       });
-      return list.length ? { list: list, terms: words, exact: false } : null;
+      return list.length ? { list: list, terms: resolved, exact: false } : null;
     }
 
     // ---------- Chips, and paging a category that runs to 165 entries ----------
