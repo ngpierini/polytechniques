@@ -8087,19 +8087,49 @@
         // mentions PEDOT:PSS) and "PBI" on a bottlebrush called PBiBEM-g-PMMA,
         // ahead of the polymers actually abbreviated that way. Lower is better;
         // null means no match at all.
+        // Separator-insensitive key. Chemists write "Nylon-6", "nylon6" and
+        // "polymethyl methacrylate" for names stored here as "Nylon 6" and
+        // "Poly(methyl methacrylate)", and a raw substring test answered every
+        // one of those with nothing at all. Stripping everything that is not a
+        // letter or a digit makes them the same string.
+        function looseKey(t) { return t.toLowerCase().replace(/[^a-z0-9]/g, ""); }
+        // Computed once per entry and kept on it: this runs over the whole
+        // library on every keystroke.
+        function looseName(p) {
+          if (p._lk === undefined) p._lk = looseKey(p.name || "");
+          return p._lk;
+        }
+        function looseAkas(p) {
+          if (p._lka === undefined) p._lka = (p.aka || []).map(looseKey);
+          return p._lka;
+        }
+        var lq = looseKey(q);
+
         function rank(p) {
           var name = p.name.toLowerCase();
           var akas = (p.aka || []).map(function (a) { return a.toLowerCase(); });
           if (name === q) return 0;
           if (akas.indexOf(q) !== -1) return 1;
-          if (name.indexOf(q) === 0) return 2;
-          if (akas.some(function (a) { return a.indexOf(q) === 0; })) return 3;
-          if (name.indexOf(q) !== -1) return 4;
-          if (akas.some(function (a) { return a.indexOf(q) !== -1; })) return 5;
+          // Loose exact sits here, above every prefix tier: "nylon66" IS
+          // Nylon 6,6, and it used to rank below anything merely starting
+          // with the same letters.
+          if (lq && looseName(p) === lq) return 2;
+          if (lq && looseAkas(p).indexOf(lq) !== -1) return 3;
+          if (name.indexOf(q) === 0) return 4;
+          if (akas.some(function (a) { return a.indexOf(q) === 0; })) return 5;
+          if (lq && looseName(p).indexOf(lq) === 0) return 6;
+          if (lq && looseAkas(p).some(function (a) { return a.indexOf(lq) === 0; })) return 7;
+          if (name.indexOf(q) !== -1) return 8;
+          if (akas.some(function (a) { return a.indexOf(q) !== -1; })) return 9;
+          // Loose "contains" only once the query is long enough to mean
+          // something: a three-character stripped query lands inside half the
+          // library.
+          if (lq.length >= 5 && looseName(p).indexOf(lq) !== -1) return 10;
+          if (lq.length >= 5 && looseAkas(p).some(function (a) { return a.indexOf(lq) !== -1; })) return 11;
           // Every result card prints "CAS <rn>", so people paste one back in.
           // These are the polymer registry numbers, not the monomer's, so a
           // monomer RN off a bottle label deliberately does not match here.
-          if (p.cas && p.cas.toLowerCase().indexOf(q) !== -1) return 6;
+          if (p.cas && p.cas.toLowerCase().indexOf(q) !== -1) return 12;
           return null;
         }
         var scored = [];
