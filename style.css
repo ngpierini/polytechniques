@@ -342,7 +342,7 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
   gap: 12px 16px;
 }
 
@@ -396,7 +396,7 @@ input[type="number"]:focus, input[type="text"]:focus, input[type="search"]:focus
 
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -859,14 +859,14 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 }
 .home-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: 20px;
 }
 /* A four-card section at the default 260px minimum wraps 3+1, stranding the
    fourth card alone on its own row. A slightly smaller minimum lets all four
    sit on one desktop row (4 x 235 + 3 x 20 = 1000px inside the 1032px body)
    while still collapsing to 2-up and then 1-up on narrower screens. */
-.home-grid--four { grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); }
+.home-grid--four { grid-template-columns: repeat(auto-fit, minmax(min(235px, 100%), 1fr)); }
 .home-card {
   display: block;
   background: var(--card-bg);
@@ -982,7 +982,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
    keeping the larger feature type size. Collapses to one column on phones. */
 .home-feature-pair {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
   gap: 20px;
 }
 .home-feature-pair .home-card--feature { display: block; }
@@ -1003,7 +1003,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
    without making any of them easier to choose between. */
 .home-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 10px;
 }
 .home-row {
@@ -1420,7 +1420,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 
 .hot-papers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -1560,7 +1560,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 
 .trivia-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 10px;
   margin-bottom: 14px;
 }
@@ -1802,7 +1802,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 
 .tech-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr));
   gap: 12px;
   margin-top: 14px;
 }
@@ -2119,7 +2119,10 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   cursor: crosshair;
 }
 /* ---- Structure editor: header + fullscreen ---- */
-.mol-editor-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+/* Wraps because the row is a heading plus two buttons, and below about 330px
+   they cannot sit on one line - the fullscreen button ran 16px past the
+   viewport and scrolled the page sideways. Inert at any width with room. */
+.mol-editor-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
 .mol-editor-head h3 { margin: 0; }
 .mol-fs-btn {
   display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
@@ -3189,7 +3192,7 @@ input.input-invalid {
 
 .calc-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
   gap: 12px;
 }
 /* A block label, NOT a flex column. Making the label a flex container turns
@@ -3445,13 +3448,26 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 .fam-entry { padding: 12px 0; border-bottom: 1px solid var(--border); }
 .fam-entry:first-of-type { padding-top: 0; }
 .fam-entry:last-child { padding-bottom: 0; border-bottom: none; }
+/* The heading is the polymer name, and plenty of those are one token with no
+   space and no hyphen: Poly(bisbenzimidazobenzophenanthroline),
+   Poly(methacryloxypropylmethylsiloxane). At 375px one of those renders 295px
+   wide in a 262px box, so 33px of the name sat outside its own card. The page
+   does not scroll at that width - the padding absorbs it - but the name still
+   ran past the edge. Names containing a hyphen already wrapped, because CSS
+   breaks after a hyphen, which is why only the hyphen-free ones showed. */
 .fam-entry h4 {
   margin: 0 0 3px;
   font-size: var(--fs-md);
   font-weight: 600;
   color: var(--text);
+  overflow-wrap: break-word;
 }
-.fam-entry p { margin: 0 0 6px; font-size: var(--fs-base); }
+/* Curated notes carry chemical names, and some of them are one long token
+   with no spaces - "acrylate/methacrylate/acrylamide/methacrylamide" is 47
+   characters and CSS does not break at a slash. That one scrolled
+   methacrylate-polymers.html sideways by 21px on a phone. .fam-meta below
+   already sets this; the note paragraph was the one that did not. */
+.fam-entry p { margin: 0 0 6px; font-size: var(--fs-base); overflow-wrap: break-word; }
 .fam-entry p:last-child { margin-bottom: 0; }
 .fam-meta {
   color: var(--text-dim);
