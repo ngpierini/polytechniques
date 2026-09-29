@@ -190,9 +190,9 @@
     var row = document.createElement("div");
     row.className = "dyn-row";
     row.innerHTML =
-      '<input type="text" class="tg-name" placeholder="Component name" value="' + (name || "") + '">' +
-      '<input type="number" class="tg-tg" placeholder="Tg (' + unitText() + ')" step="any" value="' + (tg != null ? tg : "") + '">' +
-      '<input type="number" class="tg-wt" placeholder="Weight %" step="any" min="0" value="' + (wt != null ? wt : "") + '">' +
+      '<input type="text" class="tg-name" placeholder="Component name" aria-label="Component name" value="' + (name || "") + '">' +
+      '<input type="number" class="tg-tg" placeholder="Tg (' + unitText() + ')" aria-label="Tg in ' + unitText() + '" step="any" value="' + (tg != null ? tg : "") + '">' +
+      '<input type="number" class="tg-wt" placeholder="Weight %" aria-label="Weight percent" step="any" min="0" value="' + (wt != null ? wt : "") + '">' +
       '<button type="button" class="dyn-row-remove" aria-label="Remove component">&times;</button>';
     row.querySelector(".dyn-row-remove").addEventListener("click", function () {
       row.remove();
@@ -297,6 +297,8 @@
     $("tg-unit-toggle").innerHTML = "Enter T<sub>g</sub> in " + (tgUnit === "C" ? "K" : "°C");
     document.querySelectorAll("#tg-rows .tg-tg").forEach(function (inp) {
       inp.placeholder = "Tg (" + unitText() + ")";
+      // The spoken name carries the unit too, so it has to change with it.
+      inp.setAttribute("aria-label", "Tg in " + unitText());
     });
     renderRefRows();
   }

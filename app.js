@@ -700,7 +700,7 @@ function presetBarHTML(tabId) {
         <button type="button" class="copy-btn" id="${tabId}-preset-delete-btn">Delete</button>
       </div>
       <div class="preset-row">
-        <input type="text" id="${tabId}-preset-name" class="preset-name-input" placeholder="Name this recipe…">
+        <input type="text" id="${tabId}-preset-name" class="preset-name-input" placeholder="Name this recipe…" aria-label="Name for this recipe">
         <button type="button" class="copy-btn" id="${tabId}-preset-save-btn">Save current as…</button>
       </div>
     </details>
@@ -4267,9 +4267,9 @@ function wireStepGrowthPanel() {
     const row = document.createElement("div");
     row.className = "dyn-row sg-gel-row";
     row.innerHTML =
-      '<input type="text" class="sg-g-name" placeholder="Component" value="' + (name || "") + '">' +
-      '<input type="number" class="sg-g-mol" placeholder="Moles" step="any" min="0" value="' + (mol != null ? mol : "") + '">' +
-      '<input type="number" class="sg-g-f" placeholder="f" step="1" min="1" value="' + (f != null ? f : "") + '">' +
+      '<input type="text" class="sg-g-name" placeholder="Component" aria-label="Component name" value="' + (name || "") + '">' +
+      '<input type="number" class="sg-g-mol" placeholder="Moles" aria-label="Moles" step="any" min="0" value="' + (mol != null ? mol : "") + '">' +
+      '<input type="number" class="sg-g-f" placeholder="f" aria-label="Functionality, reactive groups per molecule" step="1" min="1" value="' + (f != null ? f : "") + '">' +
       '<select class="sg-g-type" aria-label="Functional group type"><option value="A">A</option><option value="B">B</option></select>' +
       '<button type="button" class="dyn-row-remove" aria-label="Remove component">&times;</button>';
     row.querySelector(".sg-g-type").value = group || "A";
