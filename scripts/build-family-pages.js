@@ -642,9 +642,16 @@ if (problems.length) {
 }
 
 pending.forEach(([slug, html]) => {
+// A working copy checked out on Windows has CRLF where the committed file has
+// LF, so comparing raw strings reports "out of date" for a file that is
+// identical once the endings are normalised. CI is Linux and never sees it.
+function sameText(a, b) {
+  if (a == null || b == null) return a === b;
+  return String(a).replace(/\r\n/g, "\n") === String(b).replace(/\r\n/g, "\n");
+}
   const file = path.join(ROOT, slug + ".html");
   const old = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null;
-  if (old !== html) {
+  if (!sameText(old, html)) {
     changed++;
     if (!CHECK) fs.writeFileSync(file, html);
   }
