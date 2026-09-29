@@ -125,6 +125,12 @@ jobs:
       - name: Theme colours clear 4.5:1 on the surfaces they are used on
         run: node scripts/check-theme-contrast.js
 
+      # Two pages scrolled sideways at 375px and five at 320px: grid columns
+      # that could not shrink below a pixel minimum, and polymer names with no
+      # space or hyphen to break at. Both are visible in the stylesheet.
+      - name: Nothing can force a page wider than a phone
+        run: node scripts/check-narrow-layout.js
+
       - name: Trivia questions still agree with the polymer library
         run: node scripts/check-trivia.js
 

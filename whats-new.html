@@ -57,6 +57,21 @@
   </div>
 
   <div class="card">
+    <h3>&#128241; Four things that made a page scroll sideways on a phone</h3>
+    <p class="guide-note">
+      A page that scrolls left and right on a phone is a small thing that feels broken every time you touch it. I measured instead of scrolling: each of the 46 pages loaded at a fixed phone width, comparing how wide the page actually was against how wide the screen is. Two pages scrolled at 375&nbsp;pixels, the commonest phone width, and five at 320. None do now.
+    </p>
+    <p class="guide-note">
+      Two of the four were long chemical names with nowhere to break. This site is made of names like <em>Poly(bisbenzimidazobenzophenanthroline)</em> &mdash; one word, no spaces, no hyphens &mdash; and a browser will not break a word unless you let it. One of those renders about 295&nbsp;pixels wide inside a 262&nbsp;pixel card, so the name simply ran out past the edge. Names that happen to contain a hyphen were always fine, because a browser will break after a hyphen, which is why this only showed on some entries. The other was a note containing <em>acrylate/methacrylate/acrylamide/methacrylamide</em>: 47 characters, and a slash is not a break either.
+    </p>
+    <p class="guide-note">
+      The third was the two big cards at the top of the home page, which were set to be at least 340&nbsp;pixels wide. That is exactly what it sounds like, including on a 360&nbsp;pixel screen, so they hung 4&nbsp;pixels off the side. Every grid on the site can now shrink below its preferred width rather than insisting on it. The fourth was the capability table on the <a href="diagnostics.html">diagnostics page</a>, where a rule that keeps a column on one line &mdash; correct on a desktop &mdash; was still in force after the table had been restacked into cards for a narrow screen.
+    </p>
+    <p class="guide-note">
+      All four are now checked automatically, so they cannot come back quietly.
+    </p>
+  </div>
+  <div class="card">
     <h3>&#127912; Every colour on the site is now readable in both themes</h3>
     <p class="guide-note">
       Text needs to stand out from what is behind it by a measurable amount &mdash; 4.5 to 1 for ordinary type, which is the standard the accessibility guidelines set. I measured every page instead of trusting my eye: each of the 46 pages loaded in turn, every element carrying its own text compared against the colour actually painted behind it, in light mode and in dark. It came back with 89 failures in light and 36 in dark. There are now none.
