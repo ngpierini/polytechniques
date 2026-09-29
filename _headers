@@ -109,12 +109,22 @@
 #
 # Not for want of trying. A `/vendor/*` rule came back MERGED with /* as
 # `no-cache, public, max-age=2592000`, and rewriting it as two exact paths
-# changed nothing - still merged, and cf-cache-status DYNAMIC, so not a stale
-# edge copy either. The root-level rules above override /* cleanly, so
-# something about these files (subdirectory, or the application/wasm type
-# Cloudflare does not edge-cache) makes them concatenate instead. Since
-# no-cache wins that merge, the rule bought nothing but a contradictory
-# header, so it is gone.
+# changed nothing. Since no-cache wins that merge, the rule bought nothing
+# but a contradictory header, so it is gone.
+#
+# That was originally blamed on the subdirectory or on the wasm content type,
+# reasoning that the root-level rules above override /* cleanly and these did
+# not. The premise was wrong: nothing here overrides anything. Cloudflare
+# joins repeated headers with a comma, so EVERY rule in this file merges with
+# /*. The root rules only looked clean because the zone's Browser Cache TTL
+# was replacing Cache-Control wholesale, and their year beat the four hours it
+# imposed. /vendor/* asked for a month, also longer, which is why it showed
+# the join first. Setting the zone to "Respect Existing Headers" on 29 Sep
+# 2026 exposed the same join on all eleven root assets, which is why they now
+# carry `! Cache-Control`.
+#
+# So a /vendor/* rule WOULD work now, given the same `!`. It is still not
+# worth adding, for the reason below.
 #
 # What it costs: one conditional request per session, answered 304 with no
 # body - not a 6.9 MB re-download. The service worker caches the file
