@@ -693,7 +693,7 @@ function presetBarHTML(tabId) {
         <span class="preset-bar-count" id="${tabId}-preset-count"></span>
       </summary>
       <div class="preset-row">
-        <select id="${tabId}-preset-select" class="preset-select">
+        <select id="${tabId}-preset-select" class="preset-select" aria-label="Load a saved recipe">
           <option value="">Load a saved recipe</option>
         </select>
         <button type="button" class="copy-btn" id="${tabId}-preset-load-btn">Load</button>
@@ -4270,7 +4270,7 @@ function wireStepGrowthPanel() {
       '<input type="text" class="sg-g-name" placeholder="Component" value="' + (name || "") + '">' +
       '<input type="number" class="sg-g-mol" placeholder="Moles" step="any" min="0" value="' + (mol != null ? mol : "") + '">' +
       '<input type="number" class="sg-g-f" placeholder="f" step="1" min="1" value="' + (f != null ? f : "") + '">' +
-      '<select class="sg-g-type"><option value="A">A</option><option value="B">B</option></select>' +
+      '<select class="sg-g-type" aria-label="Functional group type"><option value="A">A</option><option value="B">B</option></select>' +
       '<button type="button" class="dyn-row-remove" aria-label="Remove component">&times;</button>';
     row.querySelector(".sg-g-type").value = group || "A";
     row.querySelector(".dyn-row-remove").addEventListener("click", () => { row.remove(); recalcGel(); });

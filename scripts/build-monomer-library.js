@@ -283,13 +283,20 @@ function render(list) {
 function main() {
   const list = build();
   const text = render(list);
+// A working copy checked out on Windows has CRLF where the committed file has
+// LF, so comparing raw strings reports "out of date" for a file that is
+// identical once the endings are normalised. CI is Linux and never sees it.
+function sameText(a, b) {
+  if (a == null || b == null) return a === b;
+  return String(a).replace(/\r\n/g, "\n") === String(b).replace(/\r\n/g, "\n");
+}
   const check = process.argv.indexOf("--check") !== -1;
   const named = list.filter(m => m.name).length;
   const summary = list.length + " monomers, " + named + " named, " + (list.length - named) + " unnamed";
   if (check) {
     let current = null;
     try { current = fs.readFileSync(OUT, "utf8"); } catch (e) {}
-    if (current !== text) {
+    if (!sameText(current, text)) {
       console.error("monomer-data.js is out of date - run: node scripts/build-monomer-library.js");
       process.exit(1);
     }
