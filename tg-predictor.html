@@ -38,7 +38,7 @@
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=123">
+<link rel="stylesheet" href="style.css?v=124">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -75,6 +75,7 @@
       <span>Weight %</span>
       <span class="dyn-label-spacer"></span>
     </div>
+    <div class="dyn-head" aria-hidden="true"><span>Component</span><span id="tg-head-tg">Tg (&deg;C)</span><span>Weight %</span><span class="dyn-head-gap"></span></div>
     <div id="tg-rows" class="dyn-rows"></div>
     <div class="actions" style="justify-content:flex-start; margin-top:6px; gap:8px;">
       <button type="button" class="copy-btn" id="tg-add-row">+ Add component</button>
@@ -294,6 +295,8 @@
 
   function refreshUnitUi() {
     $("tg-unit-label").innerHTML = "Homopolymer T<sub>g</sub> (" + unitText() + ")";
+    var tgHead = document.getElementById("tg-head-tg");
+    if (tgHead) tgHead.textContent = "Tg (" + unitText() + ")";
     $("tg-unit-toggle").innerHTML = "Enter T<sub>g</sub> in " + (tgUnit === "C" ? "K" : "°C");
     document.querySelectorAll("#tg-rows .tg-tg").forEach(function (inp) {
       inp.placeholder = "Tg (" + unitText() + ")";
