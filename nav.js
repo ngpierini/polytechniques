@@ -27,6 +27,7 @@
     ["chain-dimensions.html", "📐 Chain Size"],
     ["calculator.html#sg", "🔗 Step-Growth"],
     ["crosslink-density.html", "🕸️ Crosslinks"],
+    ["hydrogel-mesh-size.html", "💧 Hydrogel Mesh"],
     ["radical-kinetics.html", "⚡ FRP Kinetics"],
     ["glossary.html", "📖 Glossary"]
   ];
@@ -119,6 +120,7 @@
     ["thermal-analysis.html", "Thermal Analysis (DSC, TGA, DMA)", "dsc tga dma thermal thermogravimetric differential scanning calorimetry dynamic mechanical analysis glass transition tg melting tm crystallinity char yield decomposition onset storage loss modulus tan delta crosslink density"],
     ["calculator.html#sg", "Step-Growth & Gel Point", "carothers gel point flory stockmayer functionality stoichiometry conversion xn thermoset network cure polyester polyamide endcapper"],
     ["crosslink-density.html", "Crosslink Density", "flory rehner swelling mc molar mass between crosslinks network rubber elasticity plateau modulus chi swelling ratio"],
+    ["hydrogel-mesh-size.html", "Hydrogel Mesh Size", "hydrogel mesh size correlation length peppas merrill canal peppas swelling ratio solute diffusion release drug delivery pore size exclusion mc water content v2s"],
     ["radical-kinetics.html", "Free-Radical Kinetics", "rp rate of polymerization kinetic chain length dpn kp kt kd initiator efficiency chain transfer mayo trommsdorff half life"],
     ["glossary.html", "Glossary", "terms definitions dispersity dp cta"],
     ["polymer-chain-game.html", "Build a Polymer Chain", "game maze fun"],
@@ -707,8 +709,13 @@
       // Two columns already fit a 375px screen, and stacking them would turn
       // a scannable lookup (the Tg reference list) into a column of cards.
       if (ths.length < 3) continue;
-      var heads = [];
-      for (var h = 0; h < ths.length; h++) heads.push(ths[h].textContent.trim());
+      var heads = [], keepCase = [];
+      for (var h = 0; h < ths.length; h++) {
+        heads.push(ths[h].textContent.trim());
+        // A header that opted out of the uppercase treatment means it: the
+        // stacked label is the same text and a capital sigma is not a sigma.
+        keepCase.push(!!ths[h].querySelector(".keepcase") || ths[h].classList.contains("keepcase"));
+      }
       var rows = table.querySelectorAll("tbody tr");
       var labelled = 0;
       for (var r = 0; r < rows.length; r++) {
@@ -724,6 +731,8 @@
         for (var c = 0; c < cells.length; c++) {
           var cell = cells[c];
           if (heads[c] && !cell.hasAttribute("data-label")) cell.setAttribute("data-label", heads[c]);
+          if (keepCase[c]) cell.setAttribute("data-label-keepcase", "");
+          else cell.removeAttribute("data-label-keepcase");
           cell.removeAttribute("data-stack-last");
           var text = cell.textContent.trim().toLowerCase();
           if (c > 0 && (text === "" || text === "n/a")) cell.setAttribute("data-stack-skip", "");
@@ -892,7 +901,7 @@
   }
 
   // ---- "On this page" sticky jump nav for the long guide pages ----
-  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html", "thermal-analysis.html", "end-group-analysis.html"];
+  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html", "thermal-analysis.html", "end-group-analysis.html", "hydrogel-mesh-size.html"];
 
   function buildSectionNav(current) {
     // Compare through pageKey. The list is written with ".html" for
@@ -945,4 +954,99 @@
       links.forEach(function (l) { observer.observe(l.card); });
     }
   }
+
+  // ---- Shareable calculator state -------------------------------------------
+  // Opt-in. A page hands over the inputs worth sharing and gets two things:
+  // its values restored from the query string on load, and the query string
+  // rewritten as they change, so the URL that "Copy results" pastes underneath
+  // the numbers actually reproduces them.
+  //
+  // Only values that differ from the ones the page shipped with are written,
+  // so an untouched page keeps a clean URL. replaceState rather than pushState,
+  // because nudging a number should not fill the back button.
+  //
+  // Field kinds:
+  //   number (default)  min/max clamp a value that arrived off a URL
+  //   select            matched on the option's value
+  //   optionText        matched on a slug of the option's TEXT, for a list
+  //                     built at run time where the index is not stable
+  function shareState(fields, onChange) {
+    var defaults = {};
+    function el(f) { return document.getElementById(f.id); }
+    function slug(t) { return String(t).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+
+    fields.forEach(function (f) {
+      var e = el(f);
+      if (e) defaults[f.key] = e.value;
+    });
+
+    function apply() {
+      var touched = false;
+      try {
+        var q = new URLSearchParams(location.search);
+        fields.forEach(function (f) {
+          var raw = q.get(f.key), e = el(f);
+          if (raw === null || !e) return;
+          if (f.kind === "select") {
+            for (var i = 0; i < e.options.length; i++) {
+              if (e.options[i].value === raw) { e.value = raw; touched = true; return; }
+            }
+            return;
+          }
+          if (f.kind === "optionText") {
+            for (var j = 0; j < e.options.length; j++) {
+              if (slug(e.options[j].textContent) === slug(raw)) { e.selectedIndex = j; touched = true; return; }
+            }
+            return;
+          }
+          var v = parseFloat(raw);
+          if (!isFinite(v)) return;                       // junk in a URL is not a value
+          if (f.min !== undefined) v = Math.max(f.min, v);
+          if (f.max !== undefined) v = Math.min(f.max, v);
+          e.value = v;
+          touched = true;
+        });
+      } catch (e) { /* a malformed URL is not worth a broken page */ }
+      return touched;
+    }
+
+    function write() {
+      try {
+        var q = new URLSearchParams();
+        fields.forEach(function (f) {
+          var e = el(f);
+          if (!e) return;
+          if (e.value === "" || e.value === defaults[f.key]) return;
+          if (f.kind === "optionText") {
+            var opt = e.options[e.selectedIndex];
+            if (opt) q.set(f.key, slug(opt.textContent));
+            return;
+          }
+          q.set(f.key, e.value);
+        });
+        var qs = q.toString();
+        history.replaceState(null, "", qs ? location.pathname + "?" + qs : location.pathname);
+      } catch (e) { /* replaceState throws on a file:// origin */ }
+    }
+
+    // apply() only fills the inputs. If it changed anything the page must
+    // recompute, or it renders its defaults under restored values - which is
+    // worse than not restoring at all, because the numbers look authoritative
+    // and belong to different inputs.
+    var restored = apply();
+    if (restored && typeof onChange === "function") onChange();
+    fields.forEach(function (f) {
+      var e = el(f);
+      if (!e) return;
+      e.addEventListener(e.tagName === "SELECT" ? "change" : "input", function () {
+        if (typeof onChange === "function") onChange();
+        write();
+      });
+    });
+    return { write: write, apply: apply };
+  }
+
+  window.PolyTechniques = window.PolyTechniques || {};
+  window.PolyTechniques.shareState = shareState;
+
 })();

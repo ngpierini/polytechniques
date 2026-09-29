@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Molecular Weight Distribution Simulator: PolyTechniques</title>
-<meta name="description" content="Simulate the whole molecular weight distribution a controlled polymerization should produce - the living population, the dead-chain tail, and the trace your GPC would actually show after band broadening.">
+<meta name="description" content="Simulate the whole molecular weight distribution a controlled polymerization should produce: the living population, the dead-chain tail, and the trace your GPC would actually show after band broadening.">
 <link rel="canonical" href="https://getpolytechniques.com/mwd-simulator.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="PolyTechniques">
@@ -32,13 +32,13 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=30" defer></script>
+<script src="nav.js?v=34" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=106">
+<link rel="stylesheet" href="style.css?v=123">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -64,7 +64,7 @@
     </p>
     <ul class="guide-list">
       <li><strong>The living chains</strong> as a Schulz&ndash;Zimm distribution of shape k&nbsp;=&nbsp;1/(&#272;&nbsp;&minus;&nbsp;1), which by construction has exactly the dispersity the predictor's equation gives (Krys &amp; Matyjaszewski, <em>Eur. Polym. J.</em> <strong>89</strong> (2017) 482&ndash;523, Eq.&nbsp;6). k&nbsp;=&nbsp;1 is the Flory most-probable distribution and &#272;&nbsp;=&nbsp;2; large k is nearly monodisperse.</li>
-      <li><strong>The dead chains.</strong> A chain that terminated at conversion x stopped growing there, so it carries M&nbsp;=&nbsp;M<sub>target</sub>&nbsp;&middot;&nbsp;x. Termination runs at a roughly steady rate through the reaction, so the dead population is that family swept across every conversion &ndash; a broad low-molecular-weight shoulder rather than a second peak.</li>
+      <li><strong>The dead chains.</strong> A chain that terminated at conversion x stopped growing there, so it carries M&nbsp;=&nbsp;M<sub>target</sub>&nbsp;&middot;&nbsp;x. Termination runs at a roughly steady rate through the reaction, so the dead population is that family swept across every conversion, giving a broad low-molecular-weight shoulder rather than a second peak.</li>
       <li><strong>The instrument.</strong> Every column bank smears each slice, which in log molecular weight is a Gaussian convolution. You do not have to guess its width: run a narrow standard and read the &#272; it gives you.</li>
     </ul>
   </div>
@@ -107,7 +107,7 @@
         <div class="field" id="md-f-c" hidden>
           <label for="md-c">C = k<sub>p</sub>[R-X]<sub>0</sub> &divide; (k<sub>deact</sub>[X-Cu<sup>II</sup>/L])</label>
           <input type="number" id="md-c" value="0.05" step="any" min="0">
-          <p class="hint">[R-X]<sub>0</sub> is the initial <strong>dormant-chain</strong> concentration, not the monomer concentration &ndash; the two differ by orders of magnitude in a real recipe. More deactivator, or a faster-deactivating ligand, makes C small and the distribution narrow.</p>
+          <p class="hint">[R-X]<sub>0</sub> is the initial <strong>dormant-chain</strong> concentration, not the monomer concentration. The two differ by orders of magnitude in a real recipe. More deactivator, or a faster-deactivating ligand, makes C small and the distribution narrow.</p>
         </div>
       </div>
     </div>
@@ -123,7 +123,7 @@
         <div class="field">
           <label for="md-bb">A narrow standard on your GPC reads &#272; =</label>
           <input type="number" id="md-bb" value="1.02" step="any" min="1" max="1.5">
-          <p class="hint">This is how you measure your own band broadening. A standard that is genuinely 1.00 would read 1.00 on a perfect instrument.</p>
+          <p class="hint">This is how you measure your own band broadening, and it is the better of the two routes because it catches the injector, the detector cell and the tubing as well as the packing. If you have not run one, the <a href="gpc-trace.html">trace analyzer</a> estimates the floor from your column series instead, using the guaranteed plate count and the calibration slope.</p>
         </div>
       </div>
     </div>
@@ -137,7 +137,7 @@
     <div class="subsection" style="margin-top:20px;">
       <div class="subsection-title">Hand it to the trace analyzer</div>
       <p class="guide-note">
-        This converts the simulated distribution into the two-column chromatogram a GPC would have exported, using log&#8321;&#8320;M&nbsp;=&nbsp;10.5&nbsp;&minus;&nbsp;0.70&middot;V. Paste it into the <a href="gpc-trace.html">trace analyzer</a> to see what integrating it would have reported &ndash; which is the round trip: a distribution you know, turned into a trace, integrated back into numbers that no longer quite match.
+        This converts the simulated distribution into the two-column chromatogram a GPC would have exported, using log&#8321;&#8320;M&nbsp;=&nbsp;10.5&nbsp;&minus;&nbsp;0.70&middot;V. Paste it into the <a href="gpc-trace.html">trace analyzer</a> to see what integrating it would have reported. That closes the round trip: a distribution you know, turned into a trace, integrated back into numbers that no longer quite match.
       </p>
       <button type="button" id="md-export" class="copy-btn">Build the chromatogram</button>
       <div class="field" id="md-f-out" hidden style="margin-top:10px;">
@@ -151,7 +151,7 @@
     <h3>Three things the shape tells you that &#272; does not</h3>
 
     <p class="guide-note">
-      <strong>Termination hides from M<sub>w</sub>.</strong> Take a RAFT polymerization sitting at &#272;&nbsp;=&nbsp;1.05 and kill a tenth of its chains. &#272; goes to 1.131 and M&#8345; falls by 8.1% &ndash; but M<sub>w</sub> moves only 1.0%, because the dead chains are short and weigh almost nothing. If you are tracking a reaction by M<sub>w</sub>, a termination problem is close to invisible; it shows up in M&#8345; and in &#272;, which is a good reason to report all three rather than the one the instrument prints largest.
+      <strong>Termination hides from M<sub>w</sub>.</strong> Take a RAFT polymerization sitting at &#272;&nbsp;=&nbsp;1.05 and kill a tenth of its chains. &#272; goes to 1.131 and M&#8345; falls by 8.1%, but M<sub>w</sub> moves only 1.0%, because the dead chains are short and weigh almost nothing. If you are tracking a reaction by M<sub>w</sub>, a termination problem is close to invisible; it shows up in M&#8345; and in &#272;, which is a good reason to report all three rather than the one the instrument prints largest.
     </p>
 
     <p class="guide-note">
@@ -170,18 +170,18 @@
       </table>
     </div>
     <p class="guide-note">
-      That table uses &sigma;&nbsp;=&nbsp;0.20 in ln&nbsp;M, a middling bank. The dispersity itself is inflated by the same 4.1% in every row &ndash; but the quantity you reason about is the <em>excess</em> over 1, and that is inflated by 208% for a genuinely narrow polymer and 8% for a broad one. Band broadening is a narrow-sample problem. It is also why a commercial &#272;&nbsp;=&nbsp;1.02 standard is not really telling you the column is that good, and why chasing &#272; below about 1.05 by conventional calibration is chasing your own instrument.
+      That table uses &sigma;&nbsp;=&nbsp;0.20 in ln&nbsp;M, a middling bank. The dispersity itself is inflated by the same 4.1% in every row, but the quantity you reason about is the <em>excess</em> over 1, and that is inflated by 208% for a genuinely narrow polymer and 8% for a broad one. Band broadening is a narrow-sample problem. It is also why a commercial &#272;&nbsp;=&nbsp;1.02 standard is not really telling you the column is that good, and why chasing &#272; below about 1.05 by conventional calibration is chasing your own instrument.
     </p>
 
     <p class="guide-note">
-      <strong>A dead-chain tail and a broad living population are not the same distribution.</strong> Set the dispersity to 1.24 two ways &ndash; once by dropping C<sub>ex</sub> to about 4, once by killing 20% of the chains at C<sub>ex</sub>&nbsp;=&nbsp;20 &ndash; and the summary statistic is the same while the curves separate clearly: the first is a single symmetric peak that got wider, the second is a tight peak with a shoulder running down to low molecular weight. On a real trace that shoulder is the thing to look for, and it is the reason to keep the low-molecular-weight end inside your integration limits rather than clipping it off, which the <a href="gpc-trace.html">trace analyzer</a> shows the cost of.
+      <strong>A dead-chain tail and a broad living population are not the same distribution.</strong> Set the dispersity to 1.24 two ways, once by dropping C<sub>ex</sub> to about 4 and once by killing 20% of the chains at C<sub>ex</sub>&nbsp;=&nbsp;20. The summary statistic is the same while the curves separate clearly: the first is a single symmetric peak that got wider, the second is a tight peak with a shoulder running down to low molecular weight. On a real trace that shoulder is the thing to look for, and it is the reason to keep the low-molecular-weight end inside your integration limits rather than clipping it off, which the <a href="gpc-trace.html">trace analyzer</a> shows the cost of.
     </p>
   </div>
 
   <div class="card">
     <h3>What this model does not include</h3>
     <ul class="guide-list">
-      <li><strong>Slow initiation.</strong> Chains that start late are short at any given moment. This model starts every living chain at the same time, so it will under-predict the low-molecular-weight side for a system whose initiator is sluggish relative to propagation &ndash; a common problem with mismatched RAFT agents and one more reason a real trace can be broader than the equation says.</li>
+      <li><strong>Slow initiation.</strong> Chains that start late are short at any given moment. This model starts every living chain at the same time, so it will under-predict the low-molecular-weight side for a system whose initiator is sluggish relative to propagation, a common problem with mismatched RAFT agents and one more reason a real trace can be broader than the equation says.</li>
       <li><strong>Chain transfer to monomer, solvent or polymer.</strong> Transfer to small molecules makes a separate low-molecular-weight population; transfer to polymer makes branches, which elute early and are covered on the <a href="gpc-calibration.html">calibration page</a>.</li>
       <li><strong>Coupling.</strong> Termination is treated as chain-stopping. If your chains terminate by combination instead, the dead population sits at roughly twice the molecular weight and appears as a high-side shoulder, which is the classic diagnostic for combination in a controlled system.</li>
       <li><strong>Any claim about the absolute &#272;.</strong> The living-chain dispersity comes from the same equation as the dispersity predictor, with the same assumptions and the same caveats. This page changes what you can see, not how much the underlying model knows.</li>
@@ -191,9 +191,9 @@
   <div class="card">
     <h3>Related tools</h3>
     <ul class="guide-list">
-      <li><a href="dispersity-predictor.html">Dispersity predictor</a> &ndash; the equation behind the living-chain population, and what sets C for each mechanism.</li>
-      <li><a href="gpc-trace.html">GPC trace analyzer</a> &ndash; integrate the chromatogram this page exports, and see what the limits cost.</li>
-      <li><a href="calculator.html">Calculator</a> &ndash; set the target DP and the recipe that produces it.</li>
+      <li><a href="dispersity-predictor.html">Dispersity predictor</a>. The equation behind the living-chain population, and what sets C for each mechanism.</li>
+      <li><a href="gpc-trace.html">GPC trace analyzer</a>. Integrate the chromatogram this page exports, and see what the limits cost.</li>
+      <li><a href="calculator.html">Calculator</a>. Set the target DP and the recipe that produces it.</li>
     </ul>
   </div>
 
@@ -471,7 +471,7 @@
       n.push("<strong>Band broadening.</strong> A standard reading &#272; = " + parseFloat($("md-bb").value).toFixed(3) +
         " puts your instrument's width at &sigma; = " + r.sigma.toFixed(3) + " in ln M, which multiplies every dispersity by e<sup>&sigma;&sup2;</sup> = " +
         Math.exp(r.sigma * r.sigma).toFixed(4) + "&times;. Here that turns a true " + r.mTrue.D.toFixed(3) + " into a reported " +
-        r.mObs.D.toFixed(3) + ". The excess over 1 &ndash; the part you actually reason about &ndash; goes from " +
+        r.mObs.D.toFixed(3) + ". The excess over 1, the part you actually reason about, goes from " +
         (r.mTrue.D - 1).toFixed(3) + " to " + (r.mObs.D - 1).toFixed(3) + ", an inflation of " +
         (((r.mObs.D - 1) / (r.mTrue.D - 1) - 1) * 100).toFixed(0) + "%.");
     }
@@ -479,8 +479,8 @@
       var liveOnly = moments(r.live);
       n.push("<strong>What the dead chains cost.</strong> Without them this would be &#272; = " + liveOnly.D.toFixed(3) +
         " at M&#8345; = " + fmt(liveOnly.Mn) + ". Killing " + (r.fDead * 100).toFixed(0) + "% of the chains takes &#272; to " +
-        r.mTrue.D.toFixed(3) + " and M&#8345; to " + fmt(r.mTrue.Mn) + " &ndash; a drop of " +
-        ((1 - r.mTrue.Mn / liveOnly.Mn) * 100).toFixed(1) + "% &ndash; while M<sub>w</sub> moves only " +
+        r.mTrue.D.toFixed(3) + " and M&#8345; to " + fmt(r.mTrue.Mn) + ", a drop of " +
+        ((1 - r.mTrue.Mn / liveOnly.Mn) * 100).toFixed(1) + "%, while M<sub>w</sub> moves only " +
         (Math.abs(1 - r.mTrue.Mw / liveOnly.Mw) * 100).toFixed(1) + "%. Short chains count but do not weigh, which is why termination is hard to see in M<sub>w</sub>.");
     }
     if (r.k < 1) {
@@ -491,7 +491,7 @@
 
     $("md-plot").innerHTML = plot(r);
     $("md-caption").textContent =
-      "Weight fraction per unit log molecular weight. Schulz-Zimm shape k = " + r.k.toFixed(2) +
+      "Weight fraction per unit log molecular weight. Schulz&ndash;Zimm shape k = " + r.k.toFixed(2) +
       " for the living chains" + (r.fDead > 0 ? ", swept across conversion for the dead ones" : "") + ".";
     $("md-f-out").hidden = true;
   }
@@ -522,10 +522,33 @@
     $("md-f-c").hidden = mech !== "atrp";
   }
 
-  ["md-m0", "md-dp", "md-p", "md-cex", "md-c", "md-dead", "md-bb"].forEach(function (id) {
-    $(id).addEventListener("input", recalc);
-  });
-  $("md-mech").addEventListener("change", function () { syncFields(); recalc(); });
+  // nav.js is deferred, so wait for it before asking for the helper.
+  function wireShared() {
+  var share = window.PolyTechniques && window.PolyTechniques.shareState;
+  if (share) {
+    share([
+      { key: "mech", id: "md-mech", kind: "select" },
+      { key: "m0", id: "md-m0", min: 1 },
+      { key: "dp", id: "md-dp", min: 1 },
+      { key: "p", id: "md-p", min: 0, max: 1 },
+      { key: "cex", id: "md-cex", min: 0 },
+      { key: "c", id: "md-c", min: 0 },
+      { key: "dead", id: "md-dead", min: 0, max: 100 },
+      { key: "bb", id: "md-bb", min: 1 }
+    ], function () { syncFields(); recalc(); });
+  } else {
+    ["md-m0", "md-dp", "md-p", "md-cex", "md-c", "md-dead", "md-bb"].forEach(function (id) {
+      $(id).addEventListener("input", recalc);
+    });
+    $("md-mech").addEventListener("change", function () { syncFields(); recalc(); });
+  }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wireShared);
+  } else {
+    wireShared();
+  }
+
 
   syncFields();
   recalc();

@@ -19,9 +19,24 @@
   --text-dim: #5f6470;
   --border: #e6e2dc;
   --primary: #2563eb;
+  /* Label colour for a filled --primary surface. White is 5.17:1 on the
+     light #2563eb but only 3.23:1 on the lighter dark-theme #5b8def, so
+     dark flips to a near-black ink at 5.62:1 rather than dulling the fill
+     that marks an active tab. */
+  --on-primary: #ffffff;
+  /* Ink for the amber caveat pills, whose background is an 18-22% amber
+     tint over the card and so follows the theme. Light takes a deep amber,
+     dark takes the bright amber the tint itself is made of. */
+  --amber-ink: #88672a;
   --primary-dim: #f0f4fd;
-  --accent: #0e9f6e;
-  --danger: #d64545;
+  /* Darkened from #0e9f6e and #d64545, which read as 3.39:1 and 4.38:1 on
+     white and worse on the 10-15% tints they are paired with - and those
+     tints are hardcoded rgba of the old colours, so they do not lighten
+     when the token does. These are the lightest shades of the same hues
+     that clear 4.55:1 on every background each one lands on. The dark
+     palette below is untouched: it was already 7.81 and 6.25:1. */
+  --accent: #0b7954;
+  --danger: #b83b3b;
   --radius: 10px;
   /* Near-flat. A hairline border already separates a card from the ground;
      a drop shadow on top of it is the second answer to a question that was
@@ -37,6 +52,8 @@
     --text-dim: #a19da8;
     --border: #322f39;
     --primary: #5b8def;
+  --on-primary: #16151a;
+  --amber-ink: #f2b84b;
     --primary-dim: #232130;
     --accent: #37c98f;
     --danger: #ef6a6a;
@@ -52,6 +69,8 @@
   --text-dim: #a19da8;
   --border: #322f39;
   --primary: #5b8def;
+  --on-primary: #16151a;
+  --amber-ink: #f2b84b;
   --primary-dim: #232130;
   --accent: #37c98f;
   --danger: #ef6a6a;
@@ -68,11 +87,69 @@
   --text-dim: #5f6470;
   --border: #e6e2dc;
   --primary: #2563eb;
+  --on-primary: #ffffff;
+  --amber-ink: #88672a;
   --primary-dim: #f0f4fd;
-  --accent: #0e9f6e;
-  --danger: #d64545;
+  --accent: #0b7954;
+  --danger: #b83b3b;
   --shadow: none;
 }
+
+/* Prose links. There was no rule for these at all, so they rendered in the
+   browser default blue: 1.76:1 against a dark card, where 4.5:1 is the bar for
+   body text. var(--primary) is 5.12:1 dark and 5.17:1 light, and is already
+   the colour this site uses for anything you can act on.
+
+   Scoped deliberately. Several components are themselves anchors - .home-card
+   wraps an entire card in one - and the nav strips style their own links, so a
+   bare element selector would repaint all of them. Which means the list is
+   load-bearing: a prose container nobody added here keeps the default blue,
+   and five of them did until an audit of all 46 pages in both themes turned
+   them up. Add to it when a new prose container appears. */
+.guide-note a,
+.hint a,
+.diagram-caption a,
+.guide-list a,
+.fam-entry a,
+.tech-catch a,
+.tech-best a,
+#guide p a,
+#guide li a,
+#calc-guide p a,
+#calc-guide li a,
+#guide dd a,
+#app p a,
+#app li a,
+#app .sub a,
+.home-footnote a,
+.footer-legal a,
+.footer a {
+  color: var(--primary);
+  text-decoration-color: color-mix(in srgb, var(--primary) 45%, transparent);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.12s;
+}
+.guide-note a:hover,
+.hint a:hover,
+.diagram-caption a:hover,
+.guide-list a:hover,
+.fam-entry a:hover,
+.tech-catch a:hover,
+.tech-best a:hover,
+#guide p a:hover,
+#guide li a:hover,
+#calc-guide p a:hover,
+#calc-guide li a:hover,
+#guide dd a:hover,
+#app p a:hover,
+#app li a:hover,
+#app .sub a:hover,
+.home-footnote a:hover,
+.footer-legal a:hover,
+.footer a:hover {
+  text-decoration-color: currentColor;
+}
+
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -162,7 +239,7 @@ body {
   transition: background 0.12s, color 0.12s, border-color 0.12s;
 }
 .tab-btn:hover { border-color: var(--primary); color: var(--text); }
-.tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.tab-btn.active { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
 
 /* Eleven tabs wrap to four rows on a phone - 162px of an 812px viewport spent
    on navigation before any content. One scrolling row costs 44px instead, and
@@ -265,7 +342,7 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
   gap: 12px 16px;
 }
 
@@ -319,7 +396,7 @@ input[type="number"]:focus, input[type="text"]:focus, input[type="search"]:focus
 
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -546,6 +623,11 @@ table.recipe.recipe-data td:not(:first-child), table.recipe.recipe-data th:not(:
     text-transform: uppercase;
     letter-spacing: 0.02em;
     text-align: left;
+  }
+  /* A header marked .keepcase carries a symbol, not a word: uppercasing a
+     lower-case sigma or chi changes which character it is. */
+  table.recipe.recipe-stackable tbody td[data-label-keepcase]::before {
+    text-transform: none;
   }
   /* The first column names the row, so it reads as the card's title rather
      than as another label/value pair. */
@@ -777,14 +859,14 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 }
 .home-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: 20px;
 }
 /* A four-card section at the default 260px minimum wraps 3+1, stranding the
    fourth card alone on its own row. A slightly smaller minimum lets all four
    sit on one desktop row (4 x 235 + 3 x 20 = 1000px inside the 1032px body)
    while still collapsing to 2-up and then 1-up on narrower screens. */
-.home-grid--four { grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); }
+.home-grid--four { grid-template-columns: repeat(auto-fit, minmax(min(235px, 100%), 1fr)); }
 .home-card {
   display: block;
   background: var(--card-bg);
@@ -816,13 +898,75 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   font-size: var(--fs-3xs);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--card-accent, var(--primary));
+  color: var(--card-accent-ink, var(--card-accent, var(--primary)));
   font-weight: 700;
   margin-bottom: 8px;
 }
 .home-card h2, .home-card h3 { margin: 0 0 8px; font-size: 1.15rem; }
 .home-card p { margin: 0; color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.5; }
-.home-card-arrow { display: block; margin-top: 16px; font-size: var(--fs-sm); font-weight: 600; color: var(--card-accent, var(--primary)); }
+.home-card-arrow { display: block; margin-top: 16px; font-size: var(--fs-sm); font-weight: 600; color: var(--card-accent-ink, var(--card-accent, var(--primary))); }
+
+/* Accent colours, one class per hue, shared by the home cards, the home
+   rows, the recent-papers cards and the game HUD. Each is used four ways: a
+   3px stripe, a 14-18% tint, and two kinds of text - the card eyebrow and
+   arrow, and the paper journal pill with its Read hint.
+
+   Each hue declares three values: the bright colour, and an ink for each
+   appearance. The bright values are tuned for a dark card. On white they run
+   1.79 to 3.23:1, and all of this is small text, so the bar is 4.5:1.
+
+   Stripes and tints keep the bright colour: they are decoration, and they
+   are what tells the cards apart. Only text takes an ink.
+
+   Both inks are checked against two surfaces - the card, and a 14% tint of
+   the hue itself, which is what the journal pill sits on. That second
+   surface is why the dark ink is listed rather than assumed equal to the
+   bright colour: on its own tint, bright blue is 4.20:1 and bright salmon
+   4.49:1, so those two lighten a shade while the other five stand. The light
+   inks are each the lightest shade of their hue that clears both surfaces,
+   so blue moves least and yellow most; one shared darkening factor would
+   have had to satisfy yellow and would have taken blue to 7.22:1, flattening
+   the palette to fix a problem blue hardly had. */
+.accent-blue { --accent-bright: #5b8def; --accent-ink-dark: #6094fb; --accent-ink-light: #446ab3; }
+.accent-violet { --accent-bright: #a78bfa; --accent-ink-dark: #a78bfa; --accent-ink-light: #7360ad; }
+.accent-teal { --accent-bright: #4fd1c5; --accent-ink-dark: #4fd1c5; --accent-ink-light: #2f7b74; }
+.accent-yellow { --accent-bright: #f2b84b; --accent-ink-dark: #f2b84b; --accent-ink-light: #8c6b2c; }
+.accent-mint { --accent-bright: #37c98f; --accent-ink-dark: #37c98f; --accent-ink-light: #227d59; }
+.accent-salmon { --accent-bright: #ef6a6a; --accent-ink-dark: #f16b6b; --accent-ink-light: #ac4c4c; }
+.accent-pink { --accent-bright: #f472b6; --accent-ink-dark: #f472b6; --accent-ink-light: #a64e7c; }
+
+/* Dark appearance is the default here, matching the bright values. */
+.accent-blue,
+.accent-violet,
+.accent-teal,
+.accent-yellow,
+.accent-mint,
+.accent-salmon,
+.accent-pink
+{ --card-accent: var(--accent-bright); --card-accent-ink: var(--accent-ink-dark); }
+
+/* Light appearance: the no-attribute default and an explicit light. */
+:root:not([data-theme="dark"]) .accent-blue,
+:root:not([data-theme="dark"]) .accent-violet,
+:root:not([data-theme="dark"]) .accent-teal,
+:root:not([data-theme="dark"]) .accent-yellow,
+:root:not([data-theme="dark"]) .accent-mint,
+:root:not([data-theme="dark"]) .accent-salmon,
+:root:not([data-theme="dark"]) .accent-pink
+{ --card-accent-ink: var(--accent-ink-light); }
+
+/* A dark OS with no explicit choice is dark appearance, so the rule above
+   has to be undone. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .accent-blue,
+  :root:not([data-theme="light"]) .accent-violet,
+  :root:not([data-theme="light"]) .accent-teal,
+  :root:not([data-theme="light"]) .accent-yellow,
+  :root:not([data-theme="light"]) .accent-mint,
+  :root:not([data-theme="light"]) .accent-salmon,
+  :root:not([data-theme="light"]) .accent-pink
+  { --card-accent-ink: var(--accent-ink-dark); }
+}
 
 /* The one card that is the point of the site: laid out across the full
    width so it reads as the primary action rather than one tile of many. */
@@ -838,7 +982,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
    keeping the larger feature type size. Collapses to one column on phones. */
 .home-feature-pair {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
   gap: 20px;
 }
 .home-feature-pair .home-card--feature { display: block; }
@@ -859,7 +1003,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
    without making any of them easier to choose between. */
 .home-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 10px;
 }
 .home-row {
@@ -1162,7 +1306,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   margin-top: 14px;
   padding: 10px 24px;
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 700;
   font-size: var(--fs-base);
   border-radius: 999px;
@@ -1276,7 +1420,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 
 .hot-papers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -1284,7 +1428,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   display: block;
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-left: 4px solid var(--paper-accent, var(--primary));
+  border-left: 4px solid var(--card-accent, var(--primary));
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 16px 18px;
@@ -1320,8 +1464,8 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--paper-accent, var(--primary));
-  background: color-mix(in srgb, var(--paper-accent, var(--primary)) 14%, transparent);
+  color: var(--card-accent-ink, var(--card-accent, var(--primary)));
+  background: color-mix(in srgb, var(--card-accent, var(--primary)) 14%, transparent);
   padding: 3px 8px;
   border-radius: 999px;
 }
@@ -1329,7 +1473,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   display: inline-block;
   font-size: var(--fs-3xs);
   font-weight: 700;
-  color: #b45309;
+  color: var(--amber-ink);
   background: color-mix(in srgb, #f2b84b 22%, transparent);
   padding: 3px 8px;
   border-radius: 999px;
@@ -1355,7 +1499,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 }
 .paper-link-hint {
   font-weight: 600;
-  color: var(--paper-accent, var(--primary));
+  color: var(--card-accent-ink, var(--card-accent, var(--primary)));
 }
 
 .hot-papers-loading, .hot-papers-error {
@@ -1416,7 +1560,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 
 .trivia-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 10px;
   margin-bottom: 14px;
 }
@@ -1634,6 +1778,10 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   overflow-x: auto;
 }
 .chart-svg { display: block; width: 100%; height: auto; min-width: 320px; }
+/* For figures whose annotation does not survive being scaled to a phone.
+   .chart-wrap already scrolls, so this trades a shrunken whole for a
+   legible part the reader can pan across. */
+.chart-svg--wide { min-width: 560px; }
 .chart-svg .axis { stroke: var(--text-dim); stroke-width: 1; }
 .chart-svg .grid { stroke: var(--border); stroke-width: 1; }
 .chart-svg .tick-label { fill: var(--text-dim); font-size: var(--fs-4xs); }
@@ -1647,6 +1795,93 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 .chart-svg .area-included { fill: color-mix(in srgb, var(--primary) 38%, transparent); }
 .chart-svg .area-excluded { fill: var(--text-dim); opacity: 0.22; }
 .chart-svg .bound-line { stroke: var(--danger); stroke-width: 1.5; stroke-dasharray: 4,3; }
+
+/* ---------------------------------------------------------------------
+   Technique comparison cards
+--------------------------------------------------------------------- */
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.tech-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px 16px 15px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  /* The stripe is the scannable part: colour says what the technique costs
+     you before you have read a word of it. */
+  border-left: 3px solid var(--tech-accent, var(--primary));
+}
+.tech-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tech-eyebrow {
+  display: block;
+  font-size: var(--fs-4xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 3px;
+}
+.tech-name {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+}
+.tech-verdict {
+  flex-shrink: 0;
+  align-self: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: var(--fs-4xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: var(--tech-accent, var(--primary));
+  background: color-mix(in srgb, var(--tech-accent, var(--primary)) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tech-accent, var(--primary)) 32%, transparent);
+}
+.tech-best {
+  font-size: var(--fs-sm);
+  color: var(--text);
+  line-height: 1.5;
+}
+.tech-best b {
+  display: block;
+  font-size: var(--fs-4xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+.tech-catch {
+  font-size: var(--fs-xs);
+  color: var(--text-dim);
+  line-height: 1.55;
+  margin: 0;
+  padding-top: 9px;
+  border-top: 1px dashed var(--border);
+}
+.tech-catch b {
+  color: var(--text);
+  font-weight: 700;
+}
+.tech-card--yes { --tech-accent: var(--accent); }
+.tech-card--part { --tech-accent: var(--primary); }
+.tech-card--no { --tech-accent: var(--danger); }
 
 .stat-group-label {
   font-size: var(--fs-2xs);
@@ -1742,7 +1977,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 .game-overlay button {
   border: none;
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   padding: 10px 20px;
   border-radius: 8px;
   font-size: var(--fs-base);
@@ -1884,7 +2119,10 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   cursor: crosshair;
 }
 /* ---- Structure editor: header + fullscreen ---- */
-.mol-editor-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+/* Wraps because the row is a heading plus two buttons, and below about 330px
+   they cannot sit on one line - the fullscreen button ran 16px past the
+   viewport and scrolled the page sideways. Inert at any width with room. */
+.mol-editor-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
 .mol-editor-head h3 { margin: 0; }
 .mol-fs-btn {
   display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
@@ -2012,7 +2250,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
   font: inherit;
   font-size: var(--fs-xs);
   font-weight: 600;
-  color: #fff;
+  color: var(--on-primary);
   background: var(--primary);
   border: 1px solid var(--primary);
   border-radius: 8px;
@@ -2080,7 +2318,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
-.mol-suggest-chip:hover { border-color: var(--primary); background: var(--primary); color: #fff; }
+.mol-suggest-chip:hover { border-color: var(--primary); background: var(--primary); color: var(--on-primary); }
 .mol-sim-weak { margin-top: 12px; }
 .mol-sim-weak > summary {
   cursor: pointer;
@@ -2120,7 +2358,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
 .mol-pub-range.active {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 600;
 }
 .mol-pub-refresh {
@@ -2136,7 +2374,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
-.mol-pub-refresh:hover { border-color: var(--primary); background: var(--primary); color: #fff; }
+.mol-pub-refresh:hover { border-color: var(--primary); background: var(--primary); color: var(--on-primary); }
 .mol-pub-paper {
   display: block;
   text-decoration: none;
@@ -2322,7 +2560,7 @@ body.mol-immersive .mol-fs-btn { background: var(--primary-dim); border-color: v
 .mol-have-chip.active {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
 }
 
 .mol-result-card:focus { outline: none; }
@@ -2705,7 +2943,7 @@ input.input-invalid {
 .mol-facet-chip.is-on {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 600;
 }
 .mol-more-btn { display: block; margin: 14px auto 0; }
@@ -2808,7 +3046,7 @@ input.input-invalid {
 .install-banner-yes {
   border: none;
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   border-radius: 7px;
   padding: 7px 14px;
   font-weight: 700;
@@ -2954,7 +3192,7 @@ input.input-invalid {
 
 .calc-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
   gap: 12px;
 }
 /* A block label, NOT a flex column. Making the label a flex container turns
@@ -3210,13 +3448,26 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 .fam-entry { padding: 12px 0; border-bottom: 1px solid var(--border); }
 .fam-entry:first-of-type { padding-top: 0; }
 .fam-entry:last-child { padding-bottom: 0; border-bottom: none; }
+/* The heading is the polymer name, and plenty of those are one token with no
+   space and no hyphen: Poly(bisbenzimidazobenzophenanthroline),
+   Poly(methacryloxypropylmethylsiloxane). At 375px one of those renders 295px
+   wide in a 262px box, so 33px of the name sat outside its own card. The page
+   does not scroll at that width - the padding absorbs it - but the name still
+   ran past the edge. Names containing a hyphen already wrapped, because CSS
+   breaks after a hyphen, which is why only the hyphen-free ones showed. */
 .fam-entry h4 {
   margin: 0 0 3px;
   font-size: var(--fs-md);
   font-weight: 600;
   color: var(--text);
+  overflow-wrap: break-word;
 }
-.fam-entry p { margin: 0 0 6px; font-size: var(--fs-base); }
+/* Curated notes carry chemical names, and some of them are one long token
+   with no spaces - "acrylate/methacrylate/acrylamide/methacrylamide" is 47
+   characters and CSS does not break at a slash. That one scrolled
+   methacrylate-polymers.html sideways by 21px on a phone. .fam-meta below
+   already sets this; the note paragraph was the one that did not. */
+.fam-entry p { margin: 0 0 6px; font-size: var(--fs-base); overflow-wrap: break-word; }
 .fam-entry p:last-child { margin-bottom: 0; }
 .fam-meta {
   color: var(--text-dim);
@@ -3239,6 +3490,60 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 .fam-index a:hover { border-color: var(--primary); }
 /* Anchored headings must clear the sticky topbar when jumped to. */
 .fam-entry, #guide .card[id^="letter-"] { scroll-margin-top: 80px; }
+/* Landing on an anchor needs to say which row you landed on. The scroll-margin
+   above gets you there clear of the header; this is the part that tells you
+   you have arrived, which matters most on the family pages where 210 entries
+   look alike. Fades from a strong tint to a quiet one so it is obvious on
+   arrival and not a permanent highlight afterwards. */
+.fam-entry:target,
+#guide > .card:target {
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+  box-shadow: inset 3px 0 0 var(--primary);
+  border-radius: 6px;
+  padding-left: 14px;
+  margin-left: -14px;
+  animation: pt-target-settle 1.8s ease-out 1;
+}
+@keyframes pt-target-settle {
+  from { background: color-mix(in srgb, var(--primary) 22%, transparent); }
+  to   { background: color-mix(in srgb, var(--primary) 6%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fam-entry:target, #guide > .card:target { animation: none; }
+}
+
+/* Headings are short and shaped; balance stops the last word dropping alone
+   onto a second line. pretty does the same for the last line of a paragraph.
+   Both are ignored where unsupported, which leaves today's wrapping. */
+h1, h2, h3, h4, .subtitle, .diagram-caption, .tech-name {
+  text-wrap: balance;
+}
+p, li, .guide-note, .hint {
+  text-wrap: pretty;
+}
+
+/* The palette keeps borders and secondary text deliberately quiet. That is the
+   right default and the wrong one for anybody who has asked the operating
+   system for more contrast, so honour the ask rather than overriding it. */
+@media (prefers-contrast: more) {
+  :root {
+    --border: #b3aca2;
+    --text-dim: #4a4f59;
+  }
+  :root[data-theme="dark"] {
+    --border: #625d70;
+    --text-dim: #c6c2ce;
+  }
+  .card, .tech-card, .chart-wrap, .diagram-panel { border-width: 1.5px; }
+}
+@media (prefers-color-scheme: dark) and (prefers-contrast: more) {
+  :root:not([data-theme="light"]) {
+    --border: #625d70;
+    --text-dim: #c6c2ce;
+  }
+}
+
+
 
 /* The ask box. Visually subordinate to the name search above it - that one is
    the fast path and should stay the obvious one - but full width, because a
@@ -3334,6 +3639,34 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 .smap-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
 .smap-count { font-variant-numeric: tabular-nums; opacity: 0.7; }
 @media (pointer: coarse) { .smap-key-item { min-height: 44px; } }
+
+/* Form controls on a touch screen. Measured at 375px with pointer: coarse
+   matching: the buttons beside these were already 44px while the inputs
+   themselves were 36 and the selects 37. On a calculator the input IS the
+   interaction, so it should not be the smallest target on the page.
+
+   Scoped to coarse pointers so nothing changes on a desktop, where a 36px
+   field with a mouse is fine and taller fields would just spread the form
+   out. */
+@media (pointer: coarse) {
+  #guide input[type="number"],
+  #guide input[type="text"],
+  #guide input[type="search"],
+  #guide select,
+  #calc-guide input[type="number"],
+  #calc-guide input[type="text"],
+  #calc-guide select,
+  .calc-grid input,
+  .calc-grid select,
+  .field input,
+  .field select {
+    min-height: 44px;
+  }
+  .theme-toggle-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
 
 /* The HTML "hidden" attribute is styled by the UA sheet at the lowest
    possible specificity, so ANY class rule that sets display beats it and the

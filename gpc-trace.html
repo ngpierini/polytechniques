@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GPC Trace Analyzer: PolyTechniques</title>
-<meta name="description" content="Paste a raw GPC chromatogram and a calibration, and compute Mn, Mw, Mz and dispersity slice by slice - including how much those numbers move when you move the integration limits.">
+<meta name="description" content="Paste a raw GPC chromatogram and a calibration, and compute Mn, Mw, Mz and dispersity slice by slice, including how much those numbers move when you move the integration limits.">
 <link rel="canonical" href="https://getpolytechniques.com/gpc-trace.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="PolyTechniques">
@@ -32,13 +32,13 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=30" defer></script>
+<script src="nav.js?v=34" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=106">
+<link rel="stylesheet" href="style.css?v=123">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -89,7 +89,7 @@
             <option value="3">4</option>
             <option value="4">5</option>
           </select>
-          <p class="hint">Column 1 is always the x axis. Choose the concentration detector &ndash; usually RI. The slice sums assume the signal is proportional to mass, which a UV channel is only for a homopolymer with a constant chromophore, and a light-scattering channel is not at all.</p>
+          <p class="hint">Column 1 is always the x axis. Choose the concentration detector, usually RI. The slice sums assume the signal is proportional to mass, which a UV channel is only for a homopolymer with a constant chromophore, and a light-scattering channel is not at all.</p>
         </div>
       </div>
     </div>
@@ -128,6 +128,57 @@
           </select>
         </div>
       </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Column bank</div>
+      <div class="grid">
+        <div class="field">
+          <label for="tr-col">Column series</label>
+          <select id="tr-col">
+            <option value="mixed-a">PLgel 20 &micro;m MIXED-A</option>
+            <option value="mixed-b">PLgel 10 &micro;m MIXED-B</option>
+            <option value="mixed-c" selected>PLgel 5 &micro;m MIXED-C</option>
+            <option value="mixed-d">PLgel 5 &micro;m MIXED-D</option>
+            <option value="mixed-e">PLgel 3 &micro;m MIXED-E</option>
+            <option value="custom">Something else (enter the specs)</option>
+          </select>
+          <p class="hint">Any vendor's datasheet quotes the two numbers this needs: a guaranteed plate count and a linear molecular weight range. Pick the closest or enter your own.</p>
+        </div>
+        <div class="field">
+          <label for="tr-col-n">Columns in series</label>
+          <select id="tr-col-n">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+          <p class="hint">Describe the bank this trace came off. The calibration slope and the peak volume above already belong to it, so changing this on its own asks what a better-packed bank of the same length would give, not what buying more columns would give. The square-root rule further down answers that one.</p>
+        </div>
+        <div class="field">
+          <label for="tr-col-len">Length of each (mm)</label>
+          <select id="tr-col-len">
+            <option value="250">250</option>
+            <option value="300" selected>300</option>
+            <option value="600">600</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid" id="tr-f-colcustom" hidden>
+        <div class="field">
+          <label for="tr-col-pm">Guaranteed efficiency (plates per metre)</label>
+          <input type="number" id="tr-col-pm" value="50000" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="tr-col-lo">Linear range, low (g/mol)</label>
+          <input type="number" id="tr-col-lo" value="200" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="tr-col-hi">Linear range, high (g/mol)</label>
+          <input type="number" id="tr-col-hi" value="2000000" step="any" min="0">
+        </div>
+      </div>
+      <p class="hint">A plate count quoted per column rather than per metre becomes plates per metre by dividing by the column length in metres: 16,000 plates per 30&nbsp;cm column is 53,000&nbsp;p/m.</p>
     </div>
 
     <div class="subsection">
@@ -178,6 +229,10 @@
         <tbody></tbody>
       </table>
     </div>
+
+    <h4 id="tr-bb-title" style="margin-top:22px;">What the column bank adds</h4>
+    <div class="stat-grid" id="tr-bb-stats"></div>
+    <p class="guide-note" id="tr-bb-note" style="margin-top:10px;"></p>
   </div>
 
   <div class="card">
@@ -205,10 +260,13 @@
       Two things fall out of that table, and both are worth carrying to a real sample.
     </p>
     <p class="guide-note">
-      <strong>The error only ever runs one way.</strong> Integration limits discard tail, and a distribution with its tails clipped is narrower than the one you injected. So &#272; is always reported <em>low</em> and M&#8345; always <em>high</em>, never the reverse. A sample integrated at 10% of peak height reads &#272;&nbsp;=&nbsp;1.244 when it is really 1.300 &ndash; and there is nothing in the chromatogram to tell you that, because the trace looks perfectly clean. This is the mechanism behind the well-known observation that two analysts integrating one raw file disagree: they are not making random errors in opposite directions, they are both clipping, by different amounts.
+      <strong>The error only ever runs one way.</strong> Integration limits discard tail, and a distribution with its tails clipped is narrower than the one you injected. So &#272; is always reported <em>low</em> and M&#8345; always <em>high</em>, never the reverse. A sample integrated at 10% of peak height reads &#272;&nbsp;=&nbsp;1.244 when it is really 1.300, and nothing in the chromatogram tells you that, because the trace looks perfectly clean. This is the mechanism behind the well-known observation that two analysts integrating one raw file disagree: they are not making random errors in opposite directions, they are both clipping, by different amounts.
     </p>
     <p class="guide-note">
-      <strong>&#272; is about twice as sensitive as M&#8345;.</strong> At every row above, the dispersity error is roughly double the M&#8345; error, because &#272; is a ratio of two moments that move in opposite directions when you clip &ndash; M&#8345; rises as the low-M tail goes, M<sub>w</sub> falls as the high-M tail goes, and the ratio takes both hits. If you are comparing dispersities between samples, matching integration limits matters more than anything else you could do to the method.
+      <strong>&#272; is about twice as sensitive as M&#8345;.</strong> At every row above, the dispersity error is roughly double the M&#8345; error, because &#272; is a ratio of two moments that move in opposite directions when you clip: M&#8345; rises as the low-M tail goes, M<sub>w</sub> falls as the high-M tail goes, and the ratio takes both hits. If you are comparing dispersities between samples, matching integration limits matters more than anything else you could do to the method.
+    </p>
+    <p class="guide-note">
+      <strong>One thing does not carry, and it is the band broadening.</strong> This trace was generated from the exact distribution, so it has no instrument in it: the peak is as narrow as the maths says and not one bit wider. Apply the column correction above to it anyway and it moves &#272; from 1.284 down to 1.276, away from the 1.300 it was built from rather than towards it. That is the correction working exactly as it should on data it was not meant for. On a real injection the two effects run in opposite directions, clipping narrowing the distribution and the columns widening it, and on a trace like this one they are close enough in size to hide each other. Which is the argument for measuring both rather than hoping they cancel.
     </p>
     <p class="guide-note">
       It is worth putting that next to the opposite result from the <a href="gpc-calibration.html">calibration converter</a>. There, &#272; is the <em>robust</em> number: converting between polymer scales transforms it as &#272;<sub>true</sub>&nbsp;=&nbsp;&#272;<sub>apparent</sub><sup>(1+&alpha;<sub>std</sub>)/(1+&alpha;<sub>sample</sub>)</sup>, which contains no K at all, so a badly chosen calibration constant leaves dispersity untouched. Here it is the fragile one. The two are not in tension: dispersity survives a wrong <em>molecular weight axis</em> and does not survive a wrong <em>integration window</em>, because the first rescales the axis and the second throws material away.
@@ -216,10 +274,53 @@
   </div>
 
   <div class="card">
+    <h3>The error is a property of your column bank</h3>
+    <p class="guide-note">
+      Band broadening is usually treated as an instrument constant: run a narrow standard once, note how much wider it comes out than it really is, and apply that forever. That is the right procedure, but it hides where the constant comes from. It is set by two numbers printed on the column datasheet, and you chose them when you bought the columns.
+    </p>
+    <p class="guide-note">
+      A bank of plate count N spreads a peak eluting at V<sub>R</sub> into a Gaussian of standard deviation &sigma;<sub>V</sub>&nbsp;=&nbsp;V<sub>R</sub>&nbsp;&divide;&nbsp;&radic;N. The calibration then converts that spread in volume into a spread in molecular weight, and the exchange rate is the local slope of the calibration itself:
+    </p>
+    <div class="guide-formula">
+      &sigma; = ln(10) &middot; B &middot; V<sub>R</sub> &divide; &radic;N &nbsp;&nbsp;&nbsp; where B = &minus;d(log<sub>10</sub>M)&frasl;dV at the peak
+    </div>
+    <p class="guide-note">
+      A Gaussian of width &sigma; in ln&nbsp;M multiplies a dispersity by exactly e<sup>&sigma;&sup2;</sup>, so the number your software prints is
+      &#272;<sub>reported</sub>&nbsp;=&nbsp;&#272;<sub>true</sub>&nbsp;&middot;&nbsp;e<sup>&sigma;&sup2;</sup>, and the excess over 1 that you actually reason about picks up &sigma;&sup2; on top of whatever the polymer really has. Note that B&middot;V<sub>R</sub> is dimensionless, so this works unchanged whether your x axis is millilitres or minutes.
+    </p>
+    <p class="guide-note">
+      Both numbers on the right trace back to the datasheet. N is the guaranteed efficiency times the packed length. B is fixed by how many decades of molecular weight the series spreads over that same length: a mixed bed sold as covering a wider range has to fit more decades into the same separation volume, which is a steeper calibration, which is a larger &sigma; for identical volumetric broadening.
+    </p>
+
+    <h4 style="margin-top:22px;">Range you do not need is not free</h4>
+    <p class="guide-note" id="tr-coltab-note"></p>
+    <div class="table-scroll">
+      <table class="recipe recipe-data" id="tr-coltab">
+        <thead><tr><th>Column series</th><th class="num">Linear range, PS equiv</th><th class="num">Decades</th><th class="num">Efficiency</th><th class="num"><span class="keepcase">&sigma;</span></th><th class="num">&#272; inflated by</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="diagram-caption">
+      Specifications are Agilent's own, from the Organic GPC/SEC Columns product guide (publication 5990-7994EN): linear molecular weight operating range in polystyrene equivalents, and guaranteed column efficiency. Holding the bank geometry fixed, each row's slope is scaled from yours by the ratio of the stated ranges, on the assumption that columns of the same dimensions have about the same separation volume. PLgel 3&nbsp;&micro;m MIXED-E is left out because the guide states only an upper limit for it, up to 30,000&nbsp;g/mol, so its span cannot be computed; being both the narrowest in range and the highest in efficiency, it would sit below every row here.
+    </p>
+
+    <h4 style="margin-top:22px;">Adding columns helps as the square root</h4>
+    <p class="guide-note">
+      Put a second identical column in series. V<sub>R</sub> doubles and N doubles, so &sigma;<sub>V</sub> grows by &radic;2. But the same molecular weight range is now spread over twice the volume, so B halves. The two effects do not cancel: &sigma; falls by &radic;2, and the excess dispersity the columns add, which goes as &sigma;&sup2;, halves outright. That is the familiar result that resolution in size exclusion scales as the square root of column length, arrived at from the dispersity side rather than the peak-width side. It is also why the fourth column is a much worse buy than the second.
+    </p>
+    <p class="guide-note">
+      <strong>The practical rule is to run the narrowest range that brackets your sample.</strong> A wide mixed bed is insurance against a sample you have not characterised yet, and it is paid for in dispersity. Once you know roughly where your polymer sits, the narrower series measures the same material more precisely, on the same instrument, with no change to the method.
+    </p>
+    <p class="guide-note">
+      Two cautions about the number this page gives you. It is a <em>floor</em>: the guaranteed efficiency is the column's contribution alone, measured under the vendor's conditions, and the real bank also carries extra-column dispersion from the injector, the detector cell and every length of tubing between them. A narrow standard measures the whole system and will always come out worse; when the two disagree, trust the standard and read the difference as what your plumbing is costing you. And a column that has been in service for a year is not the column on the datasheet.
+    </p>
+  </div>
+
+  <div class="card">
     <h3>What this cannot do for you</h3>
     <ul class="guide-list">
       <li><strong>It cannot fix a calibration that was never measured where you are reading.</strong> If your peak runs past the last standard you injected, the molecular weight out there is an extrapolation of a polynomial, not a measurement, and a cubic fit can bend hard beyond its data. The page reports how much of your peak area sits outside the standards' range; treat anything above a few percent as a reason to run more standards rather than a number to report.</li>
-      <li><strong>It cannot separate band broadening from the real distribution.</strong> Every column adds spreading, so a measured trace is the true distribution convolved with the instrument's response. That inflates &#272; &ndash; in the opposite direction from the clipping above, which is why a narrow standard reads &#272;&nbsp;&asymp;&nbsp;1.02 rather than 1.00. Deconvolving it needs a measured broadening function for your bank. For a sense of scale, Silva <em>et al.</em> compared SEC against diffusion-ordered NMR on the same samples and found the NMR values running about 10% below SEC for M<sub>w</sub>, M<sub>n</sub> and &#272; alike; they stop short of calling SEC wrong, but suggest it may be overestimating all three systematically (<em>Macromol. Rapid Commun.</em> <strong>46</strong> (2025) e00303, open access).</li>
+      <li><strong>It cannot separate band broadening from the real distribution.</strong> Every column adds spreading, so a measured trace is the true distribution convolved with the instrument's response. That inflates &#272;, in the opposite direction from the clipping above, which is why a narrow standard reads &#272;&nbsp;&asymp;&nbsp;1.02 rather than 1.00. Deconvolving it needs a measured broadening function for your bank. For a sense of scale, Silva <em>et al.</em> compared SEC against diffusion-ordered NMR on the same samples and found the NMR values running about 10% below SEC for M<sub>w</sub>, M<sub>n</sub> and &#272; alike; they stop short of calling SEC wrong, but suggest it may be overestimating all three systematically (<em>Macromol. Rapid Commun.</em> <strong>46</strong> (2025) e00303, open access).</li>
       <li><strong>It assumes the detector response is proportional to mass.</strong> That is a fair assumption for RI on a homopolymer well above oligomer molecular weights. It fails for a UV detector on a copolymer whose composition drifts across the peak, and it fails near the oligomer end where end groups change dn/dc per unit mass.</li>
       <li><strong>It cannot see coelution.</strong> Anything past the exclusion limit stacks at one volume, and this page will faithfully integrate that stack as though it were separated. The <a href="gpc-peak-interpretation.html">peak interpretation page</a> covers what those artifacts look like.</li>
     </ul>
@@ -228,9 +329,11 @@
   <div class="card">
     <h3>Related tools</h3>
     <ul class="guide-list">
-      <li><a href="gpc-peak-interpretation.html">GPC peak interpretation</a> &ndash; what the shape of the trace is telling you, and how to plan a method for a given polymer.</li>
-      <li><a href="gpc-calibration.html">GPC calibration converter</a> &ndash; turn a polystyrene-equivalent molecular weight into a true one.</li>
-      <li><a href="dispersity-predictor.html">Dispersity predictor</a> &ndash; what &#272; your polymerization should have produced, to compare against what you just integrated.</li>
+      <li><a href="gpc-peak-interpretation.html">GPC peak interpretation</a>. What the shape of the trace is telling you, and how to plan a method for a given polymer.</li>
+      <li><a href="gpc-calibration.html">GPC calibration converter</a>. Turn a polystyrene-equivalent molecular weight into a true one.</li>
+      <li><a href="dispersity-predictor.html">Dispersity predictor</a>. What &#272; your polymerization should have produced, to compare against what you just integrated.</li>
+      <li><a href="end-group-analysis.html">End-group analysis</a>. An absolute M&#8345; that needs no calibration and no standards, which is the independent check on everything this page computes.</li>
+      <li><a href="mwd-simulator.html">MWD simulator</a>. Builds the distribution a polymerization should give, applies the same e<sup>&sigma;&sup2;</sup> broadening, and exports a trace you can paste back into this page.</li>
     </ul>
   </div>
 
@@ -422,6 +525,69 @@
     return function (V) { return a + b * V; };
   }
 
+  // ---- Column bank ----------------------------------------------------------
+  // Two numbers off a datasheet are enough to say what the columns themselves
+  // add to a reported dispersity: the guaranteed plate count, and how many
+  // decades of molecular weight the series spreads over its separation volume.
+  // These are Agilent's, for the PLgel MIXED grades, quoted from the Organic
+  // GPC/SEC Columns product guide (5990-7994EN). MIXED-E carries no lower bound
+  // there, so its span is null rather than guessed at.
+  var COLUMNS = [
+    { id: "mixed-a", name: "PLgel 20 \u00b5m MIXED-A", lo: 2000, hi: 40000000, pm: 18000 },
+    { id: "mixed-b", name: "PLgel 10 \u00b5m MIXED-B", lo: 500, hi: 10000000, pm: 35000 },
+    { id: "mixed-c", name: "PLgel 5 \u00b5m MIXED-C", lo: 200, hi: 2000000, pm: 50000 },
+    { id: "mixed-d", name: "PLgel 5 \u00b5m MIXED-D", lo: 200, hi: 400000, pm: 50000 },
+    { id: "mixed-e", name: "PLgel 3 \u00b5m MIXED-E", lo: null, hi: 30000, pm: 80000 }
+  ];
+
+  function colById(id) {
+    for (var i = 0; i < COLUMNS.length; i++) if (COLUMNS[i].id === id) return COLUMNS[i];
+    return null;
+  }
+
+  function colSpec() {
+    var n = parseInt($("tr-col-n").value, 10) || 1;
+    var Lmm = parseFloat($("tr-col-len").value) || 300;
+    var id = $("tr-col").value, base;
+    if (id === "custom") {
+      var pm = parseFloat($("tr-col-pm").value);
+      if (!isFinite(pm) || pm <= 0) {
+        return { err: "Enter the guaranteed efficiency in plates per metre. Every vendor quotes it, sometimes as plates per column, which divides by the column length in metres." };
+      }
+      var lo = parseFloat($("tr-col-lo").value), hi = parseFloat($("tr-col-hi").value);
+      base = { name: "your columns", pm: pm,
+        lo: isFinite(lo) && lo > 0 ? lo : null, hi: isFinite(hi) && hi > 0 ? hi : null };
+    } else {
+      base = colById(id);
+      if (!base) return { err: "Unknown column series." };
+    }
+    var Lm = n * Lmm / 1000;
+    return {
+      name: base.name, pm: base.pm, lo: base.lo, hi: base.hi,
+      n: n, Lmm: Lmm, Lm: Lm, N: base.pm * Lm,
+      decades: base.lo && base.hi ? Math.log10(base.hi / base.lo) : null
+    };
+  }
+
+  // The local slope of the calibration, -d(log10 M)/dV. Done numerically so a
+  // polynomial fit gets the slope where the peak actually is rather than an
+  // average over the whole curve, which is the case where it matters most.
+  function slopeAt(M, V) {
+    var d = 0.02, a = M(V - d), b = M(V + d);
+    if (!(a > 0) || !(b > 0)) return NaN;
+    return (Math.log10(a) - Math.log10(b)) / (2 * d);
+  }
+
+  // A Gaussian of width sigma in ln M multiplies dispersity by exp(sigma^2),
+  // which is exact for a log-normal and the same closed form the MWD simulator
+  // uses. sigma itself is the volumetric broadening read through the slope.
+  function broadening(N, B, Vr) {
+    if (!(N > 0) || !(B > 0) || !(Vr > 0)) return null;
+    var sigV = Vr / Math.sqrt(N);
+    var sigma = Math.LN10 * B * Vr / Math.sqrt(N);
+    return { sigV: sigV, sigma: sigma, factor: Math.exp(sigma * sigma) };
+  }
+
   // ---- The summation --------------------------------------------------------
   // Trapezoid slice widths, so an unevenly sampled export is handled honestly
   // rather than by pretending every slice is the same width. Slices whose
@@ -559,6 +725,99 @@
       'aria-label="Chromatogram with the integrated window shaded and the integration limits marked.">' + s + '</svg>';
   }
 
+  // ---- What the columns add, and what a different bank would have added -----
+  function renderColumns(cal, r, rows, lo, hi, base) {
+    var stats = $("tr-bb-stats"), note = $("tr-bb-note");
+    var tb = document.querySelector("#tr-coltab tbody");
+    var spec = colSpec();
+    if (spec.err) {
+      stats.innerHTML = '<div class="error-msg">' + esc(spec.err) + "</div>";
+      note.innerHTML = ""; tb.innerHTML = ""; $("tr-coltab-note").textContent = "";
+      return;
+    }
+    var B = slopeAt(cal.M, r.peakV);
+    var bb = broadening(spec.N, B, r.peakV);
+    if (!bb) {
+      stats.innerHTML = '<div class="error-msg">The calibration slope at the peak is not usable, so the broadening cannot be estimated.</div>';
+      note.innerHTML = ""; tb.innerHTML = ""; $("tr-coltab-note").textContent = "";
+      return;
+    }
+    var Dtrue = r.D / bb.factor;
+
+    stats.innerHTML =
+      '<div class="stat"><div class="label">Plates</div><div class="value">' + fmt(spec.N) +
+        '</div><div class="sub">' + spec.n + " &times; " + spec.Lmm + "&nbsp;mm at " + fmt(spec.pm) + "&nbsp;p/m</div></div>" +
+      '<div class="stat"><div class="label"><span class="keepcase">&sigma;</span></div><div class="value">' + bb.sigma.toFixed(3) +
+        '</div><div class="sub"><span class="keepcase">in ln M, from &sigma;<sub>V</sub> = ' + bb.sigV.toFixed(3) + "</span></div></div>" +
+      '<div class="stat"><div class="label">&#272; inflated by</div><div class="value">' + bb.factor.toFixed(4) +
+        '</div><div class="sub"><span class="keepcase">e<sup>&sigma;&sup2;</sup></span></div></div>' +
+      '<div class="stat stat--primary"><div class="label">&#272; corrected</div><div class="value">' + Dtrue.toFixed(3) +
+        '</div><div class="sub">against ' + r.D.toFixed(3) + " reported</div></div>";
+
+    var msgs = [];
+    var excessShare = r.D > 1 ? (bb.sigma * bb.sigma) / (r.D - 1) : NaN;
+    msgs.push("<strong>These columns multiply dispersity by " + bb.factor.toFixed(4) +
+      ", which takes a true " + Dtrue.toFixed(3) + " to the " + r.D.toFixed(3) + " reported above.</strong> " +
+      "The slope at the peak is B = " + B.toFixed(4) + " per unit of the x axis, the peak elutes at " + r.peakV +
+      ", and " + fmt(spec.N) + " plates put the volumetric broadening at &sigma;<sub>V</sub> = " + bb.sigV.toFixed(3) + ". " +
+      (isFinite(excessShare) ? "Put another way, " + pct(excessShare) + " of the excess over 1 that you are about to report is the column bank rather than the polymer. " : "") +
+      "This is the columns alone at their guaranteed efficiency, so read it as the best the bank can do rather than as what it is doing.");
+
+    // The stated linear range is a harder bound than the calibration standards:
+    // standards can bracket a peak that the packing cannot actually resolve.
+    if (spec.lo || spec.hi) {
+      var outMass = 0;
+      for (var i = lo; i <= hi; i++) {
+        var V = rows[i][0], h = rows[i][1] - base(V);
+        if (h <= 0) continue;
+        var Mi = cal.M(V);
+        if (!isFinite(Mi) || Mi <= 0) continue;
+        if ((spec.lo && Mi < spec.lo) || (spec.hi && Mi > spec.hi)) {
+          var wl = i === lo ? 0 : rows[i][0] - rows[i - 1][0];
+          var wh = i === hi ? 0 : rows[i + 1][0] - rows[i][0];
+          outMass += h * (wl + wh) / 2;
+        }
+      }
+      var fout = r.area > 0 ? outMass / r.area : 0;
+      var rangeTxt = spec.lo ? fmt(spec.lo) + " to " + fmt(spec.hi) : "up to " + fmt(spec.hi);
+      if (fout > 0.005) {
+        msgs.push("<strong>" + pct(fout) + " of the integrated mass falls outside the linear range of these columns (" +
+          rangeTxt + "&nbsp;g/mol).</strong> This is a stricter limit than the calibration: a set of standards can bracket a peak perfectly well in a region where the packing has no pores left to separate it. Beyond the exclusion limit everything co-elutes at the void volume, and below the permeation limit everything co-elutes at the total volume, so the molecular weights assigned out there are read off a calibration that is flat in reality however curved the fit looks. A wider series would resolve it.");
+      } else {
+        msgs.push("Your peak sits inside the linear range of these columns (" + rangeTxt +
+          "&nbsp;g/mol), which is the condition for any of this to mean anything.");
+      }
+    }
+    note.innerHTML = msgs.join("</p><p class=\"guide-note\">");
+
+    // The comparison: the same injection through each of the other series, in
+    // the same bank geometry. Slope scales with the decades the series has to
+    // cover, since the separation volume is set by the column dimensions.
+    var mine = spec.decades;
+    var ref = colById($("tr-col").value);
+    if (!mine && ref) mine = ref.decades;
+    var comparable = COLUMNS.filter(function (c) { return c.lo && c.hi; });
+    if (!mine) {
+      $("tr-coltab-note").innerHTML = "Scaling the slope between series needs the span of the one you selected, and that is only defined when both ends of the range are stated. Pick a series with both, or enter both bounds, to see this comparison.";
+      tb.innerHTML = "";
+      return;
+    }
+    $("tr-coltab-note").innerHTML = "The same injection, integrated the same way, through each series in the same " +
+      spec.n + " &times; " + spec.Lmm + "&nbsp;mm bank. Nothing about the sample changes down this table, only which columns are in the oven.";
+    tb.innerHTML = comparable.map(function (c) {
+      var dec = Math.log10(c.hi / c.lo);
+      var Bc = B * dec / mine;
+      var bbc = broadening(c.pm * spec.Lm, Bc, r.peakV);
+      var sel = c.id === $("tr-col").value;
+      return "<tr" + (sel ? ' style="font-weight:600;"' : "") + "><td>" + c.name + (sel ? " (selected)" : "") + "</td>" +
+        '<td class="num">' + fmt(c.lo) + " to " + fmt(c.hi) + "</td>" +
+        '<td class="num">' + dec.toFixed(2) + "</td>" +
+        '<td class="num">' + fmt(c.pm) + " p/m</td>" +
+        '<td class="num">' + bbc.sigma.toFixed(3) + "</td>" +
+        '<td class="num">' + bbc.factor.toFixed(4) + "</td></tr>";
+    }).join("");
+  }
+
   // ---- Main -----------------------------------------------------------------
   var THRESHOLDS = [0.10, 0.05, 0.02, 0.01, 0.005, 0.001];
 
@@ -579,6 +838,9 @@
       warn.innerHTML = ""; sens.innerHTML = "";
       $("tr-plot").innerHTML = ""; $("tr-plot-caption").textContent = "";
       $("tr-sens-note").textContent = "";
+      $("tr-bb-stats").innerHTML = ""; $("tr-bb-note").innerHTML = "";
+      $("tr-coltab-note").textContent = "";
+      document.querySelector("#tr-coltab tbody").innerHTML = "";
     }
 
     if (rows.length < 10) {
@@ -608,7 +870,7 @@
       var lim = limitsAt(rows, provisional, parseFloat($("tr-thresh").value));
       lo = lim[0]; hi = lim[1];
     }
-    if (hi - lo < 3) return fail("That window contains fewer than four points. Lower the threshold or widen the limits &ndash; or check the response column, since a column with no peak in it produces exactly this.");
+    if (hi - lo < 3) return fail("That window contains fewer than four points. Lower the threshold, widen the limits, or check the response column, since a column with no peak in it produces exactly this.");
 
     var base = baselineFn(rows, mode, lo, hi);
     var r = analyse(rows, lo, hi, cal.M, base);
@@ -628,7 +890,7 @@
     var w = [];
     if (r.negSlices) {
       w.push("<strong>" + r.negSlices + " slice(s) inside the limits fall below the baseline.</strong> " +
-        "They were left out of the sums rather than subtracted, because a negative mass is not a small mass - " +
+        "They were left out of the sums rather than subtracted, because a negative mass is not a small mass, and " +
         "it means the baseline is sitting above the signal. Check the baseline mode before reading anything else here.");
     }
     if (isFinite(cal.loV)) {
@@ -660,6 +922,8 @@
         "is wrong; the moments below are not meaningful until that is resolved.");
     }
     warn.innerHTML = w.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    renderColumns(cal, r, rows, lo, hi, base);
 
     // ---- Plot ---------------------------------------------------------------
     $("tr-plot").innerHTML = plot(rows, base, lo, hi, cal);
@@ -698,7 +962,7 @@
       var dD = (loose.r.D - tight.r.D) / tight.r.D;
       var dMn = (loose.r.Mn - tight.r.Mn) / tight.r.Mn;
       $("tr-sens-note").innerHTML =
-        "Nothing about the sample changes down this table &ndash; only where the integration stops. Moving from " +
+        "Nothing about the sample changes down this table, only where the integration stops. Moving from " +
         (tight.f * 100) + "% of peak height to " + (loose.f * 100) + "% moves &#272; by " +
         "<strong>" + pct(Math.abs(dD)) + "</strong> and M&#8345; by <strong>" + pct(Math.abs(dMn)) + "</strong>. " +
         "Clipping always narrows a distribution, so the tighter limits report the lower &#272; and the higher M&#8345;, " +
@@ -719,15 +983,18 @@
     var manual = $("tr-thresh").value === "manual";
     $("tr-f-lo").hidden = !manual;
     $("tr-f-hi").hidden = !manual;
+    $("tr-f-colcustom").hidden = $("tr-col").value !== "custom";
   }
 
   $("tr-data").value = DEMO;
   $("tr-std").value = DEMO_STD;
 
-  ["tr-data", "tr-std", "tr-cal-a", "tr-cal-b", "tr-lo", "tr-hi"].forEach(function (id) {
+  ["tr-data", "tr-std", "tr-cal-a", "tr-cal-b", "tr-lo", "tr-hi",
+    "tr-col-pm", "tr-col-lo", "tr-col-hi"].forEach(function (id) {
     $(id).addEventListener("input", recalc);
   });
-  ["tr-cal-mode", "tr-order", "tr-base", "tr-thresh", "tr-ycol"].forEach(function (id) {
+  ["tr-cal-mode", "tr-order", "tr-base", "tr-thresh", "tr-ycol",
+    "tr-col", "tr-col-n", "tr-col-len"].forEach(function (id) {
     $(id).addEventListener("change", function () { syncFields(); recalc(); });
   });
 

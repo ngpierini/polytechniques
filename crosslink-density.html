@@ -32,13 +32,13 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=30" defer></script>
+<script src="nav.js?v=34" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=106">
+<link rel="stylesheet" href="style.css?v=123">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -156,7 +156,7 @@
     </p>
     <div class="table-scroll">
       <table class="recipe recipe-data">
-        <thead><tr><th>&chi;</th><th>M<sub>c</sub> (g/mol)</th><th>vs. &chi; = 0.465</th></tr></thead>
+        <thead><tr><th><span class="keepcase">&chi;</span></th><th>M<sub>c</sub> (g/mol)</th><th><span class="keepcase">vs. &chi; = 0.465</span></th></tr></thead>
         <tbody>
           <tr><td class="num">0.415</td><td class="num">4,430</td><td class="num">&minus;27 %</td></tr>
           <tr><td class="num">0.465</td><td class="num">6,040</td><td class="num">&mdash;</td></tr>
@@ -211,7 +211,7 @@
   <div class="card">
     <h3>Related tools</h3>
     <p class="guide-note">
-      Before the network forms, <a href="calculator.html#sg">Step-Growth &amp; Gel Point</a> predicts when it will, and <a href="network-formation.html">Network Formation</a> extends that to mixed functionalities and predicts the M<sub>c</sub> to compare against. <a href="flory-huggins.html">Flory&ndash;Huggins</a> covers what &chi; actually is, and why 0.5 is where a solvent turns marginal. <a href="thermal-analysis.html">Thermal Analysis</a> is where the plateau modulus is measured, and <a href="chain-dimensions.html">Chain Dimensions</a> covers the uncrosslinked chain in solution.
+      Before the network forms, <a href="calculator.html#sg">Step-Growth &amp; Gel Point</a> predicts when it will, and <a href="network-formation.html">Network Formation</a> extends that to mixed functionalities and predicts the M<sub>c</sub> to compare against. <a href="flory-huggins.html">Flory&ndash;Huggins</a> covers what &chi; actually is, and why 0.5 is where a solvent turns marginal. <a href="thermal-analysis.html">Thermal Analysis</a> is where the plateau modulus is measured, and <a href="chain-dimensions.html">Chain Dimensions</a> covers the uncrosslinked chain in solution. For a gel swollen in water rather than an elastomer in an organic solvent, <a href="hydrogel-mesh-size.html">Hydrogel Mesh Size</a> runs the same measurement through the Peppas&ndash;Merrill form, which carries the relaxed state a hydrogel is crosslinked in, and then turns M<sub>c</sub> into a mesh size.
     </p>
   </div>
 
@@ -384,13 +384,42 @@
       "<strong>Modulus:</strong> M<sub>c</sub> = " + Math.round(lastMod.Mc).toLocaleString() + " g/mol<br>" + msg;
   }
 
-  ["xl-mdry", "xl-mswell", "xl-rhop", "xl-rhos", "xl-v1", "xl-chi"].forEach(function (id) {
-    $(id).addEventListener("input", recalcSwell);
-  });
-  ["xl-mod", "xl-temp", "xl-rhop2"].forEach(function (id) {
-    $(id).addEventListener("input", recalcMod);
-  });
-  $("xl-mod-unit").addEventListener("change", recalcMod);
+  // nav.js is deferred, so it has not run yet when this inline script does.
+  // Wait for the document to be ready or the helper is always missing.
+  function wireInputs() {
+  // Shared state: both routes, so the disagreement between them travels too.
+  var share = window.PolyTechniques && window.PolyTechniques.shareState;
+  if (share) {
+    share([
+      { key: "mdry", id: "xl-mdry", min: 0 },
+      { key: "mswell", id: "xl-mswell", min: 0 },
+      { key: "rhop", id: "xl-rhop", min: 0 },
+      { key: "rhos", id: "xl-rhos", min: 0 },
+      { key: "v1", id: "xl-v1", min: 0 },
+      { key: "chi", id: "xl-chi" }
+    ], recalcSwell);
+    share([
+      { key: "mod", id: "xl-mod", min: 0 },
+      { key: "temp", id: "xl-temp" },
+      { key: "rhop2", id: "xl-rhop2", min: 0 },
+      { key: "unit", id: "xl-mod-unit", kind: "select" }
+    ], recalcMod);
+  } else {
+    ["xl-mdry", "xl-mswell", "xl-rhop", "xl-rhos", "xl-v1", "xl-chi"].forEach(function (id) {
+      $(id).addEventListener("input", recalcSwell);
+    });
+    ["xl-mod", "xl-temp", "xl-rhop2"].forEach(function (id) {
+      $(id).addEventListener("input", recalcMod);
+    });
+    $("xl-mod-unit").addEventListener("change", recalcMod);
+  }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wireInputs);
+  } else {
+    wireInputs();
+  }
+
   $("xl-solv-btn").addEventListener("click", function () {
     document.querySelector("#xl-solv-table").scrollIntoView({ behavior: "smooth", block: "center" });
   });

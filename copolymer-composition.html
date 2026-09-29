@@ -32,13 +32,13 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=30" defer></script>
+<script src="nav.js?v=34" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=106">
+<link rel="stylesheet" href="style.css?v=123">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -161,6 +161,16 @@
         <tbody></tbody>
       </table>
     </div>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <ul class="guide-list">
+      <li><a href="conversion-monitoring.html">Conversion monitoring</a>. Composition drift is a function of conversion, so the drift predicted here is only as good as the conversion you actually measured.</li>
+      <li><a href="tg-predictor.html">Tg predictor</a>. What the composition does to the glass transition, by Fox, once you know what the copolymer really contains.</li>
+      <li><a href="calculator.html">Calculator</a>. Chain length for the same recipe, which the reactivity ratios say nothing about.</li>
+      <li><a href="polymer-search.html">Polymer search</a>. Reactivity ratios and structures for the monomer pair you are working with.</li>
+    </ul>
   </div>
 
 </main>
@@ -356,12 +366,31 @@
     recalc();
   });
 
+  // nav.js is deferred, so wait for it before asking for the helper.
+  function wireShared() {
+  var share = window.PolyTechniques && window.PolyTechniques.shareState;
+  if (share) {
+    share([
+      { key: "m1", id: "cc-m1" },
+      { key: "m2", id: "cc-m2" },
+      { key: "r1", id: "cc-r1", min: 0 },
+      { key: "r2", id: "cc-r2", min: 0 },
+      { key: "f1", id: "cc-f1", min: 0, max: 1 }
+    ], function () { $("cc-pair").value = "-1"; recalc(); });
+  }
   ["cc-m1", "cc-m2", "cc-r1", "cc-r2", "cc-f1"].forEach(function (id) {
+    if (share) return;
     $(id).addEventListener("input", function () {
       $("cc-pair").value = "-1";
       recalc();
     });
   });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wireShared);
+  } else {
+    wireShared();
+  }
 
   // Drag (or click) anywhere on the chart to move the feed point. The SVG
   // element persists across re-renders (only its children are replaced),

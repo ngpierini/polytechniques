@@ -90,6 +90,50 @@ jobs:
       # hand-maintained and had silently dropped one of the main tools.
       - run: node scripts/check-sitemap.js
 
+      - name: Internal links (no orphans, no broken links)
+        run: node scripts/check-internal-links.js
+
+      # Three checks that existed in the repo but were never wired in here, so
+      # they only ever ran when someone thought to run them by hand.
+      #
+      # The bracket bars and the ring templates are both geometry: they can be
+      # wrong on screen while every structural check passes, because a bracket
+      # drawn beside a molecule and a ring with stretched bonds both still have
+      # the right formula, valence and ring count.
+      - name: Bracket bars still cross the bonds they cut
+        run: node scripts/check-bracket-geometry.js
+
+      - name: Ring templates are all drawn with the same bond length
+        run: node scripts/check-ring-geometry.js
+
+      # The canvas paints element symbols in its own palette, so no stylesheet
+      # governs them and no CSS review would ever look at them. Both a 1.14:1
+      # fallback colour and a 1.92:1 sulfur yellow shipped this way.
+      - name: Canvas element labels are legible on both themes
+        run: node scripts/check-canvas-contrast.js
+
+      # An SVG clips to its viewport, so a label placed outside the viewBox just
+      # is not there - no error, and the figure still looks plausible. Two
+      # figures shipped that way and both were noticed by eye.
+      - name: SVG figure labels are inside their viewBox
+        run: node scripts/check-svg-labels.js
+
+      # An audit of all 46 pages in both themes found 89 contrast failures in
+      # light and 36 in dark, nearly all from a colour chosen against one theme
+      # and then used in both. That audit needs a browser; the arithmetic on the
+      # token definitions, which is where the fixes live, does not.
+      - name: Theme colours clear 4.5:1 on the surfaces they are used on
+        run: node scripts/check-theme-contrast.js
+
+      # Two pages scrolled sideways at 375px and five at 320px: grid columns
+      # that could not shrink below a pixel minimum, and polymer names with no
+      # space or hyphen to break at. Both are visible in the stylesheet.
+      - name: Nothing can force a page wider than a phone
+        run: node scripts/check-narrow-layout.js
+
+      - name: Trivia questions still agree with the polymer library
+        run: node scripts/check-trivia.js
+
       # Fails if the AdSense publisher number stops matching between ads.txt,
       # nav.js and the page heads - a mismatch stops serving without any
       # visible error on the site itself.

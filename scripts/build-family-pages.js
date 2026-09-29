@@ -359,13 +359,13 @@ function pageHtml(fam, entries) {
     publisher: { "@type": "Organization", name: "PolyTechniques" },
   }, null, 2) + "\n<\/script>\n";
   h += '<script src="theme.js?v=1"><\/script>\n';
-  h += '<script src="nav.js?v=30" defer><\/script>\n';
+  h += '<script src="nav.js?v=34" defer><\/script>\n';
   h += '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n';
   h += '<link rel="manifest" href="manifest.json">\n';
   h += '<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">\n';
   h += '<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=106">\n';
+  h += '<link rel="stylesheet" href="style.css?v=123">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 
@@ -411,11 +411,21 @@ function pageHtml(fam, entries) {
   });
   if (lastLetter !== null) h += "  </div>\n\n";
 
-  // Cross-links.
+  // Cross-links: the ones this family declares, then every other family and
+  // the hub. Without those a family page was a dead end, and the hub had one
+  // inbound link in the whole site.
   h += '  <div class="card">\n    <h3>Related</h3>\n    <ul>\n';
   fam.related.forEach(([href, label]) => {
     h += '      <li><a href="' + href + '">' + label + "</a></li>\n";
   });
+  const declaredHrefs = new Set(fam.related.map(([href]) => href));
+  const siblings = FAMILIES
+    .filter((f) => f.slug !== fam.slug && !declaredHrefs.has(f.slug + ".html"))
+    .map((f) => '<a href="' + f.slug + '.html">' + f.title.toLowerCase() + "</a>");
+  if (siblings.length) {
+    h += "      <li>The other families: " + siblings.join(", ") + ".</li>\n";
+  }
+  h += '      <li><a href="polymer-families.html">All polymer families</a>, the hub that indexes every one of them.</li>\n';
   h += "    </ul>\n  </div>\n\n";
 
   h += "</main>\n\n";
@@ -458,13 +468,13 @@ function hubHtml(groups) {
   h += '<meta name="twitter:image" content="' + SITE + 'og-image.png">\n';
   h += '<script src="structure-map.js?v=2" defer><\/script>\n';
   h += '<script src="theme.js?v=1"><\/script>\n';
-  h += '<script src="nav.js?v=30" defer><\/script>\n';
+  h += '<script src="nav.js?v=34" defer><\/script>\n';
   h += '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n';
   h += '<link rel="manifest" href="manifest.json">\n';
   h += '<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">\n';
   h += '<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=106">\n';
+  h += '<link rel="stylesheet" href="style.css?v=123">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 

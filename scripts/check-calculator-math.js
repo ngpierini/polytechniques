@@ -1099,6 +1099,405 @@ if (egHtml.indexOf("56106") === -1 || egHtml.indexOf("4202") === -1) {
 check("degree of substitution, page defaults", ((42 / 2) / (100 / 1)) * 100, 21, 1e-9, "%");
 check("DS is 100% when both normalised integrals match", ((50 / 1) / (50 / 1)) * 100, 100, 1e-9, "%");
 
+// ---- Column series and band broadening: gpc-trace.html --------------------
+const gtHtml = fs.readFileSync(path.join(__dirname, "..", "gpc-trace.html"), "utf8");
+
+// sigma_V = V_R/sqrt(N); the calibration slope turns it into a width in ln M.
+const gtSigma = (N, B, Vr) => Math.LN10 * B * Vr / Math.sqrt(N);
+// A Gaussian of width sigma in ln M multiplies dispersity by exp(sigma^2).
+const gtFactor = (sigma) => Math.exp(sigma * sigma);
+
+// The specifications are Agilent's, and the page is the only place they are
+// written down, so read them back rather than keeping a second copy.
+const gtCols = [...gtHtml.matchAll(
+  /\{ id: "(mixed-[a-e])", name: "([^"]+)", lo: (\d+|null), hi: (\d+), pm: (\d+) \}/g
+)].map((m) => ({ id: m[1], name: m[2], lo: m[3] === "null" ? null : Number(m[3]), hi: Number(m[4]), pm: Number(m[5]) }));
+
+if (gtCols.length !== 5) {
+  failed++;
+  cases.push({ ok: false, name: "gpc-trace carries all five PLgel MIXED grades", actual: gtCols.length, expected: 5, tol: 0, unit: "rows" });
+}
+const gtExpect = {
+  "mixed-a": { lo: 2000, hi: 40000000, pm: 18000 },
+  "mixed-b": { lo: 500, hi: 10000000, pm: 35000 },
+  "mixed-c": { lo: 200, hi: 2000000, pm: 50000 },
+  "mixed-d": { lo: 200, hi: 400000, pm: 50000 },
+  "mixed-e": { lo: null, hi: 30000, pm: 80000 },
+};
+gtCols.forEach((c) => {
+  const e = gtExpect[c.id];
+  if (!e) {
+    failed++;
+    cases.push({ ok: false, name: "unknown column series " + c.id, actual: c.id, expected: "a PLgel MIXED grade", tol: 0, unit: "" });
+    return;
+  }
+  check("column spec " + c.id + " upper range", c.hi, e.hi, 0, "g/mol");
+  check("column spec " + c.id + " efficiency", c.pm, e.pm, 0, "p/m");
+  if (e.lo === null) {
+    if (c.lo !== null) {
+      failed++;
+      cases.push({ ok: false, name: "column spec " + c.id + " must not invent a lower bound", actual: c.lo, expected: "null", tol: 0, unit: "" });
+    }
+  } else {
+    check("column spec " + c.id + " lower range", c.lo, e.lo, 0, "g/mol");
+  }
+});
+
+// The page's own defaults: 2 x 300 mm PLgel 5 um MIXED-C, the demo trace's
+// log-linear calibration, and the peak where that trace puts it.
+const GT_B = 0.70, GT_VR = 8.775, GT_L = 0.6;
+const gtN = (pm) => pm * GT_L;
+check("MIXED-C bank plate count", gtN(50000), 30000, 0, "plates");
+check("MIXED-C sigma on the demo trace", gtSigma(gtN(50000), GT_B, GT_VR), 0.0816, 5e-4, "in ln M");
+check("MIXED-C dispersity inflation", gtFactor(gtSigma(gtN(50000), GT_B, GT_VR)), 1.00668, 5e-5, "x");
+
+// Wider range, same geometry: the slope scales with the decades the series has
+// to cover. This is the whole argument of the section, so it gets checked at
+// the numbers the page prints.
+const gtDecades = (c) => Math.log10(c.hi / c.lo);
+const gtRow = (id) => {
+  const c = gtCols.find((x) => x.id === id);
+  const ref = gtCols.find((x) => x.id === "mixed-c");
+  const B = GT_B * gtDecades(c) / gtDecades(ref);
+  return gtSigma(gtN(c.pm), B, GT_VR);
+};
+check("MIXED-A and MIXED-B span the same decades", gtDecades(gtCols.find((c) => c.id === "mixed-a")) - gtDecades(gtCols.find((c) => c.id === "mixed-b")), 0, 1e-12, "decades");
+check("MIXED-A sigma, same bank", gtRow("mixed-a"), 0.1463, 5e-4, "in ln M");
+check("MIXED-B sigma, same bank", gtRow("mixed-b"), 0.1049, 5e-4, "in ln M");
+check("MIXED-D sigma, same bank", gtRow("mixed-d"), 0.0674, 5e-4, "in ln M");
+
+// The claims made in prose, as claims.
+check("a wider bed costs dispersity: MIXED-A over MIXED-D", gtRow("mixed-a") / gtRow("mixed-d"), 2.17, 0.02, "x");
+{
+  // Doubling the bank: N doubles, V_R doubles, and the same range now spreads
+  // over twice the volume so B halves. Net, sigma falls by root two.
+  const one = gtSigma(50000 * 0.3, GT_B, GT_VR);
+  const two = gtSigma(50000 * 0.6, GT_B / 2, GT_VR * 2);
+  check("doubling the bank cuts sigma by root two", one / two, Math.SQRT2, 1e-9, "x");
+  check("doubling the bank halves the excess the columns add", (one * one) / (two * two), 2, 1e-9, "x");
+}
+
+// The worked caveat: correcting the demo trace with the default MIXED-C bank
+// moves D from 1.284 to 1.276, which is AWAY from the 1.300 it was generated
+// from, because a synthetic trace carries no broadening to remove. The page
+// says so in as many words, and both figures are checked here.
+{
+  const gtReported = 1.2844;   // the 2%-of-peak row of the page's own table
+  const corrected = gtReported / gtFactor(gtSigma(gtN(50000), GT_B, GT_VR));
+  check("demo trace corrected for the default bank", corrected, 1.276, 5e-4, "D");
+  check("the correction moves away from the generated 1.300",
+    Math.abs(corrected - 1.3) > Math.abs(gtReported - 1.3) ? 1 : 0, 1, 0, "");
+  ["1.284 down to 1.276", "1.300"].forEach((frag) => {
+    if (gtHtml.indexOf(frag) === -1) {
+      failed++;
+      cases.push({ ok: false, name: "gpc-trace caveat still quotes " + frag, actual: "not found", expected: "present", tol: 0, unit: "" });
+    }
+  });
+}
+
+// The two formulae the page states have to be the two the page runs.
+["Math.LN10 * B * Vr / Math.sqrt(N)", "Math.exp(sigma * sigma)"].forEach((frag) => {
+  if (gtHtml.indexOf(frag) === -1) {
+    failed++;
+    cases.push({ ok: false, name: "gpc-trace still computes " + frag, actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+});
+
+// ---- The end-group spectrum figure ----------------------------------------
+// The figure uses the 2H ester quartet; the table below it uses the 6H signal.
+const EGF_HE = 2, EGF_D = 0.002;
+const egfShare = (DP, He) => He / (He + DP * EG_HB);
+const egfMn = (DP) => DP * EG_M0 + EG_MEND;
+const egfErr = (DP, He) => (EGF_D / egfShare(DP, He)) * (DP * EG_M0) / egfMn(DP);
+
+// Each panel writes "DP n", then its Mn, then its uncertainty, in that order.
+const egfPanels = [...egHtml.matchAll(
+  /DP (\d+)<\/text><text[^>]*>M\u2099 ([\d,]+)<\/text><text[^>]*>&plusmn;([\d.]+)%<\/text>/g
+)].map((m) => ({ DP: Number(m[1]), Mn: Number(m[2].replace(/,/g, "")), err: Number(m[3]) }));
+
+if (egfPanels.length !== 3) {
+  failed++;
+  cases.push({ ok: false, name: "the end-group spectrum figure still has three panels", actual: egfPanels.length, expected: 3, tol: 0, unit: "panels" });
+}
+[25, 100, 400].forEach((DP, i) => {
+  const p = egfPanels[i];
+  if (!p) return;
+  check("spectrum panel " + (i + 1) + " is DP " + DP, p.DP, DP, 0, "");
+  check("spectrum figure Mn at DP " + DP, p.Mn, Math.round(egfMn(DP)), 0.5, "g/mol");
+  const want = egfErr(DP, EGF_HE) * 100;
+  check("spectrum figure uncertainty at DP " + DP, p.err, Number(want.toFixed(want < 100 ? 1 : 0)), 0.05, "%");
+});
+
+// The prose under the figure quotes the end group's share of that window.
+[[25, "2.6%", 1], [100, "0.66%", 2], [400, "0.17%", 2]].forEach(([DP, quoted, dp]) => {
+  const want = egfShare(DP, EGF_HE) * 100;
+  check("spectrum share at DP " + DP + " rounds to " + quoted, Number(want.toFixed(dp)), parseFloat(quoted), 0, "%");
+  if (egHtml.indexOf(quoted + " of this window") === -1 && egHtml.indexOf(quoted + " at DP " + DP) === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the figure prose still quotes " + quoted + " at DP " + DP, actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+});
+
+// "about 20 kg/mol on the 6H signal, about 7 kg/mol on the 2H one" is a
+// derived claim: the Mn at which a 0.2% baseline error becomes a 20% error.
+{
+  const ceiling = (He) => {
+    let lo = 200, hi = 400000;
+    for (let i = 0; i < 80; i++) {
+      const mid = (lo + hi) / 2;
+      const DP = (mid - EG_MEND) / EG_M0;
+      if (egfErr(DP, He) < 0.2) lo = mid; else hi = mid;
+    }
+    return lo;
+  };
+  check("end-group ceiling on a 6H signal", ceiling(6) / 1000, 20, 1, "kg/mol");
+  check("end-group ceiling on a 2H signal", ceiling(2) / 1000, 7, 1, "kg/mol");
+  // Not exactly threefold: share is He/(He + Hb*DP), so it only tracks He
+  // once Hb*DP dominates, and Mn carries Mend on top. Pin what it is.
+  check("a 6H signal buys most of a threefold ceiling, not all of it", ceiling(6) / ceiling(2), 2.89, 0.03, "x");
+}
+
+// ---- The technique grid ---------------------------------------------------
+// It replaced a table, and a card that loses its verdict pill loses the one
+// thing the grid is scanned for.
+{
+  const cards = [...egHtml.matchAll(/<div class="tech-card tech-card--(yes|part|no)">/g)].map((m) => m[1]);
+  const pills = (egHtml.match(/<span class="tech-verdict">/g) || []).length;
+  check("the technique grid still carries eight techniques", cards.length, 8, 0, "cards");
+  check("every technique card carries a verdict", pills, cards.length, 0, "pills");
+  check("exactly one technique gives no molecular weight at all", cards.filter((c) => c === "no").length, 1, 0, "cards");
+  check("two techniques give an absolute Mn on their own", cards.filter((c) => c === "yes").length, 2, 0, "cards");
+}
+
+// ---- The MALDI figure -----------------------------------------------------
+const MALDI_NA = 22.99, MALDI_BR = 79.904, MALDI_H = 1.008, MALDI_N = 22;
+
+// The worked peak, built from the page's own constants rather than restated.
+const maldiPeak = MALDI_N * EG_M0 + EG_MEND + MALDI_NA;
+check("MALDI worked peak m/z", maldiPeak, 2420.7, 0.05, "m/z");
+// The step the prose asks the reader to do: strip the repeat units and what
+// is left has to be the ends plus the cation.
+check("stripping 22 repeat units leaves the ends plus sodium",
+  maldiPeak - MALDI_N * EG_M0, 218.0, 0.05, "Da");
+check("...which is Mend plus Na", EG_MEND + MALDI_NA, 218.04, 0.01, "Da");
+
+// The second series is one bromine down, traded for a hydrogen.
+check("the minor series offset is a bromine for a hydrogen", MALDI_BR - MALDI_H, 78.9, 0.01, "Da");
+
+// The spacing IS the repeat unit; if these ever diverge the figure is lying.
+check("MALDI comb spacing is the repeat unit", EG_M0, 100.12, 0.005, "Da");
+
+// The figure and the prose both print these, so a drift in either shows up.
+[["2420.7", "the worked peak"], ["100.12", "the repeat unit"], ["195.05", "the end groups"],
+ ["22.99", "sodium"], ["78.9", "the bromine offset"], ["218.0", "the stripped remainder"]].forEach(([frag, what]) => {
+  if (egHtml.indexOf(frag) === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the MALDI section still quotes " + frag + " for " + what,
+      actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+});
+
+// Both combs have to be drawn where the arithmetic puts them. The figure is
+// a line per peak, so read the x of one peak from each series and check the
+// gap against the mass offset through the figure's own x scale.
+{
+  const mFig = egHtml.match(/viewBox="0 0 700 288"[\s\S]*?<\/svg>/);
+  if (!mFig) {
+    failed++;
+    cases.push({ ok: false, name: "the MALDI figure is still on the page", actual: "not found", expected: "present", tol: 0, unit: "" });
+  } else {
+    const lines = [...mFig[0].matchAll(/<line x1="([\d.]+)" y1="230" x2="[\d.]+" y2="([\d.]+)" stroke="var\(--(primary|danger)[^"]*"/g)]
+      .map((m) => ({ x: Number(m[1]), col: m[3] }));
+    const br = lines.filter((l) => l.col === "primary").map((l) => l.x).sort((a, b) => a - b);
+    const h = lines.filter((l) => l.col === "danger").map((l) => l.x).sort((a, b) => a - b);
+    check("the main comb has seven peaks in the window", br.length, 7, 0, "peaks");
+    check("the minor comb has seven peaks in the window", h.length, 7, 0, "peaks");
+    // x = 70 + (m - 1990) * 605/710
+    const perDa = 605 / 710;
+    if (br.length > 1) {
+      check("drawn comb spacing equals the repeat unit", (br[1] - br[0]) / perDa, EG_M0, 0.2, "Da");
+    }
+    if (br.length === 7 && h.length === 7) {
+      // Series B at n is 78.9 below series A at the same n; both combs start
+      // at a different n in this window, so compare the highest peak of each.
+      const gap = (br[br.length - 1] - h[h.length - 1]) / perDa;
+      check("the two combs are offset by one bromine, or one repeat unit less",
+        Math.min(Math.abs(gap - (MALDI_BR - MALDI_H)), Math.abs(gap + EG_M0 - (MALDI_BR - MALDI_H))), 0, 0.3, "Da");
+    }
+  }
+}
+
+// ---- The functionality fan ------------------------------------------------
+// Mn = f x EW, and the figure draws f blocks of one EW. Both halves of that
+// are worth pinning, because the whole card is about getting f wrong.
+{
+  const EW_OH = 56106 / 56.1;
+  check("the fan's default block is one equivalent weight", EW_OH, 1000, 1, "g/eq");
+  [1, 2, 3, 4, 6].forEach((f) => {
+    check("Mn at f = " + f + " is f blocks of EW", f * EW_OH, f * 1000, f, "g/mol");
+  });
+  // "Read a diol as a triol and Mn goes ... which is 50% high".
+  check("a diol read as a triol reports Mn high by", (3 - 2) / 2 * 100, 50, 0.001, "%");
+  if (egHtml.indexOf("which is 50% high") === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the fan prose still quotes the 50% diol/triol error",
+      actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+  // The fan is drawn from these two, and the rest of the card from the same
+  // pair, so a drift in either silently rescales every bar.
+  check("hydroxyl constant still gives EW from a hydroxyl value", 56106 / 112.2, 500, 1, "g/eq");
+  check("isocyanate constant still gives EW from %NCO", 4202 / 8.4, 500, 1, "g/eq");
+  // The blocks are whole because functionality is a count; a fractional f is
+  // drawn as a part block, so the renderer has to keep both paths.
+  ["var whole = Math.floor(f + 1e-9), frac = f - whole;", "stroke-dasharray=\"3 2\""].forEach((frag) => {
+    if (egHtml.indexOf(frag) === -1) {
+      failed++;
+      cases.push({ ok: false, name: "the fan still draws whole and part blocks (" + frag.slice(0, 30) + ")",
+        actual: "not found", expected: "present", tol: 0, unit: "" });
+    }
+  });
+}
+
+// ---- Hydrogel mesh size: hydrogel-mesh-size.html --------------------------
+const hgHtml = fs.readFileSync(path.join(__dirname, "..", "hydrogel-mesh-size.html"), "utf8");
+const HG_V1 = 18.05;
+
+// Swelling -> polymer volume fraction.
+const hgV2s = (md, ms, rhoP, rhoS) => (md / rhoP) / (md / rhoP + (ms - md) / rhoS);
+// Peppas-Merrill. v2r = 1 is Flory-Rehner.
+function hgMc(v2s, v2r, chi, rhoP, Mn) {
+  const vbar = 1 / rhoP;
+  const mix = Math.log(1 - v2s) + v2s + chi * v2s * v2s;
+  const r = v2s / v2r;
+  const elastic = v2r * (Math.pow(r, 1 / 3) - 0.5 * r);
+  const ends = Mn > 0 ? 2 / Mn : 0;
+  return 1 / (ends - (vbar / HG_V1) * mix / elastic);
+}
+// Canal-Peppas.
+const hgXi = (Mc, v2s, perRepeat, M0, bond, cInf) =>
+  Math.pow(v2s, -1 / 3) * bond * Math.sqrt(cInf * (perRepeat * Mc / M0));
+
+// The page's defaults: PEG crosslinked at 10% polymer, 0.100 g dry to 1.000 g
+// swollen, and the poly(ethylene oxide) geometry out of chain-data.js.
+const HG = { md: 0.100, ms: 1.000, rhoP: 1.20, rhoS: 0.997, v2r: 0.10, chi: 0.45, Mn: 50000 };
+const PEO = { perRepeat: 3, M0: 44.05, bond: 0.147, cInf: 4 };
+{
+  const v2s = hgV2s(HG.md, HG.ms, HG.rhoP, HG.rhoS);
+  const Mc = hgMc(v2s, HG.v2r, HG.chi, HG.rhoP, HG.Mn);
+  const xi = hgXi(Mc, v2s, PEO.perRepeat, PEO.M0, PEO.bond, PEO.cInf);
+  check("hydrogel default v2s", v2s, 0.0845, 5e-4, "");
+  check("hydrogel default swelling ratio Q", 1 / v2s, 11.8, 0.05, "x");
+  check("hydrogel default Mc", Mc, 1835, 5, "g/mol");
+  check("hydrogel default mesh size", xi, 7.49, 0.02, "nm");
+  check("hydrogel default strand length", PEO.perRepeat * Mc / PEO.M0, 125, 1, "bonds");
+
+  // Lustig-Peppas: obstruction times free volume, with Y = 1.
+  const rs = 1.8;
+  const obstruction = 1 - rs / xi;
+  const freeVol = Math.exp(-1 * v2s / (1 - v2s));
+  check("hydrogel default solute hindrance", obstruction * freeVol, 0.693, 2e-3, "Dgel/Dwater");
+  check("...and it is strictly the product of the two terms",
+    obstruction * freeVol - (1 - rs / xi) * Math.exp(-v2s / (1 - v2s)), 0, 1e-12, "");
+}
+
+// The claim that Peppas-Merrill collapses onto Flory-Rehner at v2r = 1.
+{
+  const v2s = 0.2, chi = 0.45, rhoP = 1.2;
+  const pm = hgMc(v2s, 1, chi, rhoP, 0);
+  // Flory-Rehner written out independently, with no v2r anywhere in it.
+  const mix = Math.log(1 - v2s) + v2s + chi * v2s * v2s;
+  const fr = 1 / (-(1 / rhoP / HG_V1) * mix / (Math.pow(v2s, 1 / 3) - 0.5 * v2s));
+  check("Peppas-Merrill at v2r = 1 is Flory-Rehner", pm / fr, 1, 1e-12, "x");
+  // And that it does NOT collapse when the gel was made in solution.
+  const solution = hgMc(v2s, 0.1, chi, rhoP, 0);
+  if (!(solution < fr * 0.9)) {
+    failed++;
+    cases.push({ ok: false, name: "a solution-crosslinked gel must give a smaller Mc than Flory-Rehner",
+      actual: solution, expected: "< " + (fr * 0.9).toFixed(0), tol: 0, unit: "g/mol" });
+  }
+}
+
+// Mesh size has to scale the way the page says: as the square root of Mc, and
+// with swelling through v2s^(-1/3).
+{
+  const v2s = 0.0845;
+  const a = hgXi(2000, v2s, PEO.perRepeat, PEO.M0, PEO.bond, PEO.cInf);
+  const b = hgXi(8000, v2s, PEO.perRepeat, PEO.M0, PEO.bond, PEO.cInf);
+  check("quadrupling Mc doubles the mesh size", b / a, 2, 1e-9, "x");
+  const c = hgXi(2000, v2s / 8, PEO.perRepeat, PEO.M0, PEO.bond, PEO.cInf);
+  check("an eightfold more dilute gel has twice the mesh", c / a, 2, 1e-9, "x");
+}
+
+// The geometry must come from chain-data.js, not be hard-coded on the page.
+// If someone pastes a literal C-infinity in, this fails.
+{
+  const cd = fs.readFileSync(path.join(__dirname, "..", "chain-data.js"), "utf8");
+  const w = {};
+  new Function("window", cd)(w);
+  const peo = (w.CHAIN_DATA || []).find((e) => /ethylene oxide/i.test(e.name));
+  if (!peo) {
+    failed++;
+    cases.push({ ok: false, name: "chain-data.js still carries poly(ethylene oxide)", actual: "missing", expected: "present", tol: 0, unit: "" });
+  } else {
+    check("chain-data PEO bonds per repeat", peo.geom.perRepeat, PEO.perRepeat, 0, "");
+    check("chain-data PEO bond length", peo.geom.bond, PEO.bond, 1e-9, "nm");
+    check("chain-data PEO characteristic ratio", peo.cInf, PEO.cInf, 1e-9, "");
+    check("chain-data PEO repeat mass", peo.M0, PEO.M0, 1e-9, "g/mol");
+  }
+  if (hgHtml.indexOf("window.CHAIN_DATA") === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the hydrogel page still reads its geometry from chain-data.js",
+      actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+}
+
+// ---- The hydrogel mesh figure ---------------------------------------------
+{
+  // One mesh opening is S px on screen whatever xi is, so a solute of radius
+  // rs nm must be drawn at rs * S / xi px. That single line is the figure's
+  // entire claim to being to scale.
+  const S = 88;
+  const meshPx = (rs, xi) => rs * (S / xi);
+  check("a 1.8 nm solute in a 7.49 nm mesh draws at", meshPx(1.8, 7.49), 21.2, 0.1, "px");
+  check("a solute exactly the mesh size draws one opening wide", meshPx(7.49, 7.49), S, 1e-9, "px");
+  check("doubling the solute doubles the circle", meshPx(3.6, 7.49) / meshPx(1.8, 7.49), 2, 1e-12, "x");
+  // And a tighter gel must draw the same solute bigger, because the opening
+  // it is drawn against is the thing being held constant.
+  if (!(meshPx(1.8, 4) > meshPx(1.8, 7.49))) {
+    failed++;
+    cases.push({ ok: false, name: "the same solute draws larger in a tighter mesh",
+      actual: meshPx(1.8, 4), expected: "> " + meshPx(1.8, 7.49).toFixed(1), tol: 0, unit: "px" });
+  }
+
+  // Determinism: a figure that reshuffles on every keystroke reads as noise,
+  // and nothing about it could be checked. Math.random here would be a bug.
+  if (hgHtml.indexOf("var seed = 20260927;") === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the mesh figure still uses a fixed seed", actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+  const meshFn = hgHtml.slice(hgHtml.indexOf("function meshFigure"), hgHtml.indexOf("function recalc"));
+  if (meshFn.indexOf("Math.random") !== -1) {
+    failed++;
+    cases.push({ ok: false, name: "the mesh figure must not use Math.random", actual: "found", expected: "absent", tol: 0, unit: "" });
+  }
+  // The scale bar has to be exactly one opening, or the figure lies about
+  // its own units.
+  if (meshFn.indexOf('x2="\' + (bx + S) + \'"') === -1) {
+    failed++;
+    cases.push({ ok: false, name: "the scale bar is still exactly one mesh opening wide",
+      actual: "not found", expected: "present", tol: 0, unit: "" });
+  }
+  // A solute too large to fit must still be able to say so: the label falls
+  // back to a pinned position instead of being drawn off the bottom.
+  ["var ly = cy + pr + 16, tethered =", "larger than the mesh"].forEach((frag) => {
+    if (meshFn.indexOf(frag) === -1) {
+      failed++;
+      cases.push({ ok: false, name: "the mesh figure keeps its unclippable solute label (" + frag.slice(0, 26) + ")",
+        actual: "not found", expected: "present", tol: 0, unit: "" });
+    }
+  });
+}
+
 // ---- The converter's reference table has to stay checkable -----------------
 // gpc-calibration.html refuses to convert between two polymers characterised in
 // different eluents, because universal calibration equates hydrodynamic volume

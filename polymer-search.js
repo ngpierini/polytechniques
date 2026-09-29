@@ -191,6 +191,16 @@
     var BOND_HIT = 7;
     var BOND_LEN = 42;
     var SNAP_STEP = Math.PI / 6; // 30 degrees, matching standard skeletal-formula bond angles
+    // Circumradius of an n-ring drawn with the same bond length as benzene.
+    // BOND_LEN * 0.72 is that radius for a hexagon, whose side is therefore
+    // 2 * 0.72 * sin(30 deg) = 0.72 * BOND_LEN; hold that side fixed and
+    // solve for the rest. Before this, every template shared the hexagon
+    // radius, so only the 6-rings were right: a cyclopropane came out with
+    // bonds 73% too long and a cyclooctane 23% too short, both plainly
+    // visible next to a benzene on the same canvas.
+    function ringRadius(n) {
+      return (BOND_LEN * 0.72) / (2 * Math.sin(Math.PI / n));
+    }
 
     // Snap a new atom to the nearest 30-degree increment at a fixed bond length
     // from its anchor, so chains come out as proper zigzags (like a real
@@ -390,7 +400,7 @@
     // Stamp a freestanding ring centered at a point (empty-canvas click).
     function stampRingAt(center, n, aromatic) {
       snapshot();
-      var r = BOND_LEN * 0.72; // match the ring radius used everywhere else (attached, fused, worked examples)
+      var r = ringRadius(n); // same bond length as every other ring size
       var startAngle = -Math.PI / 2 + ringRotationSteps * SNAP_STEP;
       var ids = [];
       for (var i = 0; i < n; i++) {
@@ -411,7 +421,7 @@
     // ipso vertex, so the ring bulges away from the attachment atom instead
     // of folding back over it and crossing the bond leading into it.
     function ringVertexPositions(atom, snappedRad, n) {
-      var r = BOND_LEN * 0.72;
+      var r = ringRadius(n);
       var ipso = { x: atom.x + BOND_LEN * Math.cos(snappedRad), y: atom.y + BOND_LEN * Math.sin(snappedRad) };
       var center = { x: ipso.x + r * Math.cos(snappedRad), y: ipso.y + r * Math.sin(snappedRad) };
       var ipsoAngleDeg = snappedRad * 180 / Math.PI + 180;
@@ -438,7 +448,7 @@
     // at a given angle. position[0] is always exactly the atom's own
     // position, so it never moves - only the other n-1 vertices are new.
     function spiroRingVertexPositions(atom, snappedRad, n) {
-      var r = BOND_LEN * 0.72;
+      var r = ringRadius(n);
       var center = { x: atom.x + r * Math.cos(snappedRad), y: atom.y + r * Math.sin(snappedRad) };
       var atomAngleDeg = snappedRad * 180 / Math.PI + 180;
       var positions = [];
@@ -475,7 +485,7 @@
       snapshot();
       var chosen = pickRingAngle(atom, n);
       var positions = spiroRingVertexPositions(atom, chosen, n);
-      var ringR = BOND_LEN * 0.72;
+      var ringR = ringRadius(n);
       var ringCenter = { x: atom.x + ringR * Math.cos(chosen), y: atom.y + ringR * Math.sin(chosen) };
       var ids = [atom.id];
       for (var i = 1; i < n; i++) ids.push(addAtom('C', positions[i].x, positions[i].y).id);
@@ -643,6 +653,46 @@
     // enough to lay a whole reaction scheme out end to end.
     var VIEW_MIN = 0.15, VIEW_MAX = 6;
     function resetView() { viewScale = 1; viewX = 0; viewY = 0; }
+    // Bring everything drawn into view, centred, without moving anything that
+    // is drawn. resetView() above only returns to 1:1, which is no help to a
+    // drawing that has grown past the window - the case the arrow-key panning
+    // further down names as the thing it solves. This is the direct answer,
+    // and it is what View > Fit to Window does in every other editor.
+    //
+    // Zooming IN is capped. Fitting a two-atom fragment to a 970px canvas
+    // would hand it 300px bonds, which stops reading as a chemical drawing.
+    var FIT_PAD = 0.86;        // margin, so an element letter is not flush to the edge
+    var FIT_MAX_ZOOM = 1.6;
+    function contentBounds() {
+      var xs = [], ys = [];
+      function put(x, y) {
+        // Brackets carry extra fields depending on their role, so take only
+        // real numbers rather than trusting every entry to be a rectangle.
+        if (typeof x === "number" && isFinite(x)) xs.push(x);
+        if (typeof y === "number" && isFinite(y)) ys.push(y);
+      }
+      atoms.forEach(function (a) { put(a.x, a.y); });
+      labels.forEach(function (l) { put(l.x, l.y); });
+      brackets.concat(arrows).forEach(function (r) { put(r.x1, r.y1); put(r.x2, r.y2); });
+      if (!xs.length || !ys.length) return null;
+      // An atom is a point, but its element letter and the bond stroke reach
+      // past it, so grow the box instead of fitting the bare coordinates.
+      var pad = BOND_LEN * 0.45;
+      return {
+        x1: Math.min.apply(null, xs) - pad, y1: Math.min.apply(null, ys) - pad,
+        x2: Math.max.apply(null, xs) + pad, y2: Math.max.apply(null, ys) + pad
+      };
+    }
+    function fitToContent() {
+      var b = contentBounds();
+      if (!b) { resetView(); return; }
+      var bw = Math.max(1, b.x2 - b.x1), bh = Math.max(1, b.y2 - b.y1);
+      var s = Math.min(canvas.width / bw, canvas.height / bh) * FIT_PAD;
+      s = Math.max(VIEW_MIN, Math.min(Math.min(VIEW_MAX, FIT_MAX_ZOOM), s));
+      viewScale = s;
+      viewX = canvas.width / 2 - ((b.x1 + b.x2) / 2) * s;
+      viewY = canvas.height / 2 - ((b.y1 + b.y2) / 2) * s;
+    }
     // canvas pixel -> world
     function toWorld(px, py) { return { x: (px - viewX) / viewScale, y: (py - viewY) / viewScale }; }
     function zoomAbout(px, py, factor) {
@@ -670,9 +720,47 @@
       return toWorld(p.x, p.y);
     }
 
-    function elColor(el) {
-      var colors = { N: '#3b82f6', NO2: '#3b82f6', O: '#ef4444', S: '#eab308', F: '#22c55e', Cl: '#22c55e', Br: '#a16207', I: '#7c3aed', Si: '#f97316', P: '#f97316', B: '#f97316' };
-      return colors[el] || '#111';
+    // Is the surface being drawn on a dark one? Answered from the colour the
+    // caller passed rather than from data-theme, because an export forces a
+    // white background whatever the page theme is, and its labels have to stay
+    // readable against that. Falls back to "light" for anything unparseable,
+    // which is the safer guess: the light palette is the darker of the two.
+    function bgIsDark(colour) {
+      var c = String(colour || '').trim();
+      var r, g, b, m;
+      if ((m = /^#([0-9a-f]{3})$/i.exec(c))) {
+        r = parseInt(m[1][0] + m[1][0], 16); g = parseInt(m[1][1] + m[1][1], 16); b = parseInt(m[1][2] + m[1][2], 16);
+      } else if ((m = /^#([0-9a-f]{6})$/i.exec(c))) {
+        r = parseInt(m[1].slice(0, 2), 16); g = parseInt(m[1].slice(2, 4), 16); b = parseInt(m[1].slice(4, 6), 16);
+      } else if ((m = /^rgba?[(]([^)]+)[)]$/i.exec(c))) {
+        var n = m[1].split(',').map(function (v) { return parseFloat(v); });
+        r = n[0]; g = n[1]; b = n[2];
+      } else {
+        return false;
+      }
+      if (!isFinite(r) || !isFinite(g) || !isFinite(b)) return false;
+      var f = function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+      return (0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)) < 0.18;
+    }
+    // The CPK hues are fixed: a chemist reads O as red and S as yellow, so the
+    // HUE never moves. Only its lightness does, and only where the fixed colour
+    // failed 4.5:1 on the background in hand. Anything NOT in the table fell
+    // back to a hardcoded #111, which on the dark card measures 1.14:1 - so the
+    // label was painted and unreadable. Everything reachable from the periodic
+    // table but missing here (Sn, Na, Zn, Al, Li, ...) hit that.
+    //
+    // The fallback is the caller's text colour rather than a constant because
+    // drawStructure also renders exports, and those force black-on-white on
+    // purpose. So this stays correct in both: the live --text on screen, and
+    // EXPORT_TEXT against an export's white background.
+    function elColor(el, fallback, dark) {
+      // Same hues, same saturation, different lightness: the only entries that
+      // move are the ones that failed 4.5:1 on that background. Br and I are
+      // untouched on light; S, F/Cl and Si/P/B are untouched on dark.
+      var colors = dark
+        ? { N: '#4085f6', NO2: '#4085f6', O: '#f04e4e', S: '#eab308', F: '#22c55e', Cl: '#22c55e', Br: '#c37608', I: '#9e6df2', Si: '#f97316', P: '#f97316', B: '#f97316' }
+        : { N: '#196cf4', NO2: '#196cf4', O: '#e71414', S: '#916f05', F: '#178640', Cl: '#178640', Br: '#a16207', I: '#7c3aed', Si: '#c25205', P: '#c25205', B: '#c25205' };
+      return colors[el] || fallback || '#111';
     }
 
     // Just the molecule itself - bonds, atom labels, charges, the repeat-unit
@@ -682,6 +770,8 @@
     // swapped-in offscreen or SVG-recording context so the exported file
     // always matches what's on screen pixel-for-pixel (line for line).
     function drawStructure(textColor, bgColor) {
+      // Decided once per draw, not per atom.
+      var darkBg = bgIsDark(bgColor);
       var styles = getComputedStyle(document.body);
       var primary = (styles.getPropertyValue('--primary') || '#2563eb').trim() || '#2563eb';
       arrows.forEach(function (ar) { drawArrow(ar, textColor); });
@@ -719,7 +809,7 @@
           var wSub = h > 1 ? ctx.measureText(String(h)).width : 0;
           ctx.fillStyle = bgColor;
           ctx.fillRect(a.x - wEl / 2 - 3, a.y - 9, wEl + wH + wSub + 6, 18);
-          ctx.fillStyle = elColor(a.el);
+          ctx.fillStyle = elColor(a.el, textColor, darkBg);
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
           var lx = a.x - wEl / 2;
@@ -1315,7 +1405,7 @@
         positions = [];
         for (var i = 0; i < n; i++) {
           var ang = startAngle + (i * 2 * Math.PI / n);
-          positions.push({ x: ringHoverPos.x + (BOND_LEN * 0.72) * Math.cos(ang), y: ringHoverPos.y + (BOND_LEN * 0.72) * Math.sin(ang) });
+          positions.push({ x: ringHoverPos.x + ringRadius(n) * Math.cos(ang), y: ringHoverPos.y + ringRadius(n) * Math.sin(ang) });
         }
       }
       ctx.save();
@@ -2527,6 +2617,9 @@
     // Panning is on the middle button and on space-drag, so it works in every
     // tool without stealing the left button from drawing.
     var panning = false, panFrom = null, spaceHeld = false;
+    // Drawing is a strong signal that a structure search is coming, so start
+    // warming the engine now rather than when the button is pressed.
+    canvas.addEventListener('pointerdown', prefetchRDKit, { once: true });
     canvas.addEventListener('mousedown', function (evt) {
       if (evt.button === 1 || (evt.button === 0 && spaceHeld)) {
         evt.preventDefault();
@@ -2699,6 +2792,40 @@
         return;
       }
       if (typing) return;
+
+      // Ring sizes on the number keys. The digits were completely unbound:
+      // the element hotkeys below only accept single letters, and only while
+      // an atom is hovered, so nothing collides. Seven ring buttons is a lot
+      // of trips to the toolbar when drawing a page of structures.
+      //
+      // A plain digit gives the plain ring of that size, so the rule is "N
+      // gives an N-membered ring" with nothing to remember. Benzene sits on
+      // Shift+6 - the same ring, aromatic - read from evt.code, because a
+      // shifted 6 arrives as "^" on a US layout and as something else
+      // elsewhere, while the physical key is what the shortcut means.
+      if (!evt.ctrlKey && !evt.metaKey && !evt.altKey && editorInView()) {
+        var ringDigit = /^Digit([3-8])$/.exec(evt.code || "");
+        if (ringDigit) {
+          var wantN = ringDigit[1];
+          var wantAromatic = evt.shiftKey && wantN === "6";
+          // Shift on any other digit is not a shortcut; leave it alone.
+          if (!evt.shiftKey || wantAromatic) {
+            var ringBtn = null;
+            document.querySelectorAll("[data-ring-n]").forEach(function (b) {
+              if (b.getAttribute("data-ring-n") !== wantN) return;
+              if ((b.getAttribute("data-ring-aromatic") === "true") === wantAromatic) ringBtn = b;
+            });
+            if (ringBtn) {
+              evt.preventDefault();
+              // Click the button rather than setting the mode here, so the
+              // pending ring, the active-button styling and anything else
+              // that handler does all stay in one place.
+              ringBtn.click();
+              return;
+            }
+          }
+        }
+      }
 
       // Delete/Backspace clears the selection. Without it, removing a group
       // means switching to the erase tool and clicking every atom in turn.
@@ -2978,6 +3105,8 @@
     if (zoomOutBtn) zoomOutBtn.addEventListener('click', function () { zoomAbout(canvas.width / 2, canvas.height / 2, 1 / 1.25); });
     var zoomResetBtn = document.getElementById('mol-zoom-reset');
     if (zoomResetBtn) zoomResetBtn.addEventListener('click', function () { resetView(); draw(); });
+    var zoomFitBtn = document.getElementById('mol-zoom-fit');
+    if (zoomFitBtn) zoomFitBtn.addEventListener('click', function () { fitToContent(); draw(); });
 
     // ---------- Repeat-unit extraction + search ----------
     // otherRects (optional): the other blocks' brackets in a copolymer. A pendant
@@ -3368,6 +3497,19 @@
     var rdkitPromise = null;
     var rdkitLib = null;
     var FP_OPTS = JSON.stringify({ radius: 2, nBits: 1024 });
+
+    // See the note above ensureRDKit: this only warms it, it never blocks.
+    var rdkitPrefetched = false;
+    function prefetchRDKit() {
+      if (rdkitPrefetched || rdkitPromise) return;
+      rdkitPrefetched = true;
+      // Respect a metered or slow connection, and an explicit data-saver.
+      var c = navigator.connection;
+      if (c && (c.saveData || /^(slow-)?2g$/.test(c.effectiveType || ''))) return;
+      var go = function () { try { ensureRDKit(); } catch (e) {} };
+      if (typeof requestIdleCallback === 'function') requestIdleCallback(go, { timeout: 3000 });
+      else setTimeout(go, 1200);
+    }
 
     function ensureRDKit() {
       if (rdkitPromise) return rdkitPromise;
@@ -6823,6 +6965,47 @@
     // atoms and explicit H are stripped from the query (containment shouldn't
     // care about drawn chain ends), while the library targets KEEP their
     // dummies, which act as repeat-unit boundary walls.
+    // Boolean containment over the library, with no engine to download.
+    // Stars and explicit hydrogens come off first, the same way the RDKit path
+    // prepares its query, so the two are asking the same question.
+    function nativeSubstructScan(frag) {
+      if (!PG.hasSubstructure || !frag.atoms.length) return null;
+      var db = window.POLYMER_DB || [];
+      var out = [];
+      for (var i = 0; i < db.length; i++) {
+        var p = db[i];
+        if (!p.atoms || !p.atoms.length || !p.bonds) continue;
+        try {
+          if (PG.hasSubstructure(p.atoms, p.bonds, frag.atoms, frag.bonds)) out.push(p);
+        } catch (e) { /* a unit this matcher cannot read is not a match */ }
+      }
+      return out;
+    }
+
+    // The provisional list. Deliberately plain: no shading, no occurrence
+    // count, no coverage, because those are the things only RDKit knows and
+    // promising them here then changing them would be worse than waiting.
+    function renderNativeSubstructPreview(list, statusEl) {
+      var resultsEl = document.getElementById('mol-results');
+      if (!resultsEl) return;
+      var idEl = document.getElementById('mol-identify');
+      if (idEl) { idEl.hidden = true; idEl.innerHTML = ''; }
+      resultsEl.innerHTML = list.map(function (p) {
+        return '<div class="mol-sim-item">' + polymerCard(p) + '</div>';
+      }).join('');
+      // Deliberately 'candidates', not an answer. This pass ignores hydrogen
+      // counts and matches the closed repeat unit, so it casts a wider net than
+      // the chemical match that is about to replace it: the styrene example
+      // gives 10 here and 5 once RDKit lands. Claiming the larger number as a
+      // result and then halving it would read as a bug.
+      statusEl.innerHTML = list.length
+        ? list.length + ' candidate' + (list.length === 1 ? '' : 's') +
+          ' from an exact structure-graph match, shown while the chemistry engine loads. ' +
+          '<em>The chemical match is stricter and will usually narrow this.</em>'
+        : 'Nothing matches on an exact structure-graph pass. ' +
+          '<em>Loading the chemistry engine, which matches more loosely and may still find something&hellip;</em>';
+    }
+
     function runSubstructureSearch() {
       var statusEl = document.getElementById('mol-status');
       if (!statusEl) return;
@@ -6831,8 +7014,24 @@
         renderResults([]);
         return;
       }
-      statusEl.textContent = rdkitPromise ? 'Searching for polymers containing this fragment…'
-        : 'Loading the structure-matching engine (about 7 MB, one time; it stays cached)…';
+      // Prepare the query once, here, so the instant pass and RDKit both see
+      // the same fragment rather than two slightly different preparations.
+      var preEx = expandSuperatoms(atoms, bonds);
+      var preSt = stripStars(preEx.atoms, preEx.bonds);
+      var preH = {};
+      preSt.atoms.forEach(function (a) { if (a.el === 'H') preH[a.id] = 1; });
+      var preFrag = {
+        atoms: preSt.atoms.filter(function (a) { return !preH[a.id]; }),
+        bonds: preSt.bonds.filter(function (b) { return !preH[b.a] && !preH[b.b]; })
+      };
+      var alreadyLoaded = !!rdkitPromise;
+      if (!alreadyLoaded) {
+        var quick = nativeSubstructScan(preFrag);
+        if (quick) renderNativeSubstructPreview(quick, statusEl);
+        else statusEl.textContent = 'Loading the structure-matching engine (about 7 MB, one time; it stays cached)…';
+      } else {
+        statusEl.textContent = 'Searching for polymers containing this fragment…';
+      }
       ensureRDKit().then(function (RDKit) {
         var ex = expandSuperatoms(atoms, bonds);
         var st = stripStars(ex.atoms, ex.bonds);
@@ -7246,6 +7445,20 @@
         // worth indexing: "tactic" finds the 441 chains where the question even
         // arises, "isotactic" finds the entries that answer it.
         if (tacticityState(p) === 'capable') terms.push('can be tactic');
+        // What the unit CONTAINS, anywhere in it, which is a different
+        // question from what the backbone is made of and deliberately worded
+        // so the two chips cannot be confused: polyacrylamide contains an
+        // amide and has no backbone amide, nylon 6,6 has both. Matched on the
+        // closed repeat unit, so a linkage that straddles the drawn bracket
+        // still counts.
+        if (PG.FRAGMENTS && PG.hasSubstructure) {
+          Object.keys(PG.FRAGMENTS).forEach(function (k) {
+            var q = PG.FRAGMENTS[k];
+            try {
+              if (PG.hasSubstructure(p.atoms, p.bonds, q.atoms, q.bonds, q.openOnly)) terms.push(facetNorm('contains ' + k));
+            } catch (e1) { /* a malformed unit is not a match */ }
+          });
+        }
       }
       if (p.tacticity) {
         terms.push(facetNorm(p.tacticity));
@@ -7260,7 +7473,7 @@
     function facetIndex() {
       if (facetIndexCache) return facetIndexCache;
       var db = window.POLYMER_DB || [];
-      var tagCount = {}, clsCount = {}, bbCount = {};
+      var tagCount = {}, clsCount = {}, bbCount = {}, hasCount = {};
       db.forEach(function (p) {
         (p.tags || []).forEach(function (t) {
           var k = facetNorm(t);
@@ -7270,13 +7483,15 @@
         facetTermsOf(p).forEach(function (t) {
           if (t.indexOf('backbone ') === 0) bbCount[t] = (bbCount[t] || 0) + 1;
           if (t === 'can be tactic') bbCount[t] = (bbCount[t] || 0) + 1;
+          if (t.indexOf('contains ') === 0) hasCount[t] = (hasCount[t] || 0) + 1;
         });
       });
       function toList(obj) {
         return Object.keys(obj).map(function (k) { return { term: k, n: obj[k] }; })
           .sort(function (a, b) { return b.n - a.n || (a.term < b.term ? -1 : 1); });
       }
-      facetIndexCache = { tags: toList(tagCount), classes: toList(clsCount), backbone: toList(bbCount) };
+      facetIndexCache = { tags: toList(tagCount), classes: toList(clsCount),
+        backbone: toList(bbCount), contains: toList(hasCount) };
       return facetIndexCache;
     }
 
@@ -7623,11 +7838,23 @@
         return activeFacets.every(function (t) { return termMatches(p, t); });
       });
       renderFacetBar();
+      // "288 polymers are Contains ester" is not a sentence. A facet that
+      // already carries its own verb reads as one when the template stops
+      // supplying a second: "288 polymers contain ester".
+      var allContains = activeFacets.length &&
+        activeFacets.every(function (t) { return t.indexOf('contains ') === 0; });
+      var facetPhrase = allContains
+        ? activeFacets.map(function (t) { return facetLabel(t.replace(/^contains /, '')); }).join(' + ')
+        : activeFacets.map(facetLabel).join(' + ');
       renderFacetResults(list, statusEl,
         list.length
-          ? list.length + ' ' + (list.length === 1 ? 'polymer is' : 'polymers are') + ' ' +
-            activeFacets.map(facetLabel).join(' + ') + ':'
-          : 'Nothing is ' + activeFacets.map(facetLabel).join(' + ') + '. Remove a filter to widen it.');
+          ? list.length + ' ' +
+            (allContains
+              ? (list.length === 1 ? 'polymer contains' : 'polymers contain')
+              : (list.length === 1 ? 'polymer is' : 'polymers are')) +
+            ' ' + facetPhrase + ':'
+          : (allContains ? 'Nothing contains ' : 'Nothing is ') + facetPhrase +
+            '. Remove a filter to widen it.');
     }
 
     function chipButton(term, count, on) {
@@ -7697,6 +7924,28 @@
           bbRow.appendChild(chip);
         });
         wrap.appendChild(bbRow);
+      }
+
+      // A neighbouring question to the one above, and deliberately not the
+      // same row: the backbone chips say what the chain is made OF, these say
+      // what the repeat unit HAS anywhere in it, backbone or hanging off.
+      // Both are read off the structure; neither is declared anywhere.
+      var hasList = (idx.contains || []).filter(function (b) { return b.n >= 5; });
+      if (hasList.length) {
+        var hasRow = document.createElement("div");
+        hasRow.className = "mol-facet-row";
+        var hasLab = document.createElement("span");
+        hasLab.className = "mol-recent-label";
+        hasLab.textContent = "Groups anywhere in the unit:";
+        hasRow.appendChild(hasLab);
+        hasList.forEach(function (f) {
+          var chip = chipButton(f.term, f.n, activeFacets.indexOf(f.term) !== -1);
+          chip.textContent = facetLabel(f.term.replace(/^contains /, "")) + " " + f.n;
+          chip.title = f.n + " polymers contain this group somewhere in the repeat unit, " +
+            "found by matching the structure rather than by any tag";
+          hasRow.appendChild(chip);
+        });
+        wrap.appendChild(hasRow);
       }
 
       var more = document.createElement('button');
@@ -8296,6 +8545,16 @@
       var rad = angleDeg * Math.PI / 180;
       return { x: anchor.x + BOND_LEN * Math.cos(rad), y: anchor.y + BOND_LEN * Math.sin(rad) };
     }
+    // Whatever loadExample does after drawing - history, redraw, fit - the
+    // fragment branches need too, so they call this instead of duplicating it.
+    function finishExample() {
+      draw();
+      var statusEl = document.getElementById('mol-status');
+      if (statusEl) statusEl.textContent =
+        'Fragment loaded. Click "Contains fragment" to find every polymer whose repeat unit has it.';
+      renderResults([]);
+    }
+
     function loadExample(key) {
       snapshot();
       atoms = []; bonds = []; brackets = []; selectedAtom = null; selectedGroup = []; nextAtomId = 1; nextBondId = 1;
@@ -8303,6 +8562,43 @@
       // Each example draws a stub atom just outside the bracket on both ends,
       // standing in for the neighboring repeat units, so the two bonds that
       // cross the bracket edge are real (matching what the extractor needs).
+      // Fragment examples: no stubs, no bracket. These pair with "Contains
+      // fragment", where a whole repeat unit is the wrong question to ask.
+      if (key === 'frag-ester') {
+        var e0 = addAtom('C', cx - 90, cy + 20);
+        var e1 = addAtom('C', cx - 30, cy - 10);          // the carbonyl carbon
+        var eO = addAtom('O', cx - 30, cy - 75);          // =O, straight up
+        var eE = addAtom('O', cx + 30, cy + 20);          // the ester oxygen
+        var e2 = addAtom('C', cx + 90, cy - 10);
+        addBond(e0.id, e1.id, 1);
+        addBond(e1.id, eO.id, 2);
+        addBond(e1.id, eE.id, 1);
+        addBond(eE.id, e2.id, 1);
+        return finishExample();
+      }
+      if (key === 'frag-amide') {
+        var a0 = addAtom('C', cx - 90, cy + 20);
+        var a1 = addAtom('C', cx - 30, cy - 10);
+        var aO = addAtom('O', cx - 30, cy - 75);
+        var aN = addAtom('N', cx + 30, cy + 20);
+        var a2 = addAtom('C', cx + 90, cy - 10);
+        addBond(a0.id, a1.id, 1);
+        addBond(a1.id, aO.id, 2);
+        addBond(a1.id, aN.id, 1);
+        addBond(aN.id, a2.id, 1);
+        return finishExample();
+      }
+      if (key === 'frag-benzene') {
+        // A plain Kekule hexagon. Either alternation finds the same rings,
+        // because the matcher is free to rotate the mapping round the ring.
+        var ring = [], k;
+        for (k = 0; k < 6; k++) {
+          var ang = (Math.PI / 180) * (60 * k - 90);
+          ring.push(addAtom('C', cx + Math.cos(ang) * BOND_LEN, cy + Math.sin(ang) * BOND_LEN));
+        }
+        for (k = 0; k < 6; k++) addBond(ring[k].id, ring[(k + 1) % 6].id, k % 2 === 0 ? 2 : 1);
+        return finishExample();
+      }
       if (key === 'pe') {
         var p0 = { x: cx - 130, y: cy + 10 };
         var stubA = addAtom('C', p0.x, p0.y);
@@ -8332,7 +8628,7 @@
         // give it room to fit inside the bracket.
         var psAngle = Math.PI / 2;
         var ringPositions = ringVertexPositions(b2, psAngle, 6);
-        var ringR = BOND_LEN * 0.72;
+        var ringR = ringRadius(6);
         var ringIpso = { x: b2.x + BOND_LEN * Math.cos(psAngle), y: b2.y + BOND_LEN * Math.sin(psAngle) };
         var psRingCenter = { x: ringIpso.x + ringR * Math.cos(psAngle), y: ringIpso.y + ringR * Math.sin(psAngle) };
         var ids = ringPositions.map(function (p) { return addAtom('C', p.x, p.y).id; });
@@ -8391,13 +8687,17 @@
         var chainYs = chain.map(function (a) { return a.y; }).concat([oAtom.y]);
         brackets = [{ x1: n1.x - 20, y1: Math.min.apply(null, chainYs) - 15, x2: carbonyl.x + 20, y2: Math.max.apply(null, chainYs) + 15 }];
       }
+      // The example is laid out at fixed coordinates around the canvas centre,
+      // so a zoom or pan left from the previous drawing crops it - the same
+      // reason the SMILES import resets the view before placing its atoms.
+      resetView();
       draw();
       var statusEl = document.getElementById('mol-status');
       if (statusEl) statusEl.textContent = 'Example loaded. Click "Search this structure" to see it matched.';
       renderResults([]);
     }
     document.querySelectorAll('.mol-example-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () { loadExample(btn.getAttribute('data-example')); });
+      btn.addEventListener('click', function () { prefetchRDKit(); loadExample(btn.getAttribute('data-example')); });
     });
 
     new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });

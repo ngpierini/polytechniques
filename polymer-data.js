@@ -43,7 +43,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §8-11a"
     },
     name: "Polypropylene", aka: ["PP", "polypropene"], monomer: "Propylene",
-    cls: "Addition (vinyl)", cas: "9003-07-0", tg: "-10 °C", tm: "165 °C (isotactic)",
+    cls: "Addition (vinyl)", cas: "9003-07-0", tg: "-10 °C", tm: "165 °C (isotactic)", tmSource: "Odian, Principles of Polymerization, 4th ed., Sec. 8-2a-1 (p. 633), which calls isotactic polypropene a high-melting (165 °C), strong, crystalline polymer. Odian's Table 1-3 prints 176 °C without naming a tacticity.",
     tags: ["commodity", "packaging"],
     note: "The melting point here is for ordinary commercial isotactic PP; Odian's Table 1-3 gives 176 °C, which is closer to the perfectly isotactic crystal than to a moulding grade. The glass transition moves with tacticity too — that table quotes −1 °C against the −10 °C here.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -212,7 +212,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(ethyl acrylate)", aka: ["PEA"], monomer: "Ethyl acrylate", cls: "Addition (acrylate)",
-    cas: "9003-32-1", tg: "-24 °C", tags: ["acrylic"],
+    cas: "9003-32-1", tg: "-24 °C", tgSource: "Odian, Principles of Polymerization, 4th ed., Sec. 3-14d-1 (p. 307), which gives poly(ethyl acrylate) a Tg of -24 °C in the text rather than in a table.", tags: ["acrylic"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "O" }, { id: 5, el: "O" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 2 }, { a: 3, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 2, b: "S1", order: 1 }]
   },
@@ -306,7 +306,7 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §8-10b, §8-10d, §8-11g"
     },
     name: "Polybutadiene (cis-1,4)", aka: ["BR", "butadiene rubber"], monomer: "1,3-Butadiene", cls: "Addition (diene)",
-    cas: "9003-17-2", tg: "-100 °C", tm: "6 °C", tags: ["elastomer"],
+    cas: "9003-17-2", tg: "-100 °C", tm: "6 °C", tmSource: "Odian, Principles of Polymerization, 4th ed., Table 8-1 (p. 633), which tabulates Brandrup et al. (1999). Transcribed from the page image, because a -layout text extraction collapses the two isomer rows under one polymer name.", tags: ["elastomer"],
     note: "The trans-1,4 isomer is markedly more crystalline (Tg near -83 °C, Tm near 145 °C, Odian's Table 8-1). Sources spread on the cis Tg: Odian's Table 8-1 gives -95 °C where -100 °C is also widely quoted, and the real value moves with cis content, so treat anything in that range as the same material rather than a disagreement.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2, stereo: "cis" }, { a: 3, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }]
@@ -314,7 +314,7 @@ window.POLYMER_DB = [
   {
     name: "Polybutadiene (trans-1,4)", aka: ["TPB", "trans-polybutadiene", "trans-1,4-BR"],
     monomer: "1,3-Butadiene", cls: "Addition (diene)", cas: null,
-    tg: "-83 °C", tm: "145 °C", tags: ["elastomer", "specialty"],
+    tg: "-83 °C", tgSource: "Odian, Principles of Polymerization, 4th ed., Table 8-1 (p. 633), which tabulates Brandrup et al. (1999). Transcribed from the page image, because a -layout text extraction collapses the two isomer rows under one polymer name.", tm: "145 °C", tmSource: "Odian, Principles of Polymerization, 4th ed., Table 8-1 (p. 633), which tabulates Brandrup et al. (1999). Transcribed from the page image, because a -layout text extraction collapses the two isomer rows under one polymer name.", tags: ["elastomer", "specialty"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 2, stereo: "trans" }, { a: 3, b: 4, order: 1 }, { a: 4, b: "S1", order: 1 }],
     note: "The same four carbons as butadiene rubber with the double bond the other way round, and a 139 C higher melting point for it: the trans chain is symmetric enough to crystallise, so this is a hard thermoplastic rather than an elastomer. Tg and Tm from Odian's Table 8-1. Commercial \"polybutadiene rubber\" is the cis isomer; the trans form turns up in golf-ball cores and as a crystallising component in tyre compounds."
@@ -347,7 +347,7 @@ window.POLYMER_DB = [
     },
     name: "Polyoxymethylene", aka: ["POM", "acetal", "Delrin"], monomer: "Trioxane (or formaldehyde)", cls: "Ring-opening",
     noScheme: "polymerised from trioxane, which is three of these repeat units in one ring, so closing a single unit would draw a two-membered ring rather than the six-membered monomer that was actually charged",
-    cas: "9002-81-7", tg: "-60 °C", tm: "175 °C", tags: ["engineering"],
+    cas: "9002-81-7", tg: "-60 °C", tm: "175 °C", tmSource: "Odian, Principles of Polymerization, 4th ed., Sec. 5-6d (p. 448), which gives POM a Tm of 175 °C in the text. Odian's own Table 1-3 prints 181 °C for the same polymer; the text figure is the one quoted here.", tags: ["engineering"],
     note: "Made two ways: cationic ring-opening copolymerization of trioxane (the tougher acetal copolymer) or anionic chain polymerization of formaldehyde (the Delrin homopolymer). Standard tables (Brandrup/Odian) list Tg near -83 °C and Tm near 181 °C.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: "S1", order: 1 }]
@@ -844,8 +844,8 @@ window.POLYMER_DB = [
     },
     name: "Poly(ether ether ketone)", aka: ["PEEK"], monomer: "4,4'-Difluorobenzophenone + hydroquinone",
     noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
-    cas: "31694-16-3", tg: "143 °C", tm: "343 °C", tags: ["engineering"],
-    note: "High-performance semicrystalline thermoplastic; three aryl rings per repeat.",
+    cas: "31694-16-3", tg: "143 °C", tgSource: "Odian, Principles of Polymerization, 4th ed., Sec. 2-14c (p. 150), which states that PEEK and PEK have glass transition temperatures of 143 and 165 °C respectively. The melting point here is not Odian's; see the note.", tm: "343 °C", tmSource: "Victrex, VICTREX PEEK POLYMER 450G technical data sheet, Thermal: melting temperature 343 °C by ISO 11357-3, glass transition 143 °C onset / 150 °C midpoint by ISO 11357-2. Read from the rendered page, because the extraction shifts this table's values against their labels.", tags: ["engineering"],
+    note: "High-performance semicrystalline thermoplastic; three aryl rings per repeat. The two available sources disagree on the melting point: Odian prints 334 °C (Sec. 2-14c, p. 150) where Victrex, who invented the polymer, publishes 343 °C against ISO 11357-3. The datasheet figure is the one used here. Note also that its 143 °C glass transition is the DSC <em>onset</em>; the midpoint on the same sheet is 150 °C, which is worth knowing before comparing this number with someone else's.",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
       { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" },
       { id: 15, el: "C" }, { id: 16, el: "O" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -910,7 +910,7 @@ window.POLYMER_DB = [
     },
     name: "Poly(ether sulfone)", aka: ["PES", "PESU"], monomer: "4,4'-Dichlorodiphenyl sulfone + hydroquinone",
     noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
-    cas: "25608-63-3", tg: "225 °C", tags: ["engineering"],
+    cas: "25608-63-3", tg: "225 °C", tgSource: "BASF, Ultrason E, S, P (PESU, PSU, PPSU) Product Brochure, Thermal properties (p. 21), which gives glass transition temperatures of 187 °C for Ultrason S (PSU), 220 °C for Ultrason P (PPSU) and 225 °C for Ultrason E (PESU). A product-family figure, not a single grade.", tags: ["engineering"],
     note: "Amorphous, transparent high-temperature thermoplastic; the sulfone group stiffens the chain.",
     atoms: [{ id: 1, el: "O" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
       { id: 8, el: "S" }, { id: 9, el: "O" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -1949,7 +1949,7 @@ window.POLYMER_DB = [
       detail: "Nucleophilic aromatic substitution between an aromatic dihalide and a bisphenolate salt. Aryl halides are not normally reactive towards nucleophilic substitution at all; the electron-withdrawing sulfone group is what makes it facile. The bisphenolate is formed in situ by adding the bisphenol together with sodium or another alkali metal carbonate or hydroxide. Polysulfones are made from aromatic dichlorides in a polar aprotic solvent such as 1-methyl-2-pyrrolidinone or dimethyl sulfoxide, which raises the nucleophilicity of the phenoxide by solvating the cation preferentially and not the anion. Reaction temperatures of 130–160 °C are used mainly because the diphenolate salt is poorly soluble. The system has to be dry: water hydrolyses the phenolate salt to sodium hydroxide, which then reacts with the aromatic dichloride and alters the stoichiometric ratio that a step polymerisation depends on. It is run in the absence of oxygen to keep the bisphenolate from oxidising. Molar mass is capped with an excess of a monohydric phenol or a monochloroalkane.",
       source: "Odian, Principles of Polymerization (4th ed.), §2-14c"
     },
-    name: "Polysulfone", aka: ["PSU", "polysulfone (bisphenol A)", "Udel"],
+    name: "Polysulfone", tg: "187 °C", tgSource: "BASF, Ultrason E, S, P (PESU, PSU, PPSU) Product Brochure, Thermal properties (p. 21), which gives glass transition temperatures of 187 °C for Ultrason S (PSU), 220 °C for Ultrason P (PPSU) and 225 °C for Ultrason E (PESU). A product-family figure, not a single grade.", aka: ["PSU", "polysulfone (bisphenol A)", "Udel"],
     noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "bisphenol A + 4,4'-dichlorodiphenyl sulfone", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
@@ -2978,7 +2978,7 @@ window.POLYMER_DB = [
     note: "One repeat is a whole bisphenol A dianhydride residue joined to one m-phenylenediamine residue, which is why it is so large: two phthalimide rings, the two ether oxygens that give the \"ether\" in the name, the bisphenol A bridge, and a meta-linked benzene. The ether links and the meta substitution are what make it processable at all - a fully para, ether-free polyimide of this kind does not melt below its decomposition point, and Ultem trades a little heat resistance for the ability to be injection moulded."
   },
   {
-    name: "Polyphenylsulfone", aka: ["PPSU", "Radel", "poly(phenyl sulfone)"],
+    name: "Polyphenylsulfone", tg: "220 °C", tgSource: "BASF, Ultrason E, S, P (PESU, PSU, PPSU) Product Brochure, Thermal properties (p. 21), which gives glass transition temperatures of 187 °C for Ultrason S (PSU), 220 °C for Ultrason P (PPSU) and 225 °C for Ultrason E (PESU). A product-family figure, not a single grade.", aka: ["PPSU", "Radel", "poly(phenyl sulfone)"],
     noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
     monomer: "4,4'-biphenol + 4,4'-dichlorodiphenyl sulfone", cls: "Step-growth (polyester)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
@@ -3129,7 +3129,7 @@ window.POLYMER_DB = [
     monomer: "isoprene (trans-1,4 addition)", cls: "Addition (diene)", cas: null,
     tags: ["biopolymer", "specialty"],
     verified: true,
-    tg: "-58 °C", tm: "74 °C",
+    tg: "-58 °C", tgSource: "Odian, Principles of Polymerization, 4th ed., Table 8-1 (p. 633), which tabulates Brandrup et al. (1999). Transcribed from the page image, because a -layout text extraction collapses the two isomer rows under one polymer name.", tm: "74 °C", tmSource: "Odian, Principles of Polymerization, 4th ed., Table 8-1 (p. 633), which tabulates Brandrup et al. (1999). Transcribed from the page image, because a -layout text extraction collapses the two isomer rows under one polymer name.",
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 2, stereo: "trans" }, { a: 4, b: 5, order: 1 }, { a: 5, b: "S1", order: 1 }],
     note: "Natural rubber's geometric isomer, and nothing like it. The trans double bond lets the chains pack into a crystal, so gutta-percha is a hard, non-elastic solid at room temperature where cis-polyisoprene is a rubber - the same atoms, the same connectivity, one double bond facing the other way. It was the insulation on the first transatlantic cables and is still used to fill root canals. Tg and Tm from Odian Table 8-1."

@@ -32,13 +32,13 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=30" defer></script>
+<script src="nav.js?v=34" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=106">
+<link rel="stylesheet" href="style.css?v=123">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -173,6 +173,9 @@
         <button type="button" id="mol-zoom-reset" class="mol-icon-btn" title="Reset zoom and position" aria-label="Reset the view">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="13" height="13" rx="1.5"/><line x1="3.5" y1="8" x2="16.5" y2="8"/></svg>
         </button>
+        <button type="button" id="mol-zoom-fit" class="mol-icon-btn" title="Fit the whole drawing in view" aria-label="Fit the drawing in view">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5V4.5H7.5"/><path d="M12.5 4.5H16.5V7.5"/><path d="M16.5 12.5V16.5H12.5"/><path d="M7.5 16.5H3.5V12.5"/><path d="M7 11.5L10 8.5L13 11.5"/></svg>
+        </button>
         <button type="button" id="mol-clear" class="mol-icon-btn" title="Clear the canvas" aria-label="Clear the canvas">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M8 6V4h4v2M6 6l1 11h6l1-11"/></svg>
         </button>
@@ -196,13 +199,13 @@
       <input type="text" id="mol-custom-el" class="mol-custom-el" placeholder="Other&hellip;" title="Type any element symbol, then press Enter">
       <span class="mol-tool-divider"></span>
       <div class="mol-tool-cluster">
-        <button type="button" id="mol-ring-3" class="mol-mode-btn" data-mode="ring" data-ring-n="3" title="Cyclopropane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate." aria-label="Cyclopropane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 15.06,12.5 2.94,12.5"/></svg></button>
-        <button type="button" id="mol-ring-4" class="mol-mode-btn" data-mode="ring" data-ring-n="4" title="Cyclobutane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate." aria-label="Cyclobutane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 16,9 9,16 2,9"/></svg></button>
-        <button type="button" id="mol-ring-5" class="mol-mode-btn" data-mode="ring" data-ring-n="5" title="Cyclopentane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate." aria-label="Cyclopentane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 15.66,6.84 13.11,14.66 4.89,14.66 2.34,6.84"/></svg></button>
-        <button type="button" id="mol-ring-6" class="mol-mode-btn" data-mode="ring" data-ring-n="6" title="Cyclohexane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate." aria-label="Cyclohexane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 15.06,5.5 15.06,12.5 9,16 2.94,12.5 2.94,5.5"/></svg></button>
-        <button type="button" id="mol-ring-7" class="mol-mode-btn" data-mode="ring" data-ring-n="7" title="Cycloheptane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate." aria-label="Cycloheptane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 14.47,4.64 15.83,10.56 12.04,15.31 5.96,15.31 2.17,10.56 3.53,4.64"/></svg></button>
-        <button type="button" id="mol-ring-8" class="mol-mode-btn" data-mode="ring" data-ring-n="8" title="Cyclooctane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate." aria-label="Cyclooctane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 13.95,4.05 16,9 13.95,13.95 9,16 4.05,13.95 2,9 4.05,4.05"/></svg></button>
-        <button type="button" id="mol-ring-benzene" class="mol-mode-btn" data-mode="ring" data-ring-n="6" data-ring-aromatic="true" title="Benzene: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate." aria-label="Benzene ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor"><polygon points="9,2 15.06,5.5 15.06,12.5 9,16 2.94,12.5 2.94,5.5" stroke-width="1.4"/><circle cx="9" cy="9" r="3.1" stroke-width="1.1"/></svg></button>
+        <button type="button" id="mol-ring-3" class="mol-mode-btn" data-mode="ring" data-ring-n="3" title="Cyclopropane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate. Shortcut: 3." aria-label="Cyclopropane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 15.06,12.5 2.94,12.5"/></svg></button>
+        <button type="button" id="mol-ring-4" class="mol-mode-btn" data-mode="ring" data-ring-n="4" title="Cyclobutane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate. Shortcut: 4." aria-label="Cyclobutane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 16,9 9,16 2,9"/></svg></button>
+        <button type="button" id="mol-ring-5" class="mol-mode-btn" data-mode="ring" data-ring-n="5" title="Cyclopentane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate. Shortcut: 5." aria-label="Cyclopentane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 15.66,6.84 13.11,14.66 4.89,14.66 2.34,6.84"/></svg></button>
+        <button type="button" id="mol-ring-6" class="mol-mode-btn" data-mode="ring" data-ring-n="6" title="Cyclohexane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate. Shortcut: 6." aria-label="Cyclohexane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 15.06,5.5 15.06,12.5 9,16 2.94,12.5 2.94,5.5"/></svg></button>
+        <button type="button" id="mol-ring-7" class="mol-mode-btn" data-mode="ring" data-ring-n="7" title="Cycloheptane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate. Shortcut: 7." aria-label="Cycloheptane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 14.47,4.64 15.83,10.56 12.04,15.31 5.96,15.31 2.17,10.56 3.53,4.64"/></svg></button>
+        <button type="button" id="mol-ring-8" class="mol-mode-btn" data-mode="ring" data-ring-n="8" title="Cyclooctane: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate. Shortcut: 8." aria-label="Cyclooctane ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="9,2 13.95,4.05 16,9 13.95,13.95 9,16 4.05,13.95 2,9 4.05,4.05"/></svg></button>
+        <button type="button" id="mol-ring-benzene" class="mol-mode-btn" data-mode="ring" data-ring-n="6" data-ring-aromatic="true" title="Benzene: click an atom to fuse there, a bond to ring-fuse, or empty space for free-standing. Scroll to rotate. Shortcut: Shift+6." aria-label="Benzene ring tool"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor"><polygon points="9,2 15.06,5.5 15.06,12.5 9,16 2.94,12.5 2.94,5.5" stroke-width="1.4"/><circle cx="9" cy="9" r="3.1" stroke-width="1.1"/></svg></button>
       </div>
     </div>
 
@@ -310,6 +313,12 @@
         <button type="button" class="mol-example-btn copy-btn" data-example="pe">Polyethylene</button>
         <button type="button" class="mol-example-btn copy-btn" data-example="ps">Polystyrene</button>
         <button type="button" class="mol-example-btn copy-btn" data-example="nylon6">Nylon 6</button>
+      </div>
+      <div class="mol-tool-cluster">
+        <span class="mol-toolbar-label" title="These draw a group rather than a whole repeat unit, which is what the Contains fragment button is for">Fragments</span>
+        <button type="button" class="mol-example-btn copy-btn" data-example="frag-ester">Ester</button>
+        <button type="button" class="mol-example-btn copy-btn" data-example="frag-amide">Amide</button>
+        <button type="button" class="mol-example-btn copy-btn" data-example="frag-benzene">Benzene</button>
       </div>
       <div class="mol-tool-cluster">
         <button type="button" id="mol-photo-btn" class="copy-btn" hidden title="Upload a photo of a structure (from a paper, label, or hand drawing) and have it read into the editor">&#128247; From photo</button>
@@ -427,20 +436,30 @@
   </div>
 
 
+  <div class="card">
+    <h3>Where to take a result</h3>
+    <ul class="guide-list">
+      <li><a href="polymer-families.html">Polymer families</a>. The same library arranged by chemistry rather than searched, if you would rather browse than ask.</li>
+      <li><a href="calculator.html">Calculator</a>. Turn a monomer you found here into a recipe with a molecular weight target.</li>
+      <li><a href="thermal-analysis.html">Thermal analysis</a>. What the Tg and Tm on a card mean, and how they were measured.</li>
+      <li><a href="chain-dimensions.html">Chain dimensions</a>. How big one of these chains actually is in solution.</li>
+    </ul>
+  </div>
+
 </main>
 
 <footer class="footer">
   <p>Reagent data and lab guidance are references for convenience. Always verify against your reagent's COA and your institution's safety protocols.</p>
 </footer>
 
-<script src="polymer-data.js?v=65"></script>
+<script src="polymer-data.js?v=67"></script>
 <script src="polymer-xref.js?v=3"></script>
 <script src="monomer-data.js?v=4"></script>
-<script src="polymer-graph.js?v=17"></script>
+<script src="polymer-graph.js?v=21"></script>
 <script src="bracket-geometry.js?v=1"></script>
 <script src="superatoms.js?v=1"></script>
 <script src="ocr-decoders.js?v=1"></script>
-<script src="polymer-search.js?v=206"></script>
+<script src="polymer-search.js?v=220"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });

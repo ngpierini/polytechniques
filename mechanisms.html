@@ -31,13 +31,13 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=30" defer></script>
+<script src="nav.js?v=34" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=106">
+<link rel="stylesheet" href="style.css?v=123">
 <style>
   /* Subtle motion on the emulsion figure: monomer streams toward the
      particles and the entering radical gently pulses. Disabled for users
@@ -704,6 +704,13 @@
 
     <p class="guide-note">
       Because nucleation is essentially over once the micelles run out, the particle count set during that short window determines the final particle size for the rest of the reaction: the same total polymer volume divided among however many particles got started. That's the whole basis for the calculator's emulsion tab, which estimates that particle count from the surfactant and initiator charge (Smith-Ewart theory) and then reports the final diameter from a simple mass balance. Everything downstream of nucleation (propagation, transfer, termination) is ordinary free radical chemistry; the physics of getting a chain started is the only genuinely new mechanism here. This micellar picture holds when surfactant is well above its CMC; for styrene and MMA it accounts for over 99% of the particles. Below the CMC, or for more water-soluble monomers, a second route takes over: homogeneous nucleation, where oligomers growing in the water phase eventually become insoluble, precipitate, and pick up surfactant to become particles in their own right.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>The same pieces, at speed</h3>
+    <p class="guide-note">
+      Every mechanism above turns on the same handful of roles: something that starts a chain, something that adds to it, something that ends it, and something that hands it on. <a href="polymer-chain-game.html">Build a Polymer Chain</a> is those roles as an arcade game. You collect monomer to grow, avoid the inhibitor, and a chain transfer agent ends your chain and starts a new one, which is the one rule in it that is also the one idea behind controlled radical polymerization.
     </p>
   </div>
 

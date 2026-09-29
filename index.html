@@ -35,13 +35,13 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=30" defer></script>
+<script src="nav.js?v=34" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=106">
+<link rel="stylesheet" href="style.css?v=123">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 <style>
   /* ---- Arcade band ----
@@ -53,7 +53,7 @@
      what tells you it is one. */
   .arcade {
     display: grid;
-    grid-template-columns: minmax(260px, 400px) 1fr;
+    grid-template-columns: minmax(min(260px, 100%), 400px) 1fr;
     gap: 28px;
     align-items: center;
     padding: 22px;
@@ -98,7 +98,11 @@
   /* The same NES menu block as the button on the game's own title screen. */
   .arcade-btn {
     display: inline-block;
-    background: #d13b2e; color: #ffe14d;
+    /* #b63328 rather than the original #d13b2e: the lightest red that gets
+       this yellow to 4.62:1. On the old red the label was 3.69:1, and
+       2.97:1 while hovered - and no label colour at all clears 4.5 on that
+       hover red, not even white, so the face had to darken. */
+    background: #b63328; color: #ffe14d;
     font-weight: 800; font-size:var(--fs-sm); letter-spacing: 0.08em;
     text-transform: uppercase;
     padding: 12px 20px 14px;
@@ -109,7 +113,16 @@
       0 6px 0 0 #0b0e17;
     margin-bottom: 6px;
   }
-  .arcade:hover .arcade-btn { background: #e8492f; }
+  /* Hover brightens the bevel highlight rather than the face. Lightening the
+     red is what dropped the label to 2.97:1, and any red light enough to
+     read as lit-up does that again. */
+  .arcade:hover .arcade-btn {
+    box-shadow:
+      inset 4px 4px 0 0 #ffb9a4,
+      inset -4px -4px 0 0 #8f1f12,
+      0 0 0 4px #0b0e17,
+      0 6px 0 0 #0b0e17;
+  }
   .arcade:active .arcade-btn { transform: translateY(3px); box-shadow: inset 4px 4px 0 0 #ff8f73, inset -4px -4px 0 0 #7d1a10, 0 0 0 4px #0b0e17, 0 3px 0 0 #0b0e17; }
 
   @media (max-width: 760px) {
@@ -148,7 +161,7 @@
 <main class="home-body">
 
   <div class="home-feature-pair">
-    <a class="home-card home-card--feature" href="calculator.html" style="--card-accent:#5b8def">
+    <a class="home-card home-card--feature accent-blue" href="calculator.html">
       <div class="home-card-icon">🧮</div>
       <div class="feature-text">
         <div class="home-card-eyebrow">Calculator</div>
@@ -157,7 +170,7 @@
       </div>
       <span class="home-card-arrow">Start designing &rarr;</span>
     </a>
-    <a class="home-card home-card--feature" href="polymer-search.html" style="--card-accent:#a78bfa">
+    <a class="home-card home-card--feature accent-violet" href="polymer-search.html">
       <div class="home-card-icon">🔍</div>
       <div class="feature-text">
         <div class="home-card-eyebrow">Structure search</div>
@@ -193,67 +206,73 @@
   <section class="home-section">
     <h2 class="home-section-label">Plan a polymerization</h2>
     <div class="home-grid home-grid--four">
-      <a class="home-card" href="copolymer-composition.html" style="--card-accent:#4fd1c5">
+      <a class="home-card accent-teal" href="copolymer-composition.html">
         <div class="home-card-icon">🧬</div>
         <h3>Copolymer Composition</h3>
         <p>Predict instantaneous copolymer composition from feed ratio and reactivity ratios, with a composition diagram and azeotrope detection.</p>
         <span class="home-card-arrow">Open the calculator &rarr;</span>
       </a>
-      <a class="home-card" href="dispersity-predictor.html" style="--card-accent:#4fd1c5">
+      <a class="home-card accent-teal" href="dispersity-predictor.html">
         <div class="home-card-icon">🎯</div>
         <h3>Dispersity (Đ) Predictor</h3>
         <p>Predict the narrowest Đ a RAFT, ATRP, or NMP reaction can reach from its target DP, conversion, and exchange chemistry, with a live molecular-weight distribution.</p>
         <span class="home-card-arrow">Predict a Đ &rarr;</span>
       </a>
-      <a class="home-card" href="mwd-simulator.html" style="--card-accent:#4fd1c5">
+      <a class="home-card accent-teal" href="mwd-simulator.html">
         <div class="home-card-icon">〰️</div>
         <h3>Distribution Simulator</h3>
         <p>The whole molecular weight distribution, not just &#272;: living chains, the dead-chain tail, and what your GPC&rsquo;s band broadening would do to it.</p>
         <span class="home-card-arrow">Simulate a distribution &rarr;</span>
       </a>
-      <a class="home-card" href="tg-predictor.html" style="--card-accent:#4fd1c5">
+      <a class="home-card accent-teal" href="tg-predictor.html">
         <div class="home-card-icon">🌡️</div>
         <h3>Tg Predictor</h3>
         <p>Estimate a random copolymer or miscible blend's glass transition temperature from its components using the Fox equation.</p>
         <span class="home-card-arrow">Predict a Tg &rarr;</span>
       </a>
-      <a class="home-card" href="chain-dimensions.html" style="--card-accent:#4fd1c5">
+      <a class="home-card accent-teal" href="chain-dimensions.html">
         <div class="home-card-icon">📐</div>
         <h3>Chain Dimensions</h3>
         <p>Persistence length, Kuhn length, contour length and radius of gyration from a database of measured values, each quoted with the solvent it was measured in.</p>
         <span class="home-card-arrow">Size a chain &rarr;</span>
       </a>
-      <a class="home-card" href="flory-huggins.html" style="--card-accent:#4fd1c5">
+      <a class="home-card accent-teal" href="flory-huggins.html">
         <div class="home-card-icon">🧊</div>
         <h3>Flory&ndash;Huggins Phase Behaviour</h3>
         <p>Binodal, spinodal and critical point for a blend or a solution, the cloud point from &chi;(T), and the order&ndash;disorder transition of a diblock.</p>
         <span class="home-card-arrow">Will it mix? &rarr;</span>
       </a>
-      <a class="home-card" href="calculator.html#sg" style="--card-accent:#a78bfa">
+      <a class="home-card accent-violet" href="calculator.html#sg">
         <div class="home-card-icon">🔗</div>
         <h3>Step-Growth &amp; Gel Point</h3>
         <p>Degree of polymerization from conversion and stoichiometric imbalance, and when a multifunctional formulation gels &mdash; by both Carothers and Flory&ndash;Stockmayer.</p>
         <span class="home-card-arrow">Find the gel point &rarr;</span>
       </a>
-      <a class="home-card" href="crosslink-density.html" style="--card-accent:#a78bfa">
+      <a class="home-card accent-violet" href="crosslink-density.html">
         <div class="home-card-icon">🕸️</div>
         <h3>Crosslink Density</h3>
         <p>M&#8347; from equilibrium swelling by Flory&ndash;Rehner, or from the rubbery plateau modulus, with the two routes compared and their disagreement explained.</p>
         <span class="home-card-arrow">Measure a network &rarr;</span>
       </a>
-      <a class="home-card" href="network-formation.html" style="--card-accent:#a78bfa">
+      <a class="home-card accent-violet" href="hydrogel-mesh-size.html">
+        <div class="home-card-icon">💧</div>
+        <h3>Hydrogel Mesh Size</h3>
+        <p>The mesh size of a swollen gel from a swelling measurement, by Peppas&ndash;Merrill and Canal&ndash;Peppas, and whether your solute is small enough to get through it.</p>
+        <span class="home-card-arrow">Size the mesh &rarr;</span>
+      </a>
+      <a class="home-card accent-violet" href="network-formation.html">
         <div class="home-card-icon">🕸️</div>
         <h3>Network Formation</h3>
         <p>Gel point, sol fraction and elastic strand density for any mix of functionalities and off-stoichiometry, by the Macosko&ndash;Miller recursive method.</p>
         <span class="home-card-arrow">Formulate a network &rarr;</span>
       </a>
-      <a class="home-card" href="radical-kinetics.html" style="--card-accent:#a78bfa">
+      <a class="home-card accent-violet" href="radical-kinetics.html">
         <div class="home-card-icon">⚡</div>
         <h3>Free-Radical Kinetics</h3>
         <p>Rate of polymerization, kinetic chain length and DP&#8345; from the rate constants, plus chain transfer by Mayo and initiator half-life.</p>
         <span class="home-card-arrow">Run the numbers &rarr;</span>
       </a>
-      <a class="home-card" href="recipe-scaling.html" style="--card-accent:#4fd1c5">
+      <a class="home-card accent-teal" href="recipe-scaling.html">
         <div class="home-card-icon">⚖️</div>
         <h3>Recipe Scaling</h3>
         <p>Scale any recipe up or down by a factor or between batch sizes while keeping every component's ratio the same.</p>
@@ -265,37 +284,37 @@
   <section class="home-section">
     <h2 class="home-section-label">Characterize what you made</h2>
     <div class="home-grid">
-      <a class="home-card" href="thermal-analysis.html" style="--card-accent:#f2b84b">
+      <a class="home-card accent-yellow" href="thermal-analysis.html">
         <div class="home-card-icon">🔥</div>
         <h3>Thermal Analysis: DSC, TGA &amp; DMA</h3>
         <p>Interactive thermograms you reshape by heating rate, atmosphere, frequency, and crosslink density, from a 70-material library of thermoplastics, copolymers, elastomers, binders, and fillers.</p>
         <span class="home-card-arrow">Explore thermograms &rarr;</span>
       </a>
-      <a class="home-card" href="tts-master-curve.html" style="--card-accent:#f2b84b">
+      <a class="home-card accent-yellow" href="tts-master-curve.html">
         <div class="home-card-icon">🕰️</div>
         <h3>Time&ndash;Temperature Superposition</h3>
         <p>Paste isothermal frequency sweeps and build a master curve: shift factors, WLF constants, and the activation energy that is not one.</p>
         <span class="home-card-arrow">Build a master curve &rarr;</span>
       </a>
-      <a class="home-card" href="gpc-calibration.html" style="--card-accent:#f2b84b">
+      <a class="home-card accent-yellow" href="gpc-calibration.html">
         <div class="home-card-icon">📏</div>
         <h3>GPC Calibration Converter</h3>
         <p>Convert a polystyrene equivalent molecular weight from your GPC report into a true molecular weight for your actual polymer.</p>
         <span class="home-card-arrow">Convert a result &rarr;</span>
       </a>
-      <a class="home-card" href="gpc-peak-interpretation.html" style="--card-accent:#f2b84b">
+      <a class="home-card accent-yellow" href="gpc-peak-interpretation.html">
         <div class="home-card-icon">📉</div>
         <h3>GPC Peak Interpretation</h3>
         <p>Columns, solvents, and shouldering, with an interactive chromatogram showing how integration limits move M<sub>n</sub>, M<sub>w</sub>, and Đ.</p>
         <span class="home-card-arrow">Read a chromatogram &rarr;</span>
       </a>
-      <a class="home-card" href="gpc-trace.html" style="--card-accent:#f2b84b">
+      <a class="home-card accent-yellow" href="gpc-trace.html">
         <div class="home-card-icon">📈</div>
         <h3>GPC Trace Analyzer</h3>
         <p>Paste the raw chromatogram and compute M<sub>n</sub>, M<sub>w</sub>, M<sub>z</sub> and &#272; yourself, with what the integration limits were worth shown beside the answer.</p>
         <span class="home-card-arrow">Analyze a trace &rarr;</span>
       </a>
-      <a class="home-card" href="end-group-analysis.html" style="--card-accent:#f2b84b">
+      <a class="home-card accent-yellow" href="end-group-analysis.html">
         <div class="home-card-icon">🔬</div>
         <h3>End Group &amp; Pendant Group Analysis</h3>
         <p>Which technique answers which question &ndash; NMR, FTIR, titration, MALDI, UV-Vis &ndash; with M<sub>n</sub> by end-group integration, degree of substitution, and titration equivalent weight.</p>
@@ -307,35 +326,35 @@
   <section class="home-section">
     <h2 class="home-section-label">Bench guides &amp; reference</h2>
     <div class="home-list">
-      <a class="home-row" href="mechanisms.html" style="--card-accent:#37c98f">
+      <a class="home-row accent-mint" href="mechanisms.html">
         <span class="home-row-icon">⚛️</span>
         <span class="home-row-text">
           <span class="home-row-title">Polymerization Mechanisms</span>
           <span class="home-row-desc">Reaction schemes for ATRP, RAFT, ROMP, FRP, polyurethanes, and emulsion, and the "why" behind each technique's character.</span>
         </span>
       </a>
-      <a class="home-row" href="air-free-technique.html" style="--card-accent:#37c98f">
+      <a class="home-row accent-mint" href="air-free-technique.html">
         <span class="home-row-icon">💨</span>
         <span class="home-row-text">
           <span class="home-row-title">Air Free Reaction Setup</span>
           <span class="home-row-desc">Schlenk line technique, the full freeze pump thaw procedure, and inert atmosphere safety notes.</span>
         </span>
       </a>
-      <a class="home-row" href="conversion-monitoring.html" style="--card-accent:#37c98f">
+      <a class="home-row accent-mint" href="conversion-monitoring.html">
         <span class="home-row-icon">📊</span>
         <span class="home-row-text">
           <span class="home-row-title">Monitoring Conversion</span>
           <span class="home-row-desc">Taking and analyzing aliquots partway through, and why an internal standard is essential.</span>
         </span>
       </a>
-      <a class="home-row" href="polymer-families.html" style="--card-accent:#37c98f">
+      <a class="home-row accent-mint" href="polymer-families.html">
         <span class="home-row-icon">🧪</span>
         <span class="home-row-text">
           <span class="home-row-title">Polymer Families</span>
           <span class="home-row-desc">The whole structure library laid out by chemistry &mdash; acrylates, methacrylates, silicones &mdash; with CAS numbers, monomers, and what each substituent does.</span>
         </span>
       </a>
-      <a class="home-row" href="glossary.html" style="--card-accent:#37c98f">
+      <a class="home-row accent-mint" href="glossary.html">
         <span class="home-row-icon">📖</span>
         <span class="home-row-text">
           <span class="home-row-title">Glossary</span>
@@ -348,14 +367,14 @@
   <section class="home-section">
     <h2 class="home-section-label">More</h2>
     <div class="home-list">
-      <a class="home-row" href="founder.html" style="--card-accent:#f472b6">
+      <a class="home-row accent-pink" href="founder.html">
         <span class="home-row-icon">👋</span>
         <span class="home-row-text">
           <span class="home-row-title">Meet the Founder</span>
           <span class="home-row-desc">A polymer chemist's path from a community college class to a Ph.D., and why this toolkit exists.</span>
         </span>
       </a>
-      <a class="home-row" href="whats-new.html" style="--card-accent:#5b8def">
+      <a class="home-row accent-blue" href="whats-new.html">
         <span class="home-row-icon">🆕</span>
         <span class="home-row-text">
           <span class="home-row-title">What's New</span>
@@ -407,7 +426,9 @@
   var CACHE_KEY = 'polytechniques_hot_papers_v3';
   var PAGE_SIZE = 6;
   var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-  var ACCENTS = ['#5b8def', '#37c98f', '#f2b84b', '#ef6a6a', '#a78bfa', '#4fd1c5'];
+  // Accent class per card, cycled. The colours themselves live in style.css
+  // so the light-theme ink for each hue travels with them.
+  var ACCENTS = ['accent-blue', 'accent-mint', 'accent-yellow', 'accent-salmon', 'accent-violet', 'accent-teal'];
 
   var FALLBACK_PAPERS = [
     {
@@ -534,7 +555,7 @@
           ? '<span class="paper-cites">🔥 ' + p.cites + (p.cites === 1 ? ' citation' : ' citations') + '</span>'
           : '<span class="paper-cites paper-cites-new">✨ just released</span>';
       }
-      return '<a class="paper-card" style="--paper-accent:' + accent + '; animation-delay:' + (i * 0.06).toFixed(2) + 's" ' +
+      return '<a class="paper-card ' + accent + '" style="animation-delay:' + (i * 0.06).toFixed(2) + 's" ' +
         'href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener">' +
         '<div class="paper-top-row">' +
         (p.journal ? '<span class="paper-journal" title="' + escapeHtml(p.journal) + '">' + escapeHtml(p.journal) + '</span>' : '<span></span>') +
