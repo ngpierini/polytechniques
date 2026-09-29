@@ -8336,6 +8336,13 @@
       var sugg = [];
       db.forEach(function (p) {
         var cands = [p.name].concat(p.aka || []);
+        // "Polycarbonate (bisphenol A)" is a name plus a qualifier, and no typo
+        // of "polycarbonate" is within two edits of the whole string - so the
+        // sixteen entries written that way could not be corrected at all. Compare
+        // the bare head as well. It is what gets offered, and what should be
+        // typed: "Polycarbonate" finds the entry on a prefix match.
+        var head = p.name.replace(/\s+\([^()]*\)\s*$/, "");
+        if (head && head !== p.name) cands.push(head);
         var best = null;
         for (var i = 0; i < cands.length; i++) {
           var d = editDistLe2(q, cands[i].toLowerCase());
@@ -8344,6 +8351,17 @@
         if (best) sugg.push(best);
       });
       sugg.sort(function (x, y) { return x.d - y.d; });
+      // Two entries can share a bare head - Polybutadiene (cis-1,4) and
+      // (trans-1,4) both give "Polybutadiene" - which offered the same chip
+      // twice. Sorted by distance already, so the first of each label is the
+      // closest one.
+      var seenLabel = {};
+      sugg = sugg.filter(function (x) {
+        var k = x.label.toLowerCase();
+        if (seenLabel[k]) return false;
+        seenLabel[k] = true;
+        return true;
+      });
       sugg = sugg.slice(0, 5);
       if (statusEl) statusEl.textContent = 'No name matches.' + (sugg.length ? ' Did you mean:' : '');
       var resultsEl = document.getElementById('mol-results');
