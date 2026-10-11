@@ -8,25 +8,46 @@
 // A monomer with name: null is one no polymer named unambiguously.
 window.MONOMER_DB = [
   {
-    name: "1,4-butanediol", aka: ["1,4-Butanediol"],
-    formula: "C4H10O2", mass: 90.12, role: "diol", kind: "condensation",
-    polymers: ["Poly(butylene adipate)","Poly(butylene azelate)","Poly(butylene furanoate)","Poly(butylene glutarate)","Poly(butylene isophthalate)","Poly(butylene naphthalate)","Poly(butylene sebacate)","Poly(butylene succinate)","Poly(butylene terephthalate)","Poly(hexamethylene butylene urethane)","Poly(isophoronylene butylene urethane)","Poly(methylenedicyclohexylene butylene urethane)","Poly(phenylene butylene urethane)","Poly(tolylene butylene urethane)","Polyurethane (MDI-butanediol)"],
-    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"}],
-    bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1}]
-  },
-  {
     name: "adipic acid", aka: ["divinyl adipate"],
     formula: "C6H10O4", mass: 146.14, role: "diacid", kind: "condensation",
-    polymers: ["Nylon 10,6","Nylon 12,6","Nylon 4,6","Nylon 5,6","Nylon 6,6","Nylon 8,6","Nylon 9,6","Poly(butylene adipate)","Poly(decamethylene adipate)","Poly(ethylene adipate)","Poly(glycerol adipate)","Poly(hexamethylene adipate)","Poly(m-xylylene adipamide)","Poly(propylene adipate)"],
+    polymers: ["Nylon 10,6","Nylon 12,6","Nylon 4,6","Nylon 5,6","Nylon 6,6","Nylon 8,6","Nylon 9,6","Poly(1,2-propylene adipate)","Poly(1,3-butylene adipate)","Poly(1,4-cyclohexylenedimethylene adipate)","Poly(3-methylpentylene adipate)","Poly(butylene adipate)","Poly(decamethylene adipate)","Poly(ethylene adipate)","Poly(glycerol adipate)","Poly(hexamethylene adipate)","Poly(m-xylylene adipamide)","Poly(neopentylene adipate)","Poly(pentamethylene adipate)","Poly(propylene adipate)"],
     atoms: [{"id":9,"el":"C"},{"id":10,"el":"O"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
     bonds: [{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":9,"b":"__cap0","order":1},{"a":15,"b":"__cap1","order":1}]
   },
   {
+    name: "1,4-butanediol", aka: ["1,4-Butanediol"],
+    formula: "C4H10O2", mass: 90.12, role: "diol", kind: "condensation",
+    polymers: ["Poly(butylene adipate)","Poly(butylene azelate)","Poly(butylene furanoate)","Poly(butylene glutarate)","Poly(butylene isophthalate)","Poly(butylene naphthalate)","Poly(butylene phthalate)","Poly(butylene sebacate)","Poly(butylene suberate)","Poly(butylene succinate)","Poly(butylene terephthalate)","Poly(hexamethylene butylene urethane)","Poly(isophoronylene butylene urethane)","Poly(methylenedicyclohexylene butylene urethane)","Poly(phenylene butylene urethane)","Poly(tolylene butylene urethane)","Polyurethane (MDI-butanediol)"],
+    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"}],
+    bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1}]
+  },
+  {
     name: "ethylene glycol", aka: [],
     formula: "C2H6O2", mass: 62.07, role: "diol", kind: "condensation",
-    polymers: ["Poly(ethylene adipate)","Poly(ethylene azelate)","Poly(ethylene dodecanedioate)","Poly(ethylene furanoate)","Poly(ethylene glutarate)","Poly(ethylene isophthalate)","Poly(ethylene naphthalate)","Poly(ethylene oxalate)","Poly(ethylene sebacate)","Poly(ethylene succinate)","Poly(ethylene terephthalate)","Poly(hexamethylene ethylene urethane)","Poly(methylenediphenylene ethylene urethane)","Poly(tolylene ethylene urethane)"],
+    polymers: ["Poly(ethylene adipate)","Poly(ethylene azelate)","Poly(ethylene brassylate)","Poly(ethylene dodecanedioate)","Poly(ethylene furanoate)","Poly(ethylene glutarate)","Poly(ethylene isophthalate)","Poly(ethylene naphthalate)","Poly(ethylene oxalate)","Poly(ethylene phthalate)","Poly(ethylene sebacate)","Poly(ethylene suberate)","Poly(ethylene succinate)","Poly(ethylene terephthalate)","Poly(hexamethylene ethylene urethane)","Poly(methylenediphenylene ethylene urethane)","Poly(tolylene ethylene urethane)"],
     atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"}],
     bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1}]
+  },
+  {
+    name: "terephthalic acid", aka: ["terephthaloyl chloride"],
+    formula: "C8H6O4", mass: 166.13, role: "diacid", kind: "condensation",
+    polymers: ["Nylon 10T","Nylon 9T","Poly(3-methylpentylene terephthalate)","Poly(butylene terephthalate)","Poly(cyclohexylenedimethylene terephthalate)","Poly(decamethylene terephthalate)","Poly(ethylene terephthalate)","Poly(heptamethylene terephthalate)","Poly(hexamethylene terephthalamide)","Poly(hexamethylene terephthalate)","Poly(hydrazide)","Poly(neopentylene terephthalate)","Poly(p-phenylene terephthalamide)","Poly(pentamethylene terephthalate)","Poly(trimethylene terephthalate)"],
+    atoms: [{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":5,"b":6,"order":2},{"a":5,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":12,"b":7,"order":1},{"a":10,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":5,"b":"__cap0","order":1},{"a":13,"b":"__cap1","order":1}]
+  },
+  {
+    name: "1,6-hexanediol", aka: [],
+    formula: "C6H14O2", mass: 118.18, role: "diol", kind: "condensation",
+    polymers: ["Poly(hexamethylene 2,6-naphthalate)","Poly(hexamethylene adipate)","Poly(hexamethylene azelate)","Poly(hexamethylene dodecanedioate)","Poly(hexamethylene furanoate)","Poly(hexamethylene glutarate)","Poly(hexamethylene hexamethylene urethane)","Poly(hexamethylene isophthalate)","Poly(hexamethylene phthalate)","Poly(hexamethylene sebacate)","Poly(hexamethylene suberate)","Poly(hexamethylene succinate)","Poly(hexamethylene terephthalate)","Poly(methylenediphenylene hexamethylene urethane)"],
+    atoms: [{"id":2,"el":"O"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"}],
+    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1}]
+  },
+  {
+    name: "sebacic acid", aka: [],
+    formula: "C10H18O4", mass: 202.25, role: "diacid", kind: "condensation",
+    polymers: ["Nylon 10,10","Nylon 11,10","Nylon 4,10","Nylon 5,10","Nylon 6,10","Poly(1,2-propylene sebacate)","Poly(1,3-butylene sebacate)","Poly(butylene sebacate)","Poly(decamethylene sebacate)","Poly(ethylene sebacate)","Poly(hexamethylene sebacate)","Poly(neopentylene sebacate)","Poly(pentamethylene sebacate)","Poly(propylene sebacate)"],
+    atoms: [{"id":9,"el":"C"},{"id":10,"el":"O"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":2},{"a":9,"b":"__cap0","order":1},{"a":19,"b":"__cap1","order":1}]
   },
   {
     name: "hexamethylenediamine", aka: [],
@@ -36,25 +57,46 @@ window.MONOMER_DB = [
     bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1}]
   },
   {
-    name: "terephthalic acid", aka: ["terephthaloyl chloride"],
+    name: "isophthalic acid", aka: ["isophthaloyl chloride"],
     formula: "C8H6O4", mass: 166.13, role: "diacid", kind: "condensation",
-    polymers: ["Nylon 10T","Nylon 9T","Poly(butylene terephthalate)","Poly(cyclohexylenedimethylene terephthalate)","Poly(decamethylene terephthalate)","Poly(ethylene terephthalate)","Poly(hexamethylene terephthalamide)","Poly(hexamethylene terephthalate)","Poly(hydrazide)","Poly(p-phenylene terephthalamide)","Poly(trimethylene terephthalate)"],
-    atoms: [{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
-    bonds: [{"a":5,"b":6,"order":2},{"a":5,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":12,"b":7,"order":1},{"a":10,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":5,"b":"__cap0","order":1},{"a":13,"b":"__cap1","order":1}]
+    polymers: ["Nylon 6I","Poly(1,2-propylene isophthalate)","Poly(3-methylpentylene isophthalate)","Poly(butylene isophthalate)","Poly(ethylene isophthalate)","Poly(hexamethylene isophthalate)","Poly(m-phenylene isophthalamide)","Poly(neopentylene isophthalate)"],
+    atoms: [{"id":9,"el":"C"},{"id":10,"el":"O"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":16,"b":11,"order":1},{"a":13,"b":17,"order":1},{"a":17,"b":18,"order":2},{"a":9,"b":"__cap0","order":1},{"a":17,"b":"__cap1","order":1}]
   },
   {
-    name: "sebacic acid", aka: [],
-    formula: "C10H18O4", mass: 202.25, role: "diacid", kind: "condensation",
-    polymers: ["Nylon 10,10","Nylon 11,10","Nylon 4,10","Nylon 5,10","Nylon 6,10","Poly(butylene sebacate)","Poly(decamethylene sebacate)","Poly(ethylene sebacate)","Poly(hexamethylene sebacate)","Poly(propylene sebacate)"],
-    atoms: [{"id":9,"el":"C"},{"id":10,"el":"O"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
-    bonds: [{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":2},{"a":9,"b":"__cap0","order":1},{"a":19,"b":"__cap1","order":1}]
+    name: "neopentyl glycol", aka: [],
+    formula: "C5H12O2", mass: 104.15, role: "diol", kind: "condensation",
+    polymers: ["Poly(neopentylene 3,3'-thiodipropionate)","Poly(neopentylene adipate)","Poly(neopentylene azelate)","Poly(neopentylene dodecanedioate)","Poly(neopentylene isophthalate)","Poly(neopentylene sebacate)","Poly(neopentylene succinate)","Poly(neopentylene terephthalate)"],
+    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"O"}],
+    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":3,"b":5,"order":1},{"a":3,"b":6,"order":1},{"a":1,"b":2,"order":1},{"a":4,"b":7,"order":1}]
   },
   {
-    name: "1,6-hexanediol", aka: [],
-    formula: "C6H14O2", mass: 118.18, role: "diol", kind: "condensation",
-    polymers: ["Poly(hexamethylene adipate)","Poly(hexamethylene furanoate)","Poly(hexamethylene hexamethylene urethane)","Poly(hexamethylene sebacate)","Poly(hexamethylene succinate)","Poly(hexamethylene terephthalate)","Poly(methylenediphenylene hexamethylene urethane)"],
-    atoms: [{"id":2,"el":"O"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"}],
-    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1}]
+    name: "succinic acid", aka: [],
+    formula: "C4H6O4", mass: 118.09, role: "diacid", kind: "condensation",
+    polymers: ["Poly(1,4-cyclohexylenedimethylene succinate)","Poly(butylene succinate)","Poly(ethylene succinate)","Poly(hexamethylene succinate)","Poly(neopentylene succinate)","Poly(octamethylene succinate)","Poly(pentamethylene succinate)","Poly(propylene succinate)"],
+    atoms: [{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":7,"b":"__cap0","order":1},{"a":11,"b":"__cap1","order":1}]
+  },
+  {
+    name: "dodecanedioic acid", aka: [],
+    formula: "C12H22O4", mass: 230.3, role: "diacid", kind: "condensation",
+    polymers: ["Nylon 10,12","Nylon 12,12","Nylon 4,12","Nylon 6,12","Poly(ethylene dodecanedioate)","Poly(hexamethylene dodecanedioate)","Poly(neopentylene dodecanedioate)"],
+    atoms: [{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"C"},{"id":21,"el":"C"},{"id":22,"el":"C"},{"id":23,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":10,"b":11,"order":2},{"a":10,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":1},{"a":20,"b":21,"order":1},{"a":21,"b":22,"order":1},{"a":22,"b":23,"order":2},{"a":10,"b":"__cap0","order":1},{"a":22,"b":"__cap1","order":1}]
+  },
+  {
+    name: "1,3-propanediol", aka: ["1,3-Propanediol"],
+    formula: "C3H8O2", mass: 76.1, role: "diol", kind: "condensation",
+    polymers: ["Poly(propylene adipate)","Poly(propylene furanoate)","Poly(propylene sebacate)","Poly(propylene succinate)","Poly(trimethylene glutarate)","Poly(trimethylene terephthalate)"],
+    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"}],
+    bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1}]
+  },
+  {
+    name: "azelaic acid", aka: [],
+    formula: "C9H16O4", mass: 188.22, role: "diacid", kind: "condensation",
+    polymers: ["Nylon 6,9","Poly(1,2-propylene azelate)","Poly(butylene azelate)","Poly(ethylene azelate)","Poly(hexamethylene azelate)","Poly(neopentylene azelate)"],
+    atoms: [{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":10,"b":11,"order":2},{"a":10,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":2},{"a":10,"b":"__cap0","order":1},{"a":19,"b":"__cap1","order":1}]
   },
   {
     name: "1,10-diaminodecane", aka: [],
@@ -64,18 +106,18 @@ window.MONOMER_DB = [
     bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1}]
   },
   {
-    name: "1,3-propanediol", aka: ["1,3-Propanediol"],
+    name: "1,2-propanediol", aka: ["propylene glycol"],
     formula: "C3H8O2", mass: 76.1, role: "diol", kind: "condensation",
-    polymers: ["Poly(propylene adipate)","Poly(propylene furanoate)","Poly(propylene sebacate)","Poly(propylene succinate)","Poly(trimethylene terephthalate)"],
-    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"}],
-    bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1}]
+    polymers: ["Poly(1,2-propylene adipate)","Poly(1,2-propylene azelate)","Poly(1,2-propylene isophthalate)","Poly(1,2-propylene sebacate)","Poly(propylene fumarate)"],
+    atoms: [{"id":2,"el":"O"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"}],
+    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":3,"b":5,"order":1},{"a":5,"b":6,"order":1}]
   },
   {
-    name: "dodecanedioic acid", aka: [],
-    formula: "C12H22O4", mass: 230.3, role: "diacid", kind: "condensation",
-    polymers: ["Nylon 10,12","Nylon 12,12","Nylon 4,12","Nylon 6,12","Poly(ethylene dodecanedioate)"],
-    atoms: [{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"C"},{"id":21,"el":"C"},{"id":22,"el":"C"},{"id":23,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
-    bonds: [{"a":10,"b":11,"order":2},{"a":10,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":1},{"a":20,"b":21,"order":1},{"a":21,"b":22,"order":1},{"a":22,"b":23,"order":2},{"a":10,"b":"__cap0","order":1},{"a":22,"b":"__cap1","order":1}]
+    name: "1,5-pentanediol", aka: [],
+    formula: "C5H12O2", mass: 104.15, role: "diol", kind: "condensation",
+    polymers: ["Poly(pentamethylene adipate)","Poly(pentamethylene pimelate)","Poly(pentamethylene sebacate)","Poly(pentamethylene succinate)","Poly(pentamethylene terephthalate)"],
+    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"O"}],
+    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":1,"b":2,"order":1},{"a":6,"b":7,"order":1}]
   },
   {
     name: "ethylene", aka: ["polyethylene"],
@@ -106,11 +148,11 @@ window.MONOMER_DB = [
     bonds: [{"a":6,"b":7,"order":2},{"a":6,"b":8,"order":1},{"a":8,"b":9,"order":2},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":2},{"a":11,"b":12,"order":1},{"a":8,"b":12,"order":1},{"a":11,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":6,"b":"__cap0","order":1},{"a":13,"b":"__cap1","order":1}]
   },
   {
-    name: "isophthalic acid", aka: ["isophthaloyl chloride"],
-    formula: "C8H6O4", mass: 166.13, role: "diacid", kind: "condensation",
-    polymers: ["Nylon 6I","Poly(butylene isophthalate)","Poly(ethylene isophthalate)","Poly(m-phenylene isophthalamide)"],
-    atoms: [{"id":9,"el":"C"},{"id":10,"el":"O"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
-    bonds: [{"a":9,"b":10,"order":2},{"a":9,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":16,"b":11,"order":1},{"a":13,"b":17,"order":1},{"a":17,"b":18,"order":2},{"a":9,"b":"__cap0","order":1},{"a":17,"b":"__cap1","order":1}]
+    name: "glutaric acid", aka: [],
+    formula: "C5H8O4", mass: 132.11, role: "diacid", kind: "condensation",
+    polymers: ["Poly(butylene glutarate)","Poly(ethylene glutarate)","Poly(hexamethylene glutarate)","Poly(trimethylene glutarate)"],
+    atoms: [{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":5,"b":6,"order":2},{"a":5,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":2},{"a":5,"b":"__cap0","order":1},{"a":10,"b":"__cap1","order":1}]
   },
   {
     name: "lactide", aka: ["L-lactide","D,L-lactide (racemic)"],
@@ -134,11 +176,11 @@ window.MONOMER_DB = [
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":3,"order":1}]
   },
   {
-    name: "succinic acid", aka: [],
-    formula: "C4H6O4", mass: 118.09, role: "diacid", kind: "condensation",
-    polymers: ["Poly(butylene succinate)","Poly(ethylene succinate)","Poly(hexamethylene succinate)","Poly(propylene succinate)"],
-    atoms: [{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
-    bonds: [{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":7,"b":"__cap0","order":1},{"a":11,"b":"__cap1","order":1}]
+    name: "suberic acid", aka: [],
+    formula: "C8H14O4", mass: 174.2, role: "diacid", kind: "condensation",
+    polymers: ["Nylon 4,8","Poly(butylene suberate)","Poly(ethylene suberate)","Poly(hexamethylene suberate)"],
+    atoms: [{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":7,"b":"__cap0","order":1},{"a":15,"b":"__cap1","order":1}]
   },
   {
     name: "1,10-decanediol", aka: [],
@@ -148,18 +190,32 @@ window.MONOMER_DB = [
     bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1}]
   },
   {
+    name: "1,4-cyclohexanedimethanol", aka: [],
+    formula: "C8H16O2", mass: 144.21, role: "diol", kind: "condensation",
+    polymers: ["Poly(1,4-cyclohexylenedimethylene adipate)","Poly(1,4-cyclohexylenedimethylene succinate)","Poly(cyclohexylenedimethylene terephthalate)"],
+    atoms: [{"id":2,"el":"O"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"}],
+    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":4,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1}]
+  },
+  {
+    name: "2,6-naphthalenedicarboxylic acid", aka: [],
+    formula: "C12H8O4", mass: 216.19, role: "diacid", kind: "condensation",
+    polymers: ["Poly(butylene naphthalate)","Poly(ethylene naphthalate)","Poly(hexamethylene 2,6-naphthalate)"],
+    atoms: [{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":5,"b":6,"order":2},{"a":5,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":9,"order":1},{"a":9,"b":14,"order":2},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":16,"b":7,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":2},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":2},{"a":13,"b":14,"order":1},{"a":12,"b":17,"order":1},{"a":17,"b":18,"order":2},{"a":5,"b":"__cap0","order":1},{"a":17,"b":"__cap1","order":1}]
+  },
+  {
+    name: "3-methyl-1,5-pentanediol", aka: [],
+    formula: "C6H14O2", mass: 118.18, role: "diol", kind: "condensation",
+    polymers: ["Poly(3-methylpentylene adipate)","Poly(3-methylpentylene isophthalate)","Poly(3-methylpentylene terephthalate)"],
+    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"O"}],
+    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":4,"b":7,"order":1},{"a":1,"b":2,"order":1},{"a":6,"b":8,"order":1}]
+  },
+  {
     name: "4,4'-methylenediphenyl diisocyanate", aka: [],
     formula: "C15H10N2O2", mass: 250.26, role: "diisocyanate", kind: "condensation",
     polymers: ["Poly(methylenediphenylene ethylene urethane)","Poly(methylenediphenylene hexamethylene urethane)","Polyurethane (MDI-butanediol)"],
     atoms: [{"id":8,"el":"C"},{"id":9,"el":"O"},{"id":10,"el":"N"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"C"},{"id":21,"el":"C"},{"id":22,"el":"C"},{"id":23,"el":"C"},{"id":24,"el":"N"},{"id":25,"el":"C"},{"id":26,"el":"O"}],
     bonds: [{"a":8,"b":9,"order":2},{"a":8,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":11,"b":16,"order":1},{"a":14,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":2},{"a":19,"b":20,"order":1},{"a":20,"b":21,"order":2},{"a":21,"b":22,"order":1},{"a":22,"b":23,"order":2},{"a":18,"b":23,"order":1},{"a":21,"b":24,"order":1},{"a":24,"b":25,"order":2},{"a":25,"b":26,"order":2}]
-  },
-  {
-    name: "azelaic acid", aka: [],
-    formula: "C9H16O4", mass: 188.22, role: "diacid", kind: "condensation",
-    polymers: ["Nylon 6,9","Poly(butylene azelate)","Poly(ethylene azelate)"],
-    atoms: [{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
-    bonds: [{"a":10,"b":11,"order":2},{"a":10,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":2},{"a":10,"b":"__cap0","order":1},{"a":19,"b":"__cap1","order":1}]
   },
   {
     name: "hexamethylene diisocyanate", aka: [],
@@ -174,6 +230,13 @@ window.MONOMER_DB = [
     polymers: ["Polyisoprene (cis-1,4)","Polyisoprene (trans-1,4)","Vulcanised natural rubber"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"}],
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":2}]
+  },
+  {
+    name: "phthalic acid", aka: [],
+    formula: "C8H6O4", mass: 166.13, role: "diacid", kind: "condensation",
+    polymers: ["Poly(butylene phthalate)","Poly(ethylene phthalate)","Poly(hexamethylene phthalate)"],
+    atoms: [{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":7,"b":8,"order":2},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":14,"b":9,"order":1},{"a":7,"b":9,"order":1},{"a":10,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":7,"b":"__cap0","order":1},{"a":15,"b":"__cap1","order":1}]
   },
   {
     name: "propylene oxide", aka: ["propylene oxide on glycerine"],
@@ -197,6 +260,13 @@ window.MONOMER_DB = [
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2}]
   },
   {
+    name: "1,3-butanediol", aka: [],
+    formula: "C4H10O2", mass: 90.12, role: "diol", kind: "condensation",
+    polymers: ["Poly(1,3-butylene adipate)","Poly(1,3-butylene sebacate)"],
+    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"}],
+    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":2,"b":5,"order":1},{"a":1,"b":2,"order":1},{"a":4,"b":6,"order":1}]
+  },
+  {
     name: "1,5-diaminopentane", aka: [],
     formula: "C5H14N2", mass: 102.18, role: "diamine", kind: "condensation",
     polymers: ["Nylon 5,10","Nylon 5,6"],
@@ -211,25 +281,11 @@ window.MONOMER_DB = [
     bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1}]
   },
   {
-    name: "2,6-naphthalenedicarboxylic acid", aka: [],
-    formula: "C12H8O4", mass: 216.19, role: "diacid", kind: "condensation",
-    polymers: ["Poly(butylene naphthalate)","Poly(ethylene naphthalate)"],
-    atoms: [{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
-    bonds: [{"a":5,"b":6,"order":2},{"a":5,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":9,"order":1},{"a":9,"b":14,"order":2},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":16,"b":7,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":2},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":2},{"a":13,"b":14,"order":1},{"a":12,"b":17,"order":1},{"a":17,"b":18,"order":2},{"a":5,"b":"__cap0","order":1},{"a":17,"b":"__cap1","order":1}]
-  },
-  {
     name: "acrylamide", aka: [],
     formula: "C3H5NO", mass: 71.08, role: "amine", kind: "vinyl",
     polymers: ["Poly(acrylamide) crosslinked gel","Polyacrylamide"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"O"},{"id":5,"el":"N"}],
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":3,"b":5,"order":1}]
-  },
-  {
-    name: "glutaric acid", aka: [],
-    formula: "C5H8O4", mass: 132.11, role: "diacid", kind: "condensation",
-    polymers: ["Poly(butylene glutarate)","Poly(ethylene glutarate)"],
-    atoms: [{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
-    bonds: [{"a":5,"b":6,"order":2},{"a":5,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":2},{"a":5,"b":"__cap0","order":1},{"a":10,"b":"__cap1","order":1}]
   },
   {
     name: "oxalic acid", aka: ["oxalate ester"],
@@ -358,11 +414,11 @@ window.MONOMER_DB = [
     bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":2,"b":6,"order":1}]
   },
   {
-    name: "1,4-cyclohexanedimethanol", aka: [],
-    formula: "C8H16O2", mass: 144.21, role: "diol", kind: "condensation",
-    polymers: ["Poly(cyclohexylenedimethylene terephthalate)"],
-    atoms: [{"id":2,"el":"O"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"}],
-    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":4,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1}]
+    name: "1,7-heptanediol", aka: [],
+    formula: "C7H16O2", mass: 132.2, role: "diol", kind: "condensation",
+    polymers: ["Poly(heptamethylene terephthalate)"],
+    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"}],
+    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":1,"b":2,"order":1},{"a":8,"b":9,"order":1}]
   },
   {
     name: "1,8-diaminooctane", aka: [],
@@ -370,6 +426,13 @@ window.MONOMER_DB = [
     polymers: ["Nylon 8,6"],
     atoms: [{"id":1,"el":"N"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"N"}],
     bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1}]
+  },
+  {
+    name: "1,8-octanediol", aka: [],
+    formula: "C8H18O2", mass: 146.23, role: "diol", kind: "condensation",
+    polymers: ["Poly(octamethylene succinate)"],
+    atoms: [{"id":1,"el":"O"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"O"}],
+    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":1,"b":2,"order":1},{"a":9,"b":10,"order":1}]
   },
   {
     name: "11-Aminoundecanoic acid", aka: [],
@@ -995,6 +1058,13 @@ window.MONOMER_DB = [
     bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":5,"b":7,"order":1},{"a":5,"b":8,"order":1},{"a":2,"b":4,"order":1}]
   },
   {
+    name: "3,3'-thiodipropionic acid", aka: [],
+    formula: "C6H10O4S", mass: 178.2, role: "diacid", kind: "condensation",
+    polymers: ["Poly(neopentylene 3,3'-thiodipropionate)"],
+    atoms: [{"id":8,"el":"C"},{"id":9,"el":"O"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"S"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":8,"b":9,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":8,"b":10,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":8,"b":"__cap0","order":1},{"a":15,"b":"__cap1","order":1}]
+  },
+  {
     name: "3,4-ethylenedioxypyrrole", aka: [],
     formula: "C6H7NO2", mass: 125.13, role: "alkene", kind: "coupling",
     polymers: ["Poly(3,4-ethylenedioxypyrrole)"],
@@ -1392,6 +1462,13 @@ window.MONOMER_DB = [
     polymers: ["Poly(propiolactone)"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"O"}],
     bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":1,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":3,"b":4,"order":1}]
+  },
+  {
+    name: "brassylic acid", aka: [],
+    formula: "C13H24O4", mass: 244.33, role: "diacid", kind: "condensation",
+    polymers: ["Poly(ethylene brassylate)"],
+    atoms: [{"id":5,"el":"C"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":5,"b":6,"order":2},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":5,"b":7,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":2},{"a":5,"b":"__cap0","order":1},{"a":18,"b":"__cap1","order":1}]
   },
   {
     name: "butyl acrylate", aka: [],
@@ -2703,6 +2780,13 @@ window.MONOMER_DB = [
     bonds: [{"a":2,"b":3,"order":2},{"a":3,"b":4,"order":1},{"a":3,"b":6,"order":1},{"a":6,"b":7,"order":2},{"a":6,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":9,"b":14,"order":1}]
   },
   {
+    name: "pimelic acid", aka: [],
+    formula: "C7H12O4", mass: 160.17, role: "diacid", kind: "condensation",
+    polymers: ["Poly(pentamethylene pimelate)"],
+    atoms: [{"id":8,"el":"C"},{"id":9,"el":"O"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
+    bonds: [{"a":8,"b":9,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":8,"b":10,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":8,"b":"__cap0","order":1},{"a":15,"b":"__cap1","order":1}]
+  },
+  {
     name: "propargyl acrylate", aka: [],
     formula: "C6H6O2", mass: 110.11, role: "alkyne", kind: "vinyl",
     polymers: ["Poly(propargyl acrylate)"],
@@ -2729,13 +2813,6 @@ window.MONOMER_DB = [
     polymers: ["Poly(propyl methacrylate)"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"}],
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":4,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1}]
-  },
-  {
-    name: "propylene glycol", aka: [],
-    formula: "C3H8O2", mass: 76.1, role: "diol", kind: "condensation",
-    polymers: ["Poly(propylene fumarate)"],
-    atoms: [{"id":2,"el":"O"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"O"}],
-    bonds: [{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":3,"b":5,"order":1},{"a":5,"b":6,"order":1}]
   },
   {
     name: "propylene sulfide", aka: [],
@@ -2785,13 +2862,6 @@ window.MONOMER_DB = [
     polymers: ["Poly(styrene oxide)"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"}],
     bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":2},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":2},{"a":4,"b":9,"order":1},{"a":1,"b":3,"order":1}]
-  },
-  {
-    name: "suberic acid", aka: [],
-    formula: "C8H14O4", mass: 174.2, role: "diacid", kind: "condensation",
-    polymers: ["Nylon 4,8"],
-    atoms: [{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"O"},{"id":"__cap0","el":"O"},{"id":"__cap1","el":"O"}],
-    bonds: [{"a":7,"b":8,"order":2},{"a":7,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":7,"b":"__cap0","order":1},{"a":15,"b":"__cap1","order":1}]
   },
   {
     name: "substituted triarylamine", aka: [],
