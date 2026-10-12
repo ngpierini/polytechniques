@@ -325,7 +325,12 @@ function buildUnit(hetero, diChain, acidChain) {
 // the diol and the diacid we asked about, the record is something else and the
 // hit is discarded. A name search alone cannot tell the difference.
 
-const VALENCE = { C: 4, N: 3, O: 2, S: 2, H: 1 };
+// Halogens, phosphorus and silicon belong here even though the step-growth
+// blocks above use none of them: without F in the table a fluorine was given
+// valence 4 and silently grew three hydrogens, and poly(4-fluorostyrene) came
+// out as C8H10 instead of C8H7F. The structure was right; only this table and
+// the printer below were wrong.
+const VALENCE = { C: 4, N: 3, O: 2, S: 2, P: 3, Si: 4, F: 1, Cl: 1, Br: 1, I: 1, B: 3, H: 1 };
 
 // Build the free monomer: the spacer, capped with the functional groups.
 //   diol    HO-R-OH          group = "OH"
@@ -430,9 +435,8 @@ function monomerFormula(chain, group) {
   });
 
   let s = "C" + (counts.C > 1 ? counts.C : "") + "H" + (counts.H > 1 ? counts.H : "");
-  ["N", "O", "S"].forEach(function (el) {
-    if (counts[el]) s += el + (counts[el] > 1 ? counts[el] : "");
-  });
+  Object.keys(counts).filter(function (el) { return el !== "C" && el !== "H" && counts[el]; })
+    .sort().forEach(function (el) { s += el + (counts[el] > 1 ? counts[el] : ""); });
   return s;
 }
 
@@ -454,7 +458,8 @@ function repeatUnitFormula(atoms, bonds) {
     counts.H += Math.max(0, (VALENCE[a.el] || 4) - deg[String(a.id)]);
   });
   let s = "C" + (counts.C > 1 ? counts.C : "") + "H" + (counts.H > 1 ? counts.H : "");
-  ["N", "O", "S"].forEach(function (el) { if (counts[el]) s += el + (counts[el] > 1 ? counts[el] : ""); });
+  Object.keys(counts).filter(function (el) { return el !== "C" && el !== "H" && counts[el]; })
+    .sort().forEach(function (el) { s += el + (counts[el] > 1 ? counts[el] : ""); });
   return s;
 }
 

@@ -89,9 +89,20 @@ function telechelicKey(entry) {
   // one entry listed twice, which is what the duplicate check reported.
   return t.endGroup + "/f" + t.functionality + "/ew" + t.equivalentWeight + "/" + (t.core || "-");
 }
+// A declared side-chain repeat is another thing one drawn unit cannot show.
+// Poly(oligo(ethylene glycol) methyl ether methacrylate) is drawn with a single
+// ethylene oxide unit plus a "repeats" entry saying that unit recurs n times.
+// Strip that annotation and what is left IS poly(2-methoxyethyl methacrylate):
+// same graph, different polymer. Without this the two collide as a duplicate.
+function repeatsKey(entry) {
+  if (!Array.isArray(entry.repeats) || !entry.repeats.length) return "-";
+  return entry.repeats.map(function (r) {
+    return (r && r.role ? r.role : "?") + ":" + (r && r.label ? r.label : "?");
+  }).sort().join(",");
+}
 function variantKey(entry) {
   return VARIANT_FIELDS.map(function (f) { return entry[f] || "-"; })
-    .concat(telechelicKey(entry)).join("|");
+    .concat(telechelicKey(entry)).concat(repeatsKey(entry)).join("|");
 }
 
 // Generous max valence per element (bond-order sum), with slack for formal

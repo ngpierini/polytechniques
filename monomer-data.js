@@ -281,6 +281,13 @@ window.MONOMER_DB = [
     bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1}]
   },
   {
+    name: "2-Methoxyethyl methacrylate", aka: ["oligo(ethylene glycol) methyl ether methacrylate"],
+    formula: "C7H12O3", mass: 144.17, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(2-methoxyethyl methacrylate)","Poly(oligo(ethylene glycol) methyl ether methacrylate)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"},{"id":10,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":4,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1}]
+  },
+  {
     name: "acrylamide", aka: [],
     formula: "C3H5NO", mass: 71.08, role: "amine", kind: "vinyl",
     polymers: ["Poly(acrylamide) crosslinked gel","Polyacrylamide"],
@@ -358,6 +365,34 @@ window.MONOMER_DB = [
     bonds: [{"a":2,"b":3,"order":2},{"a":3,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1}]
   },
   {
+    name: "1-dodecene", aka: [],
+    formula: "C12H24", mass: 168.32, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(1-dodecene)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":2,"b":3,"order":1}]
+  },
+  {
+    name: "1-eicosene", aka: [],
+    formula: "C20H40", mass: 280.54, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(1-eicosene)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":1},{"a":2,"b":3,"order":1}]
+  },
+  {
+    name: "1-heptene", aka: [],
+    formula: "C7H14", mass: 98.19, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(1-heptene)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":2,"b":3,"order":1}]
+  },
+  {
+    name: "1-hexadecene", aka: [],
+    formula: "C16H32", mass: 224.43, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(1-hexadecene)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":2,"b":3,"order":1}]
+  },
+  {
     name: "1-hexene", aka: [],
     formula: "C6H12", mass: 84.16, role: "alkene", kind: "vinyl",
     polymers: ["Poly(1-hexene)"],
@@ -372,11 +407,39 @@ window.MONOMER_DB = [
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":4,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":16,"order":2},{"a":16,"b":7,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":2},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":2},{"a":15,"b":16,"order":1}]
   },
   {
+    name: "1-nonene", aka: [],
+    formula: "C9H18", mass: 126.24, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(1-nonene)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":2,"b":3,"order":1}]
+  },
+  {
+    name: "1-octadecene", aka: [],
+    formula: "C18H36", mass: 252.49, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(1-octadecene)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":2,"b":3,"order":1}]
+  },
+  {
     name: "1-octene", aka: [],
     formula: "C8H16", mass: 112.22, role: "alkene", kind: "vinyl",
     polymers: ["Poly(1-octene)"],
     atoms: [{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"}],
     bonds: [{"a":2,"b":3,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1}]
+  },
+  {
+    name: "1-pentene", aka: [],
+    formula: "C5H10", mass: 70.13, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(1-pentene)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":2,"b":3,"order":1}]
+  },
+  {
+    name: "1-tetradecene", aka: [],
+    formula: "C14H28", mass: 196.38, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(1-tetradecene)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":2,"b":3,"order":1}]
   },
   {
     name: "1-vinyl-3-methylimidazolium salt", aka: [],
@@ -785,6 +848,13 @@ window.MONOMER_DB = [
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":4,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":2},{"a":14,"b":9,"order":1},{"a":8,"b":9,"order":1}]
   },
   {
+    name: "2-Propyl-2-oxazoline", aka: [],
+    formula: "C6H11NO", mass: 113.16, role: "other", kind: "ring",
+    polymers: ["Poly(2-propyl-2-oxazoline)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"N"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":1},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":4,"b":6,"order":1},{"a":1,"b":3,"order":1}]
+  },
+  {
     name: "2-propylheptyl acrylate", aka: [],
     formula: "C13H24O2", mass: 212.33, role: "alkene", kind: "vinyl",
     polymers: ["Poly(2-propylheptyl acrylate)"],
@@ -888,6 +958,13 @@ window.MONOMER_DB = [
     polymers: ["Poly(pentafluorostyrene)"],
     atoms: [{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"F"},{"id":8,"el":"C"},{"id":9,"el":"F"},{"id":10,"el":"C"},{"id":11,"el":"F"},{"id":12,"el":"C"},{"id":13,"el":"F"},{"id":14,"el":"C"},{"id":15,"el":"F"}],
     bonds: [{"a":2,"b":3,"order":2},{"a":3,"b":5,"order":1},{"a":5,"b":6,"order":2},{"a":6,"b":7,"order":1},{"a":6,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":8,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":10,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":12,"b":14,"order":2},{"a":5,"b":14,"order":1},{"a":14,"b":15,"order":1}]
+  },
+  {
+    name: "2,4-Dimethylstyrene", aka: [],
+    formula: "C10H12", mass: 132.21, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(2,4-dimethylstyrene)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":3,"b":4,"order":2},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":3,"order":1},{"a":4,"b":9,"order":1},{"a":6,"b":10,"order":1},{"a":2,"b":3,"order":1}]
   },
   {
     name: "2,6-dimethylphenyl methacrylate", aka: [],
@@ -1147,6 +1224,13 @@ window.MONOMER_DB = [
     polymers: ["Poly(4-fluorophenyl methacrylate)"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"F"}],
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":4,"b":6,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":2},{"a":12,"b":7,"order":1},{"a":6,"b":7,"order":1},{"a":10,"b":13,"order":1}]
+  },
+  {
+    name: "4-Fluorostyrene", aka: [],
+    formula: "C8H7F", mass: 122.14, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(4-fluorostyrene)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"F"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":3,"b":4,"order":2},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":8,"b":3,"order":1},{"a":6,"b":9,"order":1},{"a":2,"b":3,"order":1}]
   },
   {
     name: "4-hydroxybutyl acrylate", aka: [],
@@ -2675,13 +2759,6 @@ window.MONOMER_DB = [
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":4,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1}]
   },
   {
-    name: "oligo(ethylene glycol) methyl ether methacrylate", aka: [],
-    formula: "C7H12O3", mass: 144.17, role: "alkene", kind: "vinyl",
-    polymers: ["Poly(oligo(ethylene glycol) methyl ether methacrylate)"],
-    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"O"},{"id":10,"el":"C"}],
-    bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":4,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1}]
-  },
-  {
     name: "oxetane", aka: [],
     formula: "C3H6O", mass: 58.08, role: "other", kind: "ring",
     polymers: ["Poly(oxetane)"],
@@ -3060,6 +3137,13 @@ window.MONOMER_DB = [
     bonds: [{"a":2,"b":3,"order":2},{"a":3,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":2},{"a":6,"b":8,"order":1},{"a":8,"b":9,"order":2},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":2},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":2},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":2},{"a":10,"b":15,"order":1}]
   },
   {
+    name: "vinyl decanoate", aka: [],
+    formula: "C12H22O2", mass: 198.31, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(vinyl decanoate)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":4,"b":6,"order":1}]
+  },
+  {
     name: "vinyl fluoride", aka: [],
     formula: "C2H3F", mass: 46.04, role: "alkene", kind: "vinyl",
     polymers: ["Poly(vinyl fluoride)"],
@@ -3074,6 +3158,13 @@ window.MONOMER_DB = [
     bonds: [{"a":2,"b":3,"order":2},{"a":3,"b":5,"order":1},{"a":5,"b":6,"order":1},{"a":6,"b":7,"order":2}]
   },
   {
+    name: "vinyl hexanoate", aka: [],
+    formula: "C8H14O2", mass: 142.2, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(vinyl hexanoate)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":4,"b":6,"order":1}]
+  },
+  {
     name: "vinyl laurate", aka: [],
     formula: "C14H26O2", mass: 226.36, role: "alkene", kind: "vinyl",
     polymers: ["Poly(vinyl laurate)"],
@@ -3086,6 +3177,20 @@ window.MONOMER_DB = [
     polymers: ["Poly(vinyl methacrylate)"],
     atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"O"},{"id":7,"el":"C"},{"id":8,"el":"C"}],
     bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":2,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":4,"b":6,"order":1},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":2}]
+  },
+  {
+    name: "vinyl octanoate", aka: [],
+    formula: "C10H18O2", mass: 170.25, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(vinyl octanoate)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":4,"b":6,"order":1}]
+  },
+  {
+    name: "vinyl palmitate", aka: [],
+    formula: "C18H34O2", mass: 282.47, role: "alkene", kind: "vinyl",
+    polymers: ["Poly(vinyl palmitate)"],
+    atoms: [{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"O"},{"id":4,"el":"C"},{"id":5,"el":"O"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"C"},{"id":9,"el":"C"},{"id":10,"el":"C"},{"id":11,"el":"C"},{"id":12,"el":"C"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"C"}],
+    bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":1},{"a":4,"b":5,"order":2},{"a":6,"b":7,"order":1},{"a":7,"b":8,"order":1},{"a":8,"b":9,"order":1},{"a":9,"b":10,"order":1},{"a":10,"b":11,"order":1},{"a":11,"b":12,"order":1},{"a":12,"b":13,"order":1},{"a":13,"b":14,"order":1},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":1},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":1},{"a":18,"b":19,"order":1},{"a":19,"b":20,"order":1},{"a":4,"b":6,"order":1}]
   },
   {
     name: "vinyl pivalate", aka: [],
