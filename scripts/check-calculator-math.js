@@ -1558,6 +1558,59 @@ const scale = (mmolMonomer, mmolInit, factor) => (mmolMonomer * factor) / (mmolI
 check("DP unchanged by scaling x20", scale(49.94, 0.25, 20), 199.8, 0.1, "");
 check("DP unchanged by scaling x0.02", scale(49.94, 0.25, 0.02), 199.8, 0.1, "");
 
+// ---- Isocyanate cure: isocyanate-cure.html, "A worked example" -------------
+// A polyether triol of 1000 g/eq at 200 ppm water, cured with a difunctional
+// isocyanate of 125 g/eq. Water is the point of the example: it consumes two
+// NCO per mole, so it moves the index without anybody mis-weighing anything.
+const R_GAS = 8.314462618;
+const eqOH = 10.00 / 1000;
+const molWater = 10.00 * 200 / 1e6 / 18.015;
+const eqOHeff = eqOH + 2 * molWater;
+const eqNCO = 1.250 / 125;
+const rCure = eqNCO / eqOHeff;
+check("cure example: water", molWater, 1.1102e-4, 1e-7, "mol");
+check("cure example: index dry", 100 * eqNCO / eqOH, 100.0, 0.05, "");
+check("cure example: index wet", 100 * rCure, 97.8, 0.05, "");
+// Gel point for a mixture, with functionalities averaged over GROUPS rather
+// than molecules. Water enters as a difunctional hydroxyl, which is exactly
+// why gw comes out below 3 for what is otherwise a pure triol.
+const triolMolecules = eqOH / 3, isoMolecules = eqNCO / 2;
+const gOH = 3 * triolMolecules + 2 * molWater, gNCO = 2 * isoMolecules;
+const gw = (3 * (3 * triolMolecules) + 2 * (2 * molWater)) / gOH;
+const fw = (2 * (2 * isoMolecules)) / gNCO;
+check("cure example: fw", fw, 2.000, 1e-6, "");
+check("cure example: gw", gw, 2.978, 0.001, "");
+check("cure example: alpha_gel", 1 / Math.sqrt(rCure * (fw - 1) * (gw - 1)), 0.7188, 5e-4, "");
+check("cure example: alpha_max", Math.min(1, 1 / rCure), 1.0, 1e-9, "");
+// Second order for a general ratio, ln[(1-r.a)/(1-a)] = kApp(1-r)t, fitted
+// through the origin because nothing has reacted at t = 0. These start from
+// the residual exotherms the page ships as its demo data.
+const kY = (a, r) => (Math.abs(1 - r) < 1e-6 ? a / (1 - a) : Math.log((1 - r * a) / (1 - a)) / (1 - r));
+const tToA = (a, k, r) => kY(a, r) / k;
+function fitThroughOrigin(pts, r) {
+  let sxy = 0, sxx = 0;
+  pts.forEach(([t, a]) => { sxy += t * kY(a, r); sxx += t * t; });
+  return sxy / sxx;
+}
+const DH0 = 72.0;
+const a60 = [[2, 44.9], [8, 20.8], [24, 8.2], [48, 4.0]].map(([t, h]) => [t, 1 - h / DH0]);
+const a70 = [[2, 34.4], [8, 13.0], [24, 4.5]].map(([t, h]) => [t, 1 - h / DH0]);
+const k60 = fitThroughOrigin(a60, rCure), k70 = fitThroughOrigin(a70, rCure);
+check("cure example: k at 60 C", k60, 0.3005, 2e-3, "1/h");
+check("cure example: k at 70 C", k70, 0.5410, 3e-3, "1/h");
+const EaCure = R_GAS * Math.log(k70 / k60) / (1 / 333.15 - 1 / 343.15);
+check("cure example: Ea", EaCure / 1000, 55.9, 0.4, "kJ/mol");
+check("cure example: hours to 0.95 at 60 C", tToA(0.95, k60, rCure), 52.9, 0.4, "h");
+check("cure example: hours to 0.95 at 70 C", tToA(0.95, k70, rCure), 29.4, 0.3, "h");
+// The second half of the example: 1.250 g of isocyanate becomes 1.342 g, and
+// the ceiling drops below the target that was comfortably reachable before.
+const rHigh = (1.342 / 125) / eqOHeff;
+check("cure example: index at 1.342 g", 100 * rHigh, 105.0, 0.1, "");
+check("cure example: alpha_max at index 105", Math.min(1, 1 / rHigh), 0.9521, 5e-4, "");
+// Rubber elasticity on the strand count the page reports at the target.
+check("cure example: E-prime from nu_e 289.9", 3 * 289.9 * R_GAS * 298.15 / 1e6, 2.16, 0.01, "MPa");
+check("cure example: Mc from nu_e 289.9", 1.01e6 / 289.9, 3483, 2, "g/mol");
+
 // ---- report ---------------------------------------------------------------
 cases.forEach((c) => {
   const mark = c.ok ? "  ok  " : "  FAIL";

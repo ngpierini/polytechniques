@@ -28,7 +28,7 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=34" defer></script>
+<script src="nav.js?v=35" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
@@ -53,6 +53,19 @@
   <div class="card">
     <p class="guide-note">
       This site keeps growing as I run into more things worth building. There's no fixed release schedule, so entries land whenever a tool or guide is ready, roughly newest first below. Have a suggestion? <a href="https://github.com/ngpierini/polytechniques/issues/new" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a>.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>&#129514; Isocyanate Cure Conversion: one number, measured four ways</h3>
+    <p class="guide-note">
+      A polyurethane cure has one quantity worth tracking &ndash; how much of the isocyanate has reacted &ndash; and no instrument measures it directly. The new <a href="isocyanate-cure.html"><strong>Isocyanate Cure Conversion</strong></a> page takes what the instruments <em>do</em> report and turns each into a conversion: a DSC residual exotherm, an FTIR band at 2270&nbsp;cm<sup>&minus;1</sup> ratioed against an unchanging reference, or a glass transition through the DiBenedetto equation. Three routes resting on different physics, side by side, so when they agree the number is probably right and when they diverge the pattern says which to distrust.
+    </p>
+    <p class="guide-note">
+      The part that catches people out is that the formulation decides how far the cure <em>can</em> go before any measurement means anything. Run the isocyanate in excess and the hydroxyl runs out first, capping conversion at 1/r: at index 105 that ceiling is <strong>0.952</strong>, so a specification demanding 98&nbsp;% NCO conversion is asking for something arithmetically impossible rather than merely slow. Water belongs in that arithmetic and it counts twice, because it takes one isocyanate to make an amine and a second to make the urea. In the worked example, 200&nbsp;ppm of water in the polyol moves the index by more than two points &ndash; larger than most people's weighing error.
+    </p>
+    <p class="guide-note">
+      From the conversions it fits second-order cure kinetics in the general form, <strong>ln[(1&nbsp;&minus;&nbsp;r&alpha;)/(1&nbsp;&minus;&nbsp;&alpha;)] = k<sub>app</sub>(1&nbsp;&minus;&nbsp;r)t</strong>, rather than the balanced-stoichiometry shortcut; with two cure temperatures it returns an activation energy, and with that a cure time at any other temperature. Past the gel point it counts elastically effective strands by the same Miller&ndash;Macosko recursion the <a href="network-formation.html">Network Formation</a> page uses, so the two cannot drift apart, and reports the rubbery modulus to set against what a DMA actually measures. There is a section on how each method fails too &ndash; baseline drift on a nearly cured DSC scan, carbodiimide and CO<sub>2</sub> absorbing near the isocyanate band, and vitrification quietly stopping a reaction the kinetic fit still thinks is running.
     </p>
   </div>
 
