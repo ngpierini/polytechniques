@@ -1,0 +1,418 @@
+{
+ "1184966-74-2": {
+  "formula": "C5H2F8",
+  "name": "1-Propene, 1,1,2,3,3,3-hexafluoro-, compd. with 1,1-difluoroethene (1:1)"
+ },
+ "162005-47-2": {
+  "formula": "(C8H6O4.C6H14O2)x",
+  "name": "1,4-Benzenedicarboxylic acid, polymer with 3-methyl-1,5-pentanediol"
+ },
+ "24936-41-2": {
+  "formula": "(C9H10)x",
+  "name": "Benzene, 1-ethenyl-4-methyl-, homopolymer"
+ },
+ "24937-16-4": {
+  "formula": "(C12H23NO)n",
+  "name": "Poly[imino(1-oxo-1,12-dodecanediyl)]"
+ },
+ "24937-79-9": {
+  "formula": "(C2H2F2)x",
+  "name": "Ethene, 1,1-difluoro-, homopolymer"
+ },
+ "24937-93-7": {
+  "formula": "(C6H10O4.C4H10O2)x",
+  "name": "Hexanedioic acid, polymer with 1,3-butanediol"
+ },
+ "24938-37-2": {
+  "formula": "(C6H10O4.C2H6O2)x",
+  "name": "Hexanedioic acid, polymer with 1,2-ethanediol"
+ },
+ "24938-60-1": {
+  "formula": "(C14H10N2O2)n",
+  "name": "Poly(imino-1,3-phenyleneiminocarbonyl-1,3-phenylenecarbonyl)"
+ },
+ "24938-64-5": {
+  "formula": "(C14H10N2O2)n",
+  "name": "Poly(imino-1,4-phenyleneiminocarbonyl-1,4-phenylenecarbonyl)"
+ },
+ "24968-12-5": {
+  "formula": "(C12H12O4)n",
+  "name": "Poly(oxy-1,4-butanediyloxycarbonyl-1,4-phenylenecarbonyl)"
+ },
+ "24969-06-0": {
+  "formula": "(C3H5ClO)x",
+  "name": "Oxirane, (chloromethyl)-, homopolymer"
+ },
+ "24980-41-4": {
+  "formula": "(C6H10O2)x",
+  "name": "2-Oxepanone, homopolymer"
+ },
+ "24981-14-4": {
+  "formula": "(C2H3F)x",
+  "name": "Ethene, fluoro-, homopolymer"
+ },
+ "25014-15-7": {
+  "formula": "(C7H7N)x",
+  "name": "2-Vinylpyridine homopolymer"
+ },
+ "25014-31-7": {
+  "formula": "(C9H10)x",
+  "name": "Benzene, (1-methylethenyl)-, homopolymer"
+ },
+ "25014-41-9": {
+  "formula": "(C3H3N)x",
+  "name": "Polyacrylonitrile"
+ },
+ "25035-84-1": {
+  "formula": "(C5H8O2)x",
+  "name": "Propanoic acid, ethenyl ester, homopolymer"
+ },
+ "25037-32-5": {
+  "formula": "(C10H18O4.C2H6O2)x",
+  "name": "Decanedioic acid, polymer with 1,2-ethanediol"
+ },
+ "25037-45-0": {
+  "formula": "(C15H16O2.CH2O3)x",
+  "name": "Carbonic acid, polymer with 4,4'-(1-methylethylidene)bis[phenol]"
+ },
+ "25038-54-4": {
+  "formula": "(C6H11NO)n",
+  "name": "Polycaprolactam"
+ },
+ "25038-59-9": {
+  "formula": "(C10H8O4)n",
+  "name": "Poly(ethylene terephthalate)"
+ },
+ "25038-76-0": {
+  "formula": "(C7H10)x",
+  "name": "Bicyclo[2.2.1]hept-2-ene, homopolymer"
+ },
+ "25067-02-1": {
+  "formula": "(C11H20O2.C4H6O2)x",
+  "name": "2-Propenoic acid, 2-ethylhexyl ester, polymer with ethenyl acetate"
+ },
+ "25067-05-4": {
+  "formula": "(C7H10O3)x",
+  "name": "2-Propenoic acid, 2-methyl-, oxiranylmethyl ester, homopolymer"
+ },
+ "25067-08-7": {
+  "formula": "(C12H24)x",
+  "name": "1-Dodecene, homopolymer"
+ },
+ "25068-26-2": {
+  "formula": "(C6H12)x",
+  "name": "1-Pentene, 4-methyl-, homopolymer"
+ },
+ "25087-26-7": {
+  "formula": "(C4H6O2)x",
+  "name": "Methacrylic acid homopolymer"
+ },
+ "25101-03-5": {
+  "formula": "(C6H10O4.C3H8O2)x",
+  "name": "Poly(1,2-propylene glycol adipate)"
+ },
+ "25103-87-1": {
+  "formula": "(C6H10O4.C4H10O2)x",
+  "name": "Hexanedioic acid, polymer with 1,4-butanediol"
+ },
+ "25104-37-4": {
+  "formula": "(C4H8O)x",
+  "name": "Poly(vinyl ethyl ether)"
+ },
+ "25134-01-4": {
+  "formula": "(C8H10O)x",
+  "name": "Phenol, 2,6-dimethyl-, homopolymer"
+ },
+ "25154-86-3": {
+  "formula": "(C8H15NO2)x",
+  "name": "Dimethylaminoethyl methacrylate homopolymer"
+ },
+ "25189-55-3": {
+  "formula": "(C6H11NO)x",
+  "name": "2-Propenamide, N-(1-methylethyl)-, homopolymer"
+ },
+ "25189-83-7": {
+  "formula": "(C8H13NO)x",
+  "name": "2H-Azepin-2-one, 1-ethenylhexahydro-, homopolymer"
+ },
+ "25190-06-1": {
+  "formula": "(C4H8O)nH2O",
+  "name": "Poly(oxy-1,4-butanediyl), .alpha.-hydro-.omega.-hydroxy-"
+ },
+ "25212-06-0": {
+  "formula": "(C6H14O2.C6H10O4)x",
+  "name": "Hexanedioic acid, polymer with 1,6-hexanediol"
+ },
+ "25232-41-1": {
+  "formula": "(C7H7N)x",
+  "name": "4-Vinylpyridine homopolymer"
+ },
+ "25249-16-5": {
+  "formula": "(C6H10O3)x",
+  "name": "2-Propenoic acid, 2-methyl-, 2-hydroxyethyl ester, homopolymer"
+ },
+ "25322-68-3": {
+  "formula": "(C2H4O)nH2O",
+  "name": "Polyethylene glycol"
+ },
+ "25322-69-4": {
+  "formula": "(C3H6O)nH2O",
+  "name": "Polypropylene glycol"
+ },
+ "25569-53-3": {
+  "formula": "(C4H6O4.C2H6O2)x",
+  "name": "Succinic acid ethyleneglycol polymer"
+ },
+ "25608-63-3": {
+  "formula": "(C12H10O4S.C12H8Cl2O2S)x",
+  "name": "Phenol, 4,4'-sulfonylbis-, polymer with 1,1'-sulfonylbis[4-chlorobenzene]"
+ },
+ "25610-19-9": {
+  "formula": "(C8H6O4.C2H6O2)x",
+  "name": "1,2-Benzenedicarboxylic acid, polymer with 1,2-ethanediol"
+ },
+ "25736-86-1": {
+  "formula": "(C2H4O)nC4H6O2",
+  "name": "Poly(oxy-1,2-ethanediyl), .alpha.-(2-methyl-1-oxo-2-propenyl)-.omega.-hydroxy-"
+ },
+ "25768-50-7": {
+  "formula": "(C10H16O2)x",
+  "name": "2-Propenoic acid, 2-methyl-, cyclohexyl ester, homopolymer"
+ },
+ "25777-14-4": {
+  "formula": "(C4H10O2.C4H6O4)x",
+  "name": "Butanedioic acid, polymer with 1,4-butanediol"
+ },
+ "25805-17-8": {
+  "formula": "(C5H9NO)x",
+  "name": "Oxazole, 2-ethyl-4,5-dihydro-, homopolymer"
+ },
+ "26222-20-8": {
+  "formula": "(C10H18O4.C3H8O2)x",
+  "name": "Decanedioic acid, polymer with 1,2-propanediol"
+ },
+ "26590-75-0": {
+  "formula": "(C8H6O4.C3H8O2)x",
+  "name": "1,4-Benzenedicarboxylic acid, polymer with 1,3-propanediol"
+ },
+ "26590-78-3": {
+  "formula": "(C8H6O4.C5H12O2)x",
+  "name": "1,4-Benzenedicarboxylic acid, polymer with 2,2-dimethyl-1,3-propanediol"
+ },
+ "26745-88-0": {
+  "formula": "(C10H18O4.C6H14O2)x",
+  "name": "Decanedioic acid, polymer with 1,6-hexanediol"
+ },
+ "26760-99-6": {
+  "formula": "(C9H16O4.C2H6O2)x",
+  "name": "Nonanedioic acid, polymer with 1,2-ethanediol"
+ },
+ "26810-06-0": {
+  "formula": "(C8H6O4.C2H6O2)x",
+  "name": "1,3-Benzenedicarboxylic acid, polymer with 1,2-ethanediol"
+ },
+ "26811-89-2": {
+  "formula": "(C8H6O4.C5H12O2)x",
+  "name": "1,3-Benzenedicarboxylic acid, polymer with 2,2-dimethyl-1,3-propanediol"
+ },
+ "27925-07-1": {
+  "formula": "(C6H10O4.C5H12O2)x",
+  "name": "Hexanedioic acid, polymer with 2,2-dimethyl-1,3-propanediol"
+ },
+ "27987-32-2": {
+  "formula": "(C7H12O3)x",
+  "name": "2-Propenoic acid, 2-methyl-, 2-methoxyethyl ester, homopolymer"
+ },
+ "28158-15-8": {
+  "formula": "(C10H18O4.C5H12O2)x",
+  "name": "Decanedioic acid, polymer with 2,2-dimethyl-1,3-propanediol"
+ },
+ "28257-92-3": {
+  "formula": "(C5H12O2.C4H6O4)x",
+  "name": "Butanedioic acid, polymer with 2,2-dimethyl-1,3-propanediol"
+ },
+ "28606-47-5": {
+  "formula": "(C10H18O4.C4H10O2)x",
+  "name": "Decanedioic acid, polymer with 1,3-butanediol"
+ },
+ "28964-24-1": {
+  "formula": "(C13H24O4.C2H6O2)x",
+  "name": "Tridecanedioic acid, polymer with 1,2-ethanediol"
+ },
+ "29408-58-0": {
+  "formula": "(C9H16O4.C5H12O2)x",
+  "name": "Nonanedioic acid, polymer with 2,2-dimethyl-1,3-propanediol"
+ },
+ "29408-67-1": {
+  "formula": "(C9H16O4.C3H8O2)x",
+  "name": "Nonanedioic acid, polymer with 1,2-propanediol"
+ },
+ "29697-08-3": {
+  "formula": "(C9H16O4.C6H14O2)x",
+  "name": "Nonanedioic acid, polymer with 1,6-hexanediol"
+ },
+ "30322-18-0": {
+  "formula": "(C6H10O4S.C5H12O2)x",
+  "name": "Propanoic acid, 3,3'-thiobis-, polymer with 2,2-dimethyl-1,3-propanediol"
+ },
+ "30795-57-4": {
+  "formula": "(C9H16O4.C4H10O2)x",
+  "name": "Nonanedioic acid, polymer with 1,4-butanediol"
+ },
+ "32131-17-2": {
+  "formula": "(C12H22N2O2)n",
+  "name": "Poly[imino(1,6-dioxo-1,6-hexanediyl)imino-1,6-hexanediyl]"
+ },
+ "33478-30-7": {
+  "formula": "(C8H16O2.C6H10O4)x",
+  "name": "Hexanedioic acid, polymer with 1,4-cyclohexanedimethanol"
+ },
+ "37130-81-7": {
+  "formula": "(C8H6O4.C3H8O2)x",
+  "name": "1,3-Benzenedicarboxylic acid, polymer with 1,2-propanediol"
+ },
+ "39751-34-3": {
+  "formula": "(C6H14O2.C6H10O4)x",
+  "name": "Hexanedioic acid, polymer with 3-methyl-1,5-pentanediol"
+ },
+ "40374-66-1": {
+  "formula": "(C8H6O4.C6H14O2)x",
+  "name": "1,3-Benzenedicarboxylic acid, polymer with 1,6-hexanediol"
+ },
+ "50327-95-2": {
+  "formula": "(C12H22O4.C5H12O2)x",
+  "name": "Dodecanedioic acid, polymer with 2,2-dimethyl-1,3-propanediol"
+ },
+ "60836-39-7": {
+  "formula": "(C8H16O2.C4H6O4)x",
+  "name": "Butanedioic acid, polymer with 1,4-cyclohexanedimethanol"
+ },
+ "69089-45-8": {
+  "formula": "(C6H10O2.C5H12O2)x",
+  "name": "2-Oxepanone, polymer with 2,2-dimethyl-1,3-propanediol"
+ },
+ "72018-12-3": {
+  "formula": "(C3H5NO)x",
+  "name": "Formamide, N-ethenyl-, homopolymer"
+ },
+ "76962-70-4": {
+  "formula": "(C8H6O4.C6H14O2)x",
+  "name": "1,3-Benzenedicarboxylic acid, polymer with 3-methyl-1,5-pentanediol"
+ },
+ "9002-81-7": {
+  "formula": "(CH2O)n",
+  "name": "Poly(oxymethylene)"
+ },
+ "9002-83-9": {
+  "formula": "(C2ClF3)x",
+  "name": "Ethene, chlorotrifluoro-, homopolymer"
+ },
+ "9002-84-0": {
+  "formula": "(C2F4)x",
+  "name": "Polytetrafluoroethylene"
+ },
+ "9002-85-1": {
+  "formula": "(C2H2Cl2)x",
+  "name": "Ethene, 1,1-dichloro-, homopolymer"
+ },
+ "9002-86-2": {
+  "formula": "(C2H3Cl)x",
+  "name": "Polyvinyl chloride"
+ },
+ "9002-88-4": {
+  "formula": "(C2H4)x",
+  "name": "Polyethylene"
+ },
+ "9002-89-5": {
+  "formula": "(C2H4O)x",
+  "name": "Polyvinyl alcohol"
+ },
+ "9003-01-4": {
+  "formula": "(C3H4O2)x",
+  "name": "Polyacrylic acid"
+ },
+ "9003-05-8": {
+  "formula": "(C3H5NO)x",
+  "name": "Polyacrylamide"
+ },
+ "9003-07-0": {
+  "formula": "(C3H6)x",
+  "name": "Polypropylene"
+ },
+ "9003-09-2": {
+  "formula": "(C3H6O)x",
+  "name": "Ethene, methoxy-, homopolymer"
+ },
+ "9003-17-2": {
+  "formula": "(C4H6)x",
+  "name": "Polybutadiene"
+ },
+ "9003-20-7": {
+  "formula": "(C4H6O2)x",
+  "name": "Polyvinyl acetate"
+ },
+ "9003-21-8": {
+  "formula": "(C4H6O2)x",
+  "name": "2-Propenoic acid, methyl ester, homopolymer"
+ },
+ "9003-27-4": {
+  "formula": "(C4H8)x",
+  "name": "Polyisobutylene"
+ },
+ "9003-28-5": {
+  "formula": "(C4H8)x",
+  "name": "Poly(1-butene)"
+ },
+ "9003-31-0": {
+  "formula": "(C5H8)x",
+  "name": "1,3-Butadiene, 2-methyl-, homopolymer"
+ },
+ "9003-32-1": {
+  "formula": "(C5H8O2)x",
+  "name": "Ethyl acrylate homopolymer"
+ },
+ "9003-39-8": {
+  "formula": "(C6H9NO)x",
+  "name": "Polyvinylpyrrolidone"
+ },
+ "9003-42-3": {
+  "formula": "(C6H10O2)x",
+  "name": "2-Propenoic acid, 2-methyl-, ethyl ester, homopolymer"
+ },
+ "9003-49-0": {
+  "formula": "(C7H12O2)x",
+  "name": "Butyl acrylate homopolymer"
+ },
+ "9003-53-6": {
+  "formula": "(C8H8)x",
+  "name": "Polystyrene"
+ },
+ "9003-63-8": {
+  "formula": "(C8H14O2)x",
+  "name": "Butyl methacrylate homopolymer"
+ },
+ "9003-68-3": {
+  "formula": "(C8H6O4.C2H6O2)x",
+  "name": "1,4-Benzenedicarboxylic acid, polymer with 1,2-ethanediol"
+ },
+ "9003-77-4": {
+  "formula": "(C11H20O2)x",
+  "name": "2-Propenoic acid, 2-ethylhexyl ester, homopolymer"
+ },
+ "9008-66-6": {
+  "formula": "(C16H30N2O2)n",
+  "name": "Poly[imino-1,6-hexanediylimino(1,10-dioxo-1,10-decanediyl)]"
+ },
+ "9010-98-4": {
+  "formula": "(C4H5Cl)x",
+  "name": "Chloroprene polymer"
+ },
+ "9011-14-7": {
+  "formula": "(C5H8O2)x",
+  "name": "Methyl methacrylate homopolymer"
+ },
+ "9016-00-6": {
+  "formula": "(C2H6OSi)n",
+  "name": "Poly[oxy(dimethylsilylene)]"
+ }
+}

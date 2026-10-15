@@ -1,0 +1,2360 @@
+{
+ "ethylene:oxalate": {
+  "ok": true,
+  "cas": "27615-22-1",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "ethylene:malonate": {
+  "ok": false
+ },
+ "ethylene:succinate": {
+  "ok": true,
+  "cas": "25569-53-3",
+  "formula": "(C4H6O4.C2H6O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "ethylene:glutarate": {
+  "ok": true,
+  "cas": "26983-13-1",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "ethylene:adipate": {
+  "ok": true,
+  "cas": "24938-37-2",
+  "formula": "(C6H10O4.C2H6O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "ethylene:pimelate": {
+  "ok": false
+ },
+ "ethylene:suberate": {
+  "ok": true,
+  "cas": "25776-26-5",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "ethylene:azelate": {
+  "ok": true,
+  "cas": "26760-99-6",
+  "formula": "(C9H16O4.C2H6O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "ethylene:sebacate": {
+  "ok": true,
+  "cas": "25037-32-5",
+  "formula": "(C10H18O4.C2H6O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "ethylene:undecanedioate": {
+  "ok": false
+ },
+ "ethylene:dodecanedioate": {
+  "ok": false
+ },
+ "ethylene:brassylate": {
+  "ok": true,
+  "cas": "28964-24-1",
+  "formula": "(C13H24O4.C2H6O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "ethylene:tetradecanedioate": {
+  "ok": false
+ },
+ "ethylene:hexadecanedioate": {
+  "ok": false
+ },
+ "ethylene:fumarate": {
+  "ok": false
+ },
+ "ethylene:maleate": {
+  "ok": false
+ },
+ "ethylene:itaconate": {
+  "ok": false
+ },
+ "ethylene:diglycolate": {
+  "ok": false
+ },
+ "ethylene:thiodipropionate": {
+  "ok": false
+ },
+ "ethylene:terephthalate": {
+  "ok": true,
+  "cas": "9003-68-3",
+  "formula": "(C8H6O4.C2H6O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "ethylene:isophthalate": {
+  "ok": true,
+  "cas": "26810-06-0",
+  "formula": "(C8H6O4.C2H6O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "ethylene:phthalate": {
+  "ok": true,
+  "cas": "25610-19-9",
+  "formula": "(C8H6O4.C2H6O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "ethylene:naphthalate": {
+  "ok": true,
+  "cas": null,
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "ethylene:furanoate": {
+  "ok": true,
+  "cas": "27598-47-6",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "ethylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "ethylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "trimethylene:oxalate": {
+  "ok": false
+ },
+ "trimethylene:malonate": {
+  "ok": false
+ },
+ "trimethylene:succinate": {
+  "ok": false
+ },
+ "trimethylene:glutarate": {
+  "ok": true,
+  "cas": "52256-48-1",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "trimethylene:adipate": {
+  "ok": true,
+  "cas": "36568-42-0",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "trimethylene:pimelate": {
+  "ok": false
+ },
+ "trimethylene:suberate": {
+  "ok": false
+ },
+ "trimethylene:azelate": {
+  "ok": false
+ },
+ "trimethylene:sebacate": {
+  "ok": true,
+  "cas": "28471-97-8",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "trimethylene:undecanedioate": {
+  "ok": false
+ },
+ "trimethylene:dodecanedioate": {
+  "ok": false
+ },
+ "trimethylene:brassylate": {
+  "ok": false
+ },
+ "trimethylene:tetradecanedioate": {
+  "ok": false
+ },
+ "trimethylene:hexadecanedioate": {
+  "ok": false
+ },
+ "trimethylene:fumarate": {
+  "ok": false
+ },
+ "trimethylene:maleate": {
+  "ok": false
+ },
+ "trimethylene:itaconate": {
+  "ok": false
+ },
+ "trimethylene:diglycolate": {
+  "ok": false
+ },
+ "trimethylene:thiodipropionate": {
+  "ok": false
+ },
+ "trimethylene:terephthalate": {
+  "ok": true,
+  "cas": "26590-75-0",
+  "formula": "(C8H6O4.C3H8O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "trimethylene:isophthalate": {
+  "ok": false
+ },
+ "trimethylene:phthalate": {
+  "ok": false
+ },
+ "trimethylene:naphthalate": {
+  "ok": false
+ },
+ "trimethylene:furanoate": {
+  "ok": true,
+  "cas": "935872-29-0",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "trimethylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "trimethylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "butylene:oxalate": {
+  "ok": false
+ },
+ "butylene:malonate": {
+  "ok": false
+ },
+ "butylene:succinate": {
+  "ok": true,
+  "cas": "25777-14-4",
+  "formula": "(C4H10O2.C4H6O4)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "butylene:glutarate": {
+  "ok": true,
+  "cas": "52256-54-9",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "butylene:adipate": {
+  "ok": true,
+  "cas": "25103-87-1",
+  "formula": "(C6H10O4.C4H10O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "butylene:pimelate": {
+  "ok": false
+ },
+ "butylene:suberate": {
+  "ok": true,
+  "cas": "52256-58-3",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "butylene:azelate": {
+  "ok": true,
+  "cas": "30795-57-4",
+  "formula": "(C9H16O4.C4H10O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "butylene:sebacate": {
+  "ok": false
+ },
+ "butylene:undecanedioate": {
+  "ok": false
+ },
+ "butylene:dodecanedioate": {
+  "ok": false
+ },
+ "butylene:brassylate": {
+  "ok": false
+ },
+ "butylene:tetradecanedioate": {
+  "ok": false
+ },
+ "butylene:hexadecanedioate": {
+  "ok": false
+ },
+ "butylene:fumarate": {
+  "ok": false
+ },
+ "butylene:maleate": {
+  "ok": false
+ },
+ "butylene:itaconate": {
+  "ok": false
+ },
+ "butylene:diglycolate": {
+  "ok": false
+ },
+ "butylene:thiodipropionate": {
+  "ok": false
+ },
+ "butylene:terephthalate": {
+  "ok": true,
+  "cas": "26062-94-2",
+  "formula": "(C8H6O4.C4H10O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "butylene:isophthalate": {
+  "ok": true,
+  "cas": "26615-64-5",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "butylene:phthalate": {
+  "ok": true,
+  "cas": "26352-63-6",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "butylene:naphthalate": {
+  "ok": false
+ },
+ "butylene:furanoate": {
+  "ok": true,
+  "cas": "935872-21-2",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "butylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "butylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "pentylene:oxalate": {
+  "ok": false
+ },
+ "pentylene:malonate": {
+  "ok": false
+ },
+ "pentylene:succinate": {
+  "ok": true,
+  "cas": "52256-49-2",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "pentylene:glutarate": {
+  "ok": false
+ },
+ "pentylene:adipate": {
+  "ok": true,
+  "cas": "26678-02-4",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "pentylene:pimelate": {
+  "ok": true,
+  "cas": "52256-56-1",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "pentylene:suberate": {
+  "ok": false
+ },
+ "pentylene:azelate": {
+  "ok": false
+ },
+ "pentylene:sebacate": {
+  "ok": true,
+  "cas": "65992-44-1",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "pentylene:undecanedioate": {
+  "ok": false
+ },
+ "pentylene:dodecanedioate": {
+  "ok": false
+ },
+ "pentylene:brassylate": {
+  "ok": false
+ },
+ "pentylene:tetradecanedioate": {
+  "ok": false
+ },
+ "pentylene:hexadecanedioate": {
+  "ok": false
+ },
+ "pentylene:fumarate": {
+  "ok": false
+ },
+ "pentylene:maleate": {
+  "ok": false
+ },
+ "pentylene:itaconate": {
+  "ok": false
+ },
+ "pentylene:diglycolate": {
+  "ok": false
+ },
+ "pentylene:thiodipropionate": {
+  "ok": false
+ },
+ "pentylene:terephthalate": {
+  "ok": true,
+  "cas": "25930-93-2",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "pentylene:isophthalate": {
+  "ok": false
+ },
+ "pentylene:phthalate": {
+  "ok": false
+ },
+ "pentylene:naphthalate": {
+  "ok": false
+ },
+ "pentylene:furanoate": {
+  "ok": false
+ },
+ "pentylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "pentylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "hexylene:oxalate": {
+  "ok": false
+ },
+ "hexylene:malonate": {
+  "ok": false
+ },
+ "hexylene:succinate": {
+  "ok": true,
+  "cas": "27516-89-8",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "hexylene:glutarate": {
+  "ok": true,
+  "cas": "26745-02-8",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "hexylene:adipate": {
+  "ok": true,
+  "cas": "25212-06-0",
+  "formula": "(C6H14O2.C6H10O4)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "hexylene:pimelate": {
+  "ok": false
+ },
+ "hexylene:suberate": {
+  "ok": true,
+  "cas": "35464-92-7",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "hexylene:azelate": {
+  "ok": true,
+  "cas": "29697-08-3",
+  "formula": "(C9H16O4.C6H14O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "hexylene:sebacate": {
+  "ok": true,
+  "cas": "26745-88-0",
+  "formula": "(C10H18O4.C6H14O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "hexylene:undecanedioate": {
+  "ok": false
+ },
+ "hexylene:dodecanedioate": {
+  "ok": true,
+  "cas": null,
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "hexylene:brassylate": {
+  "ok": false
+ },
+ "hexylene:tetradecanedioate": {
+  "ok": false
+ },
+ "hexylene:hexadecanedioate": {
+  "ok": false
+ },
+ "hexylene:fumarate": {
+  "ok": false
+ },
+ "hexylene:maleate": {
+  "ok": false
+ },
+ "hexylene:itaconate": {
+  "ok": false
+ },
+ "hexylene:diglycolate": {
+  "ok": false
+ },
+ "hexylene:thiodipropionate": {
+  "ok": false
+ },
+ "hexylene:terephthalate": {
+  "ok": false
+ },
+ "hexylene:isophthalate": {
+  "ok": true,
+  "cas": "40374-66-1",
+  "formula": "(C8H6O4.C6H14O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "hexylene:phthalate": {
+  "ok": true,
+  "cas": "27516-71-8",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "hexylene:naphthalate": {
+  "ok": true,
+  "cas": "28605-08-5",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "hexylene:furanoate": {
+  "ok": false
+ },
+ "hexylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "hexylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "heptylene:oxalate": {
+  "ok": false
+ },
+ "heptylene:malonate": {
+  "ok": false
+ },
+ "heptylene:succinate": {
+  "ok": false
+ },
+ "heptylene:glutarate": {
+  "ok": false
+ },
+ "heptylene:adipate": {
+  "ok": false
+ },
+ "heptylene:pimelate": {
+  "ok": false
+ },
+ "heptylene:suberate": {
+  "ok": false
+ },
+ "heptylene:azelate": {
+  "ok": false
+ },
+ "heptylene:sebacate": {
+  "ok": false
+ },
+ "heptylene:undecanedioate": {
+  "ok": false
+ },
+ "heptylene:dodecanedioate": {
+  "ok": false
+ },
+ "heptylene:brassylate": {
+  "ok": false
+ },
+ "heptylene:tetradecanedioate": {
+  "ok": false
+ },
+ "heptylene:hexadecanedioate": {
+  "ok": false
+ },
+ "heptylene:fumarate": {
+  "ok": false
+ },
+ "heptylene:maleate": {
+  "ok": false
+ },
+ "heptylene:itaconate": {
+  "ok": false
+ },
+ "heptylene:diglycolate": {
+  "ok": false
+ },
+ "heptylene:thiodipropionate": {
+  "ok": false
+ },
+ "heptylene:terephthalate": {
+  "ok": true,
+  "cas": "27576-65-4",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "heptylene:isophthalate": {
+  "ok": false
+ },
+ "heptylene:phthalate": {
+  "ok": false
+ },
+ "heptylene:naphthalate": {
+  "ok": false
+ },
+ "heptylene:furanoate": {
+  "ok": false
+ },
+ "heptylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "heptylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "octylene:oxalate": {
+  "ok": false
+ },
+ "octylene:malonate": {
+  "ok": false
+ },
+ "octylene:succinate": {
+  "ok": true,
+  "cas": "52256-51-6",
+  "formula": null,
+  "by": "name only",
+  "source": "PubChem"
+ },
+ "octylene:glutarate": {
+  "ok": false
+ },
+ "octylene:adipate": {
+  "ok": false
+ },
+ "octylene:pimelate": {
+  "ok": false
+ },
+ "octylene:suberate": {
+  "ok": false
+ },
+ "octylene:azelate": {
+  "ok": false
+ },
+ "octylene:sebacate": {
+  "ok": false
+ },
+ "octylene:undecanedioate": {
+  "ok": false
+ },
+ "octylene:dodecanedioate": {
+  "ok": false
+ },
+ "octylene:brassylate": {
+  "ok": false
+ },
+ "octylene:tetradecanedioate": {
+  "ok": false
+ },
+ "octylene:hexadecanedioate": {
+  "ok": false
+ },
+ "octylene:fumarate": {
+  "ok": false
+ },
+ "octylene:maleate": {
+  "ok": false
+ },
+ "octylene:itaconate": {
+  "ok": false
+ },
+ "octylene:diglycolate": {
+  "ok": false
+ },
+ "octylene:thiodipropionate": {
+  "ok": false
+ },
+ "octylene:terephthalate": {
+  "ok": false
+ },
+ "octylene:isophthalate": {
+  "ok": false
+ },
+ "octylene:phthalate": {
+  "ok": false
+ },
+ "octylene:naphthalate": {
+  "ok": false
+ },
+ "octylene:furanoate": {
+  "ok": false
+ },
+ "octylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "octylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "nonylene:oxalate": {
+  "ok": false
+ },
+ "nonylene:malonate": {
+  "ok": false
+ },
+ "nonylene:succinate": {
+  "ok": false
+ },
+ "nonylene:glutarate": {
+  "ok": false
+ },
+ "nonylene:adipate": {
+  "ok": false
+ },
+ "nonylene:pimelate": {
+  "ok": false
+ },
+ "nonylene:suberate": {
+  "ok": false
+ },
+ "nonylene:azelate": {
+  "ok": false
+ },
+ "nonylene:sebacate": {
+  "ok": false
+ },
+ "nonylene:undecanedioate": {
+  "ok": false
+ },
+ "nonylene:dodecanedioate": {
+  "ok": false
+ },
+ "nonylene:brassylate": {
+  "ok": false
+ },
+ "nonylene:tetradecanedioate": {
+  "ok": false
+ },
+ "nonylene:hexadecanedioate": {
+  "ok": false
+ },
+ "nonylene:fumarate": {
+  "ok": false
+ },
+ "nonylene:maleate": {
+  "ok": false
+ },
+ "nonylene:itaconate": {
+  "ok": false
+ },
+ "nonylene:diglycolate": {
+  "ok": false
+ },
+ "nonylene:thiodipropionate": {
+  "ok": false
+ },
+ "nonylene:terephthalate": {
+  "ok": false
+ },
+ "nonylene:isophthalate": {
+  "ok": false
+ },
+ "nonylene:phthalate": {
+  "ok": false
+ },
+ "nonylene:naphthalate": {
+  "ok": false
+ },
+ "nonylene:furanoate": {
+  "ok": false
+ },
+ "nonylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "nonylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "decylene:oxalate": {
+  "ok": false
+ },
+ "decylene:malonate": {
+  "ok": false
+ },
+ "decylene:succinate": {
+  "ok": false
+ },
+ "decylene:glutarate": {
+  "ok": false
+ },
+ "decylene:adipate": {
+  "ok": false
+ },
+ "decylene:pimelate": {
+  "ok": false
+ },
+ "decylene:suberate": {
+  "ok": false
+ },
+ "decylene:azelate": {
+  "ok": false
+ },
+ "decylene:sebacate": {
+  "ok": false
+ },
+ "decylene:undecanedioate": {
+  "ok": false
+ },
+ "decylene:dodecanedioate": {
+  "ok": false
+ },
+ "decylene:brassylate": {
+  "ok": false
+ },
+ "decylene:tetradecanedioate": {
+  "ok": false
+ },
+ "decylene:hexadecanedioate": {
+  "ok": false
+ },
+ "decylene:fumarate": {
+  "ok": false
+ },
+ "decylene:maleate": {
+  "ok": false
+ },
+ "decylene:itaconate": {
+  "ok": false
+ },
+ "decylene:diglycolate": {
+  "ok": false
+ },
+ "decylene:thiodipropionate": {
+  "ok": false
+ },
+ "decylene:terephthalate": {
+  "ok": false
+ },
+ "decylene:isophthalate": {
+  "ok": false
+ },
+ "decylene:phthalate": {
+  "ok": false
+ },
+ "decylene:naphthalate": {
+  "ok": false
+ },
+ "decylene:furanoate": {
+  "ok": false
+ },
+ "decylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "decylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "undecylene:oxalate": {
+  "ok": false
+ },
+ "undecylene:malonate": {
+  "ok": false
+ },
+ "undecylene:succinate": {
+  "ok": false
+ },
+ "undecylene:glutarate": {
+  "ok": false
+ },
+ "undecylene:adipate": {
+  "ok": false
+ },
+ "undecylene:pimelate": {
+  "ok": false
+ },
+ "undecylene:suberate": {
+  "ok": false
+ },
+ "undecylene:azelate": {
+  "ok": false
+ },
+ "undecylene:sebacate": {
+  "ok": false
+ },
+ "undecylene:undecanedioate": {
+  "ok": false
+ },
+ "undecylene:dodecanedioate": {
+  "ok": false
+ },
+ "undecylene:brassylate": {
+  "ok": false
+ },
+ "undecylene:tetradecanedioate": {
+  "ok": false
+ },
+ "undecylene:hexadecanedioate": {
+  "ok": false
+ },
+ "undecylene:fumarate": {
+  "ok": false
+ },
+ "undecylene:maleate": {
+  "ok": false
+ },
+ "undecylene:itaconate": {
+  "ok": false
+ },
+ "undecylene:diglycolate": {
+  "ok": false
+ },
+ "undecylene:thiodipropionate": {
+  "ok": false
+ },
+ "undecylene:terephthalate": {
+  "ok": false
+ },
+ "undecylene:isophthalate": {
+  "ok": false
+ },
+ "undecylene:phthalate": {
+  "ok": false
+ },
+ "undecylene:naphthalate": {
+  "ok": false
+ },
+ "undecylene:furanoate": {
+  "ok": false
+ },
+ "undecylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "undecylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "dodecylene:oxalate": {
+  "ok": false
+ },
+ "dodecylene:malonate": {
+  "ok": false
+ },
+ "dodecylene:succinate": {
+  "ok": false
+ },
+ "dodecylene:glutarate": {
+  "ok": false
+ },
+ "dodecylene:adipate": {
+  "ok": false
+ },
+ "dodecylene:pimelate": {
+  "ok": false
+ },
+ "dodecylene:suberate": {
+  "ok": false
+ },
+ "dodecylene:azelate": {
+  "ok": false
+ },
+ "dodecylene:sebacate": {
+  "ok": false
+ },
+ "dodecylene:undecanedioate": {
+  "ok": false
+ },
+ "dodecylene:dodecanedioate": {
+  "ok": false
+ },
+ "dodecylene:brassylate": {
+  "ok": false
+ },
+ "dodecylene:tetradecanedioate": {
+  "ok": false
+ },
+ "dodecylene:hexadecanedioate": {
+  "ok": false
+ },
+ "dodecylene:fumarate": {
+  "ok": false
+ },
+ "dodecylene:maleate": {
+  "ok": false
+ },
+ "dodecylene:itaconate": {
+  "ok": false
+ },
+ "dodecylene:diglycolate": {
+  "ok": false
+ },
+ "dodecylene:thiodipropionate": {
+  "ok": false
+ },
+ "dodecylene:terephthalate": {
+  "ok": false
+ },
+ "dodecylene:isophthalate": {
+  "ok": false
+ },
+ "dodecylene:phthalate": {
+  "ok": false
+ },
+ "dodecylene:naphthalate": {
+  "ok": false
+ },
+ "dodecylene:furanoate": {
+  "ok": false
+ },
+ "dodecylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "dodecylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "tetradecylene:oxalate": {
+  "ok": false
+ },
+ "tetradecylene:malonate": {
+  "ok": false
+ },
+ "tetradecylene:succinate": {
+  "ok": false
+ },
+ "tetradecylene:glutarate": {
+  "ok": false
+ },
+ "tetradecylene:adipate": {
+  "ok": false
+ },
+ "tetradecylene:pimelate": {
+  "ok": false
+ },
+ "tetradecylene:suberate": {
+  "ok": false
+ },
+ "tetradecylene:azelate": {
+  "ok": false
+ },
+ "tetradecylene:sebacate": {
+  "ok": false
+ },
+ "tetradecylene:undecanedioate": {
+  "ok": false
+ },
+ "tetradecylene:dodecanedioate": {
+  "ok": false
+ },
+ "tetradecylene:brassylate": {
+  "ok": false
+ },
+ "tetradecylene:tetradecanedioate": {
+  "ok": false
+ },
+ "tetradecylene:hexadecanedioate": {
+  "ok": false
+ },
+ "tetradecylene:fumarate": {
+  "ok": false
+ },
+ "tetradecylene:maleate": {
+  "ok": false
+ },
+ "tetradecylene:itaconate": {
+  "ok": false
+ },
+ "tetradecylene:diglycolate": {
+  "ok": false
+ },
+ "tetradecylene:thiodipropionate": {
+  "ok": false
+ },
+ "tetradecylene:terephthalate": {
+  "ok": false
+ },
+ "tetradecylene:isophthalate": {
+  "ok": false
+ },
+ "tetradecylene:phthalate": {
+  "ok": false
+ },
+ "tetradecylene:naphthalate": {
+  "ok": false
+ },
+ "tetradecylene:furanoate": {
+  "ok": false
+ },
+ "tetradecylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "tetradecylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "hexadecylene:oxalate": {
+  "ok": false
+ },
+ "hexadecylene:malonate": {
+  "ok": false
+ },
+ "hexadecylene:succinate": {
+  "ok": false
+ },
+ "hexadecylene:glutarate": {
+  "ok": false
+ },
+ "hexadecylene:adipate": {
+  "ok": false
+ },
+ "hexadecylene:pimelate": {
+  "ok": false
+ },
+ "hexadecylene:suberate": {
+  "ok": false
+ },
+ "hexadecylene:azelate": {
+  "ok": false
+ },
+ "hexadecylene:sebacate": {
+  "ok": false
+ },
+ "hexadecylene:undecanedioate": {
+  "ok": false
+ },
+ "hexadecylene:dodecanedioate": {
+  "ok": false
+ },
+ "hexadecylene:brassylate": {
+  "ok": false
+ },
+ "hexadecylene:tetradecanedioate": {
+  "ok": false
+ },
+ "hexadecylene:hexadecanedioate": {
+  "ok": false
+ },
+ "hexadecylene:fumarate": {
+  "ok": false
+ },
+ "hexadecylene:maleate": {
+  "ok": false
+ },
+ "hexadecylene:itaconate": {
+  "ok": false
+ },
+ "hexadecylene:diglycolate": {
+  "ok": false
+ },
+ "hexadecylene:thiodipropionate": {
+  "ok": false
+ },
+ "hexadecylene:terephthalate": {
+  "ok": false
+ },
+ "hexadecylene:isophthalate": {
+  "ok": false
+ },
+ "hexadecylene:phthalate": {
+  "ok": false
+ },
+ "hexadecylene:naphthalate": {
+  "ok": false
+ },
+ "hexadecylene:furanoate": {
+  "ok": false
+ },
+ "hexadecylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "hexadecylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "propylene12:oxalate": {
+  "ok": false
+ },
+ "propylene12:malonate": {
+  "ok": false
+ },
+ "propylene12:succinate": {
+  "ok": false
+ },
+ "propylene12:glutarate": {
+  "ok": false
+ },
+ "propylene12:adipate": {
+  "ok": true,
+  "cas": "25101-03-5",
+  "formula": "(C6H10O4.C3H8O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "propylene12:pimelate": {
+  "ok": false
+ },
+ "propylene12:suberate": {
+  "ok": false
+ },
+ "propylene12:azelate": {
+  "ok": true,
+  "cas": "29408-67-1",
+  "formula": "(C9H16O4.C3H8O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "propylene12:sebacate": {
+  "ok": true,
+  "cas": "26222-20-8",
+  "formula": "(C10H18O4.C3H8O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "propylene12:undecanedioate": {
+  "ok": false
+ },
+ "propylene12:dodecanedioate": {
+  "ok": false
+ },
+ "propylene12:brassylate": {
+  "ok": false
+ },
+ "propylene12:tetradecanedioate": {
+  "ok": false
+ },
+ "propylene12:hexadecanedioate": {
+  "ok": false
+ },
+ "propylene12:fumarate": {
+  "ok": false
+ },
+ "propylene12:maleate": {
+  "ok": false
+ },
+ "propylene12:itaconate": {
+  "ok": false
+ },
+ "propylene12:diglycolate": {
+  "ok": false
+ },
+ "propylene12:thiodipropionate": {
+  "ok": false
+ },
+ "propylene12:terephthalate": {
+  "ok": false
+ },
+ "propylene12:isophthalate": {
+  "ok": true,
+  "cas": "37130-81-7",
+  "formula": "(C8H6O4.C3H8O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "propylene12:phthalate": {
+  "ok": false
+ },
+ "propylene12:naphthalate": {
+  "ok": false
+ },
+ "propylene12:furanoate": {
+  "ok": false
+ },
+ "propylene12:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "propylene12:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "butylene13:oxalate": {
+  "ok": false
+ },
+ "butylene13:malonate": {
+  "ok": false
+ },
+ "butylene13:succinate": {
+  "ok": false
+ },
+ "butylene13:glutarate": {
+  "ok": false
+ },
+ "butylene13:adipate": {
+  "ok": true,
+  "cas": "24937-93-7",
+  "formula": "(C6H10O4.C4H10O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "butylene13:pimelate": {
+  "ok": false
+ },
+ "butylene13:suberate": {
+  "ok": false
+ },
+ "butylene13:azelate": {
+  "ok": false
+ },
+ "butylene13:sebacate": {
+  "ok": true,
+  "cas": "28606-47-5",
+  "formula": "(C10H18O4.C4H10O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "butylene13:undecanedioate": {
+  "ok": false
+ },
+ "butylene13:dodecanedioate": {
+  "ok": false
+ },
+ "butylene13:brassylate": {
+  "ok": false
+ },
+ "butylene13:tetradecanedioate": {
+  "ok": false
+ },
+ "butylene13:hexadecanedioate": {
+  "ok": false
+ },
+ "butylene13:fumarate": {
+  "ok": false
+ },
+ "butylene13:maleate": {
+  "ok": false
+ },
+ "butylene13:itaconate": {
+  "ok": false
+ },
+ "butylene13:diglycolate": {
+  "ok": false
+ },
+ "butylene13:thiodipropionate": {
+  "ok": false
+ },
+ "butylene13:terephthalate": {
+  "ok": false
+ },
+ "butylene13:isophthalate": {
+  "ok": false
+ },
+ "butylene13:phthalate": {
+  "ok": false
+ },
+ "butylene13:naphthalate": {
+  "ok": false
+ },
+ "butylene13:furanoate": {
+  "ok": false
+ },
+ "butylene13:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "butylene13:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "butylene23:oxalate": {
+  "ok": false
+ },
+ "butylene23:malonate": {
+  "ok": false
+ },
+ "butylene23:succinate": {
+  "ok": false
+ },
+ "butylene23:glutarate": {
+  "ok": false
+ },
+ "butylene23:adipate": {
+  "ok": false
+ },
+ "butylene23:pimelate": {
+  "ok": false
+ },
+ "butylene23:suberate": {
+  "ok": false
+ },
+ "butylene23:azelate": {
+  "ok": false
+ },
+ "butylene23:sebacate": {
+  "ok": false
+ },
+ "butylene23:undecanedioate": {
+  "ok": false
+ },
+ "butylene23:dodecanedioate": {
+  "ok": false
+ },
+ "butylene23:brassylate": {
+  "ok": false
+ },
+ "butylene23:tetradecanedioate": {
+  "ok": false
+ },
+ "butylene23:hexadecanedioate": {
+  "ok": false
+ },
+ "butylene23:fumarate": {
+  "ok": false
+ },
+ "butylene23:maleate": {
+  "ok": false
+ },
+ "butylene23:itaconate": {
+  "ok": false
+ },
+ "butylene23:diglycolate": {
+  "ok": false
+ },
+ "butylene23:thiodipropionate": {
+  "ok": false
+ },
+ "butylene23:terephthalate": {
+  "ok": false
+ },
+ "butylene23:isophthalate": {
+  "ok": false
+ },
+ "butylene23:phthalate": {
+  "ok": false
+ },
+ "butylene23:naphthalate": {
+  "ok": false
+ },
+ "butylene23:furanoate": {
+  "ok": false
+ },
+ "butylene23:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "butylene23:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "methylpropylene:oxalate": {
+  "ok": false
+ },
+ "methylpropylene:malonate": {
+  "ok": false
+ },
+ "methylpropylene:succinate": {
+  "ok": false
+ },
+ "methylpropylene:glutarate": {
+  "ok": false
+ },
+ "methylpropylene:adipate": {
+  "ok": false
+ },
+ "methylpropylene:pimelate": {
+  "ok": false
+ },
+ "methylpropylene:suberate": {
+  "ok": false
+ },
+ "methylpropylene:azelate": {
+  "ok": false
+ },
+ "methylpropylene:sebacate": {
+  "ok": false
+ },
+ "methylpropylene:undecanedioate": {
+  "ok": false
+ },
+ "methylpropylene:dodecanedioate": {
+  "ok": false
+ },
+ "methylpropylene:brassylate": {
+  "ok": false
+ },
+ "methylpropylene:tetradecanedioate": {
+  "ok": false
+ },
+ "methylpropylene:hexadecanedioate": {
+  "ok": false
+ },
+ "methylpropylene:fumarate": {
+  "ok": false
+ },
+ "methylpropylene:maleate": {
+  "ok": false
+ },
+ "methylpropylene:itaconate": {
+  "ok": false
+ },
+ "methylpropylene:diglycolate": {
+  "ok": false
+ },
+ "methylpropylene:thiodipropionate": {
+  "ok": false
+ },
+ "methylpropylene:terephthalate": {
+  "ok": false
+ },
+ "methylpropylene:isophthalate": {
+  "ok": false
+ },
+ "methylpropylene:phthalate": {
+  "ok": false
+ },
+ "methylpropylene:naphthalate": {
+  "ok": false
+ },
+ "methylpropylene:furanoate": {
+  "ok": false
+ },
+ "methylpropylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "methylpropylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "methylpentylene:oxalate": {
+  "ok": false
+ },
+ "methylpentylene:malonate": {
+  "ok": false
+ },
+ "methylpentylene:succinate": {
+  "ok": false
+ },
+ "methylpentylene:glutarate": {
+  "ok": false
+ },
+ "methylpentylene:adipate": {
+  "ok": true,
+  "cas": "39751-34-3",
+  "formula": "(C6H14O2.C6H10O4)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "methylpentylene:pimelate": {
+  "ok": false
+ },
+ "methylpentylene:suberate": {
+  "ok": false
+ },
+ "methylpentylene:azelate": {
+  "ok": false
+ },
+ "methylpentylene:sebacate": {
+  "ok": false
+ },
+ "methylpentylene:undecanedioate": {
+  "ok": false
+ },
+ "methylpentylene:dodecanedioate": {
+  "ok": false
+ },
+ "methylpentylene:brassylate": {
+  "ok": false
+ },
+ "methylpentylene:tetradecanedioate": {
+  "ok": false
+ },
+ "methylpentylene:hexadecanedioate": {
+  "ok": false
+ },
+ "methylpentylene:fumarate": {
+  "ok": false
+ },
+ "methylpentylene:maleate": {
+  "ok": false
+ },
+ "methylpentylene:itaconate": {
+  "ok": false
+ },
+ "methylpentylene:diglycolate": {
+  "ok": false
+ },
+ "methylpentylene:thiodipropionate": {
+  "ok": false
+ },
+ "methylpentylene:terephthalate": {
+  "ok": true,
+  "cas": "162005-47-2",
+  "formula": "(C8H6O4.C6H14O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "methylpentylene:isophthalate": {
+  "ok": true,
+  "cas": "76962-70-4",
+  "formula": "(C8H6O4.C6H14O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "methylpentylene:phthalate": {
+  "ok": false
+ },
+ "methylpentylene:naphthalate": {
+  "ok": false
+ },
+ "methylpentylene:furanoate": {
+  "ok": false
+ },
+ "methylpentylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "methylpentylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "neopentylene:oxalate": {
+  "ok": false
+ },
+ "neopentylene:malonate": {
+  "ok": false
+ },
+ "neopentylene:succinate": {
+  "ok": true,
+  "cas": "28257-92-3",
+  "formula": "(C5H12O2.C4H6O4)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "neopentylene:glutarate": {
+  "ok": false
+ },
+ "neopentylene:adipate": {
+  "ok": true,
+  "cas": "27925-07-1",
+  "formula": "(C6H10O4.C5H12O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "neopentylene:pimelate": {
+  "ok": false
+ },
+ "neopentylene:suberate": {
+  "ok": false
+ },
+ "neopentylene:azelate": {
+  "ok": true,
+  "cas": "29408-58-0",
+  "formula": "(C9H16O4.C5H12O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "neopentylene:sebacate": {
+  "ok": true,
+  "cas": "28158-15-8",
+  "formula": "(C10H18O4.C5H12O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "neopentylene:undecanedioate": {
+  "ok": false
+ },
+ "neopentylene:dodecanedioate": {
+  "ok": true,
+  "cas": "50327-95-2",
+  "formula": "(C12H22O4.C5H12O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "neopentylene:brassylate": {
+  "ok": false
+ },
+ "neopentylene:tetradecanedioate": {
+  "ok": false
+ },
+ "neopentylene:hexadecanedioate": {
+  "ok": false
+ },
+ "neopentylene:fumarate": {
+  "ok": false
+ },
+ "neopentylene:maleate": {
+  "ok": false
+ },
+ "neopentylene:itaconate": {
+  "ok": false
+ },
+ "neopentylene:diglycolate": {
+  "ok": false
+ },
+ "neopentylene:thiodipropionate": {
+  "ok": true,
+  "cas": "30322-18-0",
+  "formula": "(C6H10O4S.C5H12O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "neopentylene:terephthalate": {
+  "ok": true,
+  "cas": "26590-78-3",
+  "formula": "(C8H6O4.C5H12O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "neopentylene:isophthalate": {
+  "ok": true,
+  "cas": "26811-89-2",
+  "formula": "(C8H6O4.C5H12O2)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "neopentylene:phthalate": {
+  "ok": false
+ },
+ "neopentylene:naphthalate": {
+  "ok": false
+ },
+ "neopentylene:furanoate": {
+  "ok": false
+ },
+ "neopentylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "neopentylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "diethyleneglycol:oxalate": {
+  "ok": false
+ },
+ "diethyleneglycol:malonate": {
+  "ok": false
+ },
+ "diethyleneglycol:succinate": {
+  "ok": false
+ },
+ "diethyleneglycol:glutarate": {
+  "ok": false
+ },
+ "diethyleneglycol:adipate": {
+  "ok": false
+ },
+ "diethyleneglycol:pimelate": {
+  "ok": false
+ },
+ "diethyleneglycol:suberate": {
+  "ok": false
+ },
+ "diethyleneglycol:azelate": {
+  "ok": false
+ },
+ "diethyleneglycol:sebacate": {
+  "ok": false
+ },
+ "diethyleneglycol:undecanedioate": {
+  "ok": false
+ },
+ "diethyleneglycol:dodecanedioate": {
+  "ok": false
+ },
+ "diethyleneglycol:brassylate": {
+  "ok": false
+ },
+ "diethyleneglycol:tetradecanedioate": {
+  "ok": false
+ },
+ "diethyleneglycol:hexadecanedioate": {
+  "ok": false
+ },
+ "diethyleneglycol:fumarate": {
+  "ok": false
+ },
+ "diethyleneglycol:maleate": {
+  "ok": false
+ },
+ "diethyleneglycol:itaconate": {
+  "ok": false
+ },
+ "diethyleneglycol:diglycolate": {
+  "ok": false
+ },
+ "diethyleneglycol:thiodipropionate": {
+  "ok": false
+ },
+ "diethyleneglycol:terephthalate": {
+  "ok": false
+ },
+ "diethyleneglycol:isophthalate": {
+  "ok": false
+ },
+ "diethyleneglycol:phthalate": {
+  "ok": false
+ },
+ "diethyleneglycol:naphthalate": {
+  "ok": false
+ },
+ "diethyleneglycol:furanoate": {
+  "ok": false
+ },
+ "diethyleneglycol:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "diethyleneglycol:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "triethyleneglycol:oxalate": {
+  "ok": false
+ },
+ "triethyleneglycol:malonate": {
+  "ok": false
+ },
+ "triethyleneglycol:succinate": {
+  "ok": false
+ },
+ "triethyleneglycol:glutarate": {
+  "ok": false
+ },
+ "triethyleneglycol:adipate": {
+  "ok": false
+ },
+ "triethyleneglycol:pimelate": {
+  "ok": false
+ },
+ "triethyleneglycol:suberate": {
+  "ok": false
+ },
+ "triethyleneglycol:azelate": {
+  "ok": false
+ },
+ "triethyleneglycol:sebacate": {
+  "ok": false
+ },
+ "triethyleneglycol:undecanedioate": {
+  "ok": false
+ },
+ "triethyleneglycol:dodecanedioate": {
+  "ok": false
+ },
+ "triethyleneglycol:brassylate": {
+  "ok": false
+ },
+ "triethyleneglycol:tetradecanedioate": {
+  "ok": false
+ },
+ "triethyleneglycol:hexadecanedioate": {
+  "ok": false
+ },
+ "triethyleneglycol:fumarate": {
+  "ok": false
+ },
+ "triethyleneglycol:maleate": {
+  "ok": false
+ },
+ "triethyleneglycol:itaconate": {
+  "ok": false
+ },
+ "triethyleneglycol:diglycolate": {
+  "ok": false
+ },
+ "triethyleneglycol:thiodipropionate": {
+  "ok": false
+ },
+ "triethyleneglycol:terephthalate": {
+  "ok": false
+ },
+ "triethyleneglycol:isophthalate": {
+  "ok": false
+ },
+ "triethyleneglycol:phthalate": {
+  "ok": false
+ },
+ "triethyleneglycol:naphthalate": {
+  "ok": false
+ },
+ "triethyleneglycol:furanoate": {
+  "ok": false
+ },
+ "triethyleneglycol:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "triethyleneglycol:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:oxalate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:malonate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:succinate": {
+  "ok": true,
+  "cas": "60836-39-7",
+  "formula": "(C8H16O2.C4H6O4)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "cyclohexylenedimethylene:glutarate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:adipate": {
+  "ok": true,
+  "cas": "33478-30-7",
+  "formula": "(C8H16O2.C6H10O4)x",
+  "by": "components",
+  "source": "EPA"
+ },
+ "cyclohexylenedimethylene:pimelate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:suberate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:azelate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:sebacate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:undecanedioate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:dodecanedioate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:brassylate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:tetradecanedioate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:hexadecanedioate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:fumarate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:maleate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:itaconate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:diglycolate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:thiodipropionate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:terephthalate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:isophthalate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:phthalate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:naphthalate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:furanoate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "cyclohexylenedimethylene:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "cyclohexylene14:oxalate": {
+  "ok": false
+ },
+ "cyclohexylene14:malonate": {
+  "ok": false
+ },
+ "cyclohexylene14:succinate": {
+  "ok": false
+ },
+ "cyclohexylene14:glutarate": {
+  "ok": false
+ },
+ "cyclohexylene14:adipate": {
+  "ok": false
+ },
+ "cyclohexylene14:pimelate": {
+  "ok": false
+ },
+ "cyclohexylene14:suberate": {
+  "ok": false
+ },
+ "cyclohexylene14:azelate": {
+  "ok": false
+ },
+ "cyclohexylene14:sebacate": {
+  "ok": false
+ },
+ "cyclohexylene14:undecanedioate": {
+  "ok": false
+ },
+ "cyclohexylene14:dodecanedioate": {
+  "ok": false
+ },
+ "cyclohexylene14:brassylate": {
+  "ok": false
+ },
+ "cyclohexylene14:tetradecanedioate": {
+  "ok": false
+ },
+ "cyclohexylene14:hexadecanedioate": {
+  "ok": false
+ },
+ "cyclohexylene14:fumarate": {
+  "ok": false
+ },
+ "cyclohexylene14:maleate": {
+  "ok": false
+ },
+ "cyclohexylene14:itaconate": {
+  "ok": false
+ },
+ "cyclohexylene14:diglycolate": {
+  "ok": false
+ },
+ "cyclohexylene14:thiodipropionate": {
+  "ok": false
+ },
+ "cyclohexylene14:terephthalate": {
+  "ok": false
+ },
+ "cyclohexylene14:isophthalate": {
+  "ok": false
+ },
+ "cyclohexylene14:phthalate": {
+  "ok": false
+ },
+ "cyclohexylene14:naphthalate": {
+  "ok": false
+ },
+ "cyclohexylene14:furanoate": {
+  "ok": false
+ },
+ "cyclohexylene14:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "cyclohexylene14:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "hydroquinone:oxalate": {
+  "ok": false
+ },
+ "hydroquinone:malonate": {
+  "ok": false
+ },
+ "hydroquinone:succinate": {
+  "ok": false
+ },
+ "hydroquinone:glutarate": {
+  "ok": false
+ },
+ "hydroquinone:adipate": {
+  "ok": false
+ },
+ "hydroquinone:pimelate": {
+  "ok": false
+ },
+ "hydroquinone:suberate": {
+  "ok": false
+ },
+ "hydroquinone:azelate": {
+  "ok": false
+ },
+ "hydroquinone:sebacate": {
+  "ok": false
+ },
+ "hydroquinone:undecanedioate": {
+  "ok": false
+ },
+ "hydroquinone:dodecanedioate": {
+  "ok": false
+ },
+ "hydroquinone:brassylate": {
+  "ok": false
+ },
+ "hydroquinone:tetradecanedioate": {
+  "ok": false
+ },
+ "hydroquinone:hexadecanedioate": {
+  "ok": false
+ },
+ "hydroquinone:fumarate": {
+  "ok": false
+ },
+ "hydroquinone:maleate": {
+  "ok": false
+ },
+ "hydroquinone:itaconate": {
+  "ok": false
+ },
+ "hydroquinone:diglycolate": {
+  "ok": false
+ },
+ "hydroquinone:thiodipropionate": {
+  "ok": false
+ },
+ "hydroquinone:terephthalate": {
+  "ok": false
+ },
+ "hydroquinone:isophthalate": {
+  "ok": false
+ },
+ "hydroquinone:phthalate": {
+  "ok": false
+ },
+ "hydroquinone:naphthalate": {
+  "ok": false
+ },
+ "hydroquinone:furanoate": {
+  "ok": false
+ },
+ "hydroquinone:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "hydroquinone:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "resorcinol:oxalate": {
+  "ok": false
+ },
+ "resorcinol:malonate": {
+  "ok": false
+ },
+ "resorcinol:succinate": {
+  "ok": false
+ },
+ "resorcinol:glutarate": {
+  "ok": false
+ },
+ "resorcinol:adipate": {
+  "ok": false
+ },
+ "resorcinol:pimelate": {
+  "ok": false
+ },
+ "resorcinol:suberate": {
+  "ok": false
+ },
+ "resorcinol:azelate": {
+  "ok": false
+ },
+ "resorcinol:sebacate": {
+  "ok": false
+ },
+ "resorcinol:undecanedioate": {
+  "ok": false
+ },
+ "resorcinol:dodecanedioate": {
+  "ok": false
+ },
+ "resorcinol:brassylate": {
+  "ok": false
+ },
+ "resorcinol:tetradecanedioate": {
+  "ok": false
+ },
+ "resorcinol:hexadecanedioate": {
+  "ok": false
+ },
+ "resorcinol:fumarate": {
+  "ok": false
+ },
+ "resorcinol:maleate": {
+  "ok": false
+ },
+ "resorcinol:itaconate": {
+  "ok": false
+ },
+ "resorcinol:diglycolate": {
+  "ok": false
+ },
+ "resorcinol:thiodipropionate": {
+  "ok": false
+ },
+ "resorcinol:terephthalate": {
+  "ok": false
+ },
+ "resorcinol:isophthalate": {
+  "ok": false
+ },
+ "resorcinol:phthalate": {
+  "ok": false
+ },
+ "resorcinol:naphthalate": {
+  "ok": false
+ },
+ "resorcinol:furanoate": {
+  "ok": false
+ },
+ "resorcinol:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "resorcinol:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "bisphenolA:oxalate": {
+  "ok": false
+ },
+ "bisphenolA:malonate": {
+  "ok": false
+ },
+ "bisphenolA:succinate": {
+  "ok": false
+ },
+ "bisphenolA:glutarate": {
+  "ok": false
+ },
+ "bisphenolA:adipate": {
+  "ok": false
+ },
+ "bisphenolA:pimelate": {
+  "ok": false
+ },
+ "bisphenolA:suberate": {
+  "ok": false
+ },
+ "bisphenolA:azelate": {
+  "ok": false
+ },
+ "bisphenolA:sebacate": {
+  "ok": false
+ },
+ "bisphenolA:undecanedioate": {
+  "ok": false
+ },
+ "bisphenolA:dodecanedioate": {
+  "ok": false
+ },
+ "bisphenolA:brassylate": {
+  "ok": false
+ },
+ "bisphenolA:tetradecanedioate": {
+  "ok": false
+ },
+ "bisphenolA:hexadecanedioate": {
+  "ok": false
+ },
+ "bisphenolA:fumarate": {
+  "ok": false
+ },
+ "bisphenolA:maleate": {
+  "ok": false
+ },
+ "bisphenolA:itaconate": {
+  "ok": false
+ },
+ "bisphenolA:diglycolate": {
+  "ok": false
+ },
+ "bisphenolA:thiodipropionate": {
+  "ok": false
+ },
+ "bisphenolA:terephthalate": {
+  "ok": false
+ },
+ "bisphenolA:isophthalate": {
+  "ok": false
+ },
+ "bisphenolA:phthalate": {
+  "ok": false
+ },
+ "bisphenolA:naphthalate": {
+  "ok": false
+ },
+ "bisphenolA:furanoate": {
+  "ok": false
+ },
+ "bisphenolA:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "bisphenolA:biphenyldicarboxylate": {
+  "ok": false
+ },
+ "isosorbide:oxalate": {
+  "ok": false
+ },
+ "isosorbide:malonate": {
+  "ok": false
+ },
+ "isosorbide:succinate": {
+  "ok": false
+ },
+ "isosorbide:glutarate": {
+  "ok": false
+ },
+ "isosorbide:adipate": {
+  "ok": false
+ },
+ "isosorbide:pimelate": {
+  "ok": false
+ },
+ "isosorbide:suberate": {
+  "ok": false
+ },
+ "isosorbide:azelate": {
+  "ok": false
+ },
+ "isosorbide:sebacate": {
+  "ok": false
+ },
+ "isosorbide:undecanedioate": {
+  "ok": false
+ },
+ "isosorbide:dodecanedioate": {
+  "ok": false
+ },
+ "isosorbide:brassylate": {
+  "ok": false
+ },
+ "isosorbide:tetradecanedioate": {
+  "ok": false
+ },
+ "isosorbide:hexadecanedioate": {
+  "ok": false
+ },
+ "isosorbide:fumarate": {
+  "ok": false
+ },
+ "isosorbide:maleate": {
+  "ok": false
+ },
+ "isosorbide:itaconate": {
+  "ok": false
+ },
+ "isosorbide:diglycolate": {
+  "ok": false
+ },
+ "isosorbide:thiodipropionate": {
+  "ok": false
+ },
+ "isosorbide:terephthalate": {
+  "ok": false
+ },
+ "isosorbide:isophthalate": {
+  "ok": false
+ },
+ "isosorbide:phthalate": {
+  "ok": false
+ },
+ "isosorbide:naphthalate": {
+  "ok": false
+ },
+ "isosorbide:furanoate": {
+  "ok": false
+ },
+ "isosorbide:cyclohexanedicarboxylate": {
+  "ok": false
+ },
+ "isosorbide:biphenyldicarboxylate": {
+  "ok": false
+ }
+}
