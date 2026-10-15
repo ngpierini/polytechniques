@@ -1729,6 +1729,34 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   gap: 8px;
   margin: 14px 0 4px;
 }
+/* Column headings for the input grids. The rows come prefilled, so their
+   placeholders are painted over before anyone sees them and the columns are
+   otherwise unlabelled on screen. These mirror the row's own flex metrics
+   so a heading sits over the field it names, and end with a spacer standing
+   in for the 30px remove button.
+
+   .dyn-head is hidden below 480px because .dyn-row wraps there - measured 36px
+   tall at 480 and 80px at 420 - and a heading strip above a wrapped row would
+   name the wrong fields. .kin-row never wraps, so .kin-head has no breakpoint.
+
+   Both are aria-hidden: the fields carry their own aria-labels, and without it
+   a screen reader reads the headings and then hears every column named again. */
+.dyn-head, .kin-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: var(--fs-3xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+.dyn-head { display: none; }
+@media (min-width: 480px) { .dyn-head { display: flex; } }
+.dyn-head > span { flex: 1; min-width: 90px; }
+.kin-head > span { flex: 1; min-width: 0; }
+.dyn-head > .dyn-head-gap, .kin-head > .dyn-head-gap { flex: 0 0 30px; min-width: 0; }
 .dyn-row {
   display: flex;
   gap: 8px;

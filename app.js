@@ -4169,6 +4169,7 @@ function stepGrowthTemplate() {
         <span>Group</span>
         <span class="dyn-label-spacer"></span>
       </div>
+      <div class="dyn-head" aria-hidden="true"><span>Component</span><span>Moles</span><span>f</span><span>Type</span><span class="dyn-head-gap"></span></div>
       <div id="sg-gel-rows" class="dyn-rows"></div>
       <div class="actions" style="justify-content:flex-start; margin-top:6px; gap:8px;">
         <button type="button" class="copy-btn" id="sg-gel-add">+ Add component</button>

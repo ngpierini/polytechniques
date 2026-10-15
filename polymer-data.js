@@ -280,7 +280,7 @@ window.POLYMER_DB = [
       detail: "Made by radical polymerisation of chloroprene in emulsion — over 100 million pounds a year in the United States — and the polymer comes out highly trans-1,4 in structure. It is surpassed in oil and fuel resistance only by nitrile rubber, and in strength only by cis-1,4-polyisoprene; its cost is what confines it to applications needing that particular combination, such as wire and cable jackets, industrial belts and hoses, seals for buildings and highway joints, roof coatings, adhesives, gloves and coated fabrics.",
       source: "Odian, Principles of Polymerization (4th ed.), §8-11g"
     },
-    name: "Polychloroprene", aka: ["Neoprene"], monomer: "Chloroprene", cls: "Addition (diene)",
+    name: "Polychloroprene", aka: ["CR", "Neoprene"], monomer: "Chloroprene", cls: "Addition (diene)",
     cas: "9010-98-4", tg: "-43 °C", tm: "45 °C", tags: ["elastomer", "vinyl-halide"],
     atoms: [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "Cl" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 2, b: 4, order: 2 }, { a: 4, b: 5, order: 1 }, { a: 5, b: "S1", order: 1 }]
@@ -1951,7 +1951,7 @@ window.POLYMER_DB = [
     },
     name: "Polysulfone", tg: "187 °C", tgSource: "BASF, Ultrason E, S, P (PESU, PSU, PPSU) Product Brochure, Thermal properties (p. 21), which gives glass transition temperatures of 187 °C for Ultrason S (PSU), 220 °C for Ultrason P (PPSU) and 225 °C for Ultrason E (PESU). A product-family figure, not a single grade.", aka: ["PSU", "polysulfone (bisphenol A)", "Udel"],
     noScheme: "built by nucleophilic aromatic substitution, where a difluoro or dichloro aromatic displaces a bisphenoxide or thiolate, so the two leaving groups are the whole reaction and the repeat unit keeps no trace of them",
-    monomer: "bisphenol A + 4,4'-dichlorodiphenyl sulfone", cls: "Step-growth (polyester)", cas: null,
+    monomer: "bisphenol A + 4,4'-dichlorodiphenyl sulfone", cls: "Step-growth (polyester)", cas: "25154-01-2",
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "O" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "O" }, { id: 19, el: "C" }, { id: 20, el: "C" }, { id: 21, el: "C" }, { id: 22, el: "C" }, { id: 23, el: "C" }, { id: 24, el: "C" }, { id: 25, el: "S" }, { id: 26, el: "O" }, { id: 27, el: "O" }, { id: 28, el: "C" }, { id: 29, el: "C" }, { id: 30, el: "C" }, { id: 31, el: "C" }, { id: 32, el: "C" }, { id: 33, el: "C" }, { id: "S1", el: "*" }],
@@ -1959,7 +1959,7 @@ window.POLYMER_DB = [
     note: "A transparent, autoclavable engineering thermoplastic, and the membrane material behind most of the world's haemodialysis. The sulfone group is already fully oxidised, so it resists further oxidation and hydrolysis, and the aromatic backbone holds the glass transition near 185 C - high enough to steam-sterilise repeatedly. Differs from poly(ether sulfone) by the bisphenol A unit, which adds flexibility and lowers the glass transition in exchange for easier processing."
   },
   {
-    name: "Polyimide (PMDA-ODA)", aka: ["Kapton", "PMDA-ODA polyimide", "poly(pyromellitimide)", "aromatic polyimide"],
+    name: "Polyimide (PMDA-ODA)", aka: ["PI", "Kapton", "PMDA-ODA polyimide", "poly(pyromellitimide)", "aromatic polyimide"],
     monomer: "pyromellitic dianhydride + 4,4'-oxydianiline", cls: "Step-growth (polyamide)", cas: null,
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
@@ -2159,7 +2159,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(lauryl methacrylate)", aka: ["PLMA", "poly(dodecyl methacrylate)"],
-    monomer: "lauryl methacrylate", cls: "Addition (methacrylate)", cas: null,
+    monomer: "lauryl methacrylate", cls: "Addition (methacrylate)", cas: "25719-52-2",
     tags: ["methacrylate", "elastomer", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S1", el: "*" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "C" }],
@@ -2288,7 +2288,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Poly(2-ethylhexyl methacrylate)", aka: ["PEHMA", "poly(2-ethylhexyl methacrylate)"],
-    monomer: "2-ethylhexyl methacrylate", cls: "Addition (methacrylate)", cas: null,
+    monomer: "2-ethylhexyl methacrylate", cls: "Addition (methacrylate)", cas: "25719-51-1",
     tags: ["methacrylate", "elastomer", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: "S1", el: "*" }, { id: 6, el: "C" }, { id: 7, el: "O" }, { id: 8, el: "O" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" }, { id: 15, el: "C" }, { id: 16, el: "C" }],
@@ -2492,7 +2492,7 @@ window.POLYMER_DB = [
   {
     name: "Poly(ethylene-alt-tetrafluoroethylene)", aka: ["ETFE", "Tefzel", "ethylene tetrafluoroethylene"],
     noScheme: "an alternating copolymer: the repeat unit spans one of each monomer, so cutting it in half is the whole question and the drawing does not say where the join was",
-    monomer: "ethylene + tetrafluoroethylene", cls: "Addition (vinyl)", cas: null,
+    monomer: "ethylene + tetrafluoroethylene", cls: "Addition (vinyl)", cas: "25038-71-5",
     tags: ["fluoropolymer", "engineering", "specialty"],
     verified: false,
     atoms: [{ id: "S0", el: "*" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "F" }, { id: 6, el: "F" }, { id: 7, el: "C" }, { id: 8, el: "F" }, { id: 9, el: "F" }, { id: "S1", el: "*" }],
@@ -2971,7 +2971,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Polyetherimide", aka: ["PEI (Ultem)", "Ultem", "poly(ether imide)"],
-    monomer: "bisphenol A dianhydride + m-phenylenediamine", cls: "Step-growth (polyamide)", cas: null,
+    monomer: "bisphenol A dianhydride + m-phenylenediamine", cls: "Step-growth (polyamide)", cas: "61128-46-9",
     tags: ["engineering", "high-temperature", "specialty"],
     verified: false,
     atoms: [{"id":"S0","el":"*"},{"id":1,"el":"C"},{"id":2,"el":"C"},{"id":3,"el":"C"},{"id":4,"el":"C"},{"id":5,"el":"C"},{"id":6,"el":"C"},{"id":7,"el":"C"},{"id":8,"el":"O"},{"id":9,"el":"C"},{"id":10,"el":"O"},{"id":11,"el":"N"},{"id":12,"el":"O"},{"id":13,"el":"C"},{"id":14,"el":"C"},{"id":15,"el":"C"},{"id":16,"el":"C"},{"id":17,"el":"C"},{"id":18,"el":"C"},{"id":19,"el":"C"},{"id":20,"el":"O"},{"id":21,"el":"C"},{"id":22,"el":"O"},{"id":23,"el":"N"},{"id":24,"el":"O"},{"id":25,"el":"C"},{"id":26,"el":"C"},{"id":27,"el":"C"},{"id":28,"el":"C"},{"id":29,"el":"C"},{"id":30,"el":"C"},{"id":31,"el":"C"},{"id":32,"el":"C"},{"id":33,"el":"C"},{"id":34,"el":"C"},{"id":35,"el":"C"},{"id":36,"el":"C"},{"id":37,"el":"C"},{"id":38,"el":"C"},{"id":39,"el":"C"},{"id":40,"el":"C"},{"id":41,"el":"C"},{"id":42,"el":"C"},{"id":43,"el":"C"},{"id":44,"el":"C"},{"id":45,"el":"C"},{"id":"S1","el":"*"}], bonds: [{"a":1,"b":2,"order":2},{"a":2,"b":3,"order":1},{"a":3,"b":4,"order":2},{"a":4,"b":5,"order":1},{"a":5,"b":6,"order":2},{"a":6,"b":1,"order":1},{"a":1,"b":7,"order":1},{"a":7,"b":8,"order":2},{"a":7,"b":11,"order":1},{"a":11,"b":9,"order":1},{"a":9,"b":10,"order":2},{"a":9,"b":2,"order":1},{"a":4,"b":12,"order":1},{"a":13,"b":14,"order":2},{"a":14,"b":15,"order":1},{"a":15,"b":16,"order":2},{"a":16,"b":17,"order":1},{"a":17,"b":18,"order":2},{"a":18,"b":13,"order":1},{"a":13,"b":19,"order":1},{"a":19,"b":20,"order":2},{"a":19,"b":23,"order":1},{"a":23,"b":21,"order":1},{"a":21,"b":22,"order":2},{"a":21,"b":14,"order":1},{"a":16,"b":24,"order":1},{"a":25,"b":26,"order":2},{"a":26,"b":27,"order":1},{"a":27,"b":28,"order":2},{"a":28,"b":29,"order":1},{"a":29,"b":30,"order":2},{"a":30,"b":25,"order":1},{"a":31,"b":32,"order":2},{"a":32,"b":33,"order":1},{"a":33,"b":34,"order":2},{"a":34,"b":35,"order":1},{"a":35,"b":36,"order":2},{"a":36,"b":31,"order":1},{"a":12,"b":25,"order":1},{"a":28,"b":37,"order":1},{"a":37,"b":38,"order":1},{"a":37,"b":39,"order":1},{"a":37,"b":31,"order":1},{"a":34,"b":24,"order":1},{"a":40,"b":41,"order":2},{"a":41,"b":42,"order":1},{"a":42,"b":43,"order":2},{"a":43,"b":44,"order":1},{"a":44,"b":45,"order":2},{"a":45,"b":40,"order":1},{"a":23,"b":40,"order":1},{"a":"S0","b":11,"order":1},{"a":42,"b":"S1","order":1}],
@@ -3780,7 +3780,7 @@ window.POLYMER_DB = [
     note: "Polyisobutylene with about one percent isoprene copolymerised in, purely to provide double bonds for vulcanisation - the parent has none and cannot be cured. What makes it irreplaceable is gas permeability roughly a tenth of natural rubber's: the crowded methyl pairs leave almost no free volume for a gas molecule to hop through, which is why it is the inner liner of every tubeless tyre. Not drawn: the isoprene fraction is deliberately tiny and random."
   },
   {
-    name: "Halobutyl rubber", aka: ["chlorobutyl", "bromobutyl", "halogenated butyl rubber"],
+    name: "Halobutyl rubber", aka: ["CIIR", "BIIR", "chlorobutyl", "bromobutyl", "halogenated butyl rubber"],
     monomer: "butyl rubber + chlorine or bromine", cls: "Addition (diene)", cas: null,
     tags: ["copolymer", "elastomer", "specialty"],
     verified: false,
