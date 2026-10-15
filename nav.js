@@ -27,6 +27,7 @@
     ["chain-dimensions.html", "📐 Chain Size"],
     ["calculator.html#sg", "🔗 Step-Growth"],
     ["crosslink-density.html", "🕸️ Crosslinks"],
+    ["isocyanate-cure.html", "🧫 NCO Cure"],
     ["hydrogel-mesh-size.html", "💧 Hydrogel Mesh"],
     ["radical-kinetics.html", "⚡ FRP Kinetics"],
     ["glossary.html", "📖 Glossary"]
@@ -112,6 +113,7 @@
     ["tg-predictor.html", "Tg Predictor", "fox equation glass transition blend"],
     ["recipe-scaling.html", "Recipe Scaling", "scale batch size factor"],
     ["calculator.html#pu", "Polyurethane Calculator", "pu prepolymer capping nco oh isocyanate chain extender hard segment mdi tdi bdo"],
+    ["isocyanate-cure.html", "Isocyanate Cure Conversion", "nco conversion cure monitoring dsc residual exotherm ftir 2270 isocyanate band dibenedetto tg vitrification arrhenius activation energy pot life gel point index water polyurethane"],
     ["calculator.html#em", "Emulsion Polymerization Calculator", "sds kps surfactant micelle particle size nucleation smith-ewart raft atrp controlled persulfate latex"],
     ["mechanisms.html", "Polymerization Mechanisms", "atrp raft romp frp scheme controlled radical"],
     ["air-free-technique.html", "Air-Free Reaction Setup", "schlenk line freeze pump thaw degas inert"],

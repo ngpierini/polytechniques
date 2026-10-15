@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isocyanate Cure Conversion: PolyTechniques</title>
+<meta name="description" content="Track NCO conversion during a polyurethane cure by DSC, FTIR or glass transition, fit the rate constant and activation energy, and get the time to a target conversion.">
+<link rel="canonical" href="https://getpolytechniques.com/isocyanate-cure.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PolyTechniques">
+<meta property="og:title" content="Isocyanate Cure Conversion: PolyTechniques">
+<meta property="og:description" content="NCO conversion from DSC, FTIR or Tg, with cure kinetics, time to target and the network that conversion builds.">
+<meta property="og:url" content="https://getpolytechniques.com/isocyanate-cure.html">
+<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Isocyanate Cure Conversion: PolyTechniques">
+<meta name="twitter:description" content="NCO conversion by DSC, FTIR and Tg, cure kinetics, and time to a target conversion.">
+<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Isocyanate Cure Conversion",
+  "url": "https://getpolytechniques.com/isocyanate-cure.html",
+  "description": "Convert DSC residual exotherm, FTIR isocyanate band area or glass transition into NCO conversion, fit second-order cure kinetics and an activation energy, and predict the time to a target conversion.",
+  "applicationCategory": "ScienceApplication",
+  "operatingSystem": "Any (web-based)",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Person", "name": "Nicholas Pierini" }
+}
+</script>
+<script src="theme.js?v=1"></script>
+<script src="nav.js?v=35" defer></script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=123">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <h1>Isocyanate Cure Conversion</h1>
+      <p class="subtitle">NCO conversion from DSC, FTIR or glass transition, with cure kinetics, time to target and the network it builds</p>
+    </div>
+  </div>
+</header>
+
+<main id="guide">
+
+  <div class="card">
+    <h3>One number, measured four ways</h3>
+    <p class="guide-note">
+      A polyurethane cure has one quantity worth tracking: how much of the isocyanate has reacted. Call it &alpha;. Everything a formulator cares about &ndash; whether the part can be demoulded, whether the modulus has stopped climbing, whether free isocyanate remains &ndash; is a question about &alpha; or about the network it has built so far. The awkwardness is that no instrument measures it directly. Each technique measures something else and infers &alpha; from a calibration:
+    </p>
+    <ul class="guide-list">
+      <li><strong>DSC</strong> reheats a sample and integrates the exotherm that is left. If an uncured specimen gives &Delta;H<sub>0</sub> and a partly cured one gives &Delta;H, then &alpha; = 1 &minus; &Delta;H/&Delta;H<sub>0</sub>. It is the most direct route and the one that needs the least thought, because the heat comes from the reaction itself.</li>
+      <li><strong>FTIR</strong> follows the isocyanate stretch at roughly 2270&nbsp;cm<sup>&minus;1</sup>, which sits in an otherwise empty window and disappears as the reaction runs. The band area has to be ratioed against something that does not change &ndash; the aliphatic C&ndash;H stretches near 2900&nbsp;cm<sup>&minus;1</sup> are the usual choice &ndash; because path length and contact pressure vary from spot to spot and would otherwise be read as conversion.</li>
+      <li><strong>DMA or TMA</strong> measure the glass transition, which climbs as the network tightens. The DiBenedetto equation turns T<sub>g</sub> back into &alpha;. This is the least direct route and the most sensitive to calibration, but it is the only one that works on a finished part.</li>
+    </ul>
+    <div class="guide-formula">
+      &alpha;<sub>DSC</sub> = 1 &minus; &Delta;H / &Delta;H<sub>0</sub>
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      &alpha;<sub>FTIR</sub> = 1 &minus; (A<sub>NCO</sub>/A<sub>ref</sub>)<sub>t</sub> &divide; (A<sub>NCO</sub>/A<sub>ref</sub>)<sub>0</sub>
+      <br>
+      (T<sub>g</sub> &minus; T<sub>g0</sub>) &divide; (T<sub>g&infin;</sub> &minus; T<sub>g0</sub>) = &lambda;&alpha; &divide; (1 &minus; (1 &minus; &lambda;)&alpha;)
+    </div>
+    <p class="guide-note">
+      Three routes to one number is not redundancy, it is the test. They rest on different physics and fail differently, so when they agree the number is probably right, and when they diverge the pattern of divergence says which one to distrust. That is what this page is for: enter what the instruments reported, and see all three side by side along with what the stoichiometry says is even possible.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Stoichiometry sets the ceiling</h3>
+    <p class="guide-note">
+      Before any measurement means anything, the formulation decides how far &alpha; can go. Isocyanate conversion is capped by whatever it has to react <em>with</em>. Run the isocyanate in excess and the hydroxyl runs out first, which caps &alpha; at 1/r where r is the ratio of isocyanate to hydroxyl equivalents. At index 105 that ceiling is <strong>0.952</strong>, so a specification demanding 95&nbsp;% NCO conversion is asking the formulation to go essentially to its limit, and a specification demanding 98&nbsp;% is asking for something arithmetically impossible. That is worth checking before anyone blames the oven.
+    </p>
+    <p class="guide-note">
+      <strong>Water belongs in that arithmetic, and it counts twice.</strong> Water consumes one isocyanate to give a carbamic acid, which loses CO<sub>2</sub> to leave an amine, and that amine consumes a second isocyanate to give a urea. So each mole of water removes two equivalents of NCO, and it does it while generating gas. A polyol at 200&nbsp;ppm water is not dry: in the example below those 200&nbsp;ppm shift the effective index by more than two points, which is larger than most people's weighing error. This page adds 2&nbsp;&times;&nbsp;mol&nbsp;H<sub>2</sub>O to the hydroxyl equivalents before computing anything.
+    </p>
+    <div class="guide-formula">
+      r = eq<sub>NCO</sub> &divide; (eq<sub>OH</sub> + 2&nbsp;&times;&nbsp;mol&nbsp;H<sub>2</sub>O)
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      index = 100r
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      &alpha;<sub>max</sub> = min(1, 1/r)
+    </div>
+    <p class="guide-note">
+      The gel point follows from the same equivalents. For a mixture of functionalities it is &alpha;<sub>gel</sub> = 1/&radic;(r&nbsp;(f<sub>w</sub>&minus;1)(g<sub>w</sub>&minus;1)), with the functionalities averaged over <em>groups</em> rather than molecules, because a triol offers three chances to enter the network and a diol two. Water enters this as a difunctional hydroxyl component, which is one more reason wet polyol changes the answer.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>The formulation</h3>
+    <div class="subsection">
+      <div class="subsection-title">Components</div>
+      <div class="field">
+        <label for="ic-comp">One per line: name, role (<code>OH</code>, <code>NCO</code> or <code>-</code> for anything unreactive), mass in g, equivalent weight in g/eq, functionality, water in ppm. Anything after a <code>#</code> is ignored.</label>
+        <textarea id="ic-comp" class="data-paste" rows="5" spellcheck="false"></textarea>
+        <p class="hint" id="ic-comp-hint"></p>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label for="ic-rho">Density (g/cm<sup>3</sup>)</label>
+          <input type="number" id="ic-rho" value="1.01" step="any" min="0.1">
+          <p class="hint">Only used to turn moles of elastic strand into a concentration.</p>
+        </div>
+        <div class="field">
+          <label for="ic-target">Target conversion</label>
+          <input type="number" id="ic-target" value="0.95" step="any" min="0" max="1">
+          <p class="hint">The conversion the cure has to reach to pass.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stat-grid" id="ic-stoich" style="margin-top:16px;"></div>
+    <div id="ic-stoich-notes"></div>
+  </div>
+
+  <div class="card">
+    <h3>Calibration and measurements</h3>
+    <p class="guide-note">
+      Each route needs its own two-point calibration: the value at zero conversion and, for the T<sub>g</sub> route, the value at full cure. Run an uncured specimen and a fully cured one and these come straight off those two traces.
+    </p>
+    <div class="subsection">
+      <div class="subsection-title">Calibration</div>
+      <div class="grid">
+        <div class="field">
+          <label for="ic-dh0">&Delta;H<sub>0</sub>, uncured exotherm (J/g)</label>
+          <input type="number" id="ic-dh0" value="72.0" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="ic-rat0">(A<sub>NCO</sub>/A<sub>ref</sub>) at t = 0</label>
+          <input type="number" id="ic-rat0" value="1.520" step="any" min="0">
+        </div>
+        <div class="field">
+          <label for="ic-tg0">T<sub>g0</sub>, uncured (&deg;C)</label>
+          <input type="number" id="ic-tg0" value="-65" step="any">
+        </div>
+        <div class="field">
+          <label for="ic-tgi">T<sub>g&infin;</sub>, fully cured (&deg;C)</label>
+          <input type="number" id="ic-tgi" value="-40" step="any">
+        </div>
+        <div class="field">
+          <label for="ic-lam">DiBenedetto &lambda;</label>
+          <input type="number" id="ic-lam" value="0.45" step="any" min="0.01" max="1">
+          <p class="hint">Roughly &Delta;C<sub>p&infin;</sub>/&Delta;C<sub>p0</sub>. Fit it if you have a T<sub>g</sub> at a conversion you trust.</p>
+        </div>
+      </div>
+    </div>
+    <div class="subsection">
+      <div class="subsection-title">What the instruments reported</div>
+      <div class="field">
+        <label for="ic-meas">One per line: time in hours, cure temperature in &deg;C, technique (<code>DSC</code>, <code>FTIR</code>, <code>DMA</code> or <code>TMA</code>), value. DSC takes residual exotherm in J/g, FTIR the band ratio, DMA and TMA a T<sub>g</sub> in &deg;C. Repeat a line to enter a replicate.</label>
+        <textarea id="ic-meas" class="data-paste" rows="14" spellcheck="false"></textarea>
+        <p class="hint" id="ic-meas-hint"></p>
+      </div>
+    </div>
+    <div id="ic-table"></div>
+    <div id="ic-agree"></div>
+  </div>
+
+  <div class="card">
+    <h3>Kinetics and time to target</h3>
+    <p class="guide-note">
+      Urethane formation is second order, one isocyanate and one hydroxyl per bond. Integrating that for an arbitrary ratio gives a straight line through the origin:
+    </p>
+    <div class="guide-formula">
+      ln[(1 &minus; r&alpha;) &divide; (1 &minus; &alpha;)] = k<sub>app</sub>(1 &minus; r)t
+      &nbsp;&nbsp;&nbsp;which at r = 1 becomes&nbsp;&nbsp;&nbsp;
+      &alpha; &divide; (1 &minus; &alpha;) = k<sub>app</sub>t
+    </div>
+    <p class="guide-note">
+      k<sub>app</sub> is k[OH]<sub>0</sub> lumped together so it comes out per hour, which is the form worth quoting because it is what sets the cure schedule. Fitting several temperatures gives the activation energy from ln&nbsp;k = ln&nbsp;A &minus; E<sub>a</sub>/RT, and with E<sub>a</sub> in hand the cure time at any other temperature follows.
+    </p>
+    <div class="stat-grid" id="ic-kin"></div>
+    <div id="ic-kin-notes"></div>
+    <div id="ic-plot" class="chart-wrap"></div>
+    <p class="diagram-caption" id="ic-caption"></p>
+  </div>
+
+  <div class="card">
+    <h3>The network at that conversion</h3>
+    <p class="guide-note">
+      Conversion on its own does not tell you whether a part is usable; the network does. Past the gel point, the same equivalents and functionalities that gave &alpha;<sub>gel</sub> also give the concentration of elastically effective strands by the Miller&ndash;Macosko recursive method, counting a junction only when at least three of its arms reach the infinite network. Two attached arms makes a chain extender and fewer makes a dangling end, and neither carries stress. The rubbery modulus follows as E&prime; = 3&nu;<sub>e</sub>RT.
+    </p>
+    <div class="stat-grid" id="ic-net"></div>
+    <div id="ic-net-notes"></div>
+  </div>
+
+  <div class="card">
+    <h3>Where each method goes wrong</h3>
+    <ul class="guide-list">
+      <li><strong>DSC drifts low when the reaction is nearly over.</strong> At 95&nbsp;% conversion the residual exotherm is 5&nbsp;% of a figure that was never large, and the baseline under a broad shallow peak is a judgement call worth several percent of &alpha;. Worse, the residual scan itself cures the sample as it heats, so a slow scan on a nearly cured specimen reports less heat than a fast one. If DSC reads systematically below the other routes above about &alpha;&nbsp;=&nbsp;0.9, suspect the baseline before you suspect the chemistry.</li>
+      <li><strong>FTIR is undone by what else absorbs near 2270&nbsp;cm<sup>&minus;1</sup>.</strong> The window is usually clean, but a carbodiimide from an overheated cure absorbs at 2130, a nitrile filler absorbs at 2240, and a CO<sub>2</sub> bubble from the water side absorbs at 2340 with a band shape that leaks into a wide integration. Narrow the integration limits and state them. The internal reference has its own trap: aliphatic C&ndash;H near 2900 is the right choice only if nothing in the formulation changes there, which rules it out when an aliphatic plasticiser is migrating.</li>
+      <li><strong>The T<sub>g</sub> route is only as good as &lambda;.</strong> DiBenedetto is an interpolation with one shape parameter, and &lambda; is usually taken as &Delta;C<sub>p&infin;</sub>/&Delta;C<sub>p0</sub> from the same two calibration runs. If T<sub>g&infin;</sub> was measured on a specimen that was not actually fully cured, every &alpha; from this route is biased high, and nothing in the fit will tell you. The route is also insensitive where it matters least and most sensitive where the curve is steep: near full cure, a 1&nbsp;&deg;C error in T<sub>g</sub> is worth far less conversion than the same error at half cure.</li>
+      <li><strong>Vitrification stops the reaction without stopping the clock.</strong> When T<sub>g</sub> climbs past the cure temperature the material goes glassy and the rate falls off a cliff, because the reaction becomes diffusion controlled rather than chemically controlled. The second-order fit on this page knows nothing about that, so it will keep predicting conversion the sample cannot reach at that temperature. If the measured points fall progressively below the fitted curve at long times, vitrification is the first thing to suspect, and the fix is a post-cure above the final T<sub>g</sub>, not more time.</li>
+      <li><strong>One rate constant is doing several jobs.</strong> The fit lumps the hydroxyl and water reactions into a single k, and they do not have the same rate or the same activation energy. With a dry polyol that is a small error; at a few hundred ppm it starts to matter, and a catalyst that favours one over the other makes it worse. Primary and secondary hydroxyls differ too, which is why a polyol blend rarely gives as clean a line as a single polyol.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>A worked example</h3>
+    <p class="guide-note">
+      The values loaded above are a polyether triol of 1000&nbsp;g/eq at 200&nbsp;ppm water, cured with a difunctional isocyanate of 125&nbsp;g/eq. Those 200&nbsp;ppm are 1.11&nbsp;&times;&nbsp;10<sup>&minus;4</sup>&nbsp;mol of water against 0.01000&nbsp;eq of hydroxyl, and because each mole takes two isocyanates they add 2.22&nbsp;&times;&nbsp;10<sup>&minus;4</sup> to the effective hydroxyl equivalents &ndash; enough to move the index from 100.0 down to <strong>97.8</strong>. The gel point lands at &alpha;&nbsp;=&nbsp;0.719 and, because the isocyanate is now the deficient group, &alpha;<sub>max</sub> is 1.
+    </p>
+    <p class="guide-note">
+      The DSC, FTIR and T<sub>g</sub> columns agree to within a few parts per thousand, which is what synthetic data looks like and what real data does not; see the spread column for what your own numbers do. The rate constant comes out near <strong>0.30&nbsp;h<sup>&minus;1</sup></strong> at 60&nbsp;&deg;C and <strong>0.54&nbsp;h<sup>&minus;1</sup></strong> at 70&nbsp;&deg;C, for an activation energy of about <strong>56&nbsp;kJ/mol</strong>, which is the usual range for a tin-catalysed urethane. Those two together say the cure reaches 95&nbsp;% in about <strong>53&nbsp;hours at 60&nbsp;&deg;C</strong> and about <strong>29&nbsp;hours at 70&nbsp;&deg;C</strong> &ndash; the familiar result that ten degrees roughly halves a cure.
+    </p>
+    <p class="guide-note">
+      Now change the isocyanate mass from 1.250 to 1.342&nbsp;g, leaving every measurement exactly as it was. The index goes to <strong>105.0</strong> and &alpha;<sub>max</sub> falls to <strong>0.9521</strong>, so the 0.95 target now sits a thousandth below the ceiling. More tellingly, the <em>fit degrades</em>: R<sup>2</sup> at 60&nbsp;&deg;C drops from 1.0000 to 0.9154, and the activation energy falls from 55.9 to 42.8&nbsp;kJ/mol. Nothing about the measurements changed &ndash; only the stoichiometry they are being interpreted against.
+    </p>
+    <p class="guide-note">
+      That degradation is the useful part. The second-order form only straightens out when r is right, so a cure plot that curves is often telling you the index is not what you think it is, and a wet polyol or a mis-weighed isocyanate is a likelier explanation than exotic kinetics. Check the stoichiometry before blaming the oven.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Related tools</h3>
+    <ul class="guide-list">
+      <li><a href="calculator.html#pu">Polyurethane calculator</a>. The other half of the problem: equivalent weights, prepolymer %NCO and chain extension, for designing the formulation this page then watches cure.</li>
+      <li><a href="network-formation.html">Network formation</a>. The same Miller&ndash;Macosko recursion with sol fraction and a gel-point sweep, for any mixture of functionalities rather than one cure.</li>
+      <li><a href="crosslink-density.html">Crosslink density</a>. M<sub>c</sub> measured from swelling or the rubbery plateau, to check the network this page predicts against the one you actually made.</li>
+      <li><a href="thermal-analysis.html">Thermal analysis</a>. What a DSC trace is telling you, including how to place a baseline under a broad cure exotherm.</li>
+      <li><a href="step-growth.html">Step-growth polymerisation</a>. Carothers, the gel point from a single formula, and why stoichiometry dominates everything in a condensation.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Second-order kinetics with one lumped rate constant and mean-field network theory with no intramolecular reaction. It says how a cure should behave, not how a particular batch did.</p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  function $(id) { return document.getElementById(id); }
+  var R_GAS = 8.314462618;
+
+  var DEMO_COMP = [
+    "# name, role (OH / NCO / -), mass g, eq. weight, functionality, water ppm",
+    "Polyether triol, OH,  10.00, 1000, 3, 200",
+    "Diisocyanate,    NCO,  1.250,  125, 2, 0"
+  ].join("\n");
+
+  var DEMO_MEAS = [
+    "# time h, cure temp C, technique, value",
+    "2,  60, DSC,  44.9",
+    "8,  60, DSC,  20.8",
+    "24, 60, DSC,   8.2",
+    "48, 60, DSC,   4.0",
+    "2,  60, FTIR, 0.948",
+    "8,  60, FTIR, 0.439",
+    "24, 60, FTIR, 0.173",
+    "48, 60, FTIR, 0.085",
+    "24, 60, DMA,  -45.5",
+    "48, 60, DMA,  -42.9",
+    "2,  70, DSC,  34.4",
+    "8,  70, DSC,  13.0",
+    "24, 70, DSC,   4.5"
+  ].join("\n");
+
+  // ---- parsing ----------------------------------------------------------
+  function parseComps(text) {
+    var comps = [], errs = [];
+    text.split(/\r?\n/).forEach(function (line, ix) {
+      var t = line.replace(/#.*$/, "").trim();
+      if (!t) return;
+      var p = t.split(/\s*,\s*/);
+      if (p.length < 5) { errs.push("line " + (ix + 1) + ": needs at least five comma-separated fields"); return; }
+      var role = p[1].trim().toUpperCase();
+      if (role !== "OH" && role !== "NCO" && role !== "-") {
+        errs.push("line " + (ix + 1) + ': role must be OH, NCO or -, got "' + p[1].trim() + '"'); return;
+      }
+      var mass = parseFloat(p[2]), ew = parseFloat(p[3]), f = parseFloat(p[4]);
+      var water = p.length > 5 ? parseFloat(p[5]) : 0;
+      if (!isFinite(mass) || mass <= 0) { errs.push("line " + (ix + 1) + ": mass must be positive"); return; }
+      if (!isFinite(water) || water < 0) water = 0;
+      if (role !== "-") {
+        if (!isFinite(ew) || ew <= 0) { errs.push("line " + (ix + 1) + ": equivalent weight must be positive"); return; }
+        if (!isFinite(f) || f < 1 || Math.abs(f - Math.round(f)) > 1e-9) {
+          errs.push("line " + (ix + 1) + ": functionality must be a whole number of at least 1"); return;
+        }
+      }
+      comps.push({ name: p[0].trim(), role: role, mass: mass, ew: ew, f: Math.round(f), water: water });
+    });
+    return { comps: comps, errs: errs };
+  }
+
+  var TECHS = ["DSC", "FTIR", "DMA", "TMA"];
+  function parseMeas(text) {
+    var rows = [], errs = [];
+    text.split(/\r?\n/).forEach(function (line, ix) {
+      var t = line.replace(/#.*$/, "").trim();
+      if (!t) return;
+      var p = t.split(/\s*,\s*/);
+      if (p.length < 4) { errs.push("line " + (ix + 1) + ": needs time, temperature, technique, value"); return; }
+      var time = parseFloat(p[0]), T = parseFloat(p[1]), tech = p[2].trim().toUpperCase(), v = parseFloat(p[3]);
+      if (!isFinite(time) || time < 0) { errs.push("line " + (ix + 1) + ": time must be zero or more"); return; }
+      if (!isFinite(T)) { errs.push("line " + (ix + 1) + ": temperature must be a number"); return; }
+      if (TECHS.indexOf(tech) === -1) { errs.push("line " + (ix + 1) + ': technique must be one of ' + TECHS.join(", ")); return; }
+      if (!isFinite(v)) { errs.push("line " + (ix + 1) + ": value must be a number"); return; }
+      rows.push({ t: time, T: T, tech: tech, v: v });
+    });
+    return { rows: rows, errs: errs };
+  }
+
+  // ---- stoichiometry ----------------------------------------------------
+  function stoich(comps) {
+    var eqNCO = 0, eqOH = 0, water = 0, mass = 0;
+    comps.forEach(function (c) {
+      mass += c.mass;
+      if (c.water) water += c.mass * c.water / 1e6 / 18.015;
+      if (c.role === "NCO") eqNCO += c.mass / c.ew;
+      else if (c.role === "OH") eqOH += c.mass / c.ew;
+    });
+    var eqOHeff = eqOH + 2 * water;
+    return { eqNCO: eqNCO, eqOH: eqOH, water: water, eqOHeff: eqOHeff, mass: mass,
+      r: eqOHeff > 0 ? eqNCO / eqOHeff : Infinity };
+  }
+
+  // Functionality distributions, weighted by GROUPS: the recursion is entered
+  // through a group, so a triol gets three chances and a diol two.
+  function distributions(comps, water) {
+    var A = {}, B = {};
+    comps.forEach(function (c) {
+      if (c.role === "-") return;
+      var molecules = (c.mass / c.ew) / c.f;
+      var tgt = c.role === "NCO" ? A : B;
+      tgt[c.f] = (tgt[c.f] || 0) + molecules;
+    });
+    if (water > 0) B[2] = (B[2] || 0) + water;   // water is a difunctional hydroxyl
+    return { A: A, B: B };
+  }
+  function groupFractions(dist) {
+    var tot = 0, out = {};
+    Object.keys(dist).forEach(function (f) { tot += Number(f) * dist[f]; });
+    Object.keys(dist).forEach(function (f) { out[f] = Number(f) * dist[f] / tot; });
+    return { frac: out, groups: tot };
+  }
+  function weightAvgF(frac) {
+    var s = 0;
+    Object.keys(frac).forEach(function (f) { s += frac[f] * Number(f); });
+    return s;
+  }
+
+  // ---- network ----------------------------------------------------------
+  // Same fixed point as network-formation.html, so the two pages agree.
+  function solveP(aFrac, bFrac, pA, pB) {
+    var PA = 0, PB = 0;
+    for (var i = 0; i < 20000; i++) {
+      var nA = (1 - pA), nB = (1 - pB);
+      Object.keys(bFrac).forEach(function (g) { nA += pA * bFrac[g] * Math.pow(PB, Number(g) - 1); });
+      Object.keys(aFrac).forEach(function (f) { nB += pB * aFrac[f] * Math.pow(PA, Number(f) - 1); });
+      if (Math.abs(nA - PA) < 1e-15 && Math.abs(nB - PB) < 1e-15) { PA = nA; PB = nB; break; }
+      PA = nA; PB = nB;
+    }
+    return { PA: Math.min(1, PA), PB: Math.min(1, PB) };
+  }
+  function binom(n, k) {
+    if (k < 0 || k > n) return 0;
+    var r = 1;
+    for (var i = 0; i < k; i++) r = r * (n - i) / (i + 1);
+    return r;
+  }
+  function strands(dist, aFrac, bFrac, pA, pB, volume_m3) {
+    var P = solveP(aFrac, bFrac, pA, pB), nu = 0;
+    [[dist.A, P.PA], [dist.B, P.PB]].forEach(function (side) {
+      var d = side[0], pInf = 1 - side[1];
+      Object.keys(d).forEach(function (fs) {
+        var f = Number(fs), molecules = d[fs];
+        for (var k = 3; k <= f; k++) {
+          nu += 0.5 * k * (molecules / volume_m3) * binom(f, k) *
+            Math.pow(pInf, k) * Math.pow(1 - pInf, f - k);
+        }
+      });
+    });
+    return nu;
+  }
+
+  // ---- conversion and kinetics -----------------------------------------
+  function alphaFromTg(tg, tg0, tgInf, lam) {
+    var X = (tg - tg0) / (tgInf - tg0), den = lam + X * (1 - lam);
+    return den === 0 ? NaN : X / den;
+  }
+  function alphaMax(r) { return Math.min(1, 1 / r); }
+  function kineticY(alpha, r) {
+    if (Math.abs(1 - r) < 1e-6) return alpha / (1 - alpha);
+    return Math.log((1 - r * alpha) / (1 - alpha)) / (1 - r);
+  }
+  function alphaAt(t, k, r) {
+    if (Math.abs(1 - r) < 1e-6) { var z = k * t; return z / (1 + z); }
+    var e = Math.exp(k * (1 - r) * t);
+    return (e - 1) / (e - r);
+  }
+  function timeToAlpha(a, k, r) {
+    if (!(a > 0)) return 0;
+    if (a >= alphaMax(r) - 1e-12) return Infinity;
+    return kineticY(a, r) / k;
+  }
+  // Least squares through the origin: nothing has reacted at t = 0, so the
+  // intercept is not free.
+  function fitK(pts, r) {
+    var use = pts.filter(function (p) {
+      return p.t > 0 && p.alpha > 0 && p.alpha < alphaMax(r) - 1e-9 && isFinite(kineticY(p.alpha, r));
+    });
+    if (!use.length) return null;
+    var sxy = 0, sxx = 0, ybar = 0;
+    use.forEach(function (p) { var y = kineticY(p.alpha, r); sxy += p.t * y; sxx += p.t * p.t; ybar += y; });
+    if (!(sxx > 0)) return null;
+    var k = sxy / sxx;
+    ybar /= use.length;
+    var ssRes = 0, ssTot = 0;
+    use.forEach(function (p) {
+      var y = kineticY(p.alpha, r);
+      ssRes += Math.pow(y - k * p.t, 2);
+      ssTot += Math.pow(y - ybar, 2);
+    });
+    return { k: k, n: use.length, r2: ssTot > 0 ? 1 - ssRes / ssTot : 1 };
+  }
+  function arrhenius(runs) {
+    if (runs.length < 2) return null;
+    var n = runs.length, sx = 0, sy = 0, sxx = 0, sxy = 0;
+    runs.forEach(function (run) {
+      var x = 1 / (run.T + 273.15), y = Math.log(run.k);
+      sx += x; sy += y; sxx += x * x; sxy += x * y;
+    });
+    var den = n * sxx - sx * sx;
+    if (Math.abs(den) < 1e-30) return null;
+    var slope = (n * sxy - sx * sy) / den, intercept = (sy - slope * sx) / n;
+    var ssRes = 0, ssTot = 0, ybar = sy / n;
+    runs.forEach(function (run) {
+      var x = 1 / (run.T + 273.15), y = Math.log(run.k);
+      ssRes += Math.pow(y - (intercept + slope * x), 2);
+      ssTot += Math.pow(y - ybar, 2);
+    });
+    return { Ea: -slope * R_GAS, lnA: intercept, slope: slope,
+      r2: ssTot > 0 ? 1 - ssRes / ssTot : 1 };
+  }
+
+  function fmt(n, d) {
+    if (!isFinite(n)) return "&infin;";
+    return n.toFixed(d === undefined ? 4 : d);
+  }
+
+  // ---- plot -------------------------------------------------------------
+  var SERIES_COLOUR = ["var(--primary, #5b8def)", "var(--accent, #0e9f6e)", "#b07bd0", "#d08a3a"];
+  function plot(groups, r, aGel, aMax, target) {
+    var W = 680, H = 320, Mg = { left: 54, right: 14, top: 14, bottom: 44 };
+    var pw = W - Mg.left - Mg.right, ph = H - Mg.top - Mg.bottom;
+    var tMax = 1;
+    groups.forEach(function (g) { g.pts.forEach(function (p) { if (p.t > tMax) tMax = p.t; }); });
+    tMax *= 1.08;
+    function sx(t) { return Mg.left + (t / tMax) * pw; }
+    function sy(a) { return Mg.top + (1 - a) * ph; }
+    var s = "", i;
+    for (i = 0; i <= 5; i++) {
+      var av = i / 5;
+      s += '<line x1="' + Mg.left + '" y1="' + sy(av) + '" x2="' + (W - Mg.right) + '" y2="' + sy(av) +
+        '" stroke="var(--border)" stroke-width="0.5" opacity="0.6"/>';
+      s += '<text x="' + (Mg.left - 7) + '" y="' + (sy(av) + 3.5) + '" text-anchor="end" font-size="10.5" fill="var(--text-dim)">' + av.toFixed(1) + '</text>';
+      var tv = tMax * i / 5;
+      s += '<text x="' + sx(tv) + '" y="' + (H - Mg.bottom + 15) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">' + tv.toFixed(0) + '</text>';
+    }
+    function hline(a, colour, label) {
+      if (!isFinite(a) || a > 1 || a <= 0) return;
+      s += '<line x1="' + Mg.left + '" y1="' + sy(a) + '" x2="' + (W - Mg.right) + '" y2="' + sy(a) +
+        '" stroke="' + colour + '" stroke-width="1.3" stroke-dasharray="4 3"/>';
+      s += '<text x="' + (W - Mg.right - 3) + '" y="' + (sy(a) - 4) + '" text-anchor="end" font-size="10" fill="' + colour + '">' + label + '</text>';
+    }
+    hline(aGel, "var(--text-dim)", "gel point");
+    hline(target, "var(--danger, #d9534f)", "target");
+    if (aMax < 0.999) hline(aMax, "var(--amber-ink, #9a6b10)", "ceiling from stoichiometry");
+
+    groups.forEach(function (g, gi) {
+      var col = SERIES_COLOUR[gi % SERIES_COLOUR.length];
+      if (g.k) {
+        var d = "", started = false;
+        for (i = 0; i <= 240; i++) {
+          var t = tMax * i / 240, a = alphaAt(t, g.k, r);
+          if (!isFinite(a)) continue;
+          d += (started ? " L " : "M ") + sx(t) + " " + sy(Math.max(0, Math.min(1, a)));
+          started = true;
+        }
+        s += '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2"/>';
+      }
+      g.pts.forEach(function (p) {
+        s += '<circle cx="' + sx(p.t) + '" cy="' + sy(p.alpha) + '" r="3.4" fill="' + col + '" opacity="0.9"/>';
+      });
+    });
+
+    s += '<line x1="' + Mg.left + '" y1="' + (H - Mg.bottom) + '" x2="' + (W - Mg.right) + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    s += '<line x1="' + Mg.left + '" y1="' + Mg.top + '" x2="' + Mg.left + '" y2="' + (H - Mg.bottom) + '" stroke="var(--border)" stroke-width="1.5"/>';
+    var lx = Mg.left + 8, ly = H - Mg.bottom - 10;
+    groups.forEach(function (g, gi) {
+      var col = SERIES_COLOUR[gi % SERIES_COLOUR.length], lab = g.T + " °C";
+      s += '<line x1="' + lx + '" y1="' + (ly - 4) + '" x2="' + (lx + 15) + '" y2="' + (ly - 4) + '" stroke="' + col + '" stroke-width="2.5"/>';
+      s += '<text x="' + (lx + 20) + '" y="' + ly + '" font-size="10" fill="var(--text-dim)">' + lab + '</text>';
+      lx += 30 + lab.length * 5.4;
+    });
+    s += '<text x="' + (W / 2) + '" y="' + (H - 4) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)">cure time (h)</text>';
+    s += '<text x="14" y="' + (Mg.top + ph / 2) + '" text-anchor="middle" font-size="10.5" fill="var(--text-dim)" transform="rotate(-90 14 ' + (Mg.top + ph / 2) + ')">NCO conversion</text>';
+    return '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+      'aria-label="Isocyanate conversion against cure time, one series per cure temperature, with the gel point, the target and the stoichiometric ceiling marked.">' + s + '</svg>';
+  }
+
+  // ---- main -------------------------------------------------------------
+  function recalc() {
+    var pc = parseComps($("ic-comp").value);
+    var pm = parseMeas($("ic-meas").value);
+    var stoichEl = $("ic-stoich"), notesEl = $("ic-stoich-notes");
+
+    function failStoich(msg) {
+      stoichEl.innerHTML = '<div class="error-msg">' + msg + '</div>';
+      notesEl.innerHTML = ""; $("ic-table").innerHTML = ""; $("ic-agree").innerHTML = "";
+      $("ic-kin").innerHTML = ""; $("ic-kin-notes").innerHTML = "";
+      $("ic-net").innerHTML = ""; $("ic-net-notes").innerHTML = "";
+      $("ic-plot").innerHTML = ""; $("ic-caption").textContent = "";
+    }
+    if (pc.errs.length) return failStoich(pc.errs.slice(0, 4).join("<br>"));
+    var hasNCO = pc.comps.some(function (c) { return c.role === "NCO"; });
+    var hasOH = pc.comps.some(function (c) { return c.role === "OH"; });
+    if (!hasNCO || !hasOH) return failStoich("Give at least one isocyanate component and one hydroxyl component.");
+
+    var S = stoich(pc.comps);
+    var dist = distributions(pc.comps, S.water);
+    var ga = groupFractions(dist.A), gb = groupFractions(dist.B);
+    var fw = weightAvgF(ga.frac), gw = weightAvgF(gb.frac);
+    var aGel = (fw - 1) * (gw - 1) * S.r > 0 ? 1 / Math.sqrt(S.r * (fw - 1) * (gw - 1)) : Infinity;
+    var aMax = alphaMax(S.r);
+    var rho = parseFloat($("ic-rho").value);
+    var target = parseFloat($("ic-target").value);
+    if (!isFinite(rho) || rho <= 0) return failStoich("Density must be positive.");
+    if (!isFinite(target) || target <= 0 || target > 1) return failStoich("Target conversion must be between 0 and 1.");
+    var volume = S.mass / rho * 1e-6;
+
+    $("ic-comp-hint").textContent = pc.comps.length + " components, " +
+      S.mass.toFixed(3) + " g total";
+
+    stoichEl.innerHTML =
+      '<div class="stat stat--primary"><div class="label">Index</div><div class="value">' + fmt(100 * S.r, 1) +
+      '</div><div class="sub">100 &times; NCO &divide; OH equivalents</div></div>' +
+      '<div class="stat"><div class="label">&alpha;<sub>max</sub></div><div class="value">' + fmt(aMax, 4) +
+      '</div><div class="sub">' + (aMax < 0.999 ? "hydroxyl runs out first" : "isocyanate is the deficient group") + '</div></div>' +
+      '<div class="stat"><div class="label">&alpha;<sub>gel</sub></div><div class="value">' + (isFinite(aGel) && aGel <= 1 ? fmt(aGel, 4) : "never") +
+      '</div><div class="sub">f<sub>w</sub> = ' + fmt(fw, 3) + ', g<sub>w</sub> = ' + fmt(gw, 3) + '</div></div>' +
+      '<div class="stat"><div class="label">NCO equivalents</div><div class="value">' + S.eqNCO.toPrecision(4) +
+      '</div><div class="sub">vs ' + S.eqOHeff.toPrecision(4) + ' effective OH</div></div>' +
+      '<div class="stat"><div class="label">Water</div><div class="value">' + (S.water > 0 ? S.water.toExponential(2) : "0") +
+      '</div><div class="sub">mol, worth ' + (2 * S.water).toExponential(2) + ' eq</div></div>';
+
+    var sn = [];
+    if (S.water > 0) {
+      var idxDry = 100 * S.eqNCO / S.eqOH;
+      sn.push("<strong>Water moves the index by " + (idxDry - 100 * S.r).toFixed(1) + " points.</strong> Dry, this formulation would be at index " +
+        idxDry.toFixed(1) + "; the " + (2 * S.water).toExponential(2) + " equivalents that the water consumes bring it to " + fmt(100 * S.r, 1) + ".");
+    }
+    if (aMax < target) {
+      sn.push("<strong>The target is above the ceiling.</strong> At index " + fmt(100 * S.r, 1) +
+        " the isocyanate cannot exceed &alpha; = " + fmt(aMax, 4) + ", because the hydroxyl is exhausted there. " +
+        "A target of " + fmt(target, 3) + " cannot be met by curing longer or hotter: it needs less isocyanate, or drier polyol.");
+    } else if (aMax - target < 0.03 && aMax < 0.999) {
+      sn.push("<strong>The target sits close to the ceiling.</strong> &alpha;<sub>max</sub> is " + fmt(aMax, 4) +
+        " and the target is " + fmt(target, 3) + ". Approach to a stoichiometric ceiling is asymptotic, so the last fraction of a percent " +
+        "costs a disproportionate amount of time. Expect the predicted cure time to be very sensitive to the index.");
+    }
+    notesEl.innerHTML = sn.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    // ---- measurements to alpha ------------------------------------------
+    if (pm.errs.length) {
+      $("ic-table").innerHTML = '<div class="error-msg">' + pm.errs.slice(0, 4).join("<br>") + '</div>';
+      $("ic-agree").innerHTML = ""; $("ic-kin").innerHTML = ""; $("ic-kin-notes").innerHTML = "";
+      $("ic-net").innerHTML = ""; $("ic-net-notes").innerHTML = ""; $("ic-plot").innerHTML = "";
+      $("ic-caption").textContent = "";
+      return;
+    }
+    var dh0 = parseFloat($("ic-dh0").value), rat0 = parseFloat($("ic-rat0").value);
+    var tg0 = parseFloat($("ic-tg0").value), tgi = parseFloat($("ic-tgi").value), lam = parseFloat($("ic-lam").value);
+
+    var cells = {}, temps = {};
+    pm.rows.forEach(function (row) {
+      var a = NaN;
+      if (row.tech === "DSC") a = isFinite(dh0) && dh0 > 0 ? 1 - row.v / dh0 : NaN;
+      else if (row.tech === "FTIR") a = isFinite(rat0) && rat0 > 0 ? 1 - row.v / rat0 : NaN;
+      else a = alphaFromTg(row.v, tg0, tgi, lam);
+      if (!isFinite(a)) return;
+      var key = row.T + "|" + row.t;
+      cells[key] = cells[key] || { T: row.T, t: row.t, by: {} };
+      cells[key].by[row.tech] = cells[key].by[row.tech] || [];
+      cells[key].by[row.tech].push(a);
+      temps[row.T] = true;
+    });
+    var keys = Object.keys(cells).sort(function (x, y) {
+      var cx = cells[x], cy = cells[y];
+      return cx.T - cy.T || cx.t - cy.t;
+    });
+    $("ic-meas-hint").textContent = pm.rows.length + " readings over " + Object.keys(temps).length + " temperature(s)";
+
+    if (!keys.length) {
+      $("ic-table").innerHTML = '<div class="error-msg">No reading could be turned into a conversion. Check the calibration values.</div>';
+      return;
+    }
+
+    var head = '<tr><th>Temp (&deg;C)</th><th class="num">Time (h)</th>';
+    TECHS.forEach(function (tc) { head += '<th class="num">' + tc + '</th>'; });
+    head += '<th class="num">Mean &alpha;</th><th class="num">Spread</th></tr>';
+    var body = "", maxSpread = 0;
+    keys.forEach(function (key) {
+      var c = cells[key], vals = [];
+      var row = '<tr><td>' + c.T + '</td><td class="num">' + c.t + '</td>';
+      TECHS.forEach(function (tc) {
+        var list = c.by[tc];
+        if (!list || !list.length) { row += '<td class="num">&ndash;</td>'; return; }
+        var m = list.reduce(function (s2, v) { return s2 + v; }, 0) / list.length;
+        vals.push(m);
+        row += '<td class="num">' + m.toFixed(4) + (list.length > 1 ? ' <span class="hint">(n=' + list.length + ')</span>' : '') + '</td>';
+      });
+      var mean = vals.reduce(function (s2, v) { return s2 + v; }, 0) / vals.length;
+      var spread = vals.length > 1 ? Math.max.apply(null, vals) - Math.min.apply(null, vals) : NaN;
+      if (isFinite(spread) && spread > maxSpread) maxSpread = spread;
+      c.mean = mean;
+      row += '<td class="num"><strong>' + mean.toFixed(4) + '</strong></td><td class="num">' +
+        (isFinite(spread) ? spread.toFixed(4) : "&ndash;") + '</td></tr>';
+      body += row;
+    });
+    $("ic-table").innerHTML = '<div class="table-scroll"><table class="recipe recipe-data"><thead>' +
+      head + '</thead><tbody>' + body + '</tbody></table></div>';
+
+    var ag = [];
+    if (maxSpread > 0) {
+      ag.push("<strong>Widest disagreement between methods: " + maxSpread.toFixed(4) + " in &alpha;.</strong> " +
+        (maxSpread > 0.05
+          ? "That is large. Methods this far apart are not measuring the same thing: check that the fully cured calibration specimen really was fully cured, and that the FTIR reference band is not itself changing."
+          : maxSpread > 0.02
+            ? "That is the normal size of disagreement for real specimens, and the mean is the right number to carry forward."
+            : "That is tight enough that the three routes are effectively confirming one another."));
+    }
+    $("ic-agree").innerHTML = ag.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    // ---- kinetics --------------------------------------------------------
+    var groups = [];
+    Object.keys(temps).map(Number).sort(function (a2, b2) { return a2 - b2; }).forEach(function (T) {
+      var pts = keys.filter(function (k2) { return cells[k2].T === T; })
+        .map(function (k2) { return { t: cells[k2].t, alpha: cells[k2].mean }; });
+      var fit = fitK(pts, S.r);
+      groups.push({ T: T, pts: pts, k: fit ? fit.k : null, fit: fit });
+    });
+    var usable = groups.filter(function (g) { return g.fit; });
+    var arr = arrhenius(usable.map(function (g) { return { T: g.T, k: g.k }; }));
+
+    var kStats = "";
+    usable.forEach(function (g) {
+      kStats += '<div class="stat"><div class="label">k at ' + g.T + ' &deg;C</div><div class="value">' + fmt(g.k, 4) +
+        '</div><div class="sub">h<sup>&minus;1</sup>, R<sup>2</sup> = ' + g.fit.r2.toFixed(4) + ' over ' + g.fit.n + ' points</div></div>';
+    });
+    if (arr) {
+      kStats += '<div class="stat stat--primary"><div class="label">E<sub>a</sub></div><div class="value">' + (arr.Ea / 1000).toFixed(1) +
+        '</div><div class="sub">kJ/mol, from ' + usable.length + ' temperatures</div></div>';
+    }
+    var lowest = usable.length ? usable[0] : null;
+    if (lowest) {
+      var tTarget = timeToAlpha(target, lowest.k, S.r);
+      kStats += '<div class="stat"><div class="label">Time to ' + fmt(target, 3) + '</div><div class="value">' +
+        (isFinite(tTarget) ? tTarget.toFixed(1) : "&infin;") + '</div><div class="sub">hours at ' + lowest.T + ' &deg;C</div></div>';
+      var reached = lowest.pts.length ? Math.max.apply(null, lowest.pts.map(function (p) { return p.alpha; })) : 0;
+      kStats += '<div class="stat"><div class="label">Verdict</div><div class="value" style="font-size:1.1rem;">' +
+        (reached >= target ? "PASS" : "not yet") + '</div><div class="sub">highest measured &alpha; = ' + reached.toFixed(4) + '</div></div>';
+    }
+    $("ic-kin").innerHTML = kStats;
+
+    var kn = [];
+    if (!usable.length) {
+      kn.push("No temperature had enough usable points to fit a rate constant. A fit needs at least one reading at a time greater than zero, below the stoichiometric ceiling.");
+    }
+    if (usable.length === 1) {
+      kn.push("<strong>One temperature gives a rate constant but no activation energy.</strong> Add a second cure temperature and the Arrhenius fit will give E<sub>a</sub>, which is what lets you predict the cure time at any other temperature.");
+    }
+    if (arr && arr.Ea > 0) {
+      var kRef = lowest.k, tRef = lowest.T;
+      var hotter = tRef + 10;
+      var kHot = kRef * Math.exp(-arr.Ea / R_GAS * (1 / (hotter + 273.15) - 1 / (tRef + 273.15)));
+      var tHot = timeToAlpha(target, kHot, S.r), tCold = timeToAlpha(target, kRef, S.r);
+      if (isFinite(tHot) && isFinite(tCold)) {
+        kn.push("<strong>Ten degrees is worth a factor of " + (tCold / tHot).toFixed(2) + " here.</strong> At " + tRef +
+          " &deg;C the cure needs " + tCold.toFixed(1) + " h to reach &alpha; = " + fmt(target, 3) + "; at " + hotter +
+          " &deg;C it needs " + tHot.toFixed(1) + " h. That factor is E<sub>a</sub> talking, and it is the whole reason an " +
+          "activation energy is worth measuring rather than guessing.");
+      }
+    }
+    // The equimolar simplification is so common it is worth saying when it
+    // would have changed the answer.
+    if (lowest && Math.abs(1 - S.r) > 0.005) {
+      var fitEq = fitK(lowest.pts, 1);
+      if (fitEq) {
+        var diff = Math.abs(fitEq.k - lowest.k) / lowest.k * 100;
+        if (diff > 2) {
+          kn.push("<strong>Assuming balanced stoichiometry would have changed k by " + diff.toFixed(0) + "&nbsp;%.</strong> " +
+            "The familiar &alpha;/(1&minus;&alpha;) = kt form assumes r = 1; here r = " + fmt(S.r, 4) + ", and fitting that simpler form to " +
+            "the same points gives k = " + fmt(fitEq.k, 4) + " h<sup>&minus;1</sup> instead of " + fmt(lowest.k, 4) + ". The difference is " +
+            "concentrated at long times, where the deficient group is running out, which is exactly where cure schedules are set.");
+        }
+      }
+    }
+    $("ic-kin-notes").innerHTML = kn.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+
+    $("ic-plot").innerHTML = plot(groups, S.r, aGel, aMax, target);
+    $("ic-caption").textContent = "Points are the mean conversion across whichever methods reported at that time; " +
+      "lines are the fitted second-order cure at each temperature.";
+
+    // ---- network ---------------------------------------------------------
+    var aNet = Math.min(target, aMax);
+    var nu = strands(dist, ga.frac, gb.frac, aNet, Math.min(1, S.r * aNet), volume);
+    var Mc = nu > 0 ? rho * 1e6 / nu : Infinity;
+    var Eprime = 3 * nu * R_GAS * 298.15 / 1e6;
+    $("ic-net").innerHTML =
+      '<div class="stat stat--primary"><div class="label">&nu;<sub>e</sub></div><div class="value">' + fmt(nu, 1) +
+      '</div><div class="sub">mol/m<sup>3</sup> of elastic strands at &alpha; = ' + fmt(aNet, 3) + '</div></div>' +
+      '<div class="stat"><div class="label">M<sub>c</sub></div><div class="value">' + (isFinite(Mc) && nu > 0 ? Math.round(Mc).toLocaleString() : "&infin;") +
+      '</div><div class="sub">g/mol between elastic strands</div></div>' +
+      '<div class="stat"><div class="label">E&prime; at 25 &deg;C</div><div class="value">' + fmt(Eprime, 2) +
+      '</div><div class="sub">MPa, rubbery plateau, 3&nu;<sub>e</sub>RT</div></div>';
+
+    var nn = [];
+    if (nu <= 0) {
+      nn.push("<strong>No network at this conversion.</strong> &alpha; = " + fmt(aNet, 3) + " is below the gel point of " +
+        fmt(aGel, 4) + ", so the material is still soluble and has no rubbery modulus to speak of.");
+    } else {
+      nn.push("Compare this E&prime; against the plateau your DMA actually reports. The prediction counts chemical strands only, " +
+        "so a measured modulus <em>above</em> it usually means trapped entanglements carrying load, and one well below it means the " +
+        "conversion is lower than assumed or the network has more intramolecular loops than mean-field theory allows. " +
+        "The <a href=\"crosslink-density.html\">crosslink density</a> page works the same comparison from the other end.");
+    }
+    $("ic-net-notes").innerHTML = nn.map(function (t) { return '<p class="guide-note">' + t + "</p>"; }).join("");
+  }
+
+  $("ic-comp").value = DEMO_COMP;
+  $("ic-meas").value = DEMO_MEAS;
+  ["ic-comp", "ic-meas", "ic-rho", "ic-target", "ic-dh0", "ic-rat0", "ic-tg0", "ic-tgi", "ic-lam"]
+    .forEach(function (id) { $(id).addEventListener("input", recalc); });
+  recalc();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); });
+}
+</script>
+
+</body>
+</html>
