@@ -466,7 +466,7 @@ function hubHtml(groups) {
   h += '<meta name="twitter:title" content="Polymer families: PolyTechniques">\n';
   h += '<meta name="twitter:description" content="' + esc(desc) + '">\n';
   h += '<meta name="twitter:image" content="' + SITE + 'og-image.png">\n';
-  h += '<script src="structure-map.js?v=2" defer><\/script>\n';
+  h += '<script src="structure-map.js?v=4" defer><\/script>\n';
   h += '<script src="theme.js?v=1"><\/script>\n';
   h += '<script src="nav.js?v=34" defer><\/script>\n';
   h += '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n';
