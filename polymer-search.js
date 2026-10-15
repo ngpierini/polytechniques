@@ -7519,24 +7519,43 @@
       var query = facetNorm(q);
       if (query.length < 3) return null;
       var db = window.POLYMER_DB || [];
+      // Categories are indexed in the singular, and the match is a substring
+      // test in the wrong direction: "elastomer" is inside "elastomers", not
+      // the reverse. So asking in the plural - which is how anyone asks -
+      // found nothing at all. Retry a word without its trailing s, and keep
+      // the singular only if it actually matches, so "glass" is never quietly
+      // read as "glas": nothing matches that, and the word still fails.
+      function singularOf(w) {
+        return (w.length > 3 && /s$/.test(w) && !/ss$/.test(w)) ? w.slice(0, -1) : null;
+      }
+      function someEntryHas(term) {
+        for (var k = 0; k < db.length; k++) if (termMatches(db[k], term)) return true;
+        return false;
+      }
+
       var whole = db.filter(function (p) { return facetTermsOf(p).indexOf(query) !== -1; });
       if (whole.length) return { list: whole, terms: [query], exact: true };
+      var wholeSing = singularOf(query);
+      if (wholeSing) {
+        var whole2 = db.filter(function (p) { return facetTermsOf(p).indexOf(wholeSing) !== -1; });
+        if (whole2.length) return { list: whole2, terms: [wholeSing], exact: true };
+      }
 
       var words = query.split(' ').filter(function (w) { return w.length >= 3; });
       if (!words.length) return null;
       // Every word has to land on something, or "polyester recipe" would quietly
       // answer as if you had only typed "polyester".
+      var resolved = [];
       for (var i = 0; i < words.length; i++) {
-        var anyHit = false;
-        for (var j = 0; j < db.length; j++) {
-          if (termMatches(db[j], words[i])) { anyHit = true; break; }
-        }
-        if (!anyHit) return null;
+        if (someEntryHas(words[i])) { resolved.push(words[i]); continue; }
+        var sing = singularOf(words[i]);
+        if (sing && someEntryHas(sing)) { resolved.push(sing); continue; }
+        return null;
       }
       var list = db.filter(function (p) {
-        return words.every(function (w) { return termMatches(p, w); });
+        return resolved.every(function (w) { return termMatches(p, w); });
       });
-      return list.length ? { list: list, terms: words, exact: false } : null;
+      return list.length ? { list: list, terms: resolved, exact: false } : null;
     }
 
     // ---------- Chips, and paging a category that runs to 165 entries ----------
@@ -8087,19 +8106,49 @@
         // mentions PEDOT:PSS) and "PBI" on a bottlebrush called PBiBEM-g-PMMA,
         // ahead of the polymers actually abbreviated that way. Lower is better;
         // null means no match at all.
+        // Separator-insensitive key. Chemists write "Nylon-6", "nylon6" and
+        // "polymethyl methacrylate" for names stored here as "Nylon 6" and
+        // "Poly(methyl methacrylate)", and a raw substring test answered every
+        // one of those with nothing at all. Stripping everything that is not a
+        // letter or a digit makes them the same string.
+        function looseKey(t) { return t.toLowerCase().replace(/[^a-z0-9]/g, ""); }
+        // Computed once per entry and kept on it: this runs over the whole
+        // library on every keystroke.
+        function looseName(p) {
+          if (p._lk === undefined) p._lk = looseKey(p.name || "");
+          return p._lk;
+        }
+        function looseAkas(p) {
+          if (p._lka === undefined) p._lka = (p.aka || []).map(looseKey);
+          return p._lka;
+        }
+        var lq = looseKey(q);
+
         function rank(p) {
           var name = p.name.toLowerCase();
           var akas = (p.aka || []).map(function (a) { return a.toLowerCase(); });
           if (name === q) return 0;
           if (akas.indexOf(q) !== -1) return 1;
-          if (name.indexOf(q) === 0) return 2;
-          if (akas.some(function (a) { return a.indexOf(q) === 0; })) return 3;
-          if (name.indexOf(q) !== -1) return 4;
-          if (akas.some(function (a) { return a.indexOf(q) !== -1; })) return 5;
+          // Loose exact sits here, above every prefix tier: "nylon66" IS
+          // Nylon 6,6, and it used to rank below anything merely starting
+          // with the same letters.
+          if (lq && looseName(p) === lq) return 2;
+          if (lq && looseAkas(p).indexOf(lq) !== -1) return 3;
+          if (name.indexOf(q) === 0) return 4;
+          if (akas.some(function (a) { return a.indexOf(q) === 0; })) return 5;
+          if (lq && looseName(p).indexOf(lq) === 0) return 6;
+          if (lq && looseAkas(p).some(function (a) { return a.indexOf(lq) === 0; })) return 7;
+          if (name.indexOf(q) !== -1) return 8;
+          if (akas.some(function (a) { return a.indexOf(q) !== -1; })) return 9;
+          // Loose "contains" only once the query is long enough to mean
+          // something: a three-character stripped query lands inside half the
+          // library.
+          if (lq.length >= 5 && looseName(p).indexOf(lq) !== -1) return 10;
+          if (lq.length >= 5 && looseAkas(p).some(function (a) { return a.indexOf(lq) !== -1; })) return 11;
           // Every result card prints "CAS <rn>", so people paste one back in.
           // These are the polymer registry numbers, not the monomer's, so a
           // monomer RN off a bottle label deliberately does not match here.
-          if (p.cas && p.cas.toLowerCase().indexOf(q) !== -1) return 6;
+          if (p.cas && p.cas.toLowerCase().indexOf(q) !== -1) return 12;
           return null;
         }
         var scored = [];
@@ -8306,6 +8355,13 @@
       var sugg = [];
       db.forEach(function (p) {
         var cands = [p.name].concat(p.aka || []);
+        // "Polycarbonate (bisphenol A)" is a name plus a qualifier, and no typo
+        // of "polycarbonate" is within two edits of the whole string - so the
+        // sixteen entries written that way could not be corrected at all. Compare
+        // the bare head as well. It is what gets offered, and what should be
+        // typed: "Polycarbonate" finds the entry on a prefix match.
+        var head = p.name.replace(/\s+\([^()]*\)\s*$/, "");
+        if (head && head !== p.name) cands.push(head);
         var best = null;
         for (var i = 0; i < cands.length; i++) {
           var d = editDistLe2(q, cands[i].toLowerCase());
@@ -8314,6 +8370,17 @@
         if (best) sugg.push(best);
       });
       sugg.sort(function (x, y) { return x.d - y.d; });
+      // Two entries can share a bare head - Polybutadiene (cis-1,4) and
+      // (trans-1,4) both give "Polybutadiene" - which offered the same chip
+      // twice. Sorted by distance already, so the first of each label is the
+      // closest one.
+      var seenLabel = {};
+      sugg = sugg.filter(function (x) {
+        var k = x.label.toLowerCase();
+        if (seenLabel[k]) return false;
+        seenLabel[k] = true;
+        return true;
+      });
       sugg = sugg.slice(0, 5);
       if (statusEl) statusEl.textContent = 'No name matches.' + (sugg.length ? ' Did you mean:' : '');
       var resultsEl = document.getElementById('mol-results');
