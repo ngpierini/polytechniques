@@ -146,6 +146,7 @@ const FAMILIES = [
   },
   {
     slug: "polyesters",
+    diagram: "carothers",
     title: "Polyesters",
     nav: "Polyesters",
     lede: "An ester in the backbone &ndash; rigid enough for a bottle, hydrolysable enough for a dissolving suture",
@@ -188,12 +189,13 @@ const FAMILIES = [
   },
   {
     slug: "ring-opening-polymers",
+    diagram: "ringStrain",
     title: "Polyethers, lactones and other ring-opening polymers",
     nav: "Ring-opening",
     lede: "Strain in a ring, spent to build a chain &ndash; and the route to almost every end-functional prepolymer",
     match: e => e.cls === "Ring-opening",
     intro: [
-      "Ring-opening polymerisation gets its driving force from somewhere the other families do not: the strain in a cyclic monomer. Open a three-membered epoxide or a four-membered lactone and the relief of bond-angle strain pays for the polymerisation, which is why these reactions run under mild conditions and why ring size predicts reactivity so well. Five- and six-membered rings are nearly strain-free and are correspondingly reluctant &ndash; six-membered lactones barely polymerise at all, while the strained three- and four-membered rings go readily.",
+      "Ring-opening polymerisation gets its driving force from somewhere the other families do not: the strain in a cyclic monomer. Open a three-membered epoxide or a four-membered lactone and the relief of bond-angle strain pays for the polymerisation, which is why these reactions run under mild conditions and why ring size predicts reactivity so well. The strained three- and four-membered rings go readily. Five- and six-membered rings carry little strain, and that is where the rule gets subtle. Cyclohexane cannot be polymerised at all, and five-membered &gamma;-butyrolactone resisted every attempt until 2016, when it was finally polymerised at low temperature and high concentration (Hong and Chen, <i>Nat. Chem.</i> 8 (2016) 42). Six-membered lactones, by contrast, polymerise well: &delta;-valerolactone does, and so does lactide, the six-membered cyclic diester behind polylactide.",
       "The linkages produced are not new. A lactone opens to an ester, so poly(caprolactone) and polylactide are polyesters by a different route; an oxazoline opens to an amide. What ring-opening changes is the control you get on the way there, and that is the reason this family carries most of the library's prepolymers.",
     ],
     design: [
@@ -229,6 +231,7 @@ const FAMILIES = [
   },
   {
     slug: "block-copolymers",
+    diagram: "blockPhases",
     title: "Block copolymers",
     nav: "Blocks",
     lede: "Two incompatible polymers tied together, unable to separate &ndash; so they organise instead",
@@ -365,7 +368,7 @@ function pageHtml(fam, entries) {
   h += '<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">\n';
   h += '<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=126">\n';
+  h += '<link rel="stylesheet" href="style.css?v=127">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 
@@ -383,6 +386,8 @@ function pageHtml(fam, entries) {
 
   h += '  <div class="card">\n    <h3>What sets the properties</h3>\n';
   fam.design.forEach(p => { h += "    <p>" + p + "</p>\n"; });
+  // A computed figure, from the same generator as the tool pages' diagrams.
+  if (fam.diagram) h += "    " + require("./build-diagrams.js").FAMILY_DIAGRAMS[fam.diagram]() + "\n";
   h += "  </div>\n\n";
 
   // The library itself.
@@ -474,7 +479,7 @@ function hubHtml(groups) {
   h += '<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">\n';
   h += '<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=126">\n';
+  h += '<link rel="stylesheet" href="style.css?v=127">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 

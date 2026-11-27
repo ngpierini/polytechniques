@@ -566,6 +566,173 @@ function gpcAverages() {
   return panel("gpc-averages", "A gel permeation chromatography trace drawn as slices against log molar mass, with the number-, weight- and z-average molar masses and the peak marked. For a dispersity of 2 the three averages are evenly spaced on the log axis and the peak lies halfway between the number and weight averages.", 680, 280, b, caption, source);
 }
 
+// ---- 10. Carothers, with a stoichiometric imbalance -------------------------
+// Xn = (1 + r)/(1 + r - 2rp) for an AA + BB step-growth polymerization with
+// r = N_A/N_B <= 1. At r = 1 it is 1/(1 - p); at p = 1 it stops at (1 + r)/(1 - r).
+function carothers() {
+  const X0 = 58, Y0 = 36, X1 = 430, Y1 = 206;
+  const P0 = 0.9, LMIN = Math.log10(5), LMAX = 3;            // Xn from 5 to 1000, log scale
+  const sx = (p) => X0 + (p - P0) / (1 - P0) * (X1 - X0);
+  const sy = (xn) => Y1 - (Math.log10(xn) - LMIN) / (LMAX - LMIN) * (Y1 - Y0);
+  const Xn = (p, r) => (1 + r) / (1 + r - 2 * r * p);
+  let b = "";
+  // decade gridlines
+  [10, 100, 1000].forEach((v) => {
+    b += '<line x1="' + X0 + '" y1="' + f1(sy(v)) + '" x2="' + X1 + '" y2="' + f1(sy(v)) + '" stroke="' + BORDER + '" stroke-width="0.8" stroke-dasharray="2 4"/>';
+    b += text(X0 - 6, sy(v) + 4, String(v), "small dim", ' text-anchor="end"');
+  });
+  b += axes(X0, Y0, X1, Y1);
+  const series = [[1, BLUE, ""], [0.99, GREEN, ""], [0.98, VIOLET, ""], [0.95, DIM, "5 4"]];
+  series.forEach(([r, col, dash]) => {
+    const pts = [];
+    for (let i = 0; i <= 160; i++) {
+      const p = P0 + (1 - P0) * i / 160, v = Xn(p, r);
+      if (v <= 1000) pts.push([sx(p), sy(v)]);
+    }
+    b += '<path d="' + pathOf(pts) + '" fill="none" stroke="' + col + '" stroke-width="2.2"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>";
+    const end = Xn(1, r);
+    const lab = r === 1 ? "r = 1.00, no limit" : "r = " + r.toFixed(2) + ", stops at " + end.toFixed(0);
+    b += text(X1 + 6, (r === 1 ? Y0 + 4 : sy(end) + 4), lab, "small", tint(col === DIM ? "var(--text-dim)" : col));
+  });
+  // p ticks
+  [0.9, 0.92, 0.94, 0.96, 0.98, 1].forEach((p) => {
+    b += '<line x1="' + f1(sx(p)) + '" y1="' + Y1 + '" x2="' + f1(sx(p)) + '" y2="' + (Y1 + 4) + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    b += text(sx(p), Y1 + 16, p === 1 ? "1" : p.toFixed(2), "small dim", ' text-anchor="middle"');
+  });
+  b += text((X0 + X1) / 2, Y1 + 32, "extent of reaction, p", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 50, Y0 - 20, "X" + sub("n") + ", log scale", "small dim");
+  // one point worth reading off: 99% conversion at perfect balance
+  const px = sx(0.99), py = sy(Xn(0.99, 1));
+  b += '<circle cx="' + f1(px) + '" cy="' + f1(py) + '" r="3.5" fill="' + BLUE + '"/>';
+  b += text(px - 8, py - 8, "p = 0.99: X" + sub("n") + " = " + Xn(0.99, 1).toFixed(0), "small", ' text-anchor="end"');
+  const caption = "Step growth builds long chains only at the very end. At perfect balance X<sub>n</sub>&nbsp;=&nbsp;1/(1&nbsp;&minus;&nbsp;p), so 99% of the functional groups must react before the average chain is a hundred monomer units long. An excess of either monomer caps the chains: once the minority groups are used up there is nothing left to join, and X<sub>n</sub> stops at (1&nbsp;+&nbsp;r)/(1&nbsp;&minus;&nbsp;r) however long the reaction runs. A 1% mismatch in weighing holds the average chain below 199 monomer units, about a hundred diol&ndash;diacid repeats; a 5% one, below 39.";
+  const source = "X<sub>n</sub>&nbsp;=&nbsp;(1&nbsp;+&nbsp;r)/(1&nbsp;+&nbsp;r&nbsp;&minus;&nbsp;2rp): Carothers, <i>Trans. Faraday Soc.</i> 32 (1936) 39; Odian, <i>Principles of Polymerization</i>, 4th ed., Sec. 2-6. r is the ratio of A to B groups, at most 1, and X<sub>n</sub> counts monomer residues.";
+  return panel("carothers", "Number-average degree of polymerization against extent of reaction on a log scale, for stoichiometric ratios of 1, 0.99, 0.98 and 0.95. At a ratio of 1 the curve rises without limit; the others level off at 199, 99 and 39.", 680, 250, b, caption, source);
+}
+
+// ---- 11. ring strain, from Odian Table 7-1 ----------------------------------
+// Cycloalkane to polymethylene at 25 C, liquid monomer to crystalline polymer.
+// Values transcribed from the page image of the table (book p. 545), not from
+// a text dump, which interleaves table rows.
+const ODIAN_7_1 = [   // n, dH (kJ/mol), dS (J/mol/K), dG (kJ/mol), as printed
+  [3, -113.0, -69.1, -92.5], [4, -105.1, -55.3, -90.0], [5, -21.2, -42.7, -9.2],
+  [6, 2.9, -10.5, 5.9], [7, -21.8, -15.9, -16.3], [8, -34.8, -3.3, -34.3]
+];
+function ringStrain() {
+  const X0 = 64, Y0 = 26, X1 = 470, Y1 = 220;
+  const VMIN = -120, VMAX = 30;
+  const sy = (v) => Y0 + (VMAX - v) / (VMAX - VMIN) * (Y1 - Y0);
+  const GW = (X1 - X0) / ODIAN_7_1.length, BW = 15;
+  let b = "";
+  [-120, -90, -60, -30, 0, 30].forEach((v) => {
+    b += '<line x1="' + X0 + '" y1="' + f1(sy(v)) + '" x2="' + X1 + '" y2="' + f1(sy(v)) + '" stroke="' + BORDER + '" stroke-width="' + (v === 0 ? 1.2 : 0.8) + '"' + (v === 0 ? "" : ' stroke-dasharray="2 4"') + "/>";
+    b += text(X0 - 6, sy(v) + 4, v === 0 ? "0" : (v > 0 ? "+" : "&#8722;") + Math.abs(v), "small dim", ' text-anchor="end"');
+  });
+  const bar = (x, v, col, op) => {
+    const ya = sy(Math.max(v, 0)), yb = sy(Math.min(v, 0));
+    return '<rect x="' + f1(x) + '" y="' + f1(ya) + '" width="' + BW + '" height="' + f1(Math.max(yb - ya, 0.8)) + '" fill="' + col + '" fill-opacity="' + op + '"/>';
+  };
+  ODIAN_7_1.forEach(([n, dH, dS, dG], i) => {
+    const cx = X0 + GW * (i + 0.5);
+    const mTdS = -298.15 * dS / 1000;                          // the entropy penalty, positive
+    b += bar(cx - 1.5 * BW - 2, dH, BLUE, 0.85);
+    b += bar(cx - 0.5 * BW, mTdS, VIOLET, 0.75);
+    b += bar(cx + 0.5 * BW + 2, dG, dG > 0 ? "#c45c5c" : GREEN, 0.9);
+    const gy = dG > 0 ? sy(dG) - 5 : sy(dG) + 13;
+    b += text(cx + BW + 2, gy, (dG > 0 ? "+" : "&#8722;") + Math.abs(dG).toFixed(1), "small", ' text-anchor="middle"');
+    b += text(cx, Y1 + 16, String(n), "small", ' text-anchor="middle"');
+  });
+  b += text((X0 + X1) / 2, Y1 + 32, "ring size, n (atoms in the ring)", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 56, Y0 - 12, "kJ/mol, 25 &#176;C", "small dim");
+  // legend
+  const XR = 500;
+  const leg = (y, col, op, s1, s2) =>
+    '<rect x="' + XR + '" y="' + (y - 9) + '" width="12" height="12" fill="' + col + '" fill-opacity="' + op + '"/>' +
+    text(XR + 18, y + 1, s1, "small") + (s2 ? text(XR + 18, y + 16, s2, "small dim") : "");
+  b += leg(44, BLUE, 0.85, "&#916;H, ring strain released", "");
+  b += leg(72, VIOLET, 0.75, "&#8722;T&#916;S, entropy lost", "");
+  b += leg(100, GREEN, 0.9, "&#916;G &lt; 0: polymerizes", "");
+  b += leg(128, "#c45c5c", 0.9, "&#916;G &gt; 0: will not", "");
+  b += text(XR, 166, "Only the six-membered ring", "small dim");
+  b += text(XR, 182, "has nothing to release: it", "small dim");
+  b += text(XR, 198, "is the one cycloalkane that", "small dim");
+  b += text(XR, 214, "cannot be polymerized.", "small dim");
+  const caption = "Where the driving force comes from. Three- and four-membered rings carry so much bond-angle strain that the entropy cost of tying monomers into a chain hardly matters. The five-membered ring holds much less, eclipsing strain only, and the entropy term takes away most of it. Cyclohexane is strain-free, and opening it costs enthalpy as well as entropy. Seven- and eight-membered rings regain some strain from crowding across the ring. Heterocycles follow the pattern only loosely. Their heteroatom gives an initiator somewhere to attack, which a cycloalkane lacks, and six-membered lactams and lactones do polymerize where cyclohexane cannot.";
+  const source = "Odian, <i>Principles of Polymerization</i>, 4th ed., Table 7-1 (cycloalkane to polymethylene, liquid monomer to crystalline polymer, 25&nbsp;&deg;C; data of Dainton and Ivin 1958, Finke et al. 1956, Cubbon 1964). &#916;G is as printed; &#8722;T&#916;S is computed from the tabulated &#916;S at 298&nbsp;K.";
+  return panel("ring-strain", "Grouped bars for cycloalkane ring sizes three to eight showing the enthalpy, the entropy penalty and the free energy of polymerization at 25 degrees Celsius. Free energy is strongly negative for three- and four-membered rings, mildly negative for five, seven and eight, and positive only for the six-membered ring.", 680, 260, b, caption, source);
+}
+
+// ---- 12. when a diblock orders, and into what ---------------------------------
+// The mean-field (random-phase approximation) stability limit of the
+// disordered melt, computed from Leibler's structure factor with Debye
+// functions, and the sequence of ordered phases along composition.
+const debyeG = (f, x) => 2 * (f * x + Math.exp(-f * x) - 1) / (x * x);
+function leiblerSpinodal(f) {
+  let best = Infinity;
+  for (let x = 0.5; x < 30; x += 0.01) {
+    const saa = debyeG(f, x), sbb = debyeG(1 - f, x), sab = 0.5 * (debyeG(1, x) - saa - sbb);
+    const v = (saa + sbb + 2 * sab) / (saa * sbb - sab * sab);
+    if (v < best) best = v;
+  }
+  return best / 2;
+}
+function blockPhases() {
+  const X0 = 52, Y0 = 92, X1 = 452, Y1 = 236;
+  const CMAX = 60;
+  const sx = (f) => X0 + f * (X1 - X0);
+  const sy = (c) => Y1 - c / CMAX * (Y1 - Y0);
+  const crit = leiblerSpinodal(0.5);
+  if (Math.abs(crit - 10.495) > 0.01) throw new Error("spinodal at f = 0.5 is " + crit + ", expected 10.495");
+  let b = "";
+  // disordered region under the curve
+  const pts = [];
+  for (let i = 0; i <= 120; i++) {
+    const f = 0.05 + 0.9 * i / 120, c = leiblerSpinodal(f);
+    if (c <= CMAX) pts.push([sx(f), sy(c)]);
+  }
+  const fl = pts[0], fr = pts[pts.length - 1];
+  // mixed everywhere below the curve, including the lopsided ends where it runs off the top
+  b += '<path d="M' + X0 + "," + Y1 + " L" + X0 + "," + Y0 + " L" + f1(fl[0]) + "," + Y0 + " " + pathOf(pts).replace(/^M/, "L") + " L" + f1(fr[0]) + "," + Y0 + " L" + X1 + "," + Y0 + " L" + X1 + "," + Y1 + ' Z" fill="' + DIM + '" fill-opacity="0.08" stroke="none"/>';
+  b += '<path d="' + pathOf(pts) + '" fill="none" stroke="' + BLUE + '" stroke-width="2.4"/>';
+  b += axes(X0, Y0, X1, Y1);
+  b += '<circle cx="' + f1(sx(0.5)) + '" cy="' + f1(sy(crit)) + '" r="3.5" fill="' + BLUE + '"/>';
+  b += text(sx(0.5), sy(crit) + 16, "&#967;N = " + crit.toFixed(3) + " at f = 0.5", "small", ' text-anchor="middle"');
+  b += text(sx(0.5), sy(44), "ordered", "small dim", ' text-anchor="middle"');
+  b += text(sx(0.5), Y1 - 34, "disordered", "small dim", ' text-anchor="middle"');
+  [0, 0.25, 0.5, 0.75, 1].forEach((f) => {
+    b += '<line x1="' + f1(sx(f)) + '" y1="' + Y1 + '" x2="' + f1(sx(f)) + '" y2="' + (Y1 + 4) + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    b += text(sx(f), Y1 + 16, String(f), "small dim", ' text-anchor="middle"');
+  });
+  [0, 20, 40, 60].forEach((c) => b += text(X0 - 6, sy(c) + 4, String(c), "small dim", ' text-anchor="end"'));
+  b += text((X0 + X1) / 2, Y1 + 32, "f" + sub("A") + ", volume fraction of block A", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 44, Y0 - 6, "&#967;N", "small dim");
+  // morphology strip along the top: minority block drawn solid
+  const S = 34, YI = 18;
+  const icon = (f, kind) => {
+    const x = sx(f) - S / 2, minor = f < 0.5 ? BLUE : GREEN, major = f < 0.5 ? GREEN : BLUE;
+    let s = '<rect x="' + f1(x) + '" y="' + YI + '" width="' + S + '" height="' + S + '" rx="4" fill="' + major + '" fill-opacity="0.18" stroke="' + BORDER + '"/>';
+    if (kind === "S") [[9, 9], [25, 9], [17, 17], [9, 25], [25, 25]].forEach(([u, v]) => { s += '<circle cx="' + f1(x + u) + '" cy="' + (YI + v) + '" r="3.6" fill="' + minor + '"/>'; });
+    if (kind === "C") [7, 17, 27].forEach((v) => { s += '<rect x="' + f1(x + 4) + '" y="' + (YI + v - 3) + '" width="' + (S - 8) + '" height="6" rx="3" fill="' + minor + '"/>'; });
+    if (kind === "G") {
+      s += '<path d="M' + f1(x + 4) + "," + (YI + 10) + " q6,-8 13,0 t13,0 M" + f1(x + 4) + "," + (YI + 24) + " q6,8 13,0 t13,0 M" + f1(x + 17) + "," + (YI + 10) + " v14" + '" fill="none" stroke="' + minor + '" stroke-width="4" stroke-linecap="round"/>';
+    }
+    if (kind === "L") [0, 1, 2].forEach((k) => { s += '<rect x="' + f1(x + 2 + k * 11) + '" y="' + (YI + 2) + '" width="5.5" height="' + (S - 4) + '" fill="' + BLUE + '"/>'; });
+    return s + text(sx(f), YI + S + 14, kind === "S" ? "spheres" : kind === "C" ? "cylinders" : kind === "G" ? "gyroid" : "lamellae", "small dim", ' text-anchor="middle"');
+  };
+  b += icon(0.1, "S") + icon(0.24, "C") + icon(0.36, "G") + icon(0.5, "L") + icon(0.64, "G") + icon(0.76, "C") + icon(0.9, "S");
+  const XR = 486;
+  b += text(XR, 104, "The curve is the mean-field", "small dim");
+  b += text(XR, 120, "limit of stability of the", "small dim");
+  b += text(XR, 136, "mixed melt. Only at f = 0.5", "small dim");
+  b += text(XR, 152, "is it also where ordering", "small dim");
+  b += text(XR, 168, "begins; at other f the", "small dim");
+  b += text(XR, 184, "ordered phase appears a", "small dim");
+  b += text(XR, 200, "little below it.", "small dim");
+  const caption = "Two numbers decide a diblock&rsquo;s structure. &#967;N, the incompatibility per chain, decides whether it orders at all: below the curve the blocks stay mixed. Composition decides what it orders into, running from spheres of the minority block through cylinders and the gyroid to lamellae at a near-even split, then back again with the blocks&rsquo; roles exchanged. A symmetric diblock is the easiest to order, at &#967;N&nbsp;&asymp;&nbsp;10.5; a lopsided one needs much longer chains or much more incompatible blocks. Real melts order somewhat above the mean-field value, because composition fluctuations stabilize the mixed state, and the shortest chains most.";
+  const source = "Stability limit from the random-phase structure factor: Leibler, <i>Macromolecules</i> 13 (1980) 1602. Fluctuation shift: Fredrickson and Helfand, <i>J. Chem. Phys.</i> 87 (1987) 697. Phase sequence: Matsen and Bates, <i>Macromolecules</i> 29 (1996) 1091; the gyroid is stable only at intermediate &#967;N, and the icons mark the order of phases, not their boundaries.";
+  return panel("block-phases", "The mean-field order-disorder curve of a diblock copolymer, chi N against volume fraction, with its minimum of 10.5 at a volume fraction of one half, beneath a strip of morphologies running spheres, cylinders, gyroid, lamellae, gyroid, cylinders, spheres.", 680, 280, b, caption, source);
+}
+
 // ---- pages ------------------------------------------------------------------
 const JOBS = [
   { file: "copolymer-composition.html", build: copolymer, before: "<h3>Composition calculator</h3>" },
@@ -579,32 +746,39 @@ const JOBS = [
   { file: "gpc-trace.html", build: gpcAverages, before: "<h3>Analyze a trace</h3>" }
 ];
 
-const check = process.argv.includes("--check");
-let stale = 0;
-JOBS.forEach((job) => {
-  const f = path.join(ROOT, job.file);
-  let s = fs.readFileSync(f, "utf8");
-  const E = s.indexOf("\r\n") !== -1 ? "\r\n" : "\n";
-  const html = job.build().split("\n").join(E);
-  const name = /diagram:([a-z-]+):start/.exec(html)[1];
-  const start = "<!-- diagram:" + name + ":start -->", end = "<!-- diagram:" + name + ":end -->";
-  let next;
-  const a = s.indexOf(start), z = s.indexOf(end);
-  if (a !== -1 && z !== -1) {
-    next = s.slice(0, a) + html + s.slice(z + end.length);
-  } else {
-    // first run: put it at the end of the card that precedes the anchor heading
-    const h = s.indexOf(job.before);
-    if (h === -1) throw new Error(job.file + ": anchor heading not found");
-    const cardOpen = s.lastIndexOf('<div class="card">', h);
-    const close = s.lastIndexOf("</div>", cardOpen);
-    if (close === -1) throw new Error(job.file + ": could not find the end of the preceding card");
-    next = s.slice(0, close) + "  " + html + E + "  " + s.slice(close);
-  }
-  if (next !== s) {
-    stale++;
-    if (!check) fs.writeFileSync(f, next);
-  }
-  console.log((next === s ? "  current " : check ? "  STALE   " : "  wrote   ") + job.file);
-});
-if (check && stale) { console.error(stale + " page(s) out of date: run node scripts/build-diagrams.js"); process.exit(1); }
+// Diagrams that live on generated family pages. build-family-pages.js writes
+// those pages whole, so it calls these builders itself rather than having this
+// script patch its output.
+module.exports = { FAMILY_DIAGRAMS: { carothers, ringStrain, blockPhases } };
+
+if (require.main === module) {
+  const check = process.argv.includes("--check");
+  let stale = 0;
+  JOBS.forEach((job) => {
+    const f = path.join(ROOT, job.file);
+    let s = fs.readFileSync(f, "utf8");
+    const E = s.indexOf("\r\n") !== -1 ? "\r\n" : "\n";
+    const html = job.build().split("\n").join(E);
+    const name = /diagram:([a-z-]+):start/.exec(html)[1];
+    const start = "<!-- diagram:" + name + ":start -->", end = "<!-- diagram:" + name + ":end -->";
+    let next;
+    const a = s.indexOf(start), z = s.indexOf(end);
+    if (a !== -1 && z !== -1) {
+      next = s.slice(0, a) + html + s.slice(z + end.length);
+    } else {
+      // first run: put it at the end of the card that precedes the anchor heading
+      const h = s.indexOf(job.before);
+      if (h === -1) throw new Error(job.file + ": anchor heading not found");
+      const cardOpen = s.lastIndexOf('<div class="card">', h);
+      const close = s.lastIndexOf("</div>", cardOpen);
+      if (close === -1) throw new Error(job.file + ": could not find the end of the preceding card");
+      next = s.slice(0, close) + "  " + html + E + "  " + s.slice(close);
+    }
+    if (next !== s) {
+      stale++;
+      if (!check) fs.writeFileSync(f, next);
+    }
+    console.log((next === s ? "  current " : check ? "  STALE   " : "  wrote   ") + job.file);
+  });
+  if (check && stale) { console.error(stale + " page(s) out of date: run node scripts/build-diagrams.js"); process.exit(1); }
+}
