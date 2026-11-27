@@ -1055,4 +1055,98 @@
   window.PolyTechniques = window.PolyTechniques || {};
   window.PolyTechniques.shareState = shareState;
 
+  // ---- Download a figure ----------------------------------------------------
+  // Every diagram panel gets SVG and PNG buttons, so a figure can go into a
+  // slide or a lab notebook. The page's SVG leans on CSS variables and classes
+  // that mean nothing outside it, so the export walks the drawing and writes
+  // each element's computed colours and type in as plain attributes, over a
+  // background rectangle painted the panel's own colour, so the file looks the
+  // same opened anywhere, in either theme.
+  var FIG_PROPS = ["fill", "fill-opacity", "stroke", "stroke-width", "stroke-dasharray",
+    "stroke-opacity", "opacity", "font-size", "font-family", "font-weight", "font-style"];
+
+  function figureFileName(panel, i) {
+    var page = (location.pathname.split("/").pop() || "index").replace(/\.html$/, "") || "index";
+    return "polytechniques-" + page + "-" + (panel.getAttribute("data-figure") || "figure-" + (i + 1));
+  }
+
+  function standaloneSvg(panel) {
+    var svg = panel.querySelector("svg.diagram-svg");
+    var clone = svg.cloneNode(true);
+    var src = svg.querySelectorAll("*"), dst = clone.querySelectorAll("*");
+    for (var k = 0; k < src.length; k++) {
+      var cs = getComputedStyle(src[k]);
+      FIG_PROPS.forEach(function (p) {
+        var v = cs.getPropertyValue(p);
+        if (v && v !== "normal" && v !== "auto") dst[k].setAttribute(p, v);
+      });
+      dst[k].removeAttribute("class");
+      dst[k].removeAttribute("style");
+    }
+    clone.removeAttribute("class");
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    var vb = svg.viewBox.baseVal;
+    var bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bg.setAttribute("x", vb.x); bg.setAttribute("y", vb.y);
+    bg.setAttribute("width", vb.width); bg.setAttribute("height", vb.height);
+    bg.setAttribute("fill", getComputedStyle(panel).backgroundColor || "#ffffff");
+    clone.insertBefore(bg, clone.firstChild);
+    // what the figure is and where its facts come from travel with the file
+    var cap = panel.querySelector(".diagram-caption"), srcLine = panel.querySelector(".diagram-source");
+    var desc = document.createElementNS("http://www.w3.org/2000/svg", "desc");
+    desc.textContent = (cap ? cap.textContent.trim() : "") + (srcLine ? "\n\nSource: " + srcLine.textContent.trim() : "") +
+      "\n\nFrom " + location.href.split("#")[0];
+    clone.insertBefore(desc, clone.firstChild);
+    return { text: new XMLSerializer().serializeToString(clone), w: vb.width, h: vb.height };
+  }
+
+  function saveBlob(blob, name) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+
+  function addFigureDownloads() {
+    var panels = document.querySelectorAll(".diagram-panel");
+    for (var i = 0; i < panels.length; i++) (function (panel, i) {
+      if (panel.querySelector(".fig-actions") || !panel.querySelector("svg.diagram-svg")) return;
+      var bar = document.createElement("div");
+      bar.className = "fig-actions";
+      var mk = function (label, title, fn) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "fig-btn";
+        b.textContent = label;
+        b.title = title;
+        b.addEventListener("click", fn);
+        bar.appendChild(b);
+      };
+      mk("SVG", "Download this figure as an SVG, editable in Illustrator or Inkscape", function () {
+        var s = standaloneSvg(panel);
+        saveBlob(new Blob([s.text], { type: "image/svg+xml" }), figureFileName(panel, i) + ".svg");
+      });
+      mk("PNG", "Download this figure as a PNG at three times screen size", function () {
+        var s = standaloneSvg(panel), scale = 3;
+        var img = new Image();
+        img.onload = function () {
+          var c = document.createElement("canvas");
+          c.width = Math.round(s.w * scale); c.height = Math.round(s.h * scale);
+          var ctx = c.getContext("2d");
+          ctx.drawImage(img, 0, 0, c.width, c.height);
+          c.toBlob(function (blob) { if (blob) saveBlob(blob, figureFileName(panel, i) + ".png"); }, "image/png");
+        };
+        img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s.text);
+      });
+      var lead = document.createElement("span");
+      lead.textContent = "Download figure";
+      bar.insertBefore(lead, bar.firstChild);
+      panel.appendChild(bar);
+    })(panels[i], i);
+  }
+  document.addEventListener("DOMContentLoaded", addFigureDownloads);
+  addFigureDownloads();
+
 })();

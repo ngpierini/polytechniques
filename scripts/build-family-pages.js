@@ -100,6 +100,7 @@ const FAMILIES = [
   },
   {
     slug: "vinyl-polymers",
+    diagram: "tacticity",
     title: "Vinyl polymers",
     nav: "Vinyl",
     lede: "One backbone, every property &ndash; what hangs off the chain decides whether you get a bag, a pipe, or a non-stick pan",
@@ -126,16 +127,17 @@ const FAMILIES = [
   },
   {
     slug: "diene-elastomers",
+    diagram: "dieneTransitions",
     title: "Diene elastomers",
     nav: "Dienes",
     lede: "The rubbers &ndash; and the reason natural rubber and gutta-percha, chemically identical, are a tyre and a golf ball shell",
     match: e => e.cls === "Addition (diene)" || e.cls === "Copolymer (addition, diene)",
     intro: [
       "A 1,3-diene has two double bonds, and polymerisation consumes only one of them. Add across carbons 1 and 4 and the remaining double bond ends up in the backbone; add across 1 and 2 and it ends up as a pendant vinyl group. Every polymer on this page therefore keeps unsaturation that the vinyl polymers do not have, and that surviving double bond is the whole story of the family &ndash; it is what lets these materials be vulcanised into rubbers, and it is also what makes them age.",
-      "The double bond in the chain has a geometry, and the difference between the two options is startling. <em>cis</em>-1,4-polyisoprene has a glass transition of &minus;70&nbsp;&deg;C and melts at 28&nbsp;&deg;C: it is natural rubber, soft and highly elastic at room temperature. <em>trans</em>-1,4-polyisoprene is gutta-percha, a hard horn-like solid that melts at 74&nbsp;&deg;C. The molecular formula, the repeat unit, and the molecular weight can all be identical. The <em>cis</em> kink prevents the chain from packing; the <em>trans</em> chain is straight and crystallises readily.",
+      "The double bond in the chain has a geometry, and the difference between the two options is startling. <em>cis</em>-1,4-polyisoprene has a glass transition of &minus;73&nbsp;&deg;C and melts at 28&nbsp;&deg;C: it is natural rubber, soft and highly elastic at room temperature. <em>trans</em>-1,4-polyisoprene is gutta-percha, a hard horn-like solid that melts at 74&nbsp;&deg;C. The molecular formula, the repeat unit, and the molecular weight can all be identical. The <em>cis</em> kink prevents the chain from packing; the <em>trans</em> chain is straight and crystallises readily.",
     ],
     design: [
-      "The same split runs through polybutadiene. The <em>cis</em>-1,4 polymer has a T<sub>g</sub> of &minus;100&nbsp;&deg;C, the lowest of the hydrocarbon rubbers and the reason it is blended into tyre treads for cold-weather grip; the <em>trans</em>-1,4 polymer sits at &minus;83&nbsp;&deg;C and melts at 145&nbsp;&deg;C, behaving like a semicrystalline plastic instead. Controlling that ratio &ndash; and the fraction of 1,2 addition alongside it &ndash; is the central problem of diene polymerisation, and is why the catalyst matters far more here than in an ordinary vinyl polymerisation. Substituting the diene shifts the whole set: the chlorine in polychloroprene raises T<sub>g</sub> to &minus;43&nbsp;&deg;C and buys the oil and weather resistance that makes it a sealant and wetsuit rubber.",
+      "The same split runs through polybutadiene. The <em>cis</em>-1,4 polymer has a T<sub>g</sub> of about &minus;95&nbsp;&deg;C, the lowest of the hydrocarbon rubbers and the reason it is blended into tyre treads for cold-weather grip; the <em>trans</em>-1,4 polymer sits at &minus;83&nbsp;&deg;C and melts at 145&nbsp;&deg;C, behaving like a semicrystalline plastic instead. Controlling that ratio &ndash; and the fraction of 1,2 addition alongside it &ndash; is the central problem of diene polymerisation, and is why the catalyst matters far more here than in an ordinary vinyl polymerisation. Substituting the diene shifts the whole set: the chlorine in polychloroprene raises T<sub>g</sub> to &minus;43&nbsp;&deg;C and buys the oil and weather resistance that makes it a sealant and wetsuit rubber.",
       "Because the backbone double bonds survive, these polymers can be crosslinked through them, which is what vulcanisation does &ndash; sulfur bridges struck between chains at the alkene sites, converting a tacky flowing material into an elastic network. A rubber's useful properties are properties of that network rather than of the chain, so crosslink density, not molecular weight, is the design variable. The same reactivity is the family's weakness: an alkene is attacked by ozone and by oxygen, so diene rubbers crack and harden on exposure unless they are protected by antiozonants, and the saturated elastomers on other pages exist largely to sidestep that.",
     ],
     related: [
@@ -362,13 +364,13 @@ function pageHtml(fam, entries) {
     publisher: { "@type": "Organization", name: "PolyTechniques" },
   }, null, 2) + "\n<\/script>\n";
   h += '<script src="theme.js?v=1"><\/script>\n';
-  h += '<script src="nav.js?v=36" defer><\/script>\n';
+  h += '<script src="nav.js?v=37" defer><\/script>\n';
   h += '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n';
   h += '<link rel="manifest" href="manifest.json">\n';
   h += '<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">\n';
   h += '<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=127">\n';
+  h += '<link rel="stylesheet" href="style.css?v=128">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 
@@ -473,13 +475,13 @@ function hubHtml(groups) {
   h += '<meta name="twitter:image" content="' + SITE + 'og/' + url.replace(SITE, "").replace(/\.html$/, "") + '.png">\n';
   h += '<script src="structure-map.js?v=4" defer><\/script>\n';
   h += '<script src="theme.js?v=1"><\/script>\n';
-  h += '<script src="nav.js?v=36" defer><\/script>\n';
+  h += '<script src="nav.js?v=37" defer><\/script>\n';
   h += '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n';
   h += '<link rel="manifest" href="manifest.json">\n';
   h += '<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">\n';
   h += '<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=127">\n';
+  h += '<link rel="stylesheet" href="style.css?v=128">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 

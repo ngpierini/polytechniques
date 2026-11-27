@@ -51,7 +51,7 @@ const text = (x, y, s, cls, extra) =>
 
 function panel(name, aria, w, h, body, caption, source) {
   return "<!-- diagram:" + name + ":start -->\n" +
-    '    <div class="diagram-panel">\n' +
+    '    <div class="diagram-panel" data-figure="' + name + '">\n' +
     '      <svg class="diagram-svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="' + aria + '">\n' +
     "        " + body + "\n" +
     "      </svg>\n" +
@@ -917,7 +917,7 @@ function foxTg() {
 // [eta]M is equal at equal elution volume, so with [eta] = K M^a:
 //   log M2 = [log(K1/K2) + (1 + a1) log M1] / (1 + a2)
 const MH = {   // THF, 25 C; the same values as the page's reference list
-  PS: [1.14e-4, 0.716], PMMA: [1.28e-4, 0.69], PI: [1.77e-4, 0.735], PB: [3.07e-4, 0.75]
+  PS: [1.14e-4, 0.716], PMMA: [1.28e-4, 0.69], PI: [1.77e-4, 0.735], PB: [2.36e-4, 0.75]
 };
 const universal = (M1, s, t) => Math.pow(10, (Math.log10(MH[s][0] / MH[t][0]) + (1 + MH[s][1]) * Math.log10(M1)) / (1 + MH[t][1]));
 function gpcUniversal() {
@@ -973,7 +973,7 @@ function gpcUniversal() {
     b += text(X0 - 40, Y0 - 12, "true M / PS-equivalent M", "small dim");
   }
   const caption = "Left: a column sorts by coil size, so a polymer that swells more than polystyrene in THF carries less mass at each elution volume, and its calibration line sits below the standards&rsquo;. Right: how far the conversion moves the answer for each polymer in this page&rsquo;s list, with the ratio at 100&nbsp;kg/mol marked. Poly(methyl methacrylate) is close to polystyrene, about ten percent high; the polydienes, which are much more expanded in THF, carry half to two thirds of the polystyrene-equivalent mass. None of the ratios is flat, which is why a distribution cannot be corrected by multiplying it by one number.";
-  const source = "[&#951;]M equal at equal elution volume: Grubi&#353;i&#263;, Rempp and Beno&icirc;t, <i>J. Polym. Sci. B</i> 5 (1967) 753. Mark&ndash;Houwink constants (THF, 25&nbsp;&deg;C) are the page&rsquo;s reference values; PMMA from Wagner, <i>J. Phys. Chem. Ref. Data</i> 16 (1987) 165. The column calibration on the left is illustrative.";
+  const source = "[&#951;]M equal at equal elution volume: Grubi&#353;i&#263;, Rempp and Beno&icirc;t, <i>J. Polym. Sci. B</i> 5 (1967) 753. Mark&ndash;Houwink constants (THF, 25&nbsp;&deg;C) are the page&rsquo;s reference values: PMMA from Wagner, <i>J. Phys. Chem. Ref. Data</i> 16 (1987) 165; the polydienes from Wu (ed.), <i>Handbook of Size Exclusion Chromatography</i> (1995). The column calibration on the left is illustrative.";
   return panel("gpc-universal", "Left: polystyrene and polybutadiene calibration lines of molar mass against elution volume, the polybutadiene line lower, read at one elution volume. Right: the ratio of true to polystyrene-equivalent molar mass against molar mass for PMMA, about 1.1, polyisoprene, about 0.7, and polybutadiene, about 0.5.", 680, 240, b, caption, source);
 }
 
@@ -993,10 +993,103 @@ const JOBS = [
   { file: "gpc-calibration.html", build: gpcUniversal, before: null }
 ];
 
+// ---- 16. cis and trans dienes, from Odian Table 8-1 -------------------------
+// Transcribed from the page image (book p. 633), data of Brandrup et al. 1999.
+const ODIAN_8_1 = [   // name, isomer, Tg (C), Tm (C)
+  ["1,4-polybutadiene", "cis", -95, 6], ["1,4-polybutadiene", "trans", -83, 145],
+  ["1,4-polyisoprene", "cis", -73, 28], ["1,4-polyisoprene", "trans", -58, 74]
+];
+function dieneTransitions() {
+  const X0 = 150, X1 = 520, Y0 = 34, TMIN = -120, TMAX = 160, ROW = 34;
+  const sx = (t) => X0 + (t - TMIN) / (TMAX - TMIN) * (X1 - X0);
+  const Y1 = Y0 + ROW * ODIAN_8_1.length + 8;
+  let b = "";
+  // room temperature band, where these materials are used
+  b += '<rect x="' + f1(sx(20)) + '" y="' + (Y0 - 14) + '" width="' + f1(sx(30) - sx(20)) + '" height="' + (Y1 - Y0 + 14) + '" fill="' + GREEN + '" fill-opacity="0.12"/>';
+  b += text(sx(25), Y0 - 18, "room temperature", "small dim", ' text-anchor="middle"');
+  [-100, -50, 0, 50, 100, 150].forEach((t) => {
+    b += '<line x1="' + f1(sx(t)) + '" y1="' + (Y0 - 6) + '" x2="' + f1(sx(t)) + '" y2="' + Y1 + '" stroke="' + BORDER + '" stroke-width="0.8" stroke-dasharray="2 4"/>';
+    b += text(sx(t), Y1 + 16, (t < 0 ? "&#8722;" : "") + Math.abs(t), "small dim", ' text-anchor="middle"');
+  });
+  b += '<line x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y1 + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+  b += text((X0 + X1) / 2, Y1 + 32, "temperature (&#176;C)", "small dim", ' text-anchor="middle"');
+  ODIAN_8_1.forEach(([name, iso, tg, tm], i) => {
+    const y = Y0 + ROW * i + 12, col = iso === "cis" ? BLUE : VIOLET;
+    if (i % 2 === 0) b += text(X0 - 12, y + 22, name, "small", ' text-anchor="end"');
+    b += text(X1 + 12, y + 4, iso, "small", tint(col));
+    b += '<line x1="' + f1(sx(tg)) + '" y1="' + y + '" x2="' + f1(sx(tm)) + '" y2="' + y + '" stroke="' + col + '" stroke-width="5" stroke-linecap="round" stroke-opacity="0.35"/>';
+    b += '<circle cx="' + f1(sx(tg)) + '" cy="' + y + '" r="5" fill="var(--bg)" stroke="' + col + '" stroke-width="2"/>';
+    b += '<circle cx="' + f1(sx(tm)) + '" cy="' + y + '" r="5" fill="' + col + '"/>';
+    b += text(sx(tg) - 9, y + 4, (tg < 0 ? "&#8722;" : "") + Math.abs(tg), "small dim", ' text-anchor="end"');
+    b += text(sx(tm) + 9, y + 4, String(tm), "small dim");
+  });
+  // key
+  const XK = 572;
+  b += '<circle cx="' + XK + '" cy="52" r="5" fill="var(--bg)" stroke="var(--text-dim)" stroke-width="2"/>' + text(XK + 10, 56, "T" + sub("g"), "small");
+  b += '<circle cx="' + XK + '" cy="72" r="5" fill="var(--text-dim)"/>' + text(XK + 10, 76, "T" + sub("m"), "small");
+  b += text(XK - 6, 104, "Between the two", "small dim");
+  b += text(XK - 6, 118, "the polymer is", "small dim");
+  b += text(XK - 6, 132, "rubbery or partly", "small dim");
+  b += text(XK - 6, 146, "crystalline.", "small dim");
+  const caption = "The double bond left in a 1,4-diene chain has a geometry, and it decides what the material is. Both <em>cis</em> polymers melt near or below room temperature, so in use they are amorphous rubbers well above their glass transition: <em>cis</em>-polyisoprene is natural rubber. Both <em>trans</em> polymers pack better, melt far higher, and are hard semicrystalline solids at room temperature: <em>trans</em>-polyisoprene is gutta-percha. Natural rubber&rsquo;s melting point sitting just above room temperature is also why it crystallizes when stretched, which is much of its strength.";
+  const source = "Odian, <i>Principles of Polymerization</i>, 4th ed., Table 8-1 (data of Brandrup et al., <i>Polymer Handbook</i>, 1999). Reported values vary between sources by several degrees.";
+  return panel("diene-transitions", "Glass transition and melting temperature for cis and trans 1,4-polybutadiene and 1,4-polyisoprene on one temperature axis. The cis isomers melt at 6 and 28 degrees Celsius, near room temperature; the trans isomers melt at 145 and 74.", 680, Y1 + 44, b, caption, source);
+}
+
+// ---- 17. tacticity ---------------------------------------------------------------
+// A vinyl chain in planar zigzag, substituents toward the viewer (wedge, drawn
+// above) or away (hashed, drawn below). Dyads labelled m (meso, same side) and
+// r (racemo, opposite), the IUPAC terms.
+function tacticity() {
+  const rows = [
+    ["isotactic", [1, 1, 1, 1, 1, 1, 1], ["all m dyads", "every X on one side"]],
+    ["syndiotactic", [1, 0, 1, 0, 1, 0, 1], ["all r dyads", "X alternates sides"]],
+    ["atactic", [1, 1, 0, 1, 0, 0, 1], ["m and r at random", "no pattern to pack"]]
+  ];
+  const X0 = 116, STEP = 27, AMP = 9, H = 70;
+  let b = "";
+  rows.forEach(([name, ups, note], r) => {
+    const yc = 46 + r * H;
+    const n = ups.length * 2 + 1;
+    const pts = [];
+    for (let k = 0; k < n; k++) pts.push([X0 + k * STEP, yc + (k % 2 ? -AMP : AMP)]);
+    b += '<path d="' + pathOf(pts) + '" fill="none" stroke="var(--text)" stroke-width="1.6" stroke-linejoin="round"/>';
+    ups.forEach((u, i) => {
+      const [cx, cy] = pts[2 * i + 1];                     // the CHX carbons are the upper vertices
+      if (u) {
+        // wedge: a filled triangle widening toward the substituent, drawn up
+        b += '<path d="M' + f1(cx) + "," + f1(cy) + " L" + f1(cx - 3.5) + "," + f1(cy - 17) + " L" + f1(cx + 3.5) + "," + f1(cy - 17) + ' Z" fill="var(--text)"/>';
+        b += '<circle cx="' + f1(cx) + '" cy="' + f1(cy - 22) + '" r="5" fill="' + BLUE + '"/>';
+      } else {
+        // hashed bond, drawn down through the backbone to below it
+        for (let h = 1; h <= 5; h++) {
+          const yy = cy + h * 4.2, wh = 0.8 + h * 0.6;
+          b += '<line x1="' + f1(cx - wh) + '" y1="' + f1(yy) + '" x2="' + f1(cx + wh) + '" y2="' + f1(yy) + '" stroke="var(--text)" stroke-width="1.1"/>';
+        }
+        b += '<circle cx="' + f1(cx) + '" cy="' + f1(cy + 28) + '" r="5" fill="' + VIOLET + '"/>';
+      }
+    });
+    // dyad labels between neighbouring stereocentres
+    for (let i = 0; i < ups.length - 1; i++) {
+      const xm = pts[2 * i + 2][0];
+      b += text(xm, yc + AMP + 22, ups[i] === ups[i + 1] ? "m" : "r", "small dim", ' text-anchor="middle" font-style="italic"');
+    }
+    b += text(X0 - 16, yc + 4, name, "small", ' text-anchor="end"');
+    b += text(X0 + (n - 1) * STEP + 24, yc - 2, note[0], "small");
+    b += text(X0 + (n - 1) * STEP + 24, yc + 14, note[1], "small dim");
+  });
+  const XK = 120, YK = 46 + 3 * H - 6;
+  b += '<circle cx="' + XK + '" cy="' + YK + '" r="5" fill="' + BLUE + '"/>' + text(XK + 10, YK + 4, "X toward you (wedge)", "small");
+  b += '<circle cx="' + (XK + 170) + '" cy="' + YK + '" r="5" fill="' + VIOLET + '"/>' + text(XK + 180, YK + 4, "X away from you (hashed)", "small");
+  const caption = "Every carbon carrying a substituent in a vinyl chain is a stereocentre, and the sequence of their configurations decides whether the chain can crystallize. Isotactic and syndiotactic chains are regular and can pack: isotactic polypropylene melts at 165&nbsp;&deg;C, and syndiotactic polystyrene at 270&nbsp;&deg;C. An atactic chain has no repeating pattern to pack with, which is why ordinary radical-made polystyrene is a clear glass with no melting point at all. Neighbouring pairs of stereocentres, the dyads, are what NMR counts: tacticity is reported as the fraction of m and r dyads, or of mm, mr and rr triads.";
+  const source = "Melting points from Odian, <i>Principles of Polymerization</i>, 4th ed., Secs. 8-2a-1 and 8-11f. Dyad nomenclature: IUPAC, <i>Pure Appl. Chem.</i> 53 (1981) 733.";
+  return panel("tacticity", "Three vinyl polymer chains drawn as planar zigzags. Isotactic: every substituent on a wedge on the same side, all meso dyads. Syndiotactic: substituents alternating between wedge and hashed bonds, all racemo dyads. Atactic: a random mixture.", 680, 270, b, caption, source);
+}
+
 // Diagrams that live on generated family pages. build-family-pages.js writes
 // those pages whole, so it calls these builders itself rather than having this
 // script patch its output.
-module.exports = { FAMILY_DIAGRAMS: { carothers, ringStrain, blockPhases } };
+module.exports = { FAMILY_DIAGRAMS: { carothers, ringStrain, blockPhases, dieneTransitions, tacticity } };
 
 if (require.main === module) {
   const check = process.argv.includes("--check");
