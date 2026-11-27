@@ -271,7 +271,11 @@
     var line = document.createElement("p");
     line.className = "footer-legal";
     line.style.cssText = "font-size:var(--fs-xs);opacity:0.7;margin-top:8px;";
-    line.innerHTML = notice + ' PolyTechniques is proprietary. <a href="terms.html">Terms of Use</a> &middot; <a href="privacy.html">Privacy</a>.';
+    // Amazon requires this exact sentence "clearly and prominently" on the
+    // site (Associates Operating Agreement, section 5). Putting it in the
+    // injected legal line puts it on all 44 page footers from one place.
+    line.innerHTML = notice + ' PolyTechniques is proprietary. As an Amazon Associate I earn from qualifying purchases. ' +
+      '<a href="terms.html">Terms of Use</a> &middot; <a href="privacy.html">Privacy</a>.';
 
     var footer = document.querySelector("footer.footer");
     if (footer) {

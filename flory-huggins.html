@@ -11,13 +11,13 @@
 <meta property="og:title" content="Flory-Huggins Phase Behaviour: PolyTechniques">
 <meta property="og:description" content="Binodal, spinodal and critical point for a blend or solution, and the order-disorder transition for a diblock.">
 <meta property="og:url" content="https://getpolytechniques.com/flory-huggins.html">
-<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image" content="https://getpolytechniques.com/og/flory-huggins.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="628">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Flory-Huggins Phase Behaviour: PolyTechniques">
 <meta name="twitter:description" content="Where a polymer blend or solution separates, and why polymers almost never mix.">
-<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<meta name="twitter:image" content="https://getpolytechniques.com/og/flory-huggins.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -32,7 +32,7 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=35" defer></script>
+<script src="nav.js?v=36" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
@@ -74,6 +74,42 @@
     <p class="guide-note">
       For two chains of equal length that is &chi;<sub>c</sub>&nbsp;=&nbsp;2/N. For a polymer in a small-molecule solvent (N&#8321;&nbsp;=&nbsp;1) it tends to &frac12; from above as the chain grows, which is exactly what a theta solvent means: &chi;&nbsp;=&nbsp;0.5 is the borderline where a very long chain is on the edge of precipitating. And for two small molecules it gives &chi;<sub>c</sub>&nbsp;=&nbsp;2, the regular-solution result. One expression, three familiar limits.
     </p>
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="680" height="220" viewBox="0 0 680 220" role="img" aria-label="A phase diagram of interaction parameter against composition: a binodal and a spinodal meeting at the critical point, with a tie line joining the two coexisting compositions above it.">
+        <!-- chi up, composition across: the two curves and what they enclose -->
+        <line x1="60" y1="180" x2="400" y2="180" stroke="var(--border)" stroke-width="1.2"/>
+        <line x1="60" y1="30" x2="60" y2="180" stroke="var(--border)" stroke-width="1.2"/>
+        <text x="230" y="198" text-anchor="middle" class="small dim">&phi;, volume fraction</text>
+        <text x="66" y="26" class="small dim">&chi;</text>
+        <path d="M90,40 C150,140 200,150 230,150 C260,150 310,140 370,40" fill="none" stroke="var(--primary, #5b8def)" stroke-width="2.2"/>
+        <path d="M140,40 C180,125 205,150 230,150 C255,150 280,125 320,40" fill="none" stroke="var(--accent, #0b7954)" stroke-width="2" stroke-dasharray="5 4"/>
+        <!-- a tie line: one chi, two compositions that coexist -->
+        <line x1="118" y1="90" x2="342" y2="90" stroke="var(--text-dim)" stroke-width="1" stroke-dasharray="3 3"/>
+        <circle cx="118" cy="90" r="3.6" fill="var(--primary, #5b8def)"/>
+        <circle cx="342" cy="90" r="3.6" fill="var(--primary, #5b8def)"/>
+        <text x="118" y="78" text-anchor="middle" class="small">&phi;&prime;</text>
+        <text x="342" y="78" text-anchor="middle" class="small">&phi;&Prime;</text>
+        <text x="230" y="84" text-anchor="middle" class="small dim">tie line</text>
+        <!-- the critical point, where both curves bottom out together -->
+        <circle cx="230" cy="150" r="4.2" fill="var(--primary, #5b8def)"/>
+        <text x="230" y="167" text-anchor="middle" class="small dim">critical point</text>
+        <text x="330" y="167" text-anchor="middle" class="small dim">one phase</text>
+        <text x="230" y="56" text-anchor="middle" class="small dim">two phases</text>
+
+        <!-- legend -->
+        <line x1="440" y1="66" x2="462" y2="66" stroke="var(--primary, #5b8def)" stroke-width="2.2"/>
+        <text x="470" y="70" class="small">binodal: the compositions that coexist</text>
+        <line x1="440" y1="96" x2="462" y2="96" stroke="var(--accent, #0b7954)" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="470" y="100" class="small">spinodal: unstable to any fluctuation</text>
+        <text x="470" y="128" class="small dim">between the two: metastable,</text>
+        <text x="470" y="142" class="small dim">demixing waits for a nucleus</text>
+        <circle cx="451" cy="168" r="4.2" fill="var(--primary, #5b8def)"/>
+        <text x="470" y="172" class="small">critical point: &chi;<tspan baseline-shift="sub" font-size="8">c</tspan> = 2/N for equal chains</text>
+      </svg>
+      <p class="diagram-caption">
+        Raise &chi; past its critical value and a single mixed phase splits into two. The binodal gives the two compositions that coexist, joined by a tie line; the spinodal, inside it, marks where the mixture cannot even wait for a nucleus and separates on its own. The two curves touch only at the critical point, which for two chains of equal length sits at &chi;<sub>c</sub>&nbsp;=&nbsp;2/N, and that 2/N is why two polymers of any real length almost never mix.
+      </p>
+    </div>
   </div>
 
   <div class="card">

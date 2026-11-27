@@ -11,13 +11,13 @@
 <meta property="og:title" content="Network Formation and Gel Point: PolyTechniques">
 <meta property="og:description" content="Gel point, sol fraction and crosslink density for arbitrary functionality mixtures and off-stoichiometry.">
 <meta property="og:url" content="https://getpolytechniques.com/network-formation.html">
-<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image" content="https://getpolytechniques.com/og/network-formation.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="628">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Network Formation and Gel Point: PolyTechniques">
 <meta name="twitter:description" content="Gel point, sol fraction and elastic strand density from the formulation.">
-<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<meta name="twitter:image" content="https://getpolytechniques.com/og/network-formation.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -32,7 +32,7 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=35" defer></script>
+<script src="nav.js?v=36" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
@@ -128,6 +128,46 @@
     <p class="guide-note">
       <strong>The sol fraction collapses far faster than the conversion moves.</strong> Past the gel point a very small further extent of reaction pulls most of the remaining soluble material into the network. For the balanced triol system, going 1% past the gel point, from conversion 0.707 to 0.714, takes the sol fraction from 1 to 0.89; 5% past it, to 0.55; 20% past it, to 0.07. That steepness is why extraction is such a sensitive test of cure, and why a sample that still gives 10% extractables is not nearly cured, it is barely past gelling.
     </p>
+
+    <div class="diagram-panel">
+      <svg class="diagram-svg" width="680" height="210" viewBox="0 0 680 210" role="img" aria-label="Three trifunctional junctions: one with all three arms reaching the infinite network, one with two, one with one. Only the first counts as a crosslink.">
+        <!-- the infinite network, as a band everything either reaches or does not -->
+        <rect x="20" y="14" width="640" height="26" rx="4" fill="var(--primary, #5b8def)" opacity="0.14"/>
+        <text x="28" y="31" class="small dim">the infinite network</text>
+
+        <!-- A: three arms reach it -->
+        <g stroke="var(--primary, #5b8def)" stroke-width="2.4" stroke-linecap="round">
+          <line x1="115" y1="118" x2="75" y2="40"/><line x1="115" y1="118" x2="115" y2="40"/><line x1="115" y1="118" x2="155" y2="40"/>
+        </g>
+        <circle cx="115" cy="118" r="9" fill="var(--primary, #5b8def)"/>
+        <text x="115" y="184" text-anchor="middle" class="small">all three arms reach it</text>
+        <text x="115" y="199" text-anchor="middle" class="small dim">elastic junction: counts</text>
+
+        <!-- B: two reach, one dangles -->
+        <g stroke="var(--primary, #5b8def)" stroke-width="2.4" stroke-linecap="round">
+          <line x1="340" y1="118" x2="300" y2="40"/><line x1="340" y1="118" x2="380" y2="40"/>
+        </g>
+        <line x1="340" y1="118" x2="385" y2="164" stroke="var(--text-dim)" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round"/>
+        <circle cx="385" cy="164" r="4.5" fill="var(--card-bg)" stroke="var(--text-dim)" stroke-width="1.6"/>
+        <circle cx="340" cy="118" r="9" fill="var(--primary, #5b8def)"/>
+        <text x="340" y="184" text-anchor="middle" class="small">two reach, one dangles</text>
+        <text x="340" y="199" text-anchor="middle" class="small dim">chain extender: does not count</text>
+
+        <!-- C: one reaches, two dangle -->
+        <line x1="565" y1="118" x2="565" y2="40" stroke="var(--primary, #5b8def)" stroke-width="2.4" stroke-linecap="round"/>
+        <g stroke="var(--text-dim)" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round">
+          <line x1="565" y1="118" x2="522" y2="164"/><line x1="565" y1="118" x2="608" y2="164"/>
+        </g>
+        <circle cx="522" cy="164" r="4.5" fill="var(--card-bg)" stroke="var(--text-dim)" stroke-width="1.6"/>
+        <circle cx="608" cy="164" r="4.5" fill="var(--card-bg)" stroke="var(--text-dim)" stroke-width="1.6"/>
+        <circle cx="565" cy="118" r="9" fill="var(--primary, #5b8def)"/>
+        <text x="565" y="184" text-anchor="middle" class="small">one reaches, two dangle</text>
+        <text x="565" y="199" text-anchor="middle" class="small dim">dangling end: does not count</text>
+      </svg>
+      <p class="diagram-caption">
+        A junction carries stress only when three or more of its arms lead into the infinite network. With two it is a chain extender and with one a dangling end; all three are part of the gel, and only the first is a crosslink. That is why modulus climbs so much more slowly than gel fraction just past the gel point.
+      </p>
+    </div>
 
     <p class="guide-note">
       <strong>Elastic strands are not the same as crosslinks.</strong> A junction only contributes to the modulus if at least three of its arms actually reach the infinite network; one with two attached arms is a chain extender and one with fewer is a dangling end. Near the gel point most junctions fail that test even though the material is technically a gel, which is why modulus rises so much more slowly than gel fraction just past the gel point. The elastic strand density this page reports counts only the junctions that qualify, and the M<sub>c</sub> it gives can be compared directly against the value the <a href="crosslink-density.html">crosslink density</a> page extracts from swelling or the rubbery plateau. If the formulation predicts a much tighter network than the measurement finds, which is the usual result, the difference is not dangling ends, which the three-arm rule has already removed. It is intramolecular loops, which the theory assumes never form, or a real conversion lower than the one you entered.

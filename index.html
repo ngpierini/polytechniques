@@ -11,13 +11,13 @@
 <meta property="og:title" content="PolyTechniques">
 <meta property="og:description" content="Free tools for polymer synthesis and characterization: calculators for ATRP, RAFT, ROMP, FRP, polyurethanes, and emulsion polymerization, plus GPC, Tg, structure search, and thermal analysis.">
 <meta property="og:url" content="https://getpolytechniques.com/">
-<meta property="og:image" content="https://getpolytechniques.com/og-image.png">
+<meta property="og:image" content="https://getpolytechniques.com/og/site.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="628">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="PolyTechniques">
 <meta name="twitter:description" content="Free tools for polymer synthesis and characterization: ATRP, RAFT, ROMP, FRP, PU, and emulsion recipes, plus GPC, Tg, structure search, and thermal analysis.">
-<meta name="twitter:image" content="https://getpolytechniques.com/og-image.png">
+<meta name="twitter:image" content="https://getpolytechniques.com/og/site.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -35,7 +35,7 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=35" defer></script>
+<script src="nav.js?v=36" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
@@ -51,6 +51,21 @@
      Everything else on this page is a soft rounded card; this one is hard
      edged, dark and pixelated on purpose, because looking like the game is
      what tells you it is one. */
+  /* The hero sits on the same surface as the page. One figure, the bracketed
+     repeat unit; no scrim, no pixel art, which the arcade band below owns. */
+  .hero-next { background: var(--bg); padding: 48px 24px 28px; }
+  .hero-next-inner { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  .hero-next h1 { margin: 0 0 14px; font-size: 2.5rem; line-height: 1.08; font-weight: 650; letter-spacing: -0.01em; color: var(--text); }
+  .hero-next p { margin: 0; color: var(--text-dim); font-size: var(--fs-md); line-height: 1.55; max-width: 46ch; }
+  .hero-next-links { margin-top: 22px; display: flex; gap: 22px; flex-wrap: wrap; }
+  .hero-next-links a { font-weight: 600; color: var(--primary); text-decoration: none; border-bottom: 2px solid transparent; padding-bottom: 2px; }
+  .hero-next-links a:hover, .hero-next-links a:focus-visible { border-bottom-color: currentColor; }
+  .hero-next-unit { display: block; width: 100%; height: auto; justify-self: stretch; }
+  @media (max-width: 760px) {
+    .hero-next-inner { grid-template-columns: 1fr; gap: 24px; }
+    .hero-next-unit { max-width: 420px; justify-self: start; }
+    .hero-next h1 { font-size: 2rem; }
+  }
   .arcade {
     display: grid;
     grid-template-columns: minmax(min(260px, 100%), 400px) 1fr;
@@ -138,23 +153,31 @@
 
 <button class="theme-toggle-btn theme-toggle-fixed" onclick="togglePolyTheme()" aria-label="Toggle theme">🌙</button>
 
-<section class="hero">
-  <canvas id="hero-lab" class="hero-lab" aria-hidden="true"></canvas>
-  <div class="hero-scrim" aria-hidden="true"></div>
-  <div class="hero-content">
-    <div class="hero-brand">
-      <img src="favicon.svg" alt="" class="brand-mark">
+<section class="hero-next">
+  <div class="hero-next-inner">
+    <div>
       <h1 class="brand-name"><span class="brand-poly">Poly</span>Techniques<sup>&trade;</sup></h1>
+      <p>Calculators, a structure search across a thousand polymers, and bench guides for the reactions behind them. Built by a polymer chemist for people who weigh things out.</p>
+      <div class="hero-next-links">
+        <a href="calculator.html">Open the calculator</a>
+        <a href="polymer-search.html">Search polymers</a>
+      </div>
     </div>
-    <div class="tech-pills">
-      <span class="tech-pill">ATRP</span>
-      <span class="tech-pill">RAFT</span>
-      <span class="tech-pill">ROMP</span>
-      <span class="tech-pill">FRP</span>
-      <span class="tech-pill">Polyurethane</span>
-      <span class="tech-pill">Emulsion</span>
-    </div>
-    <p>Design a recipe for ATRP, RAFT, ROMP, FRP, polyurethanes, or emulsion polymerization. Then search structures, predict Tg and dispersity, and read your GPC and thermal data, with the technique guides to actually run the reaction.</p>
+    <!-- The one visual: a vinyl repeat unit bracketed the way print does it. The
+         same drawing is on every preview card, so a shared link and the page it
+         opens speak the same notation. The 8-bit lab that used to run behind this
+         block keeps exactly one home now, the arcade band below. -->
+    <svg class="hero-next-unit" viewBox="0 24 560 252" role="img" aria-label="A bracketed repeat unit of a vinyl polymer, with the subscript n.">
+      <polyline points="30,212 82.5,128 135,212 187.5,128 240,212 292.5,128 345,212 397.5,128 450,212" fill="none" stroke="#5b8def" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="187.5" y1="128" x2="187.5" y2="72" stroke="#5b8def" stroke-width="5" stroke-linecap="round"/>
+      <line x1="292.5" y1="128" x2="292.5" y2="72" stroke="#5b8def" stroke-width="5" stroke-linecap="round"/>
+      <line x1="397.5" y1="128" x2="397.5" y2="72" stroke="#5b8def" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="187.5" cy="72" r="18" fill="#f9c74f"/><circle cx="292.5" cy="72" r="18" fill="#f472b6"/><circle cx="397.5" cy="72" r="18" fill="#a78bfa"/>
+      <ellipse cx="181" cy="65" rx="5.5" ry="3.4" fill="#fff" opacity="0.55" transform="rotate(-35 181 65)"/><ellipse cx="286" cy="65" rx="5.5" ry="3.4" fill="#fff" opacity="0.55" transform="rotate(-35 286 65)"/><ellipse cx="391" cy="65" rx="5.5" ry="3.4" fill="#fff" opacity="0.55" transform="rotate(-35 391 65)"/>
+      <g fill="#5b8def"><circle cx="30" cy="212" r="8"/><circle cx="82.5" cy="128" r="8"/><circle cx="135" cy="212" r="8"/><circle cx="187.5" cy="128" r="8"/><circle cx="240" cy="212" r="8"/><circle cx="292.5" cy="128" r="8"/><circle cx="345" cy="212" r="8"/><circle cx="397.5" cy="128" r="8"/><circle cx="450" cy="212" r="8"/></g>
+      <g fill="none" stroke="var(--text)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M177,40 L161,40 L161,244 L177,244"/><path d="M408,40 L424,40 L424,244 L408,244"/></g>
+      <text x="434" y="258" font-size="30" font-style="italic" fill="var(--text)">n</text>
+    </svg>
   </div>
 </section>
 
@@ -175,7 +198,7 @@
       <div class="feature-text">
         <div class="home-card-eyebrow">Structure search</div>
         <h2>Search Polymers by Structure</h2>
-        <p>Draw a repeat unit and match it against a 968-entry curated library, copolymer blocks included, or search by name, trade name, or CAS. Reads names off photos, labels, and PDFs too.</p>
+        <p>Draw a repeat unit and match it against a curated library of over 1,000 polymers, copolymer blocks included, or search by name, trade name, or CAS. Reads names off photos, labels, and PDFs too.</p>
       </div>
       <span class="home-card-arrow">Search polymers &rarr;</span>
     </a>
@@ -319,6 +342,12 @@
         <h3>End Group &amp; Pendant Group Analysis</h3>
         <p>Which technique answers which question &ndash; NMR, FTIR, titration, MALDI, UV-Vis &ndash; with M<sub>n</sub> by end-group integration, degree of substitution, and titration equivalent weight.</p>
         <span class="home-card-arrow">Count end groups &rarr;</span>
+      </a>
+      <a class="home-card accent-yellow" href="isocyanate-cure.html">
+        <div class="home-card-icon">🧫</div>
+        <h3>Isocyanate Cure Conversion</h3>
+        <p>NCO conversion from a DSC residual exotherm, the FTIR band at 2270&nbsp;cm<sup>&minus;1</sup> or a T<sub>g</sub>, side by side, with cure kinetics, activation energy and time to a target conversion.</p>
+        <span class="home-card-arrow">Track a cure &rarr;</span>
       </a>
     </div>
   </section>
