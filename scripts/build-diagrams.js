@@ -684,21 +684,33 @@ function blockPhases() {
   const crit = leiblerSpinodal(0.5);
   if (Math.abs(crit - 10.495) > 0.01) throw new Error("spinodal at f = 0.5 is " + crit + ", expected 10.495");
   let b = "";
-  // disordered region under the curve
+  // disordered region under the mean-field spinodal
   const pts = [];
   for (let i = 0; i <= 120; i++) {
     const f = 0.05 + 0.9 * i / 120, c = leiblerSpinodal(f);
     if (c <= CMAX) pts.push([sx(f), sy(c)]);
   }
   const fl = pts[0], fr = pts[pts.length - 1];
-  // mixed everywhere below the curve, including the lopsided ends where it runs off the top
   b += '<path d="M' + X0 + "," + Y1 + " L" + X0 + "," + Y0 + " L" + f1(fl[0]) + "," + Y0 + " " + pathOf(pts).replace(/^M/, "L") + " L" + f1(fr[0]) + "," + Y0 + " L" + X1 + "," + Y0 + " L" + X1 + "," + Y1 + ' Z" fill="' + DIM + '" fill-opacity="0.08" stroke="none"/>';
-  b += '<path d="' + pathOf(pts) + '" fill="none" stroke="' + BLUE + '" stroke-width="2.4"/>';
+  // exact SCFT phase boundaries at two segregations, mirrored about f = 1/2
+  // (Matsen, Eur. Phys. J. E 30 (2009) 361, Table 2; close-packed and bcc spheres merged)
+  const SCFT = { 20: [0.21012, 0.24344, 0.33777, 0.37452], 30: [0.14783, 0.19164, 0.32018, 0.34849] };
+  const PHASE_COL = { S: VIOLET, C: GREEN, G: "#d08a3a", L: BLUE };
+  Object.keys(SCFT).forEach((cn) => {
+    const [d, sc, cg, gl] = SCFT[cn], y = sy(+cn);
+    const segs = [["S", d, sc], ["C", sc, cg], ["G", cg, gl], ["L", gl, 1 - gl], ["G", 1 - gl, 1 - cg], ["C", 1 - cg, 1 - sc], ["S", 1 - sc, 1 - d]];
+    segs.forEach(([ph, a, z]) => {
+      b += '<rect x="' + f1(sx(a)) + '" y="' + f1(y - 3.5) + '" width="' + f1(sx(z) - sx(a)) + '" height="7" fill="' + PHASE_COL[ph] + '" fill-opacity="0.75"/>';
+      if (+cn === 30) b += text((sx(a) + sx(z)) / 2, y - 7, ph, "small", ' text-anchor="middle"');
+    });
+    b += text(X0 + 4, y + 3.5, "&#967;N = " + cn, "small dim");
+  });
+  b += '<path d="' + pathOf(pts) + '" fill="none" stroke="var(--text)" stroke-width="1.8" stroke-dasharray="5 4"/>';
   b += axes(X0, Y0, X1, Y1);
-  b += '<circle cx="' + f1(sx(0.5)) + '" cy="' + f1(sy(crit)) + '" r="3.5" fill="' + BLUE + '"/>';
-  b += text(sx(0.5), sy(crit) + 16, "&#967;N = " + crit.toFixed(3) + " at f = 0.5", "small", ' text-anchor="middle"');
-  b += text(sx(0.5), sy(44), "ordered", "small dim", ' text-anchor="middle"');
-  b += text(sx(0.5), Y1 - 34, "disordered", "small dim", ' text-anchor="middle"');
+  b += '<circle cx="' + f1(sx(0.5)) + '" cy="' + f1(sy(crit)) + '" r="3.5" fill="var(--text)"/>';
+  b += text(sx(0.5), sy(crit) + 15, "10.495", "small", ' text-anchor="middle"');
+  b += text(sx(0.5), sy(48), "ordered", "small dim", ' text-anchor="middle"');
+  b += text(sx(0.5), Y1 - 32, "disordered", "small dim", ' text-anchor="middle"');
   [0, 0.25, 0.5, 0.75, 1].forEach((f) => {
     b += '<line x1="' + f1(sx(f)) + '" y1="' + Y1 + '" x2="' + f1(sx(f)) + '" y2="' + (Y1 + 4) + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
     b += text(sx(f), Y1 + 16, String(f), "small dim", ' text-anchor="middle"');
@@ -706,31 +718,38 @@ function blockPhases() {
   [0, 20, 40, 60].forEach((c) => b += text(X0 - 6, sy(c) + 4, String(c), "small dim", ' text-anchor="end"'));
   b += text((X0 + X1) / 2, Y1 + 32, "f" + sub("A") + ", volume fraction of block A", "small dim", ' text-anchor="middle"');
   b += text(X0 - 44, Y0 - 6, "&#967;N", "small dim");
-  // morphology strip along the top: minority block drawn solid
+  // morphology icons, centred on the chi N = 30 phase windows
   const S = 34, YI = 18;
   const icon = (f, kind) => {
     const x = sx(f) - S / 2, minor = f < 0.5 ? BLUE : GREEN, major = f < 0.5 ? GREEN : BLUE;
     let s = '<rect x="' + f1(x) + '" y="' + YI + '" width="' + S + '" height="' + S + '" rx="4" fill="' + major + '" fill-opacity="0.18" stroke="' + BORDER + '"/>';
     if (kind === "S") [[9, 9], [25, 9], [17, 17], [9, 25], [25, 25]].forEach(([u, v]) => { s += '<circle cx="' + f1(x + u) + '" cy="' + (YI + v) + '" r="3.6" fill="' + minor + '"/>'; });
     if (kind === "C") [7, 17, 27].forEach((v) => { s += '<rect x="' + f1(x + 4) + '" y="' + (YI + v - 3) + '" width="' + (S - 8) + '" height="6" rx="3" fill="' + minor + '"/>'; });
-    if (kind === "G") {
-      s += '<path d="M' + f1(x + 4) + "," + (YI + 10) + " q6,-8 13,0 t13,0 M" + f1(x + 4) + "," + (YI + 24) + " q6,8 13,0 t13,0 M" + f1(x + 17) + "," + (YI + 10) + " v14" + '" fill="none" stroke="' + minor + '" stroke-width="4" stroke-linecap="round"/>';
-    }
+    if (kind === "G") s += '<path d="M' + f1(x + 4) + "," + (YI + 10) + " q6,-8 13,0 t13,0 M" + f1(x + 4) + "," + (YI + 24) + " q6,8 13,0 t13,0 M" + f1(x + 17) + "," + (YI + 10) + " v14" + '" fill="none" stroke="' + minor + '" stroke-width="4" stroke-linecap="round"/>';
     if (kind === "L") [0, 1, 2].forEach((k) => { s += '<rect x="' + f1(x + 2 + k * 11) + '" y="' + (YI + 2) + '" width="5.5" height="' + (S - 4) + '" fill="' + BLUE + '"/>'; });
     return s + text(sx(f), YI + S + 14, kind === "S" ? "spheres" : kind === "C" ? "cylinders" : kind === "G" ? "gyroid" : "lamellae", "small dim", ' text-anchor="middle"');
   };
-  b += icon(0.1, "S") + icon(0.24, "C") + icon(0.36, "G") + icon(0.5, "L") + icon(0.64, "G") + icon(0.76, "C") + icon(0.9, "S");
-  const XR = 486;
-  b += text(XR, 104, "The curve is the mean-field", "small dim");
-  b += text(XR, 120, "limit of stability of the", "small dim");
-  b += text(XR, 136, "mixed melt. Only at f = 0.5", "small dim");
-  b += text(XR, 152, "is it also where ordering", "small dim");
-  b += text(XR, 168, "begins; at other f the", "small dim");
-  b += text(XR, 184, "ordered phase appears a", "small dim");
-  b += text(XR, 200, "little below it.", "small dim");
-  const caption = "Two numbers decide a diblock&rsquo;s structure. &#967;N, the incompatibility per chain, decides whether it orders at all: below the curve the blocks stay mixed. Composition decides what it orders into, running from spheres of the minority block through cylinders and the gyroid to lamellae at a near-even split, then back again with the blocks&rsquo; roles exchanged. A symmetric diblock is the easiest to order, at &#967;N&nbsp;&asymp;&nbsp;10.5; a lopsided one needs much longer chains or much more incompatible blocks. Real melts order somewhat above the mean-field value, because composition fluctuations stabilize the mixed state, and the shortest chains most.";
-  const source = "Stability limit from the random-phase structure factor: Leibler, <i>Macromolecules</i> 13 (1980) 1602. Fluctuation shift: Fredrickson and Helfand, <i>J. Chem. Phys.</i> 87 (1987) 697. Phase sequence: Matsen and Bates, <i>Macromolecules</i> 29 (1996) 1091; the gyroid is stable only at intermediate &#967;N, and the icons mark the order of phases, not their boundaries.";
-  return panel("block-phases", "The mean-field order-disorder curve of a diblock copolymer, chi N against volume fraction, with its minimum of 10.5 at a volume fraction of one half, beneath a strip of morphologies running spheres, cylinders, gyroid, lamellae, gyroid, cylinders, spheres.", 680, 280, b, caption, source);
+  const c30 = SCFT[30];
+  b += icon(0.10, "S") + icon((c30[1] + c30[2]) / 2, "C") + icon(0.36, "G") + icon(0.5, "L") + icon(0.64, "G") + icon(1 - (c30[1] + c30[2]) / 2, "C") + icon(0.90, "S");
+  // inset: the symmetric diblock's ODT against the invariant chain length
+  const IX0 = 508, IX1 = 664, IY0 = 116, IY1 = 220, NMIN = 2, NMAX = 4, CMIN2 = 7, CMAX2 = 30;
+  const ix = (L) => IX0 + (L - NMIN) / (NMAX - NMIN) * (IX1 - IX0), iy = (c) => IY1 - (c - CMIN2) / (CMAX2 - CMIN2) * (IY1 - IY0);
+  const fh = (n) => 10.495 + 41.0 * Math.pow(n, -1 / 3), gl = (n) => fh(n) + 123.0 * Math.pow(n, -0.56);
+  b += axes(IX0, IY0, IX1, IY1);
+  b += '<line x1="' + IX0 + '" y1="' + f1(iy(10.495)) + '" x2="' + IX1 + '" y2="' + f1(iy(10.495)) + '" stroke="var(--text)" stroke-width="1.4" stroke-dasharray="5 4"/>';
+  const cur = (fn, col, dash) => { const p = []; for (let i = 0; i <= 40; i++) { const L = NMIN + (NMAX - NMIN) * i / 40; p.push([ix(L), iy(Math.min(fn(Math.pow(10, L)), CMAX2))]); } return '<path d="' + pathOf(p) + '" fill="none" stroke="' + col + '" stroke-width="2"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>"; };
+  b += cur(fh, DIM, "2 3") + cur(gl, BLUE, "");
+  [2, 3, 4].forEach((L) => b += text(ix(L), IY1 + 14, "10" + sup(String(L)), "small dim", ' text-anchor="middle"'));
+  [10, 20, 30].forEach((c) => b += text(IX0 - 5, iy(c) + 4, String(c), "small dim", ' text-anchor="end"'));
+  b += text((IX0 + IX1) / 2, IY1 + 30, "N&#773;, invariant chain length", "small dim", ' text-anchor="middle"');
+  b += text(IX0 - 18, IY0 - 18, "(&#967;N)" + sub("ODT") + " at f = 1/2", "small dim");
+  b += text(ix(3.05), iy(gl(1e3)) - 8, "simulation fit", "small", tint(BLUE));
+  b += text(ix(2.55), iy(fh(Math.pow(10, 2.55))) + 14, "FH 1987", "small dim");
+  b += text(IX1, iy(10.495) - 5, "mean field", "small dim", ' text-anchor="end"');
+  const g3 = gl(1e3);
+  const caption = "Two numbers decide a diblock&rsquo;s structure. Composition decides what it orders into: the bars are the exact mean-field phase boundaries at &#967;N&nbsp;=&nbsp;20 and 30, running spheres, cylinders, gyroid and lamellae and back again with the blocks&rsquo; roles exchanged. &#967;N decides whether it orders at all. The dashed curve is the mean-field spinodal; away from f&nbsp;=&nbsp;1/2 the ordered phase already appears before it is reached, as the bars show. Real melts need more than the mean-field 10.495 even at f&nbsp;=&nbsp;1/2, because composition fluctuations stabilize the mixed state, and the inset shows how much: for a typical N&#773; of 1000, simulations put the order&ndash;disorder transition at &#967;N&nbsp;&asymp;&nbsp;" + g3.toFixed(1) + ", well above the classic Fredrickson&ndash;Helfand estimate. Fluctuations also move the boundaries between ordered phases, and other phases (the Fddd network, and Frank&ndash;Kasper sphere packings when the blocks differ in stiffness) appear in narrow windows.";
+  const source = "Spinodal: Leibler, <i>Macromolecules</i> 13 (1980) 1602. Phase boundaries: Matsen, <i>Eur. Phys. J. E</i> 30 (2009) 361, Table 2. ODT fit (&#967;N)<sub>ODT</sub>&nbsp;=&nbsp;10.495&nbsp;+&nbsp;41.0N&#773;<sup>&minus;1/3</sup>&nbsp;+&nbsp;123.0N&#773;<sup>&minus;0.56</sup>: Glaser, Medapuram, Beardsley, Matsen and Morse, <i>Phys. Rev. Lett.</i> 113 (2014) 068302; first two terms Fredrickson and Helfand, <i>J. Chem. Phys.</i> 87 (1987) 697. Fddd: Tyler and Morse, <i>Phys. Rev. Lett.</i> 94 (2005) 208302; Frank&ndash;Kasper &sigma;: Lee, Bluemle and Bates, <i>Science</i> 330 (2010) 349.";
+  return panel("block-phases", "The diblock copolymer phase diagram, chi N against volume fraction: the mean-field spinodal with its minimum of 10.495, exact phase-boundary bars at chi N of 20 and 30 running spheres, cylinders, gyroid and lamellae, and an inset showing the symmetric order-disorder transition rising above the mean-field value as the invariant chain length falls.", 680, 280, b, caption, source);
 }
 
 // ---- 13. Flory-Huggins: a blend and a solution -------------------------------
@@ -990,7 +1009,10 @@ const JOBS = [
   { file: "gpc-trace.html", build: gpcAverages, before: "<h3>Analyze a trace</h3>" },
   { file: "flory-huggins.html", build: floryHuggins, before: null },
   { file: "tg-predictor.html", build: foxTg, before: null },
-  { file: "gpc-calibration.html", build: gpcUniversal, before: null }
+  { file: "gpc-calibration.html", build: gpcUniversal, before: null },
+  { file: "gpc-peak-interpretation.html", build: gpcExclusion, before: null },
+  { file: "gpc-peak-interpretation.html", build: gpcBaseline, before: null },
+  { file: "gpc-peak-interpretation.html", build: gpcDetectors, before: null }
 ];
 
 // ---- 16. cis and trans dienes, from Odian Table 8-1 -------------------------
@@ -1084,6 +1106,182 @@ function tacticity() {
   const caption = "Every carbon carrying a substituent in a vinyl chain is a stereocentre, and the sequence of their configurations decides whether the chain can crystallize. Isotactic and syndiotactic chains are regular and can pack: isotactic polypropylene melts at 165&nbsp;&deg;C, and syndiotactic polystyrene at 270&nbsp;&deg;C. An atactic chain has no repeating pattern to pack with, which is why ordinary radical-made polystyrene is a clear glass with no melting point at all. Neighbouring pairs of stereocentres, the dyads, are what NMR counts: tacticity is reported as the fraction of m and r dyads, or of mm, mr and rr triads.";
   const source = "Melting points from Odian, <i>Principles of Polymerization</i>, 4th ed., Secs. 8-2a-1 and 8-11f. Dyad nomenclature: IUPAC, <i>Pure Appl. Chem.</i> 53 (1981) 733.";
   return panel("tacticity", "Three vinyl polymer chains drawn as planar zigzags. Isotactic: every substituent on a wedge on the same side, all meso dyads. Syndiotactic: substituents alternating between wedge and hashed bonds, all racemo dyads. Atactic: a random mixture.", 680, 270, b, caption, source);
+}
+
+// ---- 18-20. GPC peak interpretation ---------------------------------------
+// One illustrative column bank for all three: log M = 6.2 - 0.43 (V - 13), V in
+// mL, so the largest chains elute first (left). Samples are log-normal in M.
+const GPC_A = 6.2, GPC_B = 0.43;
+const gpcLogM = (v) => GPC_A - GPC_B * (v - 13);
+const gpcV = (logM) => 13 + (GPC_A - logM) / GPC_B;
+const gauss = (x, m, s) => Math.exp(-0.5 * ((x - m) / s) * ((x - m) / s));
+// mass per unit V of a log-normal sample with peak Mp and dispersity D
+function lnSample(Mp, D) {
+  const s = Math.sqrt(Math.log(D)) / Math.LN10 / GPC_B;    // its width in mL
+  return { vp: gpcV(Math.log10(Mp)), s, w: (v) => gauss(v, gpcV(Math.log10(Mp)), s) };
+}
+// slice sums over a trace h(v) between limits, with M read from the bank
+function gpcMoments(h, v0, v1, base) {
+  let A = 0, B = 0, C = 0;
+  for (let v = v0; v <= v1; v += 0.002) {
+    const y = h(v) - (base ? base(v) : 0);
+    if (y <= 0) continue;
+    const M = Math.pow(10, gpcLogM(v));
+    A += y; B += y / M; C += y * M;
+  }
+  return { area: A, Mn: A / B, Mw: C / A };
+}
+function gpcAxisV(b, sx, Y1, v0, v1, step) {
+  for (let v = Math.ceil(v0); v <= v1; v += step) {
+    b += '<line x1="' + f1(sx(v)) + '" y1="' + Y1 + '" x2="' + f1(sx(v)) + '" y2="' + (Y1 + 4) + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    b += text(sx(v), Y1 + 16, String(v), "small dim", ' text-anchor="middle"');
+  }
+  return b;
+}
+const kfmt = (M) => M >= 1e6 ? (M / 1e6).toFixed(2) + "M" : (M / 1000).toFixed(M < 1e4 ? 1 : 0) + "k";
+
+// 18. what each detector sees of one injection
+function gpcDetectors() {
+  const smp = lnSample(5e4, 1.8);
+  const V0 = 13, V1 = 19.5, X0 = 40, X1 = 430, Y0 = 40, Y1 = 196;
+  const sx = (v) => X0 + (v - V0) / (V1 - V0) * (X1 - X0), sy = (y) => Y1 - y * (Y1 - Y0);
+  const a = 0.716;
+  // each response is the mass trace times a power of M, which for a log-normal
+  // is the same Gaussian moved along log M; normalise each to its own peak
+  const resp = (pow) => (v) => smp.w(v) * Math.pow(10, pow * gpcLogM(v));
+  const peakOf = (fn) => { let bv = -1, bx = 0; for (let v = V0; v <= V1; v += 0.001) { const y = fn(v); if (y > bv) { bv = y; bx = v; } } return [bx, bv]; };
+  const traces = [
+    ["RI, concentration", 0, "var(--text)", ""],
+    ["light scattering", 1, BLUE, ""],
+    ["viscometer", a, GREEN, "6 3"],
+    ["UV, one end group per chain", -1, VIOLET, "2 3"]
+  ];
+  let b = axes(X0, Y0, X1, Y1);
+  // molar-mass scale along the top, from the same calibration
+  [3, 4, 5, 6].forEach((L) => {
+    const v = gpcV(L);
+    if (v < V0 || v > V1) return;
+    b += '<line x1="' + f1(sx(v)) + '" y1="' + (Y0 - 4) + '" x2="' + f1(sx(v)) + '" y2="' + Y0 + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    b += text(sx(v), Y0 - 8, "10" + sup(String(L)), "small dim", ' text-anchor="middle"');
+  });
+  b += '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + X1 + '" y2="' + Y0 + '" stroke="' + BORDER + '" stroke-width="0.8"/>';
+  b += text(X0, Y0 - 22, "M (g/mol) from the calibration", "small dim");
+  const peaks = [];
+  traces.forEach(([name, pow, col, dash]) => {
+    const fn = resp(pow), [pv, pmax] = peakOf(fn);
+    peaks.push([name, pv, col]);
+    const pts = [];
+    for (let i = 0; i <= 260; i++) { const v = V0 + (V1 - V0) * i / 260; pts.push([sx(v), sy(fn(v) / pmax)]); }
+    b += '<path d="' + pathOf(pts) + '" fill="none" stroke="' + col + '" stroke-width="' + (pow === 0 ? 2.4 : 2) + '"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>";
+  });
+  b = gpcAxisV(b, sx, Y1, V0, V1, 1);
+  b += text((X0 + X1) / 2, Y1 + 32, "elution volume (mL)", "small dim", ' text-anchor="middle"');
+  // legend, each line saying how far its peak sits from the RI peak
+  const ri = peaks[0][1], XR = 456;
+  peaks.forEach(([name, pv, col], i) => {
+    const y = 50 + i * 36, d = pv - ri, tr = traces[i];
+    b += '<line x1="' + XR + '" y1="' + (y - 4) + '" x2="' + (XR + 22) + '" y2="' + (y - 4) + '" stroke="' + col + '" stroke-width="2.2"' + (tr[3] ? ' stroke-dasharray="' + tr[3] + '"' : "") + "/>";
+    b += text(XR + 30, y, name, "small");
+    const how = i === 0 ? "the mass of polymer" : (i === 1 ? "mass &#215; M" : i === 2 ? "mass &#215; M" + sup("a") : "mass &#247; M") + ", " + Math.abs(d).toFixed(2) + " mL " + (d < 0 ? "earlier" : "later");
+    b += text(XR + 30, y + 15, how, "small dim");
+  });
+  const caption = "One injection, four detectors, four different peaks. The refractive-index trace is the mass of polymer leaving the column. Light scattering multiplies that by M, and a viscometer by M<sup>a</sup>, so both lean toward the large chains and peak earlier. A UV detector tuned to an end group (a RAFT trithiocarbonate, say) counts chain ends, one per chain, so it divides by M and leans the other way. None of the four is wrong, and the gaps between them are information. To check chain-end fidelity, compare the end-group trace with the <em>number</em> distribution worked out from the RI trace (RI divided by M), not with the RI trace itself: the two only coincide if every chain carries its end group, and two normalized raw traces will never overlay for a broad sample even when they do. A UV detector reading a chromophore in every repeat unit, such as polystyrene&rsquo;s ring, tracks the RI trace instead.";
+  const source = "Drawn for a log-normal sample, M<sub>p</sub>&nbsp;=&nbsp;50&nbsp;kg/mol and &#272;&nbsp;=&nbsp;1.8, on an illustrative calibration; a&nbsp;=&nbsp;0.716 (polystyrene in THF). Light scattering is taken in the small-chain limit, where its signal is proportional to concentration &#215; M &#215; (dn/dc)<sup>2</sup>. Detector scalings as reviewed by Matson, Steele, Mase and Schulz, <i>Polym. Chem.</i> 15 (2024) 127, and Striegel, Brewer and Zielke, <i>Nat. Rev. Methods Primers</i> 5 (2025) 40.";
+  return panel("gpc-detectors", "Four normalized detector traces from one injection against elution volume: refractive index, light scattering peaking earlier, viscometer slightly earlier, and an end-group UV trace peaking later.", 680, 240, b, caption, source);
+}
+
+// 19. where the baseline goes
+function gpcBaseline() {
+  const smp = lnSample(3e4, 1.6);
+  const h = (v) => smp.w(v);
+  const V0 = 13.5, V1 = 20.5, VA = 14.0, VZ = 20.2, VCUT = smp.vp + 2.2 * smp.s;   // a point well out on the tail, an easy mistake to make
+  const yCut = h(VCUT);
+  const sloped = (v) => yCut * (v - VA) / (VCUT - VA);
+  const good = gpcMoments(h, VA, VZ), bad = gpcMoments(h, VA, VCUT, sloped);
+  const lost = 1 - bad.area / good.area;
+  let b = "";
+  const one = (ox, title, isBad) => {
+    const X0 = ox, X1 = ox + 250, Y0 = 34, Y1 = 170;
+    const sx = (v) => X0 + (v - V0) / (V1 - V0) * (X1 - X0), sy = (y) => Y1 - 6 - y * (Y1 - Y0 - 6);
+    let s = "";
+    // counted area, shaded
+    const up = [], dn = [];
+    const va = VA, vz = isBad ? VCUT : VZ;
+    for (let i = 0; i <= 120; i++) {
+      const v = va + (vz - va) * i / 120;
+      up.push([sx(v), sy(h(v))]);
+      dn.push([sx(v), sy(isBad ? sloped(v) : 0)]);
+    }
+    s += '<path d="' + pathOf(up.concat(dn.reverse())) + ' Z" fill="' + (isBad ? "#c45c5c" : GREEN) + '" fill-opacity="0.18"/>';
+    const tr = [];
+    for (let i = 0; i <= 200; i++) { const v = V0 + (V1 - V0) * i / 200; tr.push([sx(v), sy(h(v))]); }
+    s += '<path d="' + pathOf(tr) + '" fill="none" stroke="var(--text)" stroke-width="2"/>';
+    // the baseline the integrator was given
+    if (isBad) s += '<line x1="' + f1(sx(VA)) + '" y1="' + f1(sy(0)) + '" x2="' + f1(sx(VCUT)) + '" y2="' + f1(sy(yCut)) + '" stroke="#c45c5c" stroke-width="1.6"/>';
+    else s += '<line x1="' + f1(sx(VA)) + '" y1="' + f1(sy(0)) + '" x2="' + f1(sx(VZ)) + '" y2="' + f1(sy(0)) + '" stroke="' + GREEN + '" stroke-width="1.6"/>';
+    s += '<line x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y1 + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    s += text(X0, Y0 - 14, title, "small");
+    return s;
+  };
+  b += one(40, "flat baseline, back to the true zero", false);
+  b += one(370, "sloped baseline, cut on the tail", true);
+  const pc = (x) => (x >= 0 ? "+" : "&#8722;") + Math.abs(100 * x).toFixed(0) + "%";
+  b += text(40, 196, "M" + sub("n") + " " + kfmt(good.Mn) + ", M" + sub("w") + " " + kfmt(good.Mw) + ", &#272; " + (good.Mw / good.Mn).toFixed(2), "small");
+  b += text(370, 196, "M" + sub("n") + " " + kfmt(bad.Mn) + " (" + pc(bad.Mn / good.Mn - 1) + "), M" + sub("w") + " " + kfmt(bad.Mw) + " (" + pc(bad.Mw / good.Mw - 1) + "), &#272; " + (bad.Mw / bad.Mn).toFixed(2), "small");
+  b += text(370, 214, Math.round(100 * lost) + "% of the polymer is no longer counted", "small dim");
+  b += text(40, 214, "elution volume &#8594;, small chains to the right", "small dim");
+  const caption = "The same trace integrated twice. The sloped baseline, drawn to a point on the tail instead of to where the signal returns to zero, throws away the low-molar-mass end, and that end is exactly what M<sub>n</sub> is most sensitive to. So M<sub>n</sub> rises much more than M<sub>w</sub>, and &#272; falls: the sample looks narrower than it is. Nothing about the polymer changed; only where a line was drawn. The same asymmetry runs the other way at the front of the trace: cutting off a few percent of high-mass material moves M<sub>w</sub> far more than M<sub>n</sub>.";
+  const source = "Computed by slice summation on a log-normal trace (M<sub>p</sub>&nbsp;=&nbsp;30&nbsp;kg/mol, &#272;&nbsp;=&nbsp;1.6) and an illustrative calibration. For measured examples of both effects see Radke, <i>LCGC International</i> 19(1) (2023) 9.";
+  return panel("gpc-baseline", "One GPC trace integrated with a flat baseline and with a sloped baseline that ends on the low-molar-mass tail. The sloped one excludes part of the tail, raising the number-average molar mass and lowering the dispersity.", 680, 230, b, caption, source);
+}
+
+// 20. a sample wider than the bank
+function gpcExclusion() {
+  const Mp = 4e5, D = 3, LEX = 6.0;                          // exclusion limit 10^6 g/mol
+  const smp = lnSample(Mp, D);
+  const VEX = gpcV(LEX);
+  const V0 = 11.5, V1 = 21, X0 = 40, X1 = 430, Y0 = 30, Y1 = 186;
+  const sx = (v) => X0 + (v - V0) / (V1 - V0) * (X1 - X0), sy = (y) => Y1 - y * (Y1 - Y0);
+  // mass that should have eluted before VEX all arrives at VEX
+  let above = 0, total = 0;
+  for (let v = 5; v <= 25; v += 0.002) { total += smp.w(v); if (v < VEX) above += smp.w(v); }
+  const frac = above / total;
+  const SPW = 0.06;                                          // the spike's width in mL
+  const spikeA = above * 0.002;                              // its area, in the same units
+  const spike = (v) => spikeA / (SPW * Math.sqrt(2 * Math.PI)) * gauss(v, VEX, SPW);
+  const seen = (v) => (v >= VEX ? smp.w(v) : 0) + spike(v);
+  const top = Math.max(1, spike(VEX) + smp.w(VEX));
+  // true and reported averages: the spike is read at the exclusion-limit M
+  const trueM = (() => { let A = 0, B = 0, C = 0; for (let v = 5; v <= 25; v += 0.002) { const y = smp.w(v), M = Math.pow(10, gpcLogM(v)); A += y; B += y / M; C += y * M; } return { Mn: A / B, Mw: C / A }; })();
+  const rep = gpcMoments(seen, VEX - 0.4, 25);
+  let b = "";
+  // exclusion limit
+  b += '<line x1="' + f1(sx(VEX)) + '" y1="' + Y0 + '" x2="' + f1(sx(VEX)) + '" y2="' + Y1 + '" stroke="' + DIM + '" stroke-width="1" stroke-dasharray="3 3"/>';
+  b += text(sx(VEX) - 4, Y0 + 2, "exclusion limit, 10" + sup("6"), "small dim", ' text-anchor="end"');
+  // the true distribution beyond the limit, which the column never separates
+  const ghost = [];
+  for (let i = 0; i <= 80; i++) { const v = V0 + (VEX - V0) * i / 80; ghost.push([sx(v), sy(smp.w(v) / top)]); }
+  b += '<path d="' + pathOf(ghost) + '" fill="none" stroke="' + DIM + '" stroke-width="1.6" stroke-dasharray="4 4"/>';
+  const pts = [];
+  for (let i = 0; i <= 600; i++) { const v = V0 + (V1 - V0) * i / 600; pts.push([sx(v), sy(Math.min(seen(v) / top, 1))]); }
+  b += '<path d="' + pathOf(pts) + '" fill="none" stroke="var(--text)" stroke-width="2"/>';
+  b += axes(X0, Y0, X1, Y1);
+  b = gpcAxisV(b, sx, Y1, V0, V1, 2);
+  b += text((X0 + X1) / 2, Y1 + 32, "elution volume (mL)", "small dim", ' text-anchor="middle"');
+  b += text(sx(VEX) - 22, sy(0.42), "never separated", "small dim", ' text-anchor="end"');
+  b += text(sx(VEX) + 8, sy(0.94), "all of it arrives here", "small");
+  const XR = 456;
+  b += text(XR, 50, Math.round(100 * frac) + "% of the mass is above", "small");
+  b += text(XR, 66, "the exclusion limit.", "small");
+  b += text(XR, 96, "True M" + sub("w") + ": " + kfmt(trueM.Mw), "small");
+  b += text(XR, 114, "Reported M" + sub("w") + ": " + kfmt(rep.Mw), "small");
+  b += text(XR, 132, "True &#272;: " + (trueM.Mw / trueM.Mn).toFixed(2), "small");
+  b += text(XR, 150, "Reported &#272;: " + (rep.Mw / rep.Mn).toFixed(2), "small");
+  b += text(XR, 178, "The spike is read at 10" + sup("6") + ",", "small dim");
+  b += text(XR, 194, "whatever it really holds.", "small dim");
+  const caption = "A sample broader than the column bank. Everything larger than the exclusion limit is too big to enter any pore, so it leaves the column together at the exclusion volume and piles up as one sharp spike. The software reads that spike at the molar mass the calibration assigns to that volume, so the high end of the distribution is capped there: M<sub>w</sub> is under-reported and the sample looks narrower than it is. A light-scattering detector does better on M<sub>w</sub>, because it measures the spike&rsquo;s mass-average directly, but it still sees one unseparated slice, so M<sub>n</sub> reads high and &#272; low. A spike at the front of a trace is a reason to add a column with larger pores, not a feature of the polymer.";
+  const source = "Computed for a log-normal sample (M<sub>p</sub>&nbsp;=&nbsp;400&nbsp;kg/mol, &#272;&nbsp;=&nbsp;3) on an illustrative bank excluding above 10<sup>6</sup>&nbsp;g/mol; the spike&rsquo;s width is a band-broadening guess, its area is exact. Light-scattering behaviour at the exclusion limit: Striegel, <i>Chromatographia</i> 85 (2022) 307.";
+  return panel("gpc-exclusion", "A broad GPC trace in which the part of the distribution above the exclusion limit is not separated and appears as one sharp spike at the exclusion volume, with true and reported weight-average molar mass compared.", 680, 236, b, caption, source);
 }
 
 // Diagrams that live on generated family pages. build-family-pages.js writes
