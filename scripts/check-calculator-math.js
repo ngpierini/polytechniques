@@ -150,7 +150,7 @@ check("4x initiator halves Mn", b.Mn / a.Mn, 0.50, 0.005, "x");
 function trueMw(Mapp, Ks, as, Kp, ap) {
   return Math.pow((Ks / Kp) * Math.pow(Mapp, 1 + as), 1 / (1 + ap));
 }
-const gpc = (M) => trueMw(M, 1.14e-4, 0.716, 0.80e-4, 0.70);
+const gpc = (M) => trueMw(M, 1.14e-4, 0.716, 1.28e-4, 0.69);
 
 // The rows are read out of the page rather than restated here. A figure copied
 // into this file can drift from the one on the page without either side
@@ -180,8 +180,8 @@ gpcRows.forEach(([app, published, ratio]) => {
   check(`GPC ratio published for PS-equivalent ${app}`, exact / app, ratio, 0.005, "x");
 });
 const lowRatio = gpc(10000) / 10000, highRatio = gpc(250000) / 250000;
-check("correction ratio at 10 kg/mol", lowRatio, 1.34, 0.01, "x");
-check("correction ratio at 250 kg/mol", highRatio, 1.38, 0.01, "x");
+check("correction ratio at 10 kg/mol", lowRatio, 1.08, 0.01, "x");
+check("correction ratio at 250 kg/mol", highRatio, 1.13, 0.01, "x");
 if (!(highRatio > lowRatio)) {
   failed++;
   cases.push({ ok: false, name: "correction must drift upward with molecular weight", actual: highRatio - lowRatio, expected: "> 0", tol: 0, unit: "" });
@@ -333,24 +333,24 @@ const dispConverted = (Mn, Mw, Ks, as, Kp, ap) =>
   trueMw(Mw, Ks, as, Kp, ap) / trueMw(Mn, Ks, as, Kp, ap);
 
 check("converted Đ matches the closed form",
-  dispConverted(35000, 45500, 1.14e-4, 0.716, 0.80e-4, 0.70),
-  dispClosed(45500 / 35000, 0.716, 0.70), 1e-9, "");
-check("page's worked example: Đ 1.30 converts to 1.303",
-  dispConverted(35000, 45500, 1.14e-4, 0.716, 0.80e-4, 0.70), 1.303, 0.0005, "");
+  dispConverted(35000, 45500, 1.14e-4, 0.716, 1.28e-4, 0.69),
+  dispClosed(45500 / 35000, 0.716, 0.69), 1e-9, "");
+check("page's worked example: Đ 1.30 converts to 1.305",
+  dispConverted(35000, 45500, 1.14e-4, 0.716, 1.28e-4, 0.69), 1.305, 0.0005, "");
 check("page's broad-sample case: Đ 5.0 at alpha 0.60 converts to 5.6",
   dispClosed(5.0, 0.716, 0.60), 5.62, 0.01, "");
 
 // K independence, stated on the page as the reason Đ is the one number here a
 // reader can take at face value. Two wildly different K pairs, same Đ.
 check("Đ is untouched by K",
-  dispConverted(35000, 45500, 9.9e-4, 0.716, 0.13e-4, 0.70) -
-  dispConverted(35000, 45500, 1.14e-4, 0.716, 0.80e-4, 0.70), 0, 1e-12, "");
+  dispConverted(35000, 45500, 9.9e-4, 0.716, 0.13e-4, 0.69) -
+  dispConverted(35000, 45500, 1.14e-4, 0.716, 1.28e-4, 0.69), 0, 1e-12, "");
 
 // And the sensitivity claim the band is built on: alpha beats K by more than 2x.
-const mBase = trueMw(35000, 1.14e-4, 0.716, 0.80e-4, 0.70);
-const dAlpha = Math.abs(trueMw(35000, 1.14e-4, 0.716, 0.80e-4, 0.72) / mBase - 1);
-const dK = Math.abs(trueMw(35000, 1.14e-4, 0.716, 0.88e-4, 0.70) / mBase - 1);
-check("0.02 in alpha moves M by", 100 * dAlpha, 11.8, 0.2, "%");
+const mBase = trueMw(35000, 1.14e-4, 0.716, 1.28e-4, 0.69);
+const dAlpha = Math.abs(trueMw(35000, 1.14e-4, 0.716, 1.28e-4, 0.71) / mBase - 1);
+const dK = Math.abs(trueMw(35000, 1.14e-4, 0.716, 1.408e-4, 0.69) / mBase - 1);
+check("0.02 in alpha moves M by", 100 * dAlpha, 11.6, 0.2, "%");
 check("10% in K moves M by", 100 * dK, 5.5, 0.2, "%");
 if (!(dAlpha > 2 * dK)) {
   failed++;
