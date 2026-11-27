@@ -733,6 +733,250 @@ function blockPhases() {
   return panel("block-phases", "The mean-field order-disorder curve of a diblock copolymer, chi N against volume fraction, with its minimum of 10.5 at a volume fraction of one half, beneath a strip of morphologies running spheres, cylinders, gyroid, lamellae, gyroid, cylinders, spheres.", 680, 280, b, caption, source);
 }
 
+// ---- 13. Flory-Huggins: a blend and a solution -------------------------------
+// Free energy of mixing per lattice site, phi = volume fraction of component 2:
+//   f = (1-phi) ln(1-phi)/N1 + phi ln(phi)/N2 + chi phi (1-phi)
+// The binodal is the common tangent, found here numerically, and checked
+// against the closed form that exists for equal chains before it is trusted.
+function fhFns(N1, N2, chi) {
+  return {
+    f: (p) => (1 - p) * Math.log(1 - p) / N1 + p * Math.log(p) / N2 + chi * p * (1 - p),
+    d: (p) => -(Math.log(1 - p) + 1) / N1 + (Math.log(p) + 1) / N2 + chi * (1 - 2 * p)
+  };
+}
+// the two roots of 2 chi = 1/(N1 (1-phi)) + 1/(N2 phi), or null below critical
+function fhSpinodal(N1, N2, chi) {
+  const g = (p) => 1 / (N1 * (1 - p)) + 1 / (N2 * p) - 2 * chi;
+  const pc = Math.sqrt(N1) / (Math.sqrt(N1) + Math.sqrt(N2));
+  if (g(pc) >= 0) return null;
+  const bis = (lo, hi) => { for (let k = 0; k < 200; k++) { const m = (lo + hi) / 2; if ((g(lo) > 0) === (g(m) > 0)) lo = m; else hi = m; } return (lo + hi) / 2; };
+  return [bis(1e-300, pc), bis(pc, 1 - 1e-16)];
+}
+function fhBinodal(N1, N2, chi) {
+  const sp = fhSpinodal(N1, N2, chi);
+  if (!sp) return null;
+  const { f, d } = fhFns(N1, N2, chi);
+  const [s1, s2] = sp;
+  // for a point a on the phi-poor side, the point b on the rich side with the same slope
+  const partner = (a) => {
+    const t = d(a);
+    if (t < d(s2)) return null;
+    let lo = s2, hi = 1 - 1e-16;
+    for (let k = 0; k < 200; k++) { const m = (lo + hi) / 2; if (d(m) < t) lo = m; else hi = m; }
+    return (lo + hi) / 2;
+  };
+  const h = (a) => { const b = partner(a); return b === null ? null : f(b) - f(a) - d(a) * (b - a); };
+  // walk away from the spinodal in growing steps of log a until h changes
+  // sign, then bisect on log a. Near the critical point the root sits very
+  // close to the spinodal, so the first steps have to be small.
+  let prevL = null, prevH = null, bracket = null;
+  const Ls = Math.log10(s1);
+  for (let step = 1e-6; Ls - step > -300; step *= 1.25) {
+    const L = Ls - step, v = h(Math.pow(10, L));
+    if (v === null) continue;
+    if (prevH !== null && (prevH > 0) !== (v > 0)) { bracket = [L, prevL]; break; }
+    prevL = L; prevH = v;
+  }
+  if (!bracket) return null;
+  let [lo, hi] = bracket;
+  const hlo = h(Math.pow(10, lo)) > 0;
+  for (let k = 0; k < 100; k++) { const m = (lo + hi) / 2; if ((h(Math.pow(10, m)) > 0) === hlo) lo = m; else hi = m; }
+  const a = Math.pow(10, (lo + hi) / 2);
+  return [a, partner(a)];
+}
+function floryHuggins() {
+  let b = "";
+  // left: symmetric blend, in chi N, where it is universal
+  {
+    const X0 = 46, Y0 = 30, X1 = 276, Y1 = 196, CMIN = 1, CMAX = 4;
+    const sx = (p) => X0 + p * (X1 - X0), sy = (c) => Y1 - (c - CMIN) / (CMAX - CMIN) * (Y1 - Y0);
+    // the numerical binodal must reproduce the closed form chi N = ln(phi/(1-phi))/(2 phi - 1)
+    const N = 1000, chiN = 3;
+    const nb = fhBinodal(N, N, chiN / N);
+    const closed = (p) => Math.log(p / (1 - p)) / (2 * p - 1);
+    if (!nb || Math.abs(closed(nb[0]) - chiN) > 1e-6 || Math.abs(nb[0] + nb[1] - 1) > 1e-8) throw new Error("blend binodal check failed: " + nb);
+    const bin = [], spn = [];
+    for (let i = 1; i < 200; i++) {
+      const p = i / 200;
+      const cb = Math.abs(p - 0.5) < 1e-9 ? 2 : closed(p), cs = 1 / (2 * p * (1 - p));
+      if (cb <= CMAX) bin.push([sx(p), sy(cb)]);
+      if (cs <= CMAX) spn.push([sx(p), sy(cs)]);
+    }
+    b += '<path d="' + pathOf(bin) + '" fill="none" stroke="var(--text)" stroke-width="2.2"/>';
+    b += '<path d="' + pathOf(spn) + '" fill="none" stroke="#c45c5c" stroke-width="1.8" stroke-dasharray="5 4"/>';
+    b += axes(X0, Y0, X1, Y1);
+    // tie line at chi N = 3, from the numerical binodal
+    b += '<line x1="' + f1(sx(nb[0])) + '" y1="' + f1(sy(3)) + '" x2="' + f1(sx(nb[1])) + '" y2="' + f1(sy(3)) + '" stroke="' + DIM + '" stroke-width="1.2"/>';
+    [nb[0], nb[1]].forEach((p) => b += '<circle cx="' + f1(sx(p)) + '" cy="' + f1(sy(3)) + '" r="3" fill="var(--text)"/>');
+    b += text(sx(0.5), sy(3) - 6, "tie line", "small dim", ' text-anchor="middle"');
+    b += '<circle cx="' + f1(sx(0.5)) + '" cy="' + f1(sy(2)) + '" r="3.5" fill="var(--text)"/>';
+    b += text(sx(0.5), sy(2) + 16, "&#967;N = 2", "small", ' text-anchor="middle"');
+    b += text(sx(0.5), sy(3.75), "two phases", "small dim", ' text-anchor="middle"');
+    b += text(sx(0.5), Y1 - 6, "one phase", "small dim", ' text-anchor="middle"');
+    [0, 0.5, 1].forEach((p) => b += text(sx(p), Y1 + 16, String(p), "small dim", ' text-anchor="middle"'));
+    [1, 2, 3, 4].forEach((c) => b += text(X0 - 6, sy(c) + 4, String(c), "small dim", ' text-anchor="end"'));
+    b += text((X0 + X1) / 2, Y1 + 32, "&#966;, blend of two equal chains", "small dim", ' text-anchor="middle"');
+    b += text(X0 - 34, Y0 - 12, "&#967;N", "small dim");
+  }
+  // right: polymer in a small-molecule solvent, three chain lengths
+  {
+    const X0 = 362, Y0 = 30, X1 = 592, Y1 = 196, PMAX = 0.5, CMIN = 0.45, CMAX = 0.75;
+    const sx = (p) => X0 + p / PMAX * (X1 - X0), sy = (c) => Y1 - (c - CMIN) / (CMAX - CMIN) * (Y1 - Y0);
+    b += '<line x1="' + X0 + '" y1="' + f1(sy(0.5)) + '" x2="' + X1 + '" y2="' + f1(sy(0.5)) + '" stroke="' + DIM + '" stroke-width="1" stroke-dasharray="2 3"/>';
+    b += text(X1, sy(0.5) + 14, "&#952;: &#967; = 1/2", "small dim", ' text-anchor="end"');
+    const NS = [[100, VIOLET], [1000, BLUE], [10000, GREEN]];
+    NS.forEach(([N, col]) => {
+      const pc = 1 / (1 + Math.sqrt(N)), cc = 0.5 * Math.pow(1 + 1 / Math.sqrt(N), 2);
+      const left = [], right = [];
+      let solved = 0;
+      for (let i = 1; i <= 60; i++) {
+        const chi = cc + (CMAX - cc) * Math.pow(i / 60, 1.6);
+        const bn = fhBinodal(1, N, chi);
+        if (!bn) continue;
+        solved++;
+        left.push([sx(bn[0]), sy(chi)]);
+        if (bn[1] <= PMAX) right.push([sx(bn[1]), sy(chi)]);
+      }
+      if (solved < 55) throw new Error("binodal for N = " + N + " solved at only " + solved + " of 60 points");
+      const curve = left.reverse().concat([[sx(pc), sy(cc)]], right);
+      b += '<path d="' + pathOf(curve) + '" fill="none" stroke="' + col + '" stroke-width="2.2"/>';
+      b += '<circle cx="' + f1(sx(pc)) + '" cy="' + f1(sy(cc)) + '" r="3" fill="' + col + '"/>';
+    });
+    b += axes(X0, Y0, X1, Y1);
+    [0, 0.25, 0.5].forEach((p) => b += text(sx(p), Y1 + 16, String(p), "small dim", ' text-anchor="middle"'));
+    [0.5, 0.6, 0.7].forEach((c) => b += text(X0 - 6, sy(c) + 4, c.toFixed(1), "small dim", ' text-anchor="end"'));
+    b += text((X0 + X1) / 2, Y1 + 32, "&#966; of polymer in a solvent", "small dim", ' text-anchor="middle"');
+    b += text(X0 - 30, Y0 - 12, "&#967;", "small dim");
+  }
+  // one legend for both panels: line styles, then the chain lengths
+  const XL = 606;
+  const key = (y, col, dash, w, label) => '<line x1="' + XL + '" y1="' + (y - 4) + '" x2="' + (XL + 20) + '" y2="' + (y - 4) + '" stroke="' + col + '" stroke-width="' + w + '"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>" + text(XL + 25, y, label, "small");
+  b += key(44, "var(--text)", "", 2.2, "binodal");
+  b += key(62, "#c45c5c", "5 4", 1.8, "spinodal");
+  b += text(XL, 90, "polymer in", "small dim");
+  b += text(XL, 104, "solvent:", "small dim");
+  b += key(122, VIOLET, "", 2.2, "N = 100");
+  b += key(140, BLUE, "", 2.2, "N = 1000");
+  b += key(158, GREEN, "", 2.2, "N = 10&#8201;000");
+  b += text(XL, 184, "dots mark", "small dim");
+  b += text(XL, 198, "critical points", "small dim");
+  const N1000 = 1000;
+  const caption = "Left: a blend of two chains of equal length N, which needs only one number, &#967;N. The coexisting compositions (binodal) and the limit of stability (spinodal) meet at &#967;N&nbsp;=&nbsp;2, so two polymers of N&nbsp;=&nbsp;" + N1000 + " demix once &#967; passes " + (2 / N1000).toFixed(3) + ", a value almost any chemical difference exceeds. Right: one polymer in a small-molecule solvent, where the diagram is lopsided. As the chains lengthen, the critical point slides toward the solvent-rich side and down toward &#967;&nbsp;=&nbsp;1/2, and the phase that separates out is nearly pure solvent. That is the shape Shultz and Flory measured for polystyrene in cyclohexane, and it is why a theta solvent is defined by the infinitely long chain.";
+  const source = "Curves computed from Flory&ndash;Huggins theory by common tangent. Critical point &#966;<sub>c</sub>&nbsp;=&nbsp;1/(1&nbsp;+&nbsp;&radic;N), &#967;<sub>c</sub>&nbsp;=&nbsp;&frac12;(1&nbsp;+&nbsp;1/&radic;N)<sup>2</sup> for a polymer in solvent; experiment: Shultz and Flory, <i>J. Am. Chem. Soc.</i> 74 (1952) 4760.";
+  return panel("fh-phase", "Two computed phase diagrams. Left, a symmetric polymer blend in chi N against composition: binodal and spinodal meeting at chi N equal to 2, with a tie line. Right, a polymer in solvent for chain lengths 100, 1000 and 10000: lopsided binodals whose critical points move toward low polymer fraction and toward chi equal to one half as the chains lengthen.", 680, 240, b, caption, source);
+}
+
+// ---- 14. Fox, with the page's own copolymer ---------------------------------------
+function foxTg() {
+  const T1 = -54, T2 = 105, K = 273.15;                      // BA, MMA (deg C)
+  const fox = (w) => 1 / ((1 - w) / (T1 + K) + w / (T2 + K)) - K;
+  const lin = (w) => (1 - w) * T1 + w * T2;
+  const X0 = 58, Y0 = 26, X1 = 430, Y1 = 206, TMIN = -90, TMAX = 130;
+  const sx = (w) => X0 + w * (X1 - X0), sy = (t) => Y1 - (t - TMIN) / (TMAX - TMIN) * (Y1 - Y0);
+  let b = "";
+  [-50, 0, 50, 100].forEach((t) => {
+    b += '<line x1="' + X0 + '" y1="' + f1(sy(t)) + '" x2="' + X1 + '" y2="' + f1(sy(t)) + '" stroke="' + BORDER + '" stroke-width="0.8" stroke-dasharray="2 4"/>';
+    b += text(X0 - 6, sy(t) + 4, (t < 0 ? "&#8722;" : "") + Math.abs(t), "small dim", ' text-anchor="end"');
+  });
+  b += axes(X0, Y0, X1, Y1);
+  const L = [], F = [];
+  for (let i = 0; i <= 100; i++) { const w = i / 100; L.push([sx(w), sy(lin(w))]); F.push([sx(w), sy(fox(w))]); }
+  b += '<path d="' + pathOf(L) + '" fill="none" stroke="' + DIM + '" stroke-width="1.6" stroke-dasharray="5 4"/>';
+  b += '<path d="' + pathOf(F) + '" fill="none" stroke="' + BLUE + '" stroke-width="2.4"/>';
+  const w = 0.6, tf = fox(w), tl = lin(w);
+  b += '<line x1="' + f1(sx(w)) + '" y1="' + f1(sy(tl)) + '" x2="' + f1(sx(w)) + '" y2="' + f1(sy(tf)) + '" stroke="var(--text)" stroke-width="1"/>';
+  b += '<circle cx="' + f1(sx(w)) + '" cy="' + f1(sy(tf)) + '" r="3.5" fill="' + BLUE + '"/>';
+  b += '<circle cx="' + f1(sx(w)) + '" cy="' + f1(sy(tl)) + '" r="3" fill="' + DIM + '"/>';
+  // labels sit on the side of each point the curves leave empty
+  b += text(sx(w) - 8, sy(tl) - 8, "linear " + tl.toFixed(1) + " &#176;C", "small dim", ' text-anchor="end"');
+  b += text(sx(w) + 8, sy(tf) + 16, "Fox " + tf.toFixed(1) + " &#176;C, " + (tl - tf).toFixed(1) + " K lower", "small", tint(BLUE));
+  b += text(sx(0) + 6, sy(T1) + 18, "PBA " + "&#8722;" + Math.abs(T1) + " &#176;C", "small");
+  b += text(sx(1) - 6, sy(T2) - 10, "PMMA " + T2 + " &#176;C", "small", ' text-anchor="end"');
+  [0, 0.2, 0.4, 0.6, 0.8, 1].forEach((v) => {
+    b += '<line x1="' + f1(sx(v)) + '" y1="' + Y1 + '" x2="' + f1(sx(v)) + '" y2="' + (Y1 + 4) + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    b += text(sx(v), Y1 + 16, String(v), "small dim", ' text-anchor="middle"');
+  });
+  b += text((X0 + X1) / 2, Y1 + 32, "w, weight fraction of methyl methacrylate", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 50, Y0 - 12, "T" + sub("g") + ", &#176;C", "small dim");
+  // the degrees-Celsius mistake, computed rather than asserted
+  const wrong = 1 / ((1 - w) / T1 + w / T2);
+  const XR = 466;
+  b += text(XR, 50, "1/T" + sub("g") + " = w" + sub("1") + "/T" + sub("g,1") + " + w" + sub("2") + "/T" + sub("g,2"), "small");
+  b += text(XR, 72, "with every T in kelvin.", "small dim");
+  b += text(XR, 104, "The same sum in &#176;C at", "small dim");
+  b += text(XR, 120, "60:40 gives " + (wrong < 0 ? "&#8722;" : "") + Math.abs(wrong).toFixed(0) + " &#176;C, below", "small dim");
+  b += text(XR, 136, "absolute zero: a negative", "small dim");
+  b += text(XR, 152, "T" + sub("g") + " has no reciprocal", "small dim");
+  b += text(XR, 172, "worth adding.", "small dim");
+  const caption = "Fox adds reciprocals, not temperatures, which amounts to saying the two components contribute free volume in proportion to their weight. The curve therefore always sags below the straight line between the homopolymers, and the sag grows with the gap between them: here, a 60:40 methyl methacrylate&ndash;butyl acrylate copolymer lands " + (tl - tf).toFixed(1) + "&nbsp;K below linear mixing. Measured copolymers often sit lower still, or above, which is what the Gordon&ndash;Taylor constant is there to absorb.";
+  const source = "Fox, <i>Bull. Am. Phys. Soc.</i> 1 (1956) 123. Homopolymer values: PMMA 105&nbsp;&deg;C (Odian, Table 1-3) and poly(butyl acrylate) &minus;54&nbsp;&deg;C, typical of handbook listings.";
+  return panel("fox", "Glass transition against weight fraction of methyl methacrylate in a copolymer with butyl acrylate. The Fox curve sags below the straight line of linear mixing; at 60 percent methyl methacrylate it gives 19.9 degrees Celsius against 41.4 for the straight line.", 680, 250, b, caption, source);
+}
+
+// ---- 15. universal calibration, with the page's constants -------------------------
+// [eta]M is equal at equal elution volume, so with [eta] = K M^a:
+//   log M2 = [log(K1/K2) + (1 + a1) log M1] / (1 + a2)
+const MH = {   // THF, 25 C; the same values as the page's reference list
+  PS: [1.14e-4, 0.716], PMMA: [1.28e-4, 0.69], PI: [1.77e-4, 0.735], PB: [3.07e-4, 0.75]
+};
+const universal = (M1, s, t) => Math.pow(10, (Math.log10(MH[s][0] / MH[t][0]) + (1 + MH[s][1]) * Math.log10(M1)) / (1 + MH[t][1]));
+function gpcUniversal() {
+  let b = "";
+  // left: two calibration lines and one reading
+  {
+    const X0 = 50, Y0 = 26, X1 = 280, Y1 = 196, V0 = 12, V1 = 20, LMIN = 3, LMAX = 6.5;
+    const sx = (v) => X0 + (v - V0) / (V1 - V0) * (X1 - X0), sy = (l) => Y1 - (l - LMIN) / (LMAX - LMIN) * (Y1 - Y0);
+    const ps = (v) => 6.2 - 0.43 * (v - 13);                // an illustrative column bank
+    const pb = (v) => Math.log10(universal(Math.pow(10, ps(v)), "PS", "PB"));
+    b += axes(X0, Y0, X1, Y1);
+    const line = (fn, col, dash) => {
+      const pts = [];
+      for (let i = 0; i <= 40; i++) { const v = V0 + 0.5 + (V1 - V0 - 1) * i / 40; pts.push([sx(v), sy(fn(v))]); }
+      return '<path d="' + pathOf(pts) + '" fill="none" stroke="' + col + '" stroke-width="2.2"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>";
+    };
+    b += line(ps, DIM, "5 4") + line(pb, BLUE, "");
+    const V = 16;
+    const mA = Math.pow(10, ps(V)), mT = Math.pow(10, pb(V));
+    b += '<line x1="' + f1(sx(V)) + '" y1="' + Y1 + '" x2="' + f1(sx(V)) + '" y2="' + f1(sy(ps(V))) + '" stroke="var(--text)" stroke-width="1"/>';
+    [[ps(V), DIM], [pb(V), BLUE]].forEach(([l, col]) => {
+      b += '<line x1="' + X0 + '" y1="' + f1(sy(l)) + '" x2="' + f1(sx(V)) + '" y2="' + f1(sy(l)) + '" stroke="' + col + '" stroke-width="1" stroke-dasharray="2 3"/>';
+      b += '<circle cx="' + f1(sx(V)) + '" cy="' + f1(sy(l)) + '" r="3" fill="' + col + '"/>';
+    });
+    const k = (m) => (m / 1000).toFixed(0) + "k";
+    b += text(X0 + 4, sy(ps(V)) - 5, "PS reads " + k(mA), "small dim");
+    b += text(X0 + 4, sy(pb(V)) + 13, "polybutadiene is " + k(mT), "small", tint(BLUE));
+    b += text(sx(14.1), sy(ps(12.5)) - 1, "PS standards", "small dim");
+    [12, 14, 16, 18, 20].forEach((v) => b += text(sx(v), Y1 + 16, String(v), "small dim", ' text-anchor="middle"'));
+    [3, 4, 5, 6].forEach((l) => b += text(X0 - 6, sy(l) + 4, "10" + sup(String(l)), "small dim", ' text-anchor="end"'));
+    b += text((X0 + X1) / 2, Y1 + 32, "elution volume (mL)", "small dim", ' text-anchor="middle"');
+    b += text(X0 - 40, Y0 - 12, "M (g/mol)", "small dim");
+  }
+  // right: the conversion factor for each polymer in the page's list
+  {
+    const X0 = 362, Y0 = 26, X1 = 592, Y1 = 196, LMIN = 3, LMAX = 6, RMIN = 0.3, RMAX = 1.3;
+    const sx = (l) => X0 + (l - LMIN) / (LMAX - LMIN) * (X1 - X0), sy = (r) => Y1 - (r - RMIN) / (RMAX - RMIN) * (Y1 - Y0);
+    [0.5, 1].forEach((r) => b += '<line x1="' + X0 + '" y1="' + f1(sy(r)) + '" x2="' + X1 + '" y2="' + f1(sy(r)) + '" stroke="' + BORDER + '" stroke-width="' + (r === 1 ? 1.2 : 0.8) + '" stroke-dasharray="2 4"/>');
+    b += axes(X0, Y0, X1, Y1);
+    [["PMMA", GREEN, "PMMA"], ["PI", VIOLET, "polyisoprene"], ["PB", BLUE, "polybutadiene"]].forEach(([t, col, name]) => {
+      const pts = [];
+      for (let i = 0; i <= 30; i++) { const l = LMIN + (LMAX - LMIN) * i / 30, M = Math.pow(10, l); pts.push([sx(l), sy(universal(M, "PS", t) / M)]); }
+      b += '<path d="' + pathOf(pts) + '" fill="none" stroke="' + col + '" stroke-width="2.2"/>';
+      const r5 = universal(1e5, "PS", t) / 1e5;
+      b += text(X1 + 6, sy(universal(1e6, "PS", t) / 1e6) + 4, name, "small", tint(col));
+      b += '<circle cx="' + f1(sx(5)) + '" cy="' + f1(sy(r5)) + '" r="2.6" fill="' + col + '"/>';
+      b += text(sx(5) - 6, sy(r5) - 6, r5.toFixed(2), "small", ' text-anchor="end"');
+    });
+    b += text(X1 + 6, sy(1) + 4, "PS itself", "small dim");
+    [3, 4, 5, 6].forEach((l) => b += text(sx(l), Y1 + 16, "10" + sup(String(l)), "small dim", ' text-anchor="middle"'));
+    [0.5, 1].forEach((r) => b += text(X0 - 6, sy(r) + 4, r.toFixed(1), "small dim", ' text-anchor="end"'));
+    b += text((X0 + X1) / 2, Y1 + 32, "PS-equivalent M (g/mol)", "small dim", ' text-anchor="middle"');
+    b += text(X0 - 40, Y0 - 12, "true M / PS-equivalent M", "small dim");
+  }
+  const caption = "Left: a column sorts by coil size, so a polymer that swells more than polystyrene in THF carries less mass at each elution volume, and its calibration line sits below the standards&rsquo;. Right: how far the conversion moves the answer for each polymer in this page&rsquo;s list, with the ratio at 100&nbsp;kg/mol marked. Poly(methyl methacrylate) is close to polystyrene, about ten percent high; the polydienes, which are much more expanded in THF, carry half to two thirds of the polystyrene-equivalent mass. None of the ratios is flat, which is why a distribution cannot be corrected by multiplying it by one number.";
+  const source = "[&#951;]M equal at equal elution volume: Grubi&#353;i&#263;, Rempp and Beno&icirc;t, <i>J. Polym. Sci. B</i> 5 (1967) 753. Mark&ndash;Houwink constants (THF, 25&nbsp;&deg;C) are the page&rsquo;s reference values; PMMA from Wagner, <i>J. Phys. Chem. Ref. Data</i> 16 (1987) 165. The column calibration on the left is illustrative.";
+  return panel("gpc-universal", "Left: polystyrene and polybutadiene calibration lines of molar mass against elution volume, the polybutadiene line lower, read at one elution volume. Right: the ratio of true to polystyrene-equivalent molar mass against molar mass for PMMA, about 1.1, polyisoprene, about 0.7, and polybutadiene, about 0.5.", 680, 240, b, caption, source);
+}
+
 // ---- pages ------------------------------------------------------------------
 const JOBS = [
   { file: "copolymer-composition.html", build: copolymer, before: "<h3>Composition calculator</h3>" },
@@ -743,7 +987,10 @@ const JOBS = [
   { file: "conversion-monitoring.html", build: nmr, before: "<h3>Kinetics plot</h3>" },
   { file: "dispersity-predictor.html", build: dispersityTerms, before: "<h3>What this model leaves out</h3>" },
   { file: "mwd-simulator.html", build: mwdViews, before: "<h3>Simulate a distribution</h3>" },
-  { file: "gpc-trace.html", build: gpcAverages, before: "<h3>Analyze a trace</h3>" }
+  { file: "gpc-trace.html", build: gpcAverages, before: "<h3>Analyze a trace</h3>" },
+  { file: "flory-huggins.html", build: floryHuggins, before: null },
+  { file: "tg-predictor.html", build: foxTg, before: null },
+  { file: "gpc-calibration.html", build: gpcUniversal, before: null }
 ];
 
 // Diagrams that live on generated family pages. build-family-pages.js writes
