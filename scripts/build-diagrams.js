@@ -85,7 +85,7 @@ function copolymer() {
   b += '<line x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y0 + '" stroke="' + DIM + '" stroke-width="1" stroke-dasharray="4 4"/>';
   b += '<path d="' + curve(2, 0.5) + '" fill="none" stroke="' + VIOLET + '" stroke-width="2.2"/>';
   b += '<path d="' + curve(0.52, 0.46) + '" fill="none" stroke="' + BLUE + '" stroke-width="2.4"/>';
-  b += '<path d="' + curve(0.02, 0) + '" fill="none" stroke="' + GREEN + '" stroke-width="2.2"/>';
+  b += '<path d="' + curve(0.02, 0.01) + '" fill="none" stroke="' + GREEN + '" stroke-width="2.2"/>';
   b += '<circle cx="' + f1(sx(azTxt)) + '" cy="' + f1(sy(azTxt)) + '" r="4" fill="' + BLUE + '"/>';
   b += text(X0 + S / 2, Y1 + 16, "f<tspan baseline-shift=\"sub\" font-size=\"8\">1</tspan>, monomer 1 in the feed", "small dim", ' text-anchor="middle"');
   b += text(X0 + 4, Y0 - 8, "F<tspan baseline-shift=\"sub\" font-size=\"8\">1</tspan>, in the copolymer", "small dim");
@@ -101,11 +101,11 @@ function copolymer() {
   };
   b += row(40, VIOLET, false, "ideal: r<tspan baseline-shift=\"sub\" font-size=\"8\">1</tspan>r<tspan baseline-shift=\"sub\" font-size=\"8\">2</tspan> = 1 (here 2 and 0.5)", "never crosses the diagonal; one monomer always richer");
   b += row(82, BLUE, false, "styrene / MMA, r = 0.52 / 0.46", "crosses at the azeotrope, f<tspan baseline-shift=\"sub\" font-size=\"8\">1</tspan> = " + azTxt.toFixed(2));
-  b += row(124, GREEN, false, "styrene / maleic anhydride, 0.02 / 0", "pinned near F<tspan baseline-shift=\"sub\" font-size=\"8\">1</tspan> = 0.5: alternating");
+  b += row(124, GREEN, false, "styrene / maleic anhydride, 0.02 / 0.01", "pinned near F<tspan baseline-shift=\"sub\" font-size=\"8\">1</tspan> = 0.5: alternating");
   b += row(166, DIM, true, "r<tspan baseline-shift=\"sub\" font-size=\"8\">1</tspan> = r<tspan baseline-shift=\"sub\" font-size=\"8\">2</tspan> = 1: copolymer matches feed", null);
   b += text(L + 30, 200, "same pair, NMR ratios 0.697 / 0.491: azeotrope at " + azNmr.toFixed(2), "small dim");
   const caption = "Instantaneous copolymer composition F<sub>1</sub> against feed f<sub>1</sub>, computed from the Mayo&ndash;Lewis equation for three kinds of pair. Where a curve crosses the diagonal the copolymer has the composition of its feed and does not drift as conversion rises: an azeotrope, at f<sub>1</sub>&nbsp;=&nbsp;(1&nbsp;&minus;&nbsp;r<sub>2</sub>)/(2&nbsp;&minus;&nbsp;r<sub>1</sub>&nbsp;&minus;&nbsp;r<sub>2</sub>), which exists only when both ratios sit on the same side of 1. For styrene and MMA the textbook ratios put it at " + azTxt.toFixed(2) + "; a modern in situ NMR determination puts it at " + azNmr.toFixed(2) + ". That gap is a fair measure of what a reactivity ratio is worth.";
-  const source = 'Ratios at 60&nbsp;&deg;C: textbook values 0.52/0.46 and 0.02/0, as tabulated in standard references; in situ <sup>1</sup>H NMR values from <a href="https://doi.org/10.1021/acs.macromol.8b01526">Macromolecules 51 (2018)</a>.';
+  const source = 'Styrene/MMA 0.52/0.46 at 60&nbsp;&deg;C as tabulated in Young &amp; Lovell, <i>Introduction to Polymers</i>, 3rd ed., Table 9.1; in situ <sup>1</sup>H NMR values from <a href="https://doi.org/10.1021/acs.macromol.8b01526">Macromolecules 51 (2018)</a>. Styrene/maleic anhydride 0.02/0.01 from the <i>Polymer Handbook</i>, 4th ed. (2003); some textbooks round the second ratio to zero.';
   return panel("mayo-lewis", "Copolymer composition against feed composition for an ideal pair, styrene and methyl methacrylate with its azeotrope marked, and an alternating pair.", 680, 230, b, caption, source);
 }
 
@@ -159,7 +159,7 @@ function chainDimensions() {
   b += text(L, 132, "3 kb: L = " + dna[1].L.toFixed(0) + " nm, R/L = " + dna[1].r.toFixed(2), "small dim");
   b += text(L, 146, "&#8195;a coil, R<tspan baseline-shift=\"sub\" font-size=\"8\">g</tspan> = " + dna[1].rg.toFixed(0) + " nm", "small dim");
   const caption = "The worm-like chain, computed: &lang;R&sup2;&rang;&nbsp;=&nbsp;2PL[1&nbsp;&minus;&nbsp;(P/L)(1&nbsp;&minus;&nbsp;e<sup>&minus;L/P</sup>)]. A chain much shorter than its persistence length is a rod and its end-to-end distance is its length; one much longer is a Gaussian coil with Kuhn length 2P. Persistence length sets where the crossover falls, which is why a hundred base pairs of DNA is still a stiff rod while three thousand is already a coil.";
-  const source = 'Worm-like chain end-to-end distance as derived by Kratky and Porod; dsDNA persistence length 40&ndash;50&nbsp;nm in physiological salt (<a href="https://en.wikipedia.org/wiki/Worm-like_chain">review and references</a>).';
+  const source = 'Kratky and Porod, <a href="https://doi.org/10.1002/recl.19490681203"><i>Recl. Trav. Chim. Pays-Bas</i> 68 (1949) 1106</a>. dsDNA persistence length 45&ndash;50&nbsp;nm in physiological salt, as widely measured.';
   return panel("worm-like-chain", "End-to-end distance as a fraction of contour length against contour length over persistence length, with the rod and coil limits and two DNA lengths marked.", 680, 230, b, caption, source);
 }
 
