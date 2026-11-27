@@ -255,12 +255,13 @@ const FAMILIES = [
   },
   {
     slug: "bottlebrush-polymers",
+    diagram: "bottlebrush",
     title: "Bottlebrush polymers",
     nav: "Bottlebrush",
     lede: "A side chain on every backbone unit, crowded enough that the molecule stops behaving like a chain",
     match: e => /^Bottlebrush/.test(e.cls || ""),
     intro: [
-      "A bottlebrush carries a polymeric side chain on every repeat unit of its backbone, and the consequence is steric rather than chemical. The side chains are anchored too densely to avoid one another, so they push the backbone straight simply to make room. A linear chain of the same molecular weight is a random coil; a bottlebrush is an extended cylinder whose persistence length is far larger, set by how long and how dense the side chains are rather than by anything about backbone bond angles.",
+      "A bottlebrush carries a polymeric side chain on every repeat unit of its backbone, or close to it, and the consequence is steric rather than chemical. The side chains are anchored too densely to avoid one another, so they push the backbone straight simply to make room. A linear chain of the same molecular weight is a random coil; a bottlebrush is an extended cylinder whose persistence length is far larger, set by how long and how dense the side chains are rather than by anything about backbone bond angles.",
       "Nothing about the chemistry has changed &ndash; a poly(lactide) bottlebrush is made of the same ester as a linear poly(lactide). The architecture alone changes the physics, which is what makes this family interesting: it is a way to reach properties that are not otherwise available from the monomers you already have.",
     ],
     design: [
