@@ -1215,6 +1215,16 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 .diagram-svg text { font-family: inherit; fill: var(--text); }
 .diagram-svg .dim { fill: var(--text-dim); }
 .diagram-svg .small { font-size: var(--fs-4xs); }
+/* Where a diagram's facts come from, one line under its caption. Quieter than
+   the caption, because it is there to be checked rather than read. */
+.diagram-source {
+  font-size: var(--fs-2xs);
+  color: var(--text-dim);
+  text-align: center;
+  margin: 0;
+  max-width: 68ch;
+}
+.diagram-source a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .diagram-caption {
   font-size: var(--fs-xs);
   color: var(--text-dim);
