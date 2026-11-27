@@ -1284,10 +1284,95 @@ function gpcExclusion() {
   return panel("gpc-exclusion", "A broad GPC trace in which the part of the distribution above the exclusion limit is not separated and appears as one sharp spike at the exclusion volume, with true and reported weight-average molar mass compared.", 680, 236, b, caption, source);
 }
 
+// ---- 21. bottlebrush softness and firmness ---------------------------------
+// Left: Liang et al.'s universal crossover for the entanglement plateau of comb
+// and bottlebrush melts, G_e,gr/G_e,lin = phi^3 [1 + (Phi/0.7)^3], with
+// phi = n_g/(n_g + n_sc) and crowding parameter Phi = phi^-1 n_sc^-1/2.
+// Right: stress-stretch curves of three poly(n-butyl acrylate) bottlebrush
+// networks from Maw et al. 2022, Table 2 (n_sc = 11, n_g = 1), drawn from the
+// constitutive equation they were fitted with. Their tabulated Young's moduli
+// are reproduced from G and beta before anything is drawn.
+function bottlebrush() {
+  let b = "";
+  {
+    const X0 = 56, Y0 = 26, X1 = 300, Y1 = 196, L0 = 1, L1 = 3, Q0 = -4, Q1 = 0;
+    const sx = (n) => X0 + (Math.log10(n) - L0) / (L1 - L0) * (X1 - X0);
+    const sy = (r) => Y1 - (Math.log10(r) - Q0) / (Q1 - Q0) * (Y1 - Y0);
+    const ratio = (nsc, ng) => { const phi = ng / (ng + nsc), P = 1 / (phi * Math.sqrt(nsc)); return Math.min(1, Math.pow(phi, 3) * (1 + Math.pow(P / 0.7, 3))); };
+    [-4, -3, -2, -1, 0].forEach((q) => {
+      b += '<line x1="' + X0 + '" y1="' + f1(sy(Math.pow(10, q))) + '" x2="' + X1 + '" y2="' + f1(sy(Math.pow(10, q))) + '" stroke="' + BORDER + '" stroke-width="0.8" stroke-dasharray="2 4"/>';
+      b += text(X0 - 6, sy(Math.pow(10, q)) + 4, q === 0 ? "1" : "10" + sup(String(q).replace("-", "&#8722;")), "small dim", ' text-anchor="end"');
+    });
+    b += axes(X0, Y0, X1, Y1);
+    // the bottlebrush asymptote, the same for every n_g
+    const asym = [];
+    for (let i = 0; i <= 20; i++) { const n = Math.pow(10, L0 + (L1 - L0) * i / 20); asym.push([sx(n), sy(Math.pow(n, -1.5) / Math.pow(0.7, 3))]); }
+    b += '<path d="' + pathOf(asym.filter((p) => p[1] >= Y0)) + '" fill="none" stroke="var(--text)" stroke-width="1.2" stroke-dasharray="5 4"/>';
+    const NG = [[1, BLUE], [16, GREEN], [64, VIOLET]];
+    NG.forEach(([ng, col]) => {
+      const pts = [];
+      for (let i = 0; i <= 80; i++) { const n = Math.pow(10, L0 + (L1 - L0) * i / 80); pts.push([sx(n), sy(ratio(n, ng))]); }
+      b += '<path d="' + pathOf(pts) + '" fill="none" stroke="' + col + '" stroke-width="2.2"/>';
+      // the comb-to-bottlebrush crossover, Phi = 0.7, where it falls in range
+      for (let i = 1; i <= 400; i++) {
+        const n0 = Math.pow(10, L0 + (L1 - L0) * (i - 1) / 400), n1 = Math.pow(10, L0 + (L1 - L0) * i / 400);
+        const P = (n) => (1 + n / ng) / Math.sqrt(n);
+        if ((P(n0) - 0.7) * (P(n1) - 0.7) < 0 && P(n1) > P(n0)) b += '<circle cx="' + f1(sx(n1)) + '" cy="' + f1(sy(ratio(n1, ng))) + '" r="3.2" fill="var(--bg)" stroke="' + col + '" stroke-width="1.8"/>';
+      }
+    });
+    b += text(sx(12), sy(ratio(12, 1)) + 16, "n" + sub("g") + " = 1", "small", tint(BLUE));
+    b += text(sx(12), sy(ratio(12, 16)) - 7, "n" + sub("g") + " = 16", "small", tint(GREEN));
+    b += text(sx(45), sy(ratio(45, 64)) - 8, "n" + sub("g") + " = 64", "small", tint(VIOLET));
+    b += text(sx(150), sy(Math.pow(150, -1.5) / 0.343) + 18, "all: n" + sub("sc") + sup("&#8722;3/2"), "small dim", ' text-anchor="middle"');
+    [10, 100, 1000].forEach((n) => b += text(sx(n), Y1 + 16, String(n), "small dim", ' text-anchor="middle"'));
+    b += text((X0 + X1) / 2, Y1 + 32, "n" + sub("sc") + ", side-chain length", "small dim", ' text-anchor="middle"');
+    b += text(X0 - 40, Y0 - 16, "G" + sub("e") + " of the brush melt / G" + sub("e") + " of linear", "small dim");
+  }
+  {
+    // the three PBA networks: n_x, G (kPa), beta, E0 (kPa) as tabulated
+    const NETS = [[50, 9.9, 0.22, 42.4, BLUE], [100, 5.4, 0.16, 20.7, GREEN], [200, 2.5, 0.10, 8.7, VIOLET]];
+    NETS.forEach(([nx, G, be, E0]) => {
+      const e = G * (1 + 2 / Math.pow(1 - be, 2));
+      if (Math.abs(e - E0) > 0.06) throw new Error("E0 for n_x = " + nx + " computes to " + e.toFixed(2) + ", table says " + E0);
+    });
+    const sig = (lam, G, be) => (G / 3) * (lam * lam - 1 / lam) * (1 + 2 / Math.pow(1 - be * (lam * lam + 2 / lam) / 3, 2));
+    const lmax = (be) => { let lo = 1, hi = 20; for (let k = 0; k < 100; k++) { const m = (lo + hi) / 2; if (1 - be * (m * m + 2 / m) / 3 > 0) lo = m; else hi = m; } return lo; };
+    const X0 = 378, Y0 = 26, X1 = 572, Y1 = 196, LA1 = 6, SMAX = 120;
+    const sx = (l) => X0 + (l - 1) / (LA1 - 1) * (X1 - X0), sy = (s) => Y1 - s / SMAX * (Y1 - Y0);
+    [40, 80, 120].forEach((s) => b += text(X0 - 6, sy(s) + 4, String(s), "small dim", ' text-anchor="end"'));
+    b += text(X0 - 6, sy(0) + 4, "0", "small dim", ' text-anchor="end"');
+    b += axes(X0, Y0, X1, Y1);
+    NETS.forEach(([nx, G, be, E0, col]) => {
+      const lm = lmax(be), pts = [];
+      for (let i = 0; i <= 300; i++) {
+        const l = 1 + (lm - 1) * i / 300, s = sig(l, G, be);
+        if (s > SMAX) break;
+        pts.push([sx(l), sy(s)]);
+      }
+      b += '<path d="' + pathOf(pts) + '" fill="none" stroke="' + col + '" stroke-width="2.2"/>';
+      b += '<line x1="' + f1(sx(lm)) + '" y1="' + Y0 + '" x2="' + f1(sx(lm)) + '" y2="' + Y1 + '" stroke="' + col + '" stroke-width="1" stroke-dasharray="2 3"/>';
+    });
+    [1, 2, 3, 4, 5, 6].forEach((l) => b += text(sx(l), Y1 + 16, String(l), "small dim", ' text-anchor="middle"'));
+    b += text((X0 + X1) / 2, Y1 + 32, "stretch, &#955;", "small dim", ' text-anchor="middle"');
+    b += text(X0 - 30, Y0 - 12, "true stress (kPa)", "small dim");
+    const XL = 588;
+    NETS.forEach(([nx, G, be, E0, col], i) => {
+      const y = 40 + i * 58;
+      b += '<line x1="' + XL + '" y1="' + (y - 4) + '" x2="' + (XL + 14) + '" y2="' + (y - 4) + '" stroke="' + col + '" stroke-width="2.2"/>';
+      b += text(XL + 18, y, "n" + sub("x") + " " + nx, "small");
+      b += text(XL, y + 19, "E" + sub("0") + " " + E0 + " kPa", "small dim");
+      b += text(XL, y + 38, "&#946; = " + be.toFixed(2), "small dim");
+    });
+  }
+  const caption = "Left: why bottlebrushes are soft. Grafting side chains dilutes the backbone, and the entanglement plateau of the melt falls with it. Sparse combs follow the dilution alone, steeply; once the side chains crowd each other (open circles, where the crowding parameter passes 0.7) every architecture joins the same bottlebrush line, falling as n<sub>sc</sub><sup>&minus;3/2</sup>, half as steeply as the n<sub>sc</sub><sup>&minus;3</sup> of the comb regime that is often quoted for both. Right: why they are also firm. Three poly(butyl acrylate) bottlebrush networks soften as the strands between crosslinks lengthen, Young&rsquo;s modulus from 42 down to 9&nbsp;kPa, tissue-soft with no solvent in them, yet each stiffens sharply as its strands approach full extension (dotted lines). That combination, soft at first touch and firm under strain, is what lets bottlebrush elastomers mimic skin and other biological tissue.";
+  const source = "Plateau modulus: Liang, Morgan, Xie, Martinez, Zhulina, Matyjaszewski, Sheiko and Dobrynin, <i>Macromolecules</i> 51 (2018) 10028; curves cut at the linear-melt value, where the crossover formula stops applying. Networks: Maw et al., <i>Macromolecules</i> 55 (2022) 2940, Table 2 (n<sub>sc</sub>&nbsp;=&nbsp;11, n<sub>g</sub>&nbsp;=&nbsp;1), drawn from &sigma;&nbsp;=&nbsp;(G/3)(&lambda;<sup>2</sup>&nbsp;&minus;&nbsp;&lambda;<sup>&minus;1</sup>)[1&nbsp;+&nbsp;2(1&nbsp;&minus;&nbsp;&beta;(&lambda;<sup>2</sup>&nbsp;+&nbsp;2/&lambda;)/3)<sup>&minus;2</sup>]. Supersoft solvent-free elastomers: Daniel et al., <i>Nat. Mater.</i> 15 (2016) 183; tissue mimicry: Vatankhah-Varnosfaderani et al., <i>Nature</i> 549 (2017) 497.";
+  return panel("bottlebrush", "Left: entanglement plateau modulus of comb and bottlebrush melts relative to the linear polymer, against side-chain length, for three graft spacings, all converging on a line falling as side-chain length to the minus three halves. Right: true stress against stretch for three bottlebrush networks, soft at small strain and stiffening sharply near their limiting stretch.", 680, 240, b, caption, source);
+}
+
 // Diagrams that live on generated family pages. build-family-pages.js writes
 // those pages whole, so it calls these builders itself rather than having this
 // script patch its output.
-module.exports = { FAMILY_DIAGRAMS: { carothers, ringStrain, blockPhases, dieneTransitions, tacticity } };
+module.exports = { FAMILY_DIAGRAMS: { carothers, ringStrain, blockPhases, dieneTransitions, tacticity, bottlebrush } };
 
 if (require.main === module) {
   const check = process.argv.includes("--check");
