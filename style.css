@@ -15,7 +15,7 @@
      look like. The hues are close enough that nothing else had to move. */
   --bg: #faf9f7;
   --card-bg: #ffffff;
-  --text: #1f2328;
+  --text: #1a1917;
   --text-dim: #5f6470;
   --border: #e6e2dc;
   --primary: #2563eb;
@@ -37,11 +37,11 @@
      palette below is untouched: it was already 7.81 and 6.25:1. */
   --accent: #0b7954;
   --danger: #b83b3b;
-  --radius: 10px;
+  --radius: 16px;
   /* Near-flat. A hairline border already separates a card from the ground;
      a drop shadow on top of it is the second answer to a question that was
      only asked once, and thirty of them down a page reads as clutter. */
-  --shadow: none;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -57,7 +57,7 @@
     --primary-dim: #232130;
     --accent: #37c98f;
     --danger: #ef6a6a;
-    --shadow: none;   /* flat in both themes; the border separates */
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.03);   /* flat in both themes; the border separates */
   }
 }
 
@@ -74,7 +74,7 @@
   --primary-dim: #232130;
   --accent: #37c98f;
   --danger: #ef6a6a;
-  --shadow: none;   /* flat in both themes; the border separates */
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.03);   /* flat in both themes; the border separates */
 }
 /* Must track :root exactly. Warming the palette there and not here meant an
    OS-light visitor saw the new warm design while anyone who had explicitly
@@ -92,7 +92,7 @@
   --primary-dim: #f0f4fd;
   --accent: #0b7954;
   --danger: #b83b3b;
-  --shadow: none;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 /* Prose links. There was no rule for these at all, so they rendered in the
@@ -168,7 +168,7 @@ body {
   padding: 20px 24px 16px;
 }
 .topbar-inner { max-width: 1080px; margin: 0 auto; }
-.topbar h1 { margin: 0 0 4px; font-size: 1.5rem; }
+.topbar h1 { margin: 0 0 6px; font-size: 2rem; line-height: 1.1; }
 .subtitle { margin: 0; color: var(--text-dim); font-size: var(--fs-base); }
 
 .topbar-row {
@@ -325,7 +325,7 @@ body {
   box-shadow: var(--shadow);
   /* More air. These cards hold paragraphs of chemistry, not dashboard tiles,
      and 16px of padding crowded the text against the rule around it. */
-  padding: 22px 24px;
+  padding: 26px 28px;
 }
 /* The heading was uppercase, letter-spaced, grey and smaller than the body
    text under it - the idiom of a control-panel label. Read as a document
@@ -405,7 +405,7 @@ input[type="number"]:focus, input[type="text"]:focus, input[type="search"]:focus
   border-radius: 8px;
   padding: 12px 14px;
 }
-.stat .label { font-size: var(--fs-xs); color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
+.stat .label { font-size: var(--fs-xs); color: var(--text-dim); font-weight: 600; text-transform: none; }
 .stat .value {
   font-size: 1.25rem;
   font-weight: 700;
@@ -853,8 +853,8 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   margin: 0 0 14px;
   font-size: var(--fs-xs);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-dim);
 }
 .home-grid {
@@ -871,10 +871,9 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   display: block;
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-top: 3px solid var(--card-accent, var(--primary));
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 22px 24px 24px;
+  padding: 26px 28px 28px;
   text-decoration: none;
   color: var(--text);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
@@ -887,7 +886,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  display: flex;
+  display: none; /* the emoji tiles are gone: type carries the card now */
   align-items: center;
   justify-content: center;
   font-size: 1.3rem;
@@ -895,16 +894,16 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   background: color-mix(in srgb, var(--card-accent, var(--primary)) 16%, transparent);
 }
 .home-card-eyebrow {
-  font-size: var(--fs-3xs);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--card-accent-ink, var(--card-accent, var(--primary)));
-  font-weight: 700;
+  font-size: var(--fs-sm);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-dim);
+  font-weight: 500;
   margin-bottom: 8px;
 }
-.home-card h2, .home-card h3 { margin: 0 0 8px; font-size: 1.15rem; }
+.home-card h2, .home-card h3 { margin: 0 0 8px; font-size: 1.3rem; }
 .home-card p { margin: 0; color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.5; }
-.home-card-arrow { display: block; margin-top: 16px; font-size: var(--fs-sm); font-weight: 600; color: var(--card-accent-ink, var(--card-accent, var(--primary))); }
+.home-card-arrow { display: block; margin-top: 16px; font-size: var(--fs-sm); font-weight: 600; color: var(--primary); }
 
 /* Accent colours, one class per hue, shared by the home cards, the home
    rows, the recent-papers cards and the game HUD. Each is used four ways: a
@@ -1637,8 +1636,8 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   min-width: 0;
   font-size: var(--fs-xs);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-dim);
 }
 .preset-bar > summary:hover .preset-bar-title { color: var(--primary); }
@@ -1857,8 +1856,8 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   display: block;
   font-size: var(--fs-4xs);
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--text-dim);
   margin-bottom: 3px;
 }
@@ -1914,8 +1913,8 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
 .stat-group-label {
   font-size: var(--fs-2xs);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-dim);
   margin: 14px 0 8px;
 }
@@ -2070,7 +2069,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
     --primary-dim: #f0f4ff;
     --accent: #0e7a54;
     --danger: #b3261e;
-    --shadow: none;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   }
   body { background: #fff; }
 
@@ -3543,6 +3542,18 @@ tr.sg-current { background: color-mix(in srgb, var(--primary) 12%, transparent);
 /* Headings are short and shaped; balance stops the last word dropping alone
    onto a second line. pretty does the same for the last line of a paragraph.
    Both are ignored where unsupported, which leaves today's wrapping. */
+/* Display type. Headings in a serif over the sans body - two families, clearly
+   distinct - at a regular weight and a larger size, which is where the calm
+   comes from. A system stack: Iowan Old Style and Charter on Apple, Cambria
+   and Palatino on Windows, Georgia everywhere else. No webfont, so the page
+   makes no request it did not make before, which the privacy page relies on. */
+h1, h2, h3, .home-card h2, .home-card h3 {
+  font-family: "Iowan Old Style", "Palatino Linotype", Cambria, Charter, Georgia, serif;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+}
+.card h3 { font-size: 1.35rem; }
 h1, h2, h3, h4, .subtitle, .diagram-caption, .tech-name {
   text-wrap: balance;
 }
