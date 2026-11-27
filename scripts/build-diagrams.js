@@ -304,13 +304,279 @@ function radical() {
   return panel("radical-steps", "The four elementary steps of free-radical polymerization beside a log-log plot in which rate rises and kinetic chain length falls with the square root of initiator concentration.", 680, 230, b, caption, source);
 }
 
+// ---- 6. conversion by 1H NMR -----------------------------------------------
+// Two stacked spectra drawn the way a paper or an SI page draws them: chemical
+// shift decreasing to the right, one trace per time point, integrals printed
+// under the peaks. Lines are Lorentzians of one width, so a peak's area is
+// proportional to its height and the drawn heights are honest integrals.
+const sub = (s) => '<tspan baseline-shift="sub" font-size="8">' + s + "</tspan>";
+const sup = (s) => '<tspan font-size="7" baseline-shift="super">' + s + "</tspan>";
+const tint = (c) => ' style="fill:' + c + '"';
+function nmr() {
+  const X0 = 30, X1 = 470, D0 = 7.45, D1 = 4.85;           // ppm runs D0 (left) to D1 (right)
+  const sx = (d) => X0 + (D0 - d) / (D0 - D1) * (X1 - X0);
+  const HW = 0.011;                                        // half width at half height, ppm
+  const UNIT = 3.6;                                        // px of height per integral unit
+  const RATIO = 20;                                        // monomer : standard, mol/mol
+  const p = 0.55;
+  // integrals per proton count, with the standard's own 6 protons calibrated to 6.00
+  const mono0 = RATIO * 1, monoT = RATIO * (1 - p);        // one proton per =CH2 signal
+  const peaksAt = (mono) => [
+    [7.26, 1.4, "solvent"], [6.10, mono, "mma"], [5.57, mono, "mma"], [5.14, 6, "std"]
+  ];
+  const trace = (base, scale, mono) => {
+    const pk = peaksAt(mono);
+    const y = (d) => base - scale * UNIT * pk.reduce((s, q) => s + q[1] / (1 + ((d - q[0]) / HW) * ((d - q[0]) / HW)), 0);
+    // coarse everywhere, fine near each line: a smooth curve without a 2000-point path
+    const ds = new Set();
+    for (let x = X0; x <= X1; x += 3) ds.add(+x.toFixed(2));
+    pk.forEach((q) => { for (let k = -24; k <= 24; k++) ds.add(+(sx(q[0]) + k * 0.6).toFixed(2)); });
+    const xs = [...ds].filter((x) => x >= X0 && x <= X1).sort((a, b) => a - b);
+    const toD = (x) => D0 - (x - X0) / (X1 - X0) * (D0 - D1);
+    return '<path d="' + pathOf(xs.map((x) => [x, y(toD(x))])) + '" fill="none" stroke="var(--text)" stroke-width="1.1"/>';
+  };
+  let b = "";
+  const B1 = 112, B2 = 224, S2 = 0.72;                     // the second aliquot is smaller
+  b += trace(B1, 1, mono0) + trace(B2, S2, monoT);
+  // peak labels over the first trace
+  b += text(sx(7.26), B1 - 1.4 * UNIT - 8, "CHCl" + sub("3"), "small dim", ' text-anchor="middle"');
+  b += text((sx(6.10) + sx(5.57)) / 2, B1 - mono0 * UNIT - 10, "MMA =CH" + sub("2") + ", 1H each", "small", ' text-anchor="middle"');
+  b += text(sx(5.14), B1 - 6 * UNIT - 8, "trioxane, 6H", "small", ' text-anchor="middle"' + tint(GREEN));
+  // integrals under each trace
+  const integ = (base, mono) => {
+    let s = "";
+    [[6.10, mono], [5.57, mono], [5.14, 6]].forEach(([d, v]) => {
+      s += '<line x1="' + f1(sx(d) - 12) + '" y1="' + (base + 6) + '" x2="' + f1(sx(d) + 12) + '" y2="' + (base + 6) + '" stroke="' + DIM + '" stroke-width="1"/>';
+      s += text(sx(d), base + 18, v.toFixed(2), "small" + (d === 5.14 ? "" : ""), ' text-anchor="middle"' + (d === 5.14 ? tint(GREEN) : ""));
+    });
+    return s;
+  };
+  b += integ(B1, mono0) + integ(B2, monoT);
+  b += text(X0, B1 - 62, "t = 0", "small");
+  b += text(X0, B2 - 62, "t = 2 h", "small");
+  b += text(sx(6.6), B2 - 30, "smaller aliquot:", "small dim", ' text-anchor="middle"');
+  b += text(sx(6.6), B2 - 17, "every line shorter", "small dim", ' text-anchor="middle"');
+  // shift axis
+  const YA = 262;
+  b += '<line x1="' + X0 + '" y1="' + YA + '" x2="' + X1 + '" y2="' + YA + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+  [7.0, 6.5, 6.0, 5.5, 5.0].forEach((d) => {
+    b += '<line x1="' + f1(sx(d)) + '" y1="' + YA + '" x2="' + f1(sx(d)) + '" y2="' + (YA + 4) + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    b += text(sx(d), YA + 16, d.toFixed(1), "small dim", ' text-anchor="middle"');
+  });
+  b += text(X1, YA + 30, "&#948; (ppm)", "small dim", ' text-anchor="end"');
+  // the arithmetic, computed from the same numbers that drew the lines
+  const XR = 500;
+  const r0 = mono0 / 6, rt = monoT / 6;
+  b += text(XR, 52, "Ratio to the standard", "small dim");
+  b += text(XR, 70, "t = 0: " + mono0.toFixed(2) + " / 6.00 = " + r0.toFixed(2), "small");
+  b += text(XR, 88, "t = 2 h: " + monoT.toFixed(2) + " / 6.00 = " + rt.toFixed(2), "small");
+  b += text(XR, 118, "p = 1 &#8722; " + rt.toFixed(2) + " / " + r0.toFixed(2), "small");
+  b += text(XR, 136, "&#8195;= " + (1 - rt / r0).toFixed(2), "small");
+  b += text(XR, 170, "The standard is", "small dim");
+  b += text(XR, 186, "calibrated to its own", "small dim");
+  b += text(XR, 202, "proton count in each", "small dim");
+  b += text(XR, 218, "spectrum, so the", "small dim");
+  b += text(XR, 234, "aliquot size cancels.", "small dim");
+  const caption = "What the worked example looks like on the instrument. Both vinyl lines of methyl methacrylate shrink as monomer is used up, while the trioxane line, mixed into the flask at the start, cannot change. The second aliquot was smaller, so every line in it is shorter, the standard included; that is exactly why the raw heights mean nothing and the ratio to the standard means everything. Poly(methyl methacrylate) has no signal in this window, so nothing grows in to be mistaken for monomer.";
+  const source = "Typical shifts in CDCl<sub>3</sub>: MMA =CH<sub>2</sub> 6.10 and 5.57&nbsp;ppm, 1,3,5-trioxane 5.14&nbsp;ppm; residual CHCl<sub>3</sub> 7.26&nbsp;ppm (Fulmer et al., <i>Organometallics</i> 29 (2010) 2176). Check them against your own t&nbsp;=&nbsp;0 spectrum. Line shapes are idealized Lorentzians of equal width.";
+  return panel("nmr-conversion", "Two stacked proton NMR spectra, at time zero and at two hours. The methyl methacrylate vinyl lines at 6.10 and 5.57 ppm fall from an integral of 20 to 9 relative to a trioxane standard at 5.14 ppm calibrated to 6, giving 55 percent conversion.", 680, 300, b, caption, source);
+}
+
+// ---- 7. where dispersity comes from -----------------------------------------
+// The page's own equation, split into its two terms and stacked, for the
+// page's defaults (target DP 200, RAFT agent with C_ex = 30), with a poorer and
+// a better agent drawn as single lines for scale.
+function dispersityTerms() {
+  const DP = 200;
+  const X0 = 56, Y0 = 24, X1 = 430, Y1 = 214;
+  const PMIN = 0.05, YMAX = 2.0;
+  const sx = (p) => X0 + p * (X1 - X0);
+  const sy = (D) => Y1 - (D - 1) / (YMAX - 1) * (Y1 - Y0);
+  const poisson = (p) => 1 / (DP * p);
+  const exch = (p, cex) => (1 / cex) * (2 / p - 1);
+  let b = axes(X0, Y0, X1, Y1);
+  // stacked bands for C_ex = 30, clipped at the top of the plot
+  const ps = [];
+  for (let i = 0; i <= 190; i++) ps.push(PMIN + (1 - PMIN) * i / 190);
+  const clip = (D) => Math.min(D, YMAX);
+  const band = (lo, hi, fill, op) => {
+    const top = ps.map((p) => [sx(p), sy(clip(hi(p)))]);
+    const bot = ps.slice().reverse().map((p) => [sx(p), sy(clip(lo(p)))]);
+    return '<path d="' + pathOf(top.concat(bot)) + ' Z" fill="' + fill + '" fill-opacity="' + op + '" stroke="none"/>';
+  };
+  b += band(() => 1, (p) => 1 + poisson(p), VIOLET, 0.6);
+  b += band((p) => 1 + poisson(p), (p) => 1 + poisson(p) + exch(p, 30), BLUE, 0.22);
+  const line = (cex, dash, w) => {
+    const pts = ps.filter((p) => 1 + poisson(p) + exch(p, cex) <= YMAX).map((p) => [sx(p), sy(1 + poisson(p) + exch(p, cex))]);
+    return '<path d="' + pathOf(pts) + '" fill="none" stroke="' + BLUE + '" stroke-width="' + w + '"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>";
+  };
+  b += line(30, "", 2.4) + line(5, "5 4", 1.6) + line(300, "2 3", 1.6);
+  // axis labels
+  [0, 0.25, 0.5, 0.75, 1].forEach((p) => {
+    b += '<line x1="' + f1(sx(p)) + '" y1="' + Y1 + '" x2="' + f1(sx(p)) + '" y2="' + (Y1 + 4) + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    b += text(sx(p), Y1 + 16, p === 0 ? "0" : p === 1 ? "1" : String(p), "small dim", ' text-anchor="middle"');
+  });
+  [1, 1.25, 1.5, 1.75, 2].forEach((D) => {
+    b += text(X0 - 6, sy(D) + 4, D.toFixed(2), "small dim", ' text-anchor="end"');
+  });
+  b += text((X0 + X1) / 2, Y1 + 32, "conversion, p", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 40, Y0 - 10, "&#272;", "small dim");
+  // curve labels at the right-hand end, computed at p = 1
+  const at1 = (cex) => 1 + poisson(1) + exch(1, cex);
+  b += text(X1 + 6, sy(at1(5)) + 4, "C" + sub("ex") + " = 5", "small");
+  b += text(X1 + 6, sy(at1(30)) - 2, "C" + sub("ex") + " = 30", "small");
+  b += text(X1 + 6, sy(at1(300)) + 13, "C" + sub("ex") + " = 300", "small");
+  // band labels inside the plot
+  // label in the open space, with a leader into the band (inside it is too thin)
+  b += '<line x1="' + f1(sx(0.3) - 3) + '" y1="' + f1(sy(1.33)) + '" x2="' + f1(sx(0.2)) + '" y2="' + f1(sy(1.16)) + '" stroke="' + DIM + '" stroke-width="1"/>';
+  b += text(sx(0.3), sy(1.35), "exchange term, C(2/p &#8722; 1)", "small");
+  // the numbers at the page's default conversion
+  const p9 = 0.9, a = poisson(p9), e = exch(p9, 30);
+  const XR = 520;
+  b += text(XR, 40, "At p = 0.9, C" + sub("ex") + " = 30:", "small dim");
+  b += text(XR, 60, "1/DP" + sub("n") + " = " + a.toFixed(4), "small" , tint(VIOLET));
+  b += text(XR, 78, "C(2/p &#8722; 1) = " + e.toFixed(4), "small", tint(BLUE));
+  b += text(XR, 96, "&#272; = " + (1 + a + e).toFixed(3), "small");
+  b += text(XR, 124, "Exchange is " + Math.round(e / (a + e) * 100) + "% of the", "small dim");
+  b += text(XR, 140, "excess over 1; the", "small dim");
+  b += text(XR, 156, "chain-length floor", "small dim");
+  b += text(XR, 172, "(violet, along the", "small dim");
+  b += text(XR, 188, "bottom) is the rest.", "small dim");
+  // the claim in the caption, checked rather than asserted
+  ps.forEach((p) => { if (exch(p, 30) <= poisson(p)) throw new Error("exchange term does not dominate at p = " + p); });
+  const end30 = 1 + poisson(1) + exch(1, 30), end300 = 1 + poisson(1) + exch(1, 300);
+  const caption = "The equation on this page has two terms, and they matter at different times. The chain-length term 1/DP<sub>n</sub> (violet) is the Poisson floor a perfect living polymerization would reach; for a target DP of 200 it is already small. The exchange term C(2/p&nbsp;&minus;&nbsp;1) (blue) is the price of a finite transfer constant, and with C<sub>ex</sub>&nbsp;=&nbsp;30 it is the larger of the two at every conversion. At full conversion it falls to C itself, so the best &#272; an agent can reach is 1&nbsp;+&nbsp;1/DP<sub>n</sub>&nbsp;+&nbsp;C: " + end30.toFixed(3) + " here, and " + end300.toFixed(3) + " with an agent ten times better, where the chain-length floor finally starts to matter.";
+  const source = "&#272;&nbsp;=&nbsp;1&nbsp;+&nbsp;1/DP<sub>n</sub>&nbsp;+&nbsp;C(2/p&nbsp;&minus;&nbsp;1) with C&nbsp;=&nbsp;1/C<sub>ex</sub> for RAFT and DP<sub>n</sub>&nbsp;=&nbsp;200p: Krys and Matyjaszewski, <i>Eur. Polym. J.</i> 89 (2017) 482, Eq. 6. Curves above &#272;&nbsp;=&nbsp;2 are cut off.";
+  return panel("dispersity-terms", "Dispersity against conversion for a target degree of polymerization of 200, drawn as two stacked bands: a thin chain-length floor and a larger exchange term that falls as conversion rises. Lines for RAFT transfer constants of 5, 30 and 300 show the final dispersity falling as the agent improves.", 680, 260, b, caption, source);
+}
+
+// ---- 8. one sample, three distributions --------------------------------------
+// The same Flory most-probable population plotted three ways. Each curve is
+// scaled to its own maximum; what differs is where the maximum is.
+function mwdViews() {
+  const DPn = 100, P = 1 - 1 / DPn;                          // Flory: DPn = 1/(1-p)
+  const DPw = (1 + P) / (1 - P);
+  const XMAX = 500;
+  const X0 = 50, Y0 = 30, X1 = 450, Y1 = 200;
+  const sx = (x) => X0 + x / XMAX * (X1 - X0);
+  const sy = (v) => Y1 - v * (Y1 - Y0);
+  const n = (x) => Math.pow(P, x - 1);                       // number fraction, up to a constant
+  const w = (x) => x * Math.pow(P, x - 1);                   // weight fraction
+  const g = (x) => x * x * Math.pow(P, x - 1);               // per unit log M: what a GPC trace shows
+  const xs = [];
+  for (let x = 1; x <= XMAX; x += 2) xs.push(x);
+  const peak = (fn) => { let bx = 1, bv = -1; for (let x = 1; x <= 2000; x++) { const v = fn(x); if (v > bv) { bv = v; bx = x; } } return [bx, bv]; };
+  const [nx, nv] = peak(n), [wx, wv] = peak(w), [gx, gv] = peak(g);
+  let b = axes(X0, Y0, X1, Y1);
+  const curve = (fn, top, col, dash) =>
+    '<path d="' + pathOf(xs.map((x) => [sx(x), sy(fn(x) / top)])) + '" fill="none" stroke="' + col + '" stroke-width="2.2"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>";
+  b += curve(n, nv, DIM, "5 4") + curve(w, wv, BLUE) + curve(g, gv, GREEN);
+  // DPn and DPw markers
+  [[DPn, "DP" + sub("n") + " = " + DPn], [DPw, "DP" + sub("w") + " = " + DPw.toFixed(0)]].forEach(([x, lab]) => {
+    b += '<line x1="' + f1(sx(x)) + '" y1="' + Y0 + '" x2="' + f1(sx(x)) + '" y2="' + Y1 + '" stroke="' + DIM + '" stroke-width="1" stroke-dasharray="2 3"/>';
+    b += text(sx(x), Y0 - 8, lab, "small", ' text-anchor="middle"');
+  });
+  [0, 100, 200, 300, 400, 500].forEach((x) => {
+    b += '<line x1="' + f1(sx(x)) + '" y1="' + Y1 + '" x2="' + f1(sx(x)) + '" y2="' + (Y1 + 4) + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    b += text(sx(x), Y1 + 16, String(x), "small dim", ' text-anchor="middle"');
+  });
+  b += text((X0 + X1) / 2, Y1 + 32, "chain length, x (repeat units)", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 6, Y0 + 4, "1", "small dim", ' text-anchor="end"');
+  b += text(X0 - 6, Y1 + 4, "0", "small dim", ' text-anchor="end"');
+  // legend, each line naming where its own curve peaks (computed above)
+  const XR = 478;
+  const leg = (y, col, dash, name, where) => {
+    let s = '<line x1="' + XR + '" y1="' + (y - 4) + '" x2="' + (XR + 22) + '" y2="' + (y - 4) + '" stroke="' + col + '" stroke-width="2.2"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>";
+    s += text(XR + 30, y, name, "small");
+    s += text(XR + 30, y + 15, where, "small dim");
+    return s;
+  };
+  b += leg(52, DIM, "5 4", "number of chains", "largest at x = " + nx);
+  b += leg(96, BLUE, "", "mass of chains", "peaks at x = " + wx + ", near DP" + sub("n"));
+  b += leg(140, GREEN, "", "GPC trace, dw/dlog M", "peaks at x = " + gx + ", near DP" + sub("w"));
+  b += text(XR, 186, "Each curve scaled to its", "small dim");
+  b += text(XR, 202, "own maximum.", "small dim");
+  const caption = "One sample, three pictures. In a most-probable distribution (&#272;&nbsp;=&nbsp;2) the single commonest chain is the shortest one, yet almost none of the mass is there: weighting each chain by its length moves the maximum out to DP<sub>n</sub>. A GPC trace is plotted against log&nbsp;M, which weights by length once more, and moves the peak again, to within a percent of DP<sub>w</sub>. So the peak of a chromatogram is not M<sub>n</sub>, and for a broad sample it is not even close to it.";
+  const source = "Number fraction (1&nbsp;&minus;&nbsp;p)p<sup>x&minus;1</sup> and weight fraction x(1&nbsp;&minus;&nbsp;p)<sup>2</sup>p<sup>x&minus;1</sup>: Flory, <i>J. Am. Chem. Soc.</i> 58 (1936) 1877. The trace per unit log&nbsp;M is proportional to M&nbsp;w(M). Drawn for p&nbsp;=&nbsp;0.99.";
+  return panel("mwd-views", "The same most-probable chain-length distribution drawn three ways: number of chains falling from a maximum at one repeat unit, mass of chains peaking near the number-average length of 100, and the GPC trace per log M peaking near the weight-average length of 199.", 680, 250, b, caption, source);
+}
+
+// ---- 9. Mn, Mw and Mz on one trace ---------------------------------------------
+// A log-normal (Wesslau) distribution, the shape most GPC traces resemble,
+// with its averages placed where the moments put them. A few slices are drawn
+// to show what the page's sums run over.
+function gpcAverages() {
+  const D = 2, MP = 5e4;
+  const s2 = Math.log(D), s = Math.sqrt(s2);
+  const Mn = MP * Math.exp(-s2 / 2), Mw = MP * Math.exp(s2 / 2), Mz = MP * Math.exp(1.5 * s2);
+  const L0 = 3, L1 = 6.3;                                    // log10 M range
+  const X0 = 40, Y0 = 34, X1 = 470, Y1 = 200;
+  const sx = (M) => X0 + (Math.log10(M) - L0) / (L1 - L0) * (X1 - X0);
+  const sy = (v) => Y1 - v * (Y1 - Y0);
+  const h = (M) => Math.exp(-Math.pow(Math.log(M / MP), 2) / (2 * s2));   // dw/dlnM, peak 1
+  let b = "";
+  // slices: thin bars under the curve, one highlighted
+  const SL = 0.1;                                              // slice width in log10 M
+  for (let k = 0; k <= 25; k++) {
+    const L = 3.4 + k * SL;
+    const M = Math.pow(10, L + SL / 2), x = sx(Math.pow(10, L));
+    const hi = k === 8;                                        // a slice on the low side, where there is room to label it
+    b += '<rect x="' + f1(x + 0.6) + '" y="' + f1(sy(h(M))) + '" width="' + f1((X1 - X0) * SL / (L1 - L0) - 1.2) + '" height="' + f1(Y1 - sy(h(M))) + '" fill="' + (hi ? GREEN : BLUE) + '" fill-opacity="' + (hi ? 0.55 : 0.12) + '"/>';
+    if (hi) {
+      b += text(x - 5, sy(h(M)) + 4, "slice i: height h" + sub("i"), "small", ' text-anchor="end"' + tint(GREEN));
+      b += text(x - 5, sy(h(M)) + 22, "at M" + sub("i"), "small", ' text-anchor="end"' + tint(GREEN));
+    }
+  }
+  b += axes(X0, Y0, X1, Y1);
+  const pts = [];
+  for (let i = 0; i <= 220; i++) { const L = L0 + (L1 - L0) * i / 220; pts.push([sx(Math.pow(10, L)), sy(h(Math.pow(10, L)))]); }
+  b += '<path d="' + pathOf(pts) + '" fill="none" stroke="var(--text)" stroke-width="2"/>';
+  // the averages
+  const fmtM = (M) => (M / 1000).toFixed(1) + "k";
+  [[Mn, "M" + sub("n"), VIOLET], [MP, "M" + sub("p"), DIM], [Mw, "M" + sub("w"), BLUE], [Mz, "M" + sub("z"), GREEN]].forEach(([M, lab, col], i) => {
+    const x = sx(M);
+    b += '<line x1="' + f1(x) + '" y1="' + f1(sy(h(M))) + '" x2="' + f1(x) + '" y2="' + Y1 + '" stroke="' + col + '" stroke-width="' + (i === 1 ? 1 : 1.8) + '"' + (i === 1 ? ' stroke-dasharray="2 3"' : "") + "/>";
+    b += text(x, Y1 + 16 + (i === 1 ? 14 : 0), lab, "small", ' text-anchor="middle"');
+  });
+  // decade ticks
+  [3, 4, 5, 6].forEach((L) => {
+    b += '<line x1="' + f1(sx(Math.pow(10, L))) + '" y1="' + Y1 + '" x2="' + f1(sx(Math.pow(10, L))) + '" y2="' + (Y1 - 4) + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    b += text(sx(Math.pow(10, L)), Y1 + 48, "10" + sup(String(L)), "small dim", ' text-anchor="middle"');
+  });
+  b += text(X1, Y1 + 62, "M (g/mol), log scale", "small dim", ' text-anchor="end"');
+  b += text(X0 + 4, Y0 - 12, "detector signal, dw/dlog M", "small dim");
+  // elution direction: high M comes off first
+  b += '<path d="M' + (X1 - 10) + "," + (Y0 - 16) + " L" + (X1 - 110) + "," + (Y0 - 16) + '" stroke="' + DIM + '" stroke-width="1.2" marker-end="url(#gpc-arrow)" fill="none"/>';
+  b += '<defs><marker id="gpc-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="' + DIM + '"/></marker></defs>';
+  b += text(X1 - 116, Y0 - 12, "elutes later", "small dim", ' text-anchor="end"');
+  // the spacing, computed
+  const XR = 500;
+  const step = Math.log10(Mw / Mn);
+  b += text(XR, 40, "Drawn for &#272; = " + D.toFixed(1) + ":", "small dim");
+  [["M" + sub("n"), Mn], ["M" + sub("p"), MP], ["M" + sub("w"), Mw], ["M" + sub("z"), Mz]].forEach(([lab, M], i) => {
+    b += text(XR, 60 + i * 20, lab + " = " + fmtM(M) + " g/mol", "small");
+  });
+  b += text(XR, 148, "On a log axis the three", "small dim");
+  b += text(XR, 164, "averages are evenly", "small dim");
+  b += text(XR, 180, "spaced by log &#272; (" + step.toFixed(2) + " decades),", "small dim");
+  b += text(XR, 196, "and the peak sits halfway", "small dim");
+  b += text(XR, 212, "from M" + sub("n") + " to M" + sub("w") + ".", "small dim");
+  const caption = "The three sums on this page run over the same slices; they differ only in how hard they weight the heavy end. M<sub>n</sub> divides each slice by its M and is dragged down by the low tail; M<sub>w</sub> is a plain mass average; M<sub>z</sub> multiplies by M again and is pulled toward the high tail. The trace is drawn against log&nbsp;M, increasing to the right as papers plot it; on the column itself the order is reversed, because the largest chains elute first.";
+  const source = "Log-normal weight distribution (Wesslau, <i>Makromol. Chem.</i> 20 (1956) 111), for which M<sub>n</sub>, M<sub>w</sub> and M<sub>z</sub> are M<sub>p</sub>e<sup>&minus;s&sup2;/2</sup>, M<sub>p</sub>e<sup>s&sup2;/2</sup> and M<sub>p</sub>e<sup>3s&sup2;/2</sup>, s being the width in ln&nbsp;M.";
+  return panel("gpc-averages", "A gel permeation chromatography trace drawn as slices against log molar mass, with the number-, weight- and z-average molar masses and the peak marked. For a dispersity of 2 the three averages are evenly spaced on the log axis and the peak lies halfway between the number and weight averages.", 680, 280, b, caption, source);
+}
+
 // ---- pages ------------------------------------------------------------------
 const JOBS = [
   { file: "copolymer-composition.html", build: copolymer, before: "<h3>Composition calculator</h3>" },
   { file: "chain-dimensions.html", build: chainDimensions, before: "<h3>DNA is the model system, and it is not a coincidence</h3>" },
   { file: "tts-master-curve.html", build: tts, before: "<h3>Build a master curve</h3>" },
   { file: "hydrogel-mesh-size.html", build: hydrogel, before: "<h3>Mesh size from a swelling measurement</h3>" },
-  { file: "radical-kinetics.html", build: radical, before: "<h3>Kinetics calculator</h3>" }
+  { file: "radical-kinetics.html", build: radical, before: "<h3>Kinetics calculator</h3>" },
+  { file: "conversion-monitoring.html", build: nmr, before: "<h3>Kinetics plot</h3>" },
+  { file: "dispersity-predictor.html", build: dispersityTerms, before: "<h3>What this model leaves out</h3>" },
+  { file: "mwd-simulator.html", build: mwdViews, before: "<h3>Simulate a distribution</h3>" },
+  { file: "gpc-trace.html", build: gpcAverages, before: "<h3>Analyze a trace</h3>" }
 ];
 
 const check = process.argv.includes("--check");
