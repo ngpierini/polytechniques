@@ -1244,7 +1244,7 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
     position: sticky; left: 0;
     font-size: var(--fs-3xs); color: var(--text-dim);
   }
-  .diagram-caption, .diagram-source, .diagram-legend { position: sticky; left: 0; max-width: 100%; }
+  .diagram-caption, .diagram-source, .diagram-legend, .fig-actions { position: sticky; left: 0; max-width: 100%; }
 }
 .diagram-legend {
   display: flex;
@@ -3663,6 +3663,28 @@ p, li, .guide-note, .hint {
   margin-top: 4px;
 }
 @media print { .calc-actions { display: none !important; } }
+
+/* Under each figure: download it as SVG or PNG (nav.js). Quiet, because it is
+   a utility, and kept off paper. */
+.fig-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-3xs);
+  color: var(--text-dim);
+}
+.fig-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  font: inherit;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.fig-btn:hover, .fig-btn:focus-visible { color: var(--primary); border-color: var(--primary); }
+@media print { .fig-actions { display: none !important; } }
 
 /* The structure map on the families hub. The canvas is sized in CSS and its
    backing store is matched to that in JS, so it stays sharp on a retina screen
