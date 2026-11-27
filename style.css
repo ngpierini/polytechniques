@@ -1231,6 +1231,21 @@ h4.guide-subhead { margin: 14px 0 8px; font-size: var(--fs-sm); }
   text-align: center;
   margin-top: 2px;
 }
+/* On a phone a 680-wide figure scaled to fit the card puts its 10px labels at
+   about 4px, so it is a picture of a figure. Below 640px figures keep a
+   readable size and the panel scrolls sideways under them; the hint and the
+   caption stay put while the figure moves. */
+@media (max-width: 640px) {
+  .diagram-panel { align-items: flex-start; overflow-x: auto; overscroll-behavior-x: contain; }
+  .diagram-svg { flex: none; max-width: none; width: 500px; }
+  .diagram-svg[width="680"] { width: 600px; }
+  .diagram-panel::before {
+    content: "Swipe sideways for the whole figure \2192";
+    position: sticky; left: 0;
+    font-size: var(--fs-3xs); color: var(--text-dim);
+  }
+  .diagram-caption, .diagram-source, .diagram-legend { position: sticky; left: 0; max-width: 100%; }
+}
 .diagram-legend {
   display: flex;
   gap: 16px;
