@@ -35,13 +35,13 @@
 }
 </script>
 <script src="theme.js?v=1"></script>
-<script src="nav.js?v=38" defer></script>
+<script src="nav.js?v=39" defer></script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=129">
+<link rel="stylesheet" href="style.css?v=130">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"></script>
 <style>
   /* ---- Arcade band ----
@@ -55,7 +55,7 @@
      repeat unit; no scrim, no pixel art, which the arcade band below owns. */
   .hero-next { background: var(--bg); padding: 48px 24px 28px; }
   .hero-next-inner { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
-  .hero-next h1 { margin: 0 0 14px; font-size: 2.6rem; line-height: 1.08; font-weight: 500; letter-spacing: -0.005em; color: var(--text); }
+  .hero-next h1 { margin: 0 0 16px; font-size: 2.55rem; line-height: 1.1; font-weight: 500; letter-spacing: -0.014em; color: var(--text); max-width: 18ch; }
   .hero-next p { margin: 0; color: var(--text-dim); font-size: var(--fs-md); line-height: 1.55; max-width: 46ch; }
   .hero-next-links { margin-top: 22px; display: flex; gap: 22px; flex-wrap: wrap; }
   .hero-next-links a { font-weight: 600; color: var(--primary); text-decoration: none; border-bottom: 2px solid transparent; padding-bottom: 2px; }
@@ -156,11 +156,11 @@
 <section class="hero-next">
   <div class="hero-next-inner">
     <div>
-      <h1 class="brand-name"><span class="brand-poly">Poly</span>Techniques<sup>&trade;</sup></h1>
-      <p>Calculators, a structure search across a thousand polymers, and bench guides for the reactions behind them. Built by a polymer chemist for people who weigh things out.</p>
-      <div class="hero-next-links">
-        <a href="calculator.html">Open the calculator</a>
-        <a href="polymer-search.html">Search polymers</a>
+      <h1>Calculators and bench guides for polymer chemists</h1>
+      <p>Design a polymerization, identify a polymer from its structure, and read your DSC, GPC and DMA data properly. Built by a polymer chemist for people who weigh things out.</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="calculator.html">Open the calculator</a>
+        <a class="btn-secondary" href="polymer-search.html">Search polymers by structure</a>
       </div>
     </div>
     <!-- The one visual: a vinyl repeat unit bracketed the way print does it. The
@@ -183,240 +183,104 @@
 
 <main class="home-body">
 
-  <div class="home-feature-pair">
-    <a class="home-card home-card--feature accent-blue" href="calculator.html">
-      <div class="home-card-icon">🧮</div>
-      <div class="feature-text">
-        <div class="home-card-eyebrow">Calculator</div>
-        <h2>Open the Calculator</h2>
-        <p>Target Mₙ, DP, or concentration across ATRP, RAFT, ROMP, and FRP, plus polyurethane and emulsion formulations, macroinitiators, and a block copolymer builder.</p>
-      </div>
-      <span class="home-card-arrow">Start designing &rarr;</span>
+  <section class="home-start" aria-label="Start here">
+    <a class="start-card" href="calculator.html">
+      <span class="start-kicker">Calculator</span>
+      <h2>Design a polymerization</h2>
+      <p>Target M<sub>n</sub>, DP or concentration for ATRP, RAFT, ROMP and free-radical reactions, plus polyurethane and emulsion formulations, macroinitiators and block copolymers.</p>
     </a>
-    <a class="home-card home-card--feature accent-violet" href="polymer-search.html">
-      <div class="home-card-icon">🔍</div>
-      <div class="feature-text">
-        <div class="home-card-eyebrow">Structure search</div>
-        <h2>Search Polymers by Structure</h2>
-        <p>Draw a repeat unit and match it against a curated library of over 1,000 polymers, copolymer blocks included, or search by name, trade name, or CAS. Reads names off photos, labels, and PDFs too.</p>
-      </div>
-      <span class="home-card-arrow">Search polymers &rarr;</span>
+    <a class="start-card" href="polymer-search.html">
+      <span class="start-kicker">Structure search</span>
+      <h2>Identify a polymer</h2>
+      <p>Draw a repeat unit and match it against more than 1,000 polymers, or search by name, trade name or CAS number. It reads names off photos, labels and PDFs too.</p>
     </a>
-  </div>
+    <a class="start-card" href="polymer-families.html">
+      <span class="start-kicker">Polymer families</span>
+      <h2>Browse by chemistry</h2>
+      <p>The whole library laid out by family, from acrylates to bottlebrushes, with monomers, CAS numbers and what each structural choice does to properties.</p>
+    </a>
+  </section>
 
-  <a class="arcade" href="polymer-chain-game.html">
-    <div class="arcade-strip" aria-hidden="true">
-      <span style="background:#ff5d5d"></span><span style="background:#ffa53d"></span>
-      <span style="background:#ffe14d"></span><span style="background:#5fdc8a"></span>
-      <span style="background:#4dd2ff"></span><span style="background:#7f9dff"></span>
-      <span style="background:#c77dff"></span><span style="background:#ff7ad9"></span>
-    </div>
-    <canvas id="arcade-canvas" class="arcade-screen" aria-hidden="true"></canvas>
-    <div class="arcade-text">
-      <div class="arcade-eyebrow">Free browser game</div>
-      <h2>Build a Polymer Chain</h2>
-      <p>An 8-bit maze game about the thing this whole site is for. Collect every monomer bead while O&#8322;, an inhibitor and a chain transfer agent hunt your growing radical &mdash; and the real score is not points, it is your dispersity.</p>
-      <ul class="arcade-facts">
-        <li>25 levels</li>
-        <li>Polyethylene &rarr; carbyne</li>
-        <li>&#272; is the score</li>
-        <li>Plays offline</li>
+  <section class="home-directory" aria-label="Every tool and guide">
+    <div class="dir-col">
+      <h2>Plan a polymerization</h2>
+      <ul>
+        <li><a href="copolymer-composition.html"><span class="dir-title">Copolymer composition</span><span class="dir-desc">Copolymer composition from feed and reactivity ratios, with azeotropes.</span></a></li>
+        <li><a href="dispersity-predictor.html"><span class="dir-title">Dispersity predictor</span><span class="dir-desc">The narrowest &#272; a RAFT, ATRP or NMP reaction can reach.</span></a></li>
+        <li><a href="mwd-simulator.html"><span class="dir-title">Distribution simulator</span><span class="dir-desc">The whole molecular weight distribution, dead chains and band broadening included.</span></a></li>
+        <li><a href="tg-predictor.html"><span class="dir-title">T<sub>g</sub> predictor</span><span class="dir-desc">Glass transition of a copolymer or miscible blend by Fox.</span></a></li>
+        <li><a href="chain-dimensions.html"><span class="dir-title">Chain dimensions</span><span class="dir-desc">Persistence and Kuhn length, contour length and R<sub>g</sub> from measured values.</span></a></li>
+        <li><a href="flory-huggins.html"><span class="dir-title">Flory&ndash;Huggins phase behaviour</span><span class="dir-desc">Binodal, spinodal, cloud point, and the order&ndash;disorder transition of a diblock.</span></a></li>
+        <li><a href="calculator.html#sg"><span class="dir-title">Step-growth and gel point</span><span class="dir-desc">Degree of polymerization and gelation by Carothers and Flory&ndash;Stockmayer.</span></a></li>
+        <li><a href="crosslink-density.html"><span class="dir-title">Crosslink density</span><span class="dir-desc">M<sub>c</sub> from swelling or from the rubbery plateau, and why they disagree.</span></a></li>
+        <li><a href="hydrogel-mesh-size.html"><span class="dir-title">Hydrogel mesh size</span><span class="dir-desc">Mesh size from swelling, and whether a solute can pass through it.</span></a></li>
+        <li><a href="network-formation.html"><span class="dir-title">Network formation</span><span class="dir-desc">Gel point, sol fraction and elastic strands by Macosko&ndash;Miller.</span></a></li>
+        <li><a href="radical-kinetics.html"><span class="dir-title">Free-radical kinetics</span><span class="dir-desc">Rate, kinetic chain length and DP<sub>n</sub> from the rate constants.</span></a></li>
+        <li><a href="recipe-scaling.html"><span class="dir-title">Recipe scaling</span><span class="dir-desc">Scale a recipe by a factor or between batch sizes.</span></a></li>
       </ul>
-      <span class="arcade-btn">Insert coin &#9656; Play free</span>
     </div>
-  </a>
-
-  <section class="home-section">
-    <h2 class="home-section-label">Plan a polymerization</h2>
-    <div class="home-grid home-grid--four">
-      <a class="home-card accent-teal" href="copolymer-composition.html">
-        <div class="home-card-icon">🧬</div>
-        <h3>Copolymer Composition</h3>
-        <p>Predict instantaneous copolymer composition from feed ratio and reactivity ratios, with a composition diagram and azeotrope detection.</p>
-        <span class="home-card-arrow">Open the calculator &rarr;</span>
-      </a>
-      <a class="home-card accent-teal" href="dispersity-predictor.html">
-        <div class="home-card-icon">🎯</div>
-        <h3>Dispersity (Đ) Predictor</h3>
-        <p>Predict the narrowest Đ a RAFT, ATRP, or NMP reaction can reach from its target DP, conversion, and exchange chemistry, with a live molecular-weight distribution.</p>
-        <span class="home-card-arrow">Predict a Đ &rarr;</span>
-      </a>
-      <a class="home-card accent-teal" href="mwd-simulator.html">
-        <div class="home-card-icon">〰️</div>
-        <h3>Distribution Simulator</h3>
-        <p>The whole molecular weight distribution, not just &#272;: living chains, the dead-chain tail, and what your GPC&rsquo;s band broadening would do to it.</p>
-        <span class="home-card-arrow">Simulate a distribution &rarr;</span>
-      </a>
-      <a class="home-card accent-teal" href="tg-predictor.html">
-        <div class="home-card-icon">🌡️</div>
-        <h3>Tg Predictor</h3>
-        <p>Estimate a random copolymer or miscible blend's glass transition temperature from its components using the Fox equation.</p>
-        <span class="home-card-arrow">Predict a Tg &rarr;</span>
-      </a>
-      <a class="home-card accent-teal" href="chain-dimensions.html">
-        <div class="home-card-icon">📐</div>
-        <h3>Chain Dimensions</h3>
-        <p>Persistence length, Kuhn length, contour length and radius of gyration from a database of measured values, each quoted with the solvent it was measured in.</p>
-        <span class="home-card-arrow">Size a chain &rarr;</span>
-      </a>
-      <a class="home-card accent-teal" href="flory-huggins.html">
-        <div class="home-card-icon">🧊</div>
-        <h3>Flory&ndash;Huggins Phase Behaviour</h3>
-        <p>Binodal, spinodal and critical point for a blend or a solution, the cloud point from &chi;(T), and the order&ndash;disorder transition of a diblock.</p>
-        <span class="home-card-arrow">Will it mix? &rarr;</span>
-      </a>
-      <a class="home-card accent-violet" href="calculator.html#sg">
-        <div class="home-card-icon">🔗</div>
-        <h3>Step-Growth &amp; Gel Point</h3>
-        <p>Degree of polymerization from conversion and stoichiometric imbalance, and when a multifunctional formulation gels &mdash; by both Carothers and Flory&ndash;Stockmayer.</p>
-        <span class="home-card-arrow">Find the gel point &rarr;</span>
-      </a>
-      <a class="home-card accent-violet" href="crosslink-density.html">
-        <div class="home-card-icon">🕸️</div>
-        <h3>Crosslink Density</h3>
-        <p>M&#8347; from equilibrium swelling by Flory&ndash;Rehner, or from the rubbery plateau modulus, with the two routes compared and their disagreement explained.</p>
-        <span class="home-card-arrow">Measure a network &rarr;</span>
-      </a>
-      <a class="home-card accent-violet" href="hydrogel-mesh-size.html">
-        <div class="home-card-icon">💧</div>
-        <h3>Hydrogel Mesh Size</h3>
-        <p>The mesh size of a swollen gel from a swelling measurement, by Peppas&ndash;Merrill and Canal&ndash;Peppas, and whether your solute is small enough to get through it.</p>
-        <span class="home-card-arrow">Size the mesh &rarr;</span>
-      </a>
-      <a class="home-card accent-violet" href="network-formation.html">
-        <div class="home-card-icon">🕸️</div>
-        <h3>Network Formation</h3>
-        <p>Gel point, sol fraction and elastic strand density for any mix of functionalities and off-stoichiometry, by the Macosko&ndash;Miller recursive method.</p>
-        <span class="home-card-arrow">Formulate a network &rarr;</span>
-      </a>
-      <a class="home-card accent-violet" href="radical-kinetics.html">
-        <div class="home-card-icon">⚡</div>
-        <h3>Free-Radical Kinetics</h3>
-        <p>Rate of polymerization, kinetic chain length and DP&#8345; from the rate constants, plus chain transfer by Mayo and initiator half-life.</p>
-        <span class="home-card-arrow">Run the numbers &rarr;</span>
-      </a>
-      <a class="home-card accent-teal" href="recipe-scaling.html">
-        <div class="home-card-icon">⚖️</div>
-        <h3>Recipe Scaling</h3>
-        <p>Scale any recipe up or down by a factor or between batch sizes while keeping every component's ratio the same.</p>
-        <span class="home-card-arrow">Scale a recipe &rarr;</span>
-      </a>
+    <div class="dir-col">
+      <h2>Characterize what you made</h2>
+      <ul>
+        <li><a href="thermal-analysis.html"><span class="dir-title">Thermal analysis</span><span class="dir-desc">Interactive DSC, TGA and DMA curves for 70 materials.</span></a></li>
+        <li><a href="thermal-instrument-guide.html"><span class="dir-title">Running DSC, TGA and DMA</span><span class="dir-desc">Standard methods, step by step in TA Instruments TRIOS and Mettler Toledo STARe.</span></a></li>
+        <li><a href="tts-master-curve.html"><span class="dir-title">Time&ndash;temperature superposition</span><span class="dir-desc">Master curves, shift factors and WLF constants from frequency sweeps.</span></a></li>
+        <li><a href="gpc-calibration.html"><span class="dir-title">GPC calibration converter</span><span class="dir-desc">Polystyrene-equivalent molecular weight to true molecular weight.</span></a></li>
+        <li><a href="gpc-trace.html"><span class="dir-title">GPC trace analyzer</span><span class="dir-desc">M<sub>n</sub>, M<sub>w</sub>, M<sub>z</sub> and &#272; from a raw chromatogram.</span></a></li>
+        <li><a href="gpc-peak-interpretation.html"><span class="dir-title">GPC peak interpretation</span><span class="dir-desc">Columns, detectors, baselines and what a shoulder means.</span></a></li>
+        <li><a href="end-group-analysis.html"><span class="dir-title">End-group analysis</span><span class="dir-desc">M<sub>n</sub> and functionality by NMR, titration, FTIR and MALDI.</span></a></li>
+        <li><a href="isocyanate-cure.html"><span class="dir-title">Isocyanate cure</span><span class="dir-desc">NCO conversion by DSC, FTIR or T<sub>g</sub>, with cure kinetics.</span></a></li>
+      </ul>
+    </div>
+    <div class="dir-col">
+      <h2>Bench guides and reference</h2>
+      <ul>
+        <li><a href="mechanisms.html"><span class="dir-title">Polymerization mechanisms</span><span class="dir-desc">Schemes for ATRP, RAFT, ROMP, free-radical, polyurethane and emulsion.</span></a></li>
+        <li><a href="air-free-technique.html"><span class="dir-title">Air-free technique</span><span class="dir-desc">Schlenk lines, freeze&ndash;pump&ndash;thaw and inert-atmosphere safety.</span></a></li>
+        <li><a href="conversion-monitoring.html"><span class="dir-title">Monitoring conversion</span><span class="dir-desc">Aliquots, internal standards and the kinetics plot.</span></a></li>
+        <li><a href="glossary.html"><span class="dir-title">Glossary</span><span class="dir-desc">Plain definitions for M<sub>n</sub>, &#272;, DP, CTA and the rest.</span></a></li>
+        <li><a href="whats-new.html"><span class="dir-title">What&rsquo;s new</span><span class="dir-desc">Everything added to the site, newest first.</span></a></li>
+        <li><a href="founder.html"><span class="dir-title">About the author</span><span class="dir-desc">Who builds this, and why.</span></a></li>
+      </ul>
     </div>
   </section>
 
-  <section class="home-section">
-    <h2 class="home-section-label">Characterize what you made</h2>
-    <div class="home-grid">
-      <a class="home-card accent-yellow" href="thermal-analysis.html">
-        <div class="home-card-icon">🔥</div>
-        <h3>Thermal Analysis: DSC, TGA &amp; DMA</h3>
-        <p>Interactive thermograms you reshape by heating rate, atmosphere, frequency, and crosslink density, from a 70-material library of thermoplastics, copolymers, elastomers, binders, and fillers.</p>
-        <span class="home-card-arrow">Explore thermograms &rarr;</span>
-      </a>
-      <a class="home-card accent-yellow" href="tts-master-curve.html">
-        <div class="home-card-icon">🕰️</div>
-        <h3>Time&ndash;Temperature Superposition</h3>
-        <p>Paste isothermal frequency sweeps and build a master curve: shift factors, WLF constants, and the activation energy that is not one.</p>
-        <span class="home-card-arrow">Build a master curve &rarr;</span>
-      </a>
-      <a class="home-card accent-yellow" href="gpc-calibration.html">
-        <div class="home-card-icon">📏</div>
-        <h3>GPC Calibration Converter</h3>
-        <p>Convert a polystyrene equivalent molecular weight from your GPC report into a true molecular weight for your actual polymer.</p>
-        <span class="home-card-arrow">Convert a result &rarr;</span>
-      </a>
-      <a class="home-card accent-yellow" href="gpc-peak-interpretation.html">
-        <div class="home-card-icon">📉</div>
-        <h3>GPC Peak Interpretation</h3>
-        <p>Columns, solvents, and shouldering, with an interactive chromatogram showing how integration limits move M<sub>n</sub>, M<sub>w</sub>, and Đ.</p>
-        <span class="home-card-arrow">Read a chromatogram &rarr;</span>
-      </a>
-      <a class="home-card accent-yellow" href="gpc-trace.html">
-        <div class="home-card-icon">📈</div>
-        <h3>GPC Trace Analyzer</h3>
-        <p>Paste the raw chromatogram and compute M<sub>n</sub>, M<sub>w</sub>, M<sub>z</sub> and &#272; yourself, with what the integration limits were worth shown beside the answer.</p>
-        <span class="home-card-arrow">Analyze a trace &rarr;</span>
-      </a>
-      <a class="home-card accent-yellow" href="end-group-analysis.html">
-        <div class="home-card-icon">🔬</div>
-        <h3>End Group &amp; Pendant Group Analysis</h3>
-        <p>Which technique answers which question &ndash; NMR, FTIR, titration, MALDI, UV-Vis &ndash; with M<sub>n</sub> by end-group integration, degree of substitution, and titration equivalent weight.</p>
-        <span class="home-card-arrow">Count end groups &rarr;</span>
-      </a>
-      <a class="home-card accent-yellow" href="isocyanate-cure.html">
-        <div class="home-card-icon">🧫</div>
-        <h3>Isocyanate Cure Conversion</h3>
-        <p>NCO conversion from a DSC residual exotherm, the FTIR band at 2270&nbsp;cm<sup>&minus;1</sup> or a T<sub>g</sub>, side by side, with cure kinetics, activation energy and time to a target conversion.</p>
-        <span class="home-card-arrow">Track a cure &rarr;</span>
-      </a>
-    </div>
-  </section>
+  <section class="home-duo">
+    <a class="arcade" href="polymer-chain-game.html">
+      <div class="arcade-strip" aria-hidden="true">
+        <span style="background:#ff5d5d"></span><span style="background:#ffa53d"></span>
+        <span style="background:#ffe14d"></span><span style="background:#5fdc8a"></span>
+        <span style="background:#4dd2ff"></span><span style="background:#7f9dff"></span>
+        <span style="background:#c77dff"></span><span style="background:#ff7ad9"></span>
+      </div>
+      <canvas id="arcade-canvas" class="arcade-screen" aria-hidden="true"></canvas>
+      <div class="arcade-text">
+        <div class="arcade-eyebrow">Free browser game</div>
+        <h2>Build a Polymer Chain</h2>
+        <p>An 8-bit maze game about the thing this whole site is for. Collect every monomer bead while O&#8322;, an inhibitor and a chain transfer agent hunt your growing radical &mdash; and the real score is not points, it is your dispersity.</p>
+        <ul class="arcade-facts">
+          <li>25 levels</li>
+          <li>Polyethylene &rarr; carbyne</li>
+          <li>&#272; is the score</li>
+          <li>Plays offline</li>
+        </ul>
+        <span class="arcade-btn">Insert coin &#9656; Play free</span>
+      </div>
+    </a>
 
-  <section class="home-section">
-    <h2 class="home-section-label">Bench guides &amp; reference</h2>
-    <div class="home-list">
-      <a class="home-row accent-mint" href="mechanisms.html">
-        <span class="home-row-icon">⚛️</span>
-        <span class="home-row-text">
-          <span class="home-row-title">Polymerization Mechanisms</span>
-          <span class="home-row-desc">Reaction schemes for ATRP, RAFT, ROMP, FRP, polyurethanes, and emulsion, and the "why" behind each technique's character.</span>
-        </span>
-      </a>
-      <a class="home-row accent-mint" href="air-free-technique.html">
-        <span class="home-row-icon">💨</span>
-        <span class="home-row-text">
-          <span class="home-row-title">Air Free Reaction Setup</span>
-          <span class="home-row-desc">Schlenk line technique, the full freeze pump thaw procedure, and inert atmosphere safety notes.</span>
-        </span>
-      </a>
-      <a class="home-row accent-mint" href="conversion-monitoring.html">
-        <span class="home-row-icon">📊</span>
-        <span class="home-row-text">
-          <span class="home-row-title">Monitoring Conversion</span>
-          <span class="home-row-desc">Taking and analyzing aliquots partway through, and why an internal standard is essential.</span>
-        </span>
-      </a>
-      <a class="home-row accent-mint" href="polymer-families.html">
-        <span class="home-row-icon">🧪</span>
-        <span class="home-row-text">
-          <span class="home-row-title">Polymer Families</span>
-          <span class="home-row-desc">The whole structure library laid out by chemistry &mdash; acrylates, methacrylates, silicones &mdash; with CAS numbers, monomers, and what each substituent does.</span>
-        </span>
-      </a>
-      <a class="home-row accent-mint" href="glossary.html">
-        <span class="home-row-icon">📖</span>
-        <span class="home-row-text">
-          <span class="home-row-title">Glossary</span>
-          <span class="home-row-desc">Plain language definitions for M<sub>n</sub>, Đ, DP, CTAs, macroinitiators, and every other term used here.</span>
-        </span>
-      </a>
-    </div>
-  </section>
-
-  <section class="home-section">
-    <h2 class="home-section-label">More</h2>
-    <div class="home-list">
-      <a class="home-row accent-pink" href="founder.html">
-        <span class="home-row-icon">👋</span>
-        <span class="home-row-text">
-          <span class="home-row-title">Meet the Founder</span>
-          <span class="home-row-desc">A polymer chemist's path from a community college class to a Ph.D., and why this toolkit exists.</span>
-        </span>
-      </a>
-      <a class="home-row accent-blue" href="whats-new.html">
-        <span class="home-row-icon">🆕</span>
-        <span class="home-row-text">
-          <span class="home-row-title">What's New</span>
-          <span class="home-row-desc">A running list of what's been added to the toolkit, newest first.</span>
-        </span>
-      </a>
-    </div>
+    <section class="trivia">
+      <div class="trivia-header">
+        <h2>Daily polymer trivia</h2>
+        <p class="trivia-subtitle">One new chemistry question every day. You get three tries.</p>
+      </div>
+      <div class="trivia-card" id="trivia-card"></div>
+    </section>
   </section>
 
   <section class="hot-papers">
     <div class="hot-papers-header">
       <div>
-        <h2>🔥 Hot Off the Press</h2>
+        <h2>Recent papers</h2>
         <p class="hot-papers-subtitle">Recent polymer papers from the past week, with any early citations surfaced first</p>
       </div>
       <div class="hot-papers-controls">
@@ -437,13 +301,6 @@
     <p class="hot-papers-caption" id="hot-papers-caption"></p>
   </section>
 
-  <section class="trivia">
-    <div class="trivia-header">
-      <h2>🧠 Daily Polymer Trivia</h2>
-      <p class="trivia-subtitle">One new chemistry question every day. You get three tries.</p>
-    </div>
-    <div class="trivia-card" id="trivia-card"></div>
-  </section>
 
 </main>
 
