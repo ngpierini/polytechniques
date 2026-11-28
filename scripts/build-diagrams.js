@@ -1957,8 +1957,8 @@ function polyamideMelting() {
   b += text(XK, 50, "More amide groups per", "small dim") + text(XK, 64, "chain: more hydrogen", "small dim") + text(XK, 78, "bonds in the crystal,", "small dim") + text(XK, 92, "higher melting point.", "small dim");
   b += text(XK, 124, "Spacing is not the", "small dim") + text(XK, 138, "whole story: nylon 6", "small dim") + text(XK, 152, "and 6,6 have the same", "small dim") + text(XK, 166, "density and melt " + (p66.tm - p6.tm) + " K", "small dim") + text(XK, 180, "apart.", "small dim");
   const caption = "Each amide group in a nylon can hydrogen-bond to its neighbour in the crystal, and those bonds are what the melt has to break. Dilute them with methylene and the melting point falls toward polyethylene's, the limit with no amide groups at all: nylon 6,6 and nylon 6 at one amide per seven backbone atoms, nylon 6,10 at one per nine, nylon 11 and 12 at one per twelve and thirteen. Density is not everything, though. Nylon 6 and nylon 6,6 carry exactly the same number of amides per backbone atom and melt " + (p66.tm - p6.tm) + " K apart, which is about how the amides line up from chain to chain, not how many there are.";
-  const source = "Melting points from the library's entries: nylon 6,6 from Odian, <i>Principles of Polymerization</i>, 4th ed., Table 1-3; nylon 6, 11, 12 and 6,10 from the makers' datasheets (BASF Ultramid, Arkema Rilsan, Evonik Vestamid; DSC at 10 &#176;C/min, ISO 11357). Polyethylene: Odian, Table 1-3. Amide density counted from each repeat unit.";
-  return panel("polyamide-melting", "Melting temperature against amide groups per 100 backbone atoms for nylon 6, 6,6, 6,10, 11 and 12, with polyethylene at zero amide density. The melting point rises with amide density; nylon 6 and 6,6 share a density but melt 45 K apart.", 680, Y1 + 46, b, caption, source);
+  const source = "Melting points from the library's entries: nylon 6,6 from Odian, <i>Principles of Polymerization</i>, 4th ed., Table 1-3; nylon 6, 11, 12 and 6,10 from the makers' datasheets (BASF Ultramid, Arkema Rilsan, Evonik Vestamid; DSC at 10 &#176;C/min, ISO 11357). Polyethylene: Odian, Table 1-3, 137 &#176;C for ideal linear polyethylene (commercial HDPE melts nearer 130 &#176;C). Amide density counted from each repeat unit.";
+  return panel("polyamide-melting", "Melting temperature against amide groups per 100 backbone atoms for nylon 6, 6,6, 6,10, 11 and 12, with polyethylene at zero amide density. The melting point rises with amide density; nylon 6 and 6,6 share a density but melt " + (p66.tm - p6.tm) + " K apart.", 680, Y1 + 46, b, caption, source);
 }
 
 // ---- family pages: the all-trans siloxane chain ------------------------------
@@ -1998,7 +1998,7 @@ function siloxaneChain() {
   const RX = 190, RY = 262;
   const spt = si.map(([x, y]) => [RX + (x - sxm) * S, RY + (y - sym) * S]);
   let b = "";
-  const atom = (p, r, fill, lab) => '<circle cx="' + f1(p[0]) + '" cy="' + f1(p[1]) + '" r="' + r + '" fill="' + fill + '" stroke="var(--bg)" stroke-width="1.5"/>' + (lab ? text(p[0], p[1] + 3.5, lab, "small", ' text-anchor="middle" style="fill:var(--bg);font-size:9px;font-weight:600"') : "");
+  const atom = (p, r, fill, lab) => '<circle cx="' + f1(p[0]) + '" cy="' + f1(p[1]) + '" r="' + r + '" fill="' + fill + '" stroke="var(--bg)" stroke-width="1.5"/>' + (lab ? text(p[0], p[1] + 3.5, lab, "small", ' text-anchor="middle" style="fill:var(--bg);font-size:10px;font-weight:600"') : "");
   // carbon chain
   b += text(cx0, 26, "Carbon chain, all-trans: C&#8211;C " + CC.toFixed(2) + " &#197;, " + A_C + "&#176; at every atom", "small");
   b += '<path d="' + pathOf(cpt) + '" fill="none" stroke="var(--text)" stroke-width="2.2" stroke-linejoin="round"/>';
@@ -2008,7 +2008,6 @@ function siloxaneChain() {
   b += text(cx0, 146, "Siloxane chain, all-trans: Si&#8211;O " + SIO.toFixed(2) + " &#197;, " + A_SI + "&#176; at Si, " + A_O + "&#176; at O", "small");
   b += '<path d="' + pathOf(spt) + '" fill="none" stroke="var(--text)" stroke-width="2.2" stroke-linejoin="round"/>';
   spt.forEach((p, i) => { b += i % 2 ? atom(p, 6, BLUE, "O") : atom(p, 8, VIOLET, "Si"); });
-  // start and end markers: the chain comes back round to where it began
   // the chain starts and, 11 units on, ends at the same atom position: say so in the empty middle of the ring
   b += text(RX, RY - 4, "after " + (NB / 2) + " units the chain", "small dim", ' text-anchor="middle"');
   b += text(RX, RY + 10, "is back where it started", "small dim", ' text-anchor="middle"');
