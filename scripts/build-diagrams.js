@@ -2027,6 +2027,62 @@ function siloxaneChain() {
   return panel("siloxane-chain", "A carbon chain and a siloxane chain drawn to scale in the all-trans conformation. The carbon chain runs straight; the siloxane chain, with 110 degree angles at silicon and 143 at oxygen, curves round and closes into a ring after about eleven repeat units.", 680, 372, b, caption, source);
 }
 
+// ---- family pages: acrylic Tg against the ester side chain -------------------
+// Both series from the library's sourced entries. Linear esters make the lines;
+// the branched butyl esters sit at four carbons as open points.
+function acrylicTg() {
+  const DB = libraryDB();
+  const tgOf = (name) => {
+    const e = DB.find((x) => x.name === name);
+    if (!e || !e.tgSource) throw new Error("acrylicTg: " + name + " needs a sourced tg");
+    return parseFloat(e.tg.replace("~", ""));
+  };
+  const ALKYL = [[1, "methyl"], [2, "ethyl"], [4, "butyl"], [6, "hexyl"], [8, "octyl"], [12, "lauryl"]];
+  const series = (suffix) => ALKYL.map(([n, r]) => [n, "Poly(" + r + " " + suffix + ")"])
+    .filter(([, name]) => DB.some((x) => x.name === name && x.tgSource)).map(([n, name]) => ({ n, tg: tgOf(name) }));
+  const MA = series("methacrylate"), A = series("acrylate");
+  const BR = [["iso", "Poly(isobutyl methacrylate)", 1], ["tert", "Poly(tert-butyl methacrylate)", 1], ["iso", "Poly(isobutyl acrylate)", 0]]
+    .map(([lab, name, meth]) => ({ lab, tg: tgOf(name), meth }));
+  const X0 = 70, X1 = 470, Y0 = 22, Y1 = 262, NMAX = 13, TMIN = -80, TMAX = 130;
+  const sx = (n) => X0 + n / NMAX * (X1 - X0), sy = (t) => Y1 - (t - TMIN) / (TMAX - TMIN) * (Y1 - Y0);
+  let b = axes(X0, Y0, X1, Y1);
+  for (let t = -60; t <= 120; t += 30) {
+    b += '<line x1="' + X0 + '" y1="' + f1(sy(t)) + '" x2="' + X1 + '" y2="' + f1(sy(t)) + '" stroke="' + BORDER + '" stroke-width="0.6" stroke-dasharray="2 4"/>';
+    b += text(X0 - 8, sy(t) + 4, (t < 0 ? "&#8722;" : "") + Math.abs(t), "small dim", ' text-anchor="end"');
+  }
+  [1, 2, 4, 6, 8, 12].forEach((n) => { b += text(sx(n), Y1 + 16, String(n), "small dim", ' text-anchor="middle"'); });
+  b += text((X0 + X1) / 2, Y1 + 34, "carbons in the linear alkyl ester (methyl = 1, butyl = 4)", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 46, (Y0 + Y1) / 2, "T" + sub("g") + " (&#176;C)", "small dim", ' text-anchor="middle" transform="rotate(-90 ' + (X0 - 46) + " " + f1((Y0 + Y1) / 2) + ')"');
+  // the alpha-methyl gap wherever both esters are in the library (the key states the sizes)
+  const gaps = A.filter((a) => MA.some((m) => m.n === a.n)).map((a) => ({ n: a.n, d: MA.find((m) => m.n === a.n).tg - a.tg, lo: a.tg }));
+  gaps.forEach((g) => {
+    const x = sx(g.n) - 11;
+    b += '<line x1="' + f1(x) + '" y1="' + f1(sy(g.lo + g.d) + 6) + '" x2="' + f1(x) + '" y2="' + f1(sy(g.lo) - 6) + '" stroke="' + DIM + '" stroke-width="1" stroke-dasharray="3 3"/>';
+  });
+  [[MA, VIOLET, "methacrylates"], [A, BLUE, "acrylates"]].forEach(([pts, col, lab]) => {
+    b += '<path d="' + pathOf(pts.map((p) => [sx(p.n), sy(p.tg)])) + '" fill="none" stroke="' + col + '" stroke-width="2"/>';
+    pts.forEach((p) => {
+      b += '<circle cx="' + f1(sx(p.n)) + '" cy="' + f1(sy(p.tg)) + '" r="4.5" fill="' + col + '"/>';
+      b += text(sx(p.n) + 8, sy(p.tg) - 7, (p.tg < 0 ? "&#8722;" : "") + Math.abs(p.tg), "small dim");
+    });
+    const last = pts[pts.length - 1];
+    b += text(sx(last.n) + 8, sy(last.tg) + 14, lab, "small", tint(col));
+  });
+  // branched butyl esters at n = 4: open circles, labelled
+  BR.forEach((p) => {
+    const col = p.meth ? VIOLET : BLUE;
+    b += '<circle cx="' + f1(sx(4)) + '" cy="' + f1(sy(p.tg)) + '" r="4.5" fill="var(--bg)" stroke="' + col + '" stroke-width="2"/>';
+    b += text(sx(4) + 9, sy(p.tg) + 4, p.lab + "-butyl " + (p.tg < 0 ? "&#8722;" : "") + Math.abs(p.tg), "small dim");
+  });
+  const XK = 500, g0 = gaps[0], gl = gaps[gaps.length - 1];
+  b += text(XK, 44, "The &#945;-methyl lifts T" + sub("g"), "small dim") + text(XK, 58, "by " + g0.d + " K for the methyl", "small dim") + text(XK, 72, "esters, " + gl.d + " K by butyl:", "small dim") + text(XK, 86, "the longer the side chain,", "small dim") + text(XK, 100, "the less the backbone", "small dim") + text(XK, 114, "methyl matters.", "small dim");
+  b += text(XK, 146, "Open points: the branched", "small dim") + text(XK, 160, "butyl esters. Same mass,", "small dim") + text(XK, 174, "far stiffer than linear.", "small dim");
+  const tB = BR.find((p) => p.lab === "tert"), nB = MA.find((m) => m.n === 4);
+  const caption = "Lengthen a linear ester and the glass transition falls in both families: the side chain holds neighbouring backbones apart and plasticises the polymer from inside, from " + MA[0].tg + "&nbsp;&deg;C for poly(methyl methacrylate) to " + (MA[MA.length - 1].tg < 0 ? "&minus;" : "") + Math.abs(MA[MA.length - 1].tg) + "&nbsp;&deg;C at lauryl. The backbone &alpha;-methyl that makes a methacrylate raises T<sub>g</sub> by " + g0.d + "&nbsp;K at methyl but only " + gl.d + "&nbsp;K at butyl, because a long side chain already sets how freely the backbone moves. Branching works the other way from length: <em>tert</em>-butyl methacrylate sits at " + tB.tg + "&nbsp;&deg;C, " + (tB.tg - nB.tg) + "&nbsp;K above its linear isomer. Longer esters still, from about twelve carbons, crystallise their side chains, and a single T<sub>g</sub> stops describing them; those are left off.";
+  const source = "Every value is a library entry, sourced to the Sigma-Aldrich table &ldquo;Thermal Transitions of Homopolymers&rdquo; (literature values compiled from various sources) or, for poly(methyl methacrylate) and poly(ethyl acrylate), to Odian, <i>Principles of Polymerization</i>, 4th ed.; the two agree where both list a value. Reported T<sub>g</sub>s vary by several kelvin with molar mass, tacticity and method.";
+  return panel("acrylic-tg", "Glass transition temperature against the number of carbons in the linear alkyl ester for methacrylates and acrylates. Both fall as the ester lengthens; the methacrylate line sits above the acrylate line by " + g0.d + " K at methyl and " + gl.d + " K at butyl. Branched isobutyl and tert-butyl esters sit well above the linear butyl esters.", 680, Y1 + 46, b, caption, source);
+}
+
 // ---- home page gallery ----------------------------------------------------
 // The home page shows every tool as a small version of its link-preview card:
 // the topic label, title and one line of text set as real HTML on the left,
@@ -2079,7 +2135,7 @@ function buildGallery() {
 // Diagrams that live on generated family pages. build-family-pages.js writes
 // those pages whole, so it calls these builders itself rather than having this
 // script patch its output.
-module.exports = { FAMILY_DIAGRAMS: { carothers, ringStrain, blockPhases, dieneTransitions, tacticity, bottlebrush, polyamideMelting, siloxaneChain } };
+module.exports = { FAMILY_DIAGRAMS: { carothers, ringStrain, blockPhases, dieneTransitions, tacticity, bottlebrush, polyamideMelting, siloxaneChain, acrylicTg } };
 
 if (require.main === module) {
   const check = process.argv.includes("--check");
