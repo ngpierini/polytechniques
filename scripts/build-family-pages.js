@@ -371,7 +371,7 @@ function pageHtml(fam, entries) {
   h += '<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">\n';
   h += '<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=133">\n';
+  h += '<link rel="stylesheet" href="style.css?v=134">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 
@@ -483,7 +483,7 @@ function hubHtml(groups) {
   h += '<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">\n';
   h += '<meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)">\n';
   h += '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n';
-  h += '<link rel="stylesheet" href="style.css?v=133">\n';
+  h += '<link rel="stylesheet" href="style.css?v=134">\n';
   h += '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9553775926809206" crossorigin="anonymous"><\/script>\n';
   h += "</head>\n<body>\n\n";
 

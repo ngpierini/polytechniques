@@ -1909,73 +1909,51 @@ function dmaMultiFreq() {
 }
 
 // ---- home page gallery ----------------------------------------------------
-// The home page shows every tool as a card whose picture is that tool's own
-// figure, copied out of its page after the jobs above have written it. So a
-// thumbnail can never drift from the figure it advertises. Labels are dropped
-// (they would be unreadably small) and coordinates rounded, to keep the page
-// light; marker ids are made unique per card.
+// The home page shows every tool as a small version of its link-preview card:
+// the topic label, title and one line of text set as real HTML on the left,
+// and the navy panel from the card on the right. scripts/build-og-images.py
+// draws those panels (og/tile/<slug>.webp) with the cards, so a tile and the
+// preview someone sees when the link is shared are the same drawing.
 const GALLERY = [
-  // href, title, what it does, group, page to take the figure from, figure name (null: first drawing on the page)
-  ["calculator.html", "Calculator", "Recipes for ATRP, RAFT, ROMP and free-radical polymerization", "Start", "index.html", "hero"],
-  ["polymer-search.html", "Structure search", "Identify a polymer from its repeat unit, name or CAS", "Start", "vinyl-polymers.html", "tacticity"],
-  ["polymer-families.html", "Polymer families", "The library by chemistry, acrylates to bottlebrushes", "Start", "block-copolymers.html", "block-phases"],
-  ["copolymer-composition.html", "Copolymer composition", "Composition from feed and reactivity ratios", "Plan", "copolymer-composition.html", "mayo-lewis"],
-  ["dispersity-predictor.html", "Dispersity predictor", "The narrowest &#272; a controlled polymerization can reach", "Plan", "dispersity-predictor.html", "dispersity-terms"],
-  ["mwd-simulator.html", "Distribution simulator", "The whole molecular weight distribution", "Plan", "mwd-simulator.html", "mwd-views"],
-  ["tg-predictor.html", "T<sub>g</sub> predictor", "Glass transition of copolymers and blends", "Plan", "tg-predictor.html", "fox"],
-  ["chain-dimensions.html", "Chain dimensions", "Persistence length, Kuhn length and R<sub>g</sub>", "Plan", "chain-dimensions.html", "worm-like-chain"],
-  ["flory-huggins.html", "Flory&ndash;Huggins", "Binodal, spinodal and cloud point", "Plan", "flory-huggins.html", "fh-phase"],
-  ["calculator.html#sg", "Step-growth and gel point", "Carothers and Flory&ndash;Stockmayer", "Plan", "polyesters.html", "carothers"],
-  ["crosslink-density.html", "Crosslink density", "M<sub>c</sub> from swelling or the rubbery plateau", "Plan", "crosslink-density.html", null],
-  ["hydrogel-mesh-size.html", "Hydrogel mesh size", "Mesh size, and what diffuses through it", "Plan", "hydrogel-mesh-size.html", "mesh"],
-  ["network-formation.html", "Network formation", "Gel point and sol fraction by Macosko&ndash;Miller", "Plan", "network-formation.html", null],
-  ["radical-kinetics.html", "Free-radical kinetics", "Rate and kinetic chain length from the constants", "Plan", "radical-kinetics.html", "radical-steps"],
-  ["thermal-analysis.html", "Thermal analysis", "Live DSC, TGA and DMA curves for 70 materials", "Measure", "thermal-instrument-guide.html", "dsc-reading"],
-  ["thermal-instrument-guide.html", "Running DSC, TGA and DMA", "Standard methods in TRIOS and STARe", "Measure", "thermal-instrument-guide.html", "tga-e1131"],
-  ["tts-master-curve.html", "Time&ndash;temperature superposition", "Master curves and WLF constants", "Measure", "tts-master-curve.html", "tts"],
-  ["gpc-calibration.html", "GPC calibration", "Polystyrene-equivalent to true molecular weight", "Measure", "gpc-calibration.html", "gpc-universal"],
-  ["gpc-trace.html", "GPC trace analyzer", "M<sub>n</sub>, M<sub>w</sub> and &#272; from a raw chromatogram", "Measure", "gpc-trace.html", "gpc-averages"],
-  ["gpc-peak-interpretation.html", "GPC peak interpretation", "Detectors, baselines and shoulders", "Measure", "gpc-peak-interpretation.html", "gpc-detectors"],
-  ["conversion-monitoring.html", "Monitoring conversion", "Aliquots and internal standards by NMR", "Measure", "conversion-monitoring.html", "nmr-conversion"],
-  ["isocyanate-cure.html", "Isocyanate cure", "NCO conversion by DSC, FTIR or T<sub>g</sub>", "Measure", "isocyanate-cure.html", null],
-  ["mechanisms.html", "Polymerization mechanisms", "ATRP, RAFT, ROMP, free-radical and emulsion", "Guide", "mechanisms.html", null],
-  ["air-free-technique.html", "Air-free technique", "Schlenk lines and freeze&ndash;pump&ndash;thaw", "Guide", "air-free-technique.html", null]
+  // href, title, what it does, topic label, panel (og/tile/<slug>.webp)
+  ["calculator.html", "Calculator", "Recipes for ATRP, RAFT, ROMP and free-radical polymerization", "Start here", "calculator"],
+  ["polymer-search.html", "Structure search", "Identify a polymer from its repeat unit, name or CAS", "Start here", "polymer-search"],
+  ["polymer-families.html", "Polymer families", "The library by chemistry, acrylates to bottlebrushes", "Start here", "polymer-families"],
+  ["copolymer-composition.html", "Copolymer composition", "Composition from feed and reactivity ratios", "Copolymers", "copolymer-composition"],
+  ["dispersity-predictor.html", "Dispersity predictor", "The narrowest &#272; a controlled polymerization can reach", "Molecular weight", "dispersity-predictor"],
+  ["mwd-simulator.html", "Distribution simulator", "The whole molecular weight distribution", "Molecular weight", "mwd-simulator"],
+  ["tg-predictor.html", "T<sub>g</sub> predictor", "Glass transition of copolymers and blends", "Thermal", "tg-predictor"],
+  ["chain-dimensions.html", "Chain dimensions", "Persistence length, Kuhn length and R<sub>g</sub>", "Chain physics", "chain-dimensions"],
+  ["flory-huggins.html", "Flory&ndash;Huggins", "Binodal, spinodal and cloud point", "Phase behaviour", "flory-huggins"],
+  ["calculator.html#sg", "Step-growth and gel point", "Carothers and Flory&ndash;Stockmayer", "Step growth", "polyesters"],
+  ["crosslink-density.html", "Crosslink density", "M<sub>c</sub> from swelling or the rubbery plateau", "Networks &amp; gels", "crosslink-density"],
+  ["hydrogel-mesh-size.html", "Hydrogel mesh size", "Mesh size, and what diffuses through it", "Networks &amp; gels", "hydrogel-mesh-size"],
+  ["network-formation.html", "Network formation", "Gel point and sol fraction by Macosko&ndash;Miller", "Networks &amp; gels", "network-formation"],
+  ["radical-kinetics.html", "Free-radical kinetics", "Rate and kinetic chain length from the constants", "Kinetics", "radical-kinetics"],
+  ["thermal-analysis.html", "Thermal analysis", "Live DSC, TGA and DMA curves for 70 materials", "Thermal analysis", "thermal-analysis"],
+  ["thermal-instrument-guide.html", "Running DSC, TGA and DMA", "Standard methods in TRIOS and STARe", "Thermal analysis", "thermal-instrument-guide"],
+  ["tts-master-curve.html", "Time&ndash;temperature superposition", "Master curves and WLF constants", "Rheology", "tts-master-curve"],
+  ["gpc-calibration.html", "GPC calibration", "Polystyrene-equivalent to true molecular weight", "GPC / SEC", "gpc-calibration"],
+  ["gpc-trace.html", "GPC trace analyzer", "M<sub>n</sub>, M<sub>w</sub> and &#272; from a raw chromatogram", "GPC / SEC", "gpc-trace"],
+  ["gpc-peak-interpretation.html", "GPC peak interpretation", "Detectors, baselines and shoulders", "GPC / SEC", "gpc-peak-interpretation"],
+  ["conversion-monitoring.html", "Monitoring conversion", "Aliquots and internal standards by NMR", "Kinetics", "conversion-monitoring"],
+  ["isocyanate-cure.html", "Isocyanate cure", "NCO conversion by DSC, FTIR or T<sub>g</sub>", "Kinetics", "isocyanate-cure"],
+  ["mechanisms.html", "Polymerization mechanisms", "ATRP, RAFT, ROMP, free-radical and emulsion", "Mechanisms", "mechanisms"],
+  ["air-free-technique.html", "Air-free technique", "Schlenk lines and freeze&ndash;pump&ndash;thaw", "Lab technique", "air-free-technique"]
 ];
 
-// the bracketed vinyl repeat unit that headed the home page until the gallery
-const HERO_ART = "<svg class=\"hero-next-unit\" viewBox=\"0 24 560 252\" role=\"img\" aria-label=\"A bracketed repeat unit of a vinyl polymer, with the subscript n.\">\n      <polyline points=\"30,212 82.5,128 135,212 187.5,128 240,212 292.5,128 345,212 397.5,128 450,212\" fill=\"none\" stroke=\"#5b8def\" stroke-width=\"7\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\n      <line x1=\"187.5\" y1=\"128\" x2=\"187.5\" y2=\"72\" stroke=\"#5b8def\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n      <line x1=\"292.5\" y1=\"128\" x2=\"292.5\" y2=\"72\" stroke=\"#5b8def\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n      <line x1=\"397.5\" y1=\"128\" x2=\"397.5\" y2=\"72\" stroke=\"#5b8def\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n      <circle cx=\"187.5\" cy=\"72\" r=\"18\" fill=\"#f9c74f\"/><circle cx=\"292.5\" cy=\"72\" r=\"18\" fill=\"#f472b6\"/><circle cx=\"397.5\" cy=\"72\" r=\"18\" fill=\"#a78bfa\"/>\n      <ellipse cx=\"181\" cy=\"65\" rx=\"5.5\" ry=\"3.4\" fill=\"#fff\" opacity=\"0.55\" transform=\"rotate(-35 181 65)\"/><ellipse cx=\"286\" cy=\"65\" rx=\"5.5\" ry=\"3.4\" fill=\"#fff\" opacity=\"0.55\" transform=\"rotate(-35 286 65)\"/><ellipse cx=\"391\" cy=\"65\" rx=\"5.5\" ry=\"3.4\" fill=\"#fff\" opacity=\"0.55\" transform=\"rotate(-35 391 65)\"/>\n      <g fill=\"#5b8def\"><circle cx=\"30\" cy=\"212\" r=\"8\"/><circle cx=\"82.5\" cy=\"128\" r=\"8\"/><circle cx=\"135\" cy=\"212\" r=\"8\"/><circle cx=\"187.5\" cy=\"128\" r=\"8\"/><circle cx=\"240\" cy=\"212\" r=\"8\"/><circle cx=\"292.5\" cy=\"128\" r=\"8\"/><circle cx=\"345\" cy=\"212\" r=\"8\"/><circle cx=\"397.5\" cy=\"128\" r=\"8\"/><circle cx=\"450\" cy=\"212\" r=\"8\"/></g>\n      <g fill=\"none\" stroke=\"var(--text)\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M177,40 L161,40 L161,244 L177,244\"/><path d=\"M408,40 L424,40 L424,244 L408,244\"/></g>\n      <text x=\"434\" y=\"258\" font-size=\"30\" font-style=\"italic\" fill=\"var(--text)\">n</text>\n    </svg>";
-
-function galleryThumb(page, fig, n) {
-  const html = fs.readFileSync(path.join(ROOT, page), "utf8");
-  let svg;
-  if (fig === "hero") svg = [HERO_ART];
-  else if (fig) svg = html.match(new RegExp('data-figure="' + fig + '">\\s*(<svg[\\s\\S]*?<\\/svg>)'));
-  else svg = html.match(/<svg class="diagram-svg"[\s\S]*?<\/svg>/);
-  if (!svg) throw new Error("gallery: no figure '" + fig + "' in " + page);
-  // line endings normalised here, or a Windows checkout writes stray CRs that a
-  // Linux CI run regenerates without, and the check reports the page stale
-  let s = (svg[1] || svg[0]).replace(/\r\n?/g, "\n");
-  s = s.replace(/<text[\s\S]*?<\/text>/g, "");
-  s = s.replace(/^<svg[^>]*>/, (tag) => {
-    const vb = (tag.match(/viewBox="([^"]+)"/) || [])[1];
-    if (!vb) throw new Error("gallery: figure without a viewBox in " + page);
-    return '<svg class="tile-svg" viewBox="' + vb + '" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">';
-  });
-  s = s.replace(/\sclass="[^"]*"/g, (m, i) => (m.indexOf("tile-svg") !== -1 ? m : ""));
-  // round path and polygon coordinates; every other attribute keeps its value
-  s = s.replace(/\s(d|points)="([^"]*)"/g, (m, k, v) => " " + k + '="' + v.replace(/-?\d+\.\d+/g, (x) => String(Math.round(+x))) + '"');
-  // unique ids per card
-  s = s.replace(/\sid="([^"]+)"/g, ' id="g' + n + '-$1"').replace(/url\(#([^)]+)\)/g, "url(#g" + n + "-$1)");
-  return s;
-}
-
 function buildGallery() {
-  const items = GALLERY.map(([href, title, sub, group, page, fig], i) =>
-    '    <a class="tile" href="' + href + '">\n' +
-    '      <span class="tile-media">' + galleryThumb(page, fig, i) + "</span>\n" +
-    '      <span class="tile-meta"><span class="tile-title">' + title + '</span><span class="tile-group">' + group + "</span></span>\n" +
-    '      <span class="tile-sub">' + sub + "</span>\n" +
-    "    </a>").join("\n");
+  const seen = new Set();
+  const items = GALLERY.map(([href, title, sub, label, art]) => {
+    if (!fs.existsSync(path.join(ROOT, "og", "tile", art + ".webp")))
+      throw new Error("gallery: og/tile/" + art + ".webp is missing; run py -3 scripts/build-og-images.py");
+    if (seen.has(art)) throw new Error("gallery: two tiles share the panel " + art);
+    seen.add(art);
+    return '    <a class="tile" href="' + href + '">\n' +
+      '      <span class="tile-text"><span class="tile-label">' + label + '</span><span class="tile-title">' + title + '</span><span class="tile-sub">' + sub + "</span></span>\n" +
+      '      <img class="tile-art" src="og/tile/' + art + '.webp" width="400" height="502" alt="" loading="lazy" decoding="async">\n' +
+      "    </a>";
+  }).join("\n");
   return "<!-- gallery:start -->\n  <section class=\"tile-grid\" aria-label=\"Every tool\">\n" + items + "\n  </section>\n  <!-- gallery:end -->";
 }
 
