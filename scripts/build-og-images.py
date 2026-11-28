@@ -14,7 +14,8 @@ Fonts are bundled in brand/fonts (SIL OFL), so this runs on any machine.
 
 Run:  py -3 scripts/build-og-images.py            (all cards)
       py -3 scripts/build-og-images.py gpc-trace  (just the named slugs)
-Writes og/<page>.png for each page in sitemap.xml and og/site.png.
+Writes og/<page>.png for each page in sitemap.xml and og/site.png, and the navy
+panel of each alone as og/tile/<page>.webp for the home page gallery.
 """
 import math
 import os
@@ -25,6 +26,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "og")
+TILES = os.path.join(OUT, "tile")   # navy panels alone, for the home page
+TILE = (400, 502)                  # 500 x 628 panel at 0.8x: sharp at 2x DPR in a ~200px column
 FONTS = os.path.join(ROOT, "brand", "fonts")
 LOGO = os.path.join(ROOT, "brand", "logo-horizontal.png")
 
@@ -989,6 +992,10 @@ def card(slug, title, label, motif, path):
     panel(d)
     MOTIFS[motif](d)
 
+    # the navy panel on its own: the home page gallery sets it beside real text
+    art = im.crop((SPLIT * S, 0, W * S, H * S)).resize(TILE, Image.LANCZOS)
+    art.save(os.path.join(TILES, slug + ".webp"), quality=82, method=6)
+
     # logo
     lg = logo(48)
     im.paste(lg, P(64, 64), lg)
@@ -1038,7 +1045,7 @@ def check_unique():
 
 
 def main():
-    os.makedirs(OUT, exist_ok=True)
+    os.makedirs(TILES, exist_ok=True)
     only = set(sys.argv[1:])
     n = 0
     check_unique()

@@ -3808,10 +3808,10 @@ p, li, .guide-note, .hint {
    ===================================================================== */
 :root { --side: 268px; --rail: 232px; --rail-gap: 44px; --col: 1040px;
   /* logo colours (brand/README.md): orange ring, white P, navy ink */
-  --logo-accent: #EA580C; --logo-p: #FFFFFF; --logo-ink: #13212F; --logo-ring: rgba(255, 255, 255, 0.35); }
+  --logo-accent: #EA580C; --label-accent: #C2410C; --logo-p: #FFFFFF; --logo-ink: #13212F; --logo-ring: rgba(255, 255, 255, 0.35); }
 /* the brand's dark-background variant: light orange ring, navy P, white ink */
-:root[data-theme="dark"] { --logo-accent: #FB923C; --logo-p: #13212F; --logo-ink: #FFFFFF; --logo-ring: transparent; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --logo-accent: #FB923C; --logo-p: #13212F; --logo-ink: #FFFFFF; --logo-ring: transparent; } }
+:root[data-theme="dark"] { --logo-accent: #FB923C; --label-accent: #FB923C; --logo-p: #13212F; --logo-ink: #FFFFFF; --logo-ring: transparent; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --logo-accent: #FB923C; --label-accent: #FB923C; --logo-p: #13212F; --logo-ink: #FFFFFF; --logo-ring: transparent; } }
 .brand-lockup { display: block; height: 28px; width: auto; flex: none; }
 .brand-tm { font-size: 0.6rem; color: var(--text-dim); align-self: flex-start; margin-left: -6px; }
 
@@ -4119,31 +4119,82 @@ p, li, .guide-note, .hint {
   .lead-note, .lead-text { grid-column: 1; }
 }
 
+/* Each tool is a small version of its link-preview card (og/*.png): topic
+   label, title and one line on the left, the card's navy drawing on the right,
+   an orange rule under the text. The panel is 500 of the card's 1200 px. */
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("fonts/space-grotesk-700.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 .tile-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(28px, 3vw, 48px) 20px;
+  gap: 20px;
 }
 @media screen and (min-width: 2300px) { .tile-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 1100px) { .tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 620px) { .tile-grid { grid-template-columns: 1fr; } }
-.tile { display: block; color: var(--text); text-decoration: none; }
-.tile-media {
-  display: block;
-  aspect-ratio: 16 / 10;
+.tile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 41.667%;
   background: var(--card-bg);
   border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
   overflow: hidden;
-  padding: 6%;
 }
-.tile-svg { display: block; width: 100%; height: 100%; }
-.tile:hover .tile-media, .tile:focus-visible .tile-media { border-color: var(--primary); }
-.tile:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
-.tile-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 16px; }
-.tile-title { font-family: "Iowan Old Style", "Palatino Linotype", Cambria, Charter, Georgia, serif; font-size: clamp(1.3rem, 1.6vw, 1.75rem); font-weight: 500; letter-spacing: -0.012em; line-height: 1.15; }
-.tile-group { flex: none; font-size: var(--fs-2xs); color: var(--text-dim); }
-.tile-sub { display: block; margin-top: 4px; color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.4; }
-.tile:hover .tile-title { color: var(--primary); }
+.tile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(16px, 1.5vw, 26px) clamp(16px, 1.5vw, 26px) clamp(14px, 1.2vw, 20px);
+  border-bottom: 4px solid var(--logo-accent);
+}
+.tile-label {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--label-accent);
+}
+.tile-label::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 3px;
+  margin-top: 10px;
+  background: var(--logo-accent);
+}
+.tile-title {
+  margin-top: 14px;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.15rem, 1.3vw, 1.6rem);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--logo-ink);
+}
+.tile-sub {
+  margin-top: auto;
+  padding-top: 12px;
+  color: var(--text-dim);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+}
+.tile-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #13212F;
+}
+.tile:hover, .tile:focus-visible { border-color: var(--logo-accent); }
+.tile:hover .tile-title { color: var(--label-accent); }
+.tile:focus-visible { outline: 2px solid var(--logo-accent); outline-offset: 3px; }
 
 .more-tools { border-top: 1px solid var(--border); padding-top: 22px; }
 .more-tools h2 { margin: 0 0 12px; font-size: 1.08rem; }
