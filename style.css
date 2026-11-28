@@ -4015,63 +4015,13 @@ p, li, .guide-note, .hint {
 
 /* ---- home page ---- */
 @media screen and (min-width: 1200px) {
-  body.has-sidebar .hero-next { padding: 56px 40px 32px; }
-  body.has-sidebar .hero-next-inner,
-  body.has-sidebar .home-body { max-width: 1320px; }
   body.has-sidebar .home-body { padding: 0 40px; }
   body.has-sidebar .home-grid--four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   body.has-sidebar .home-grid { grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); }
 }
 @media print { .side-nav { display: none !important; } body.has-sidebar { padding-left: 0 !important; } }
 
-/* ---- home page, 2026 revamp ----
-   The hero states what the site is; three start cards cover the three ways
-   in; then a directory of every tool in three columns, read like the
-   contents of a handbook rather than a wall of equal tiles. */
-.start-card:focus-visible, .home-directory a:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-
-.home-start {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-  gap: 18px;
-}
-.start-card {
-  display: block;
-  padding: 24px 26px 26px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--text);
-  text-decoration: none;
-  border-top: 3px solid var(--primary);
-}
-.start-card:hover { border-color: var(--primary); }
-.start-kicker { display: block; font-size: var(--fs-xs); font-weight: 600; color: var(--primary); margin-bottom: 8px; }
-.start-card h2 { margin: 0 0 8px; font-size: 1.32rem; line-height: 1.2; }
-.start-card p { margin: 0; color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.55; }
-
-.home-directory {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-  gap: 0 40px;
-  padding: 28px 30px 18px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-.dir-col h2 {
-  margin: 0 0 6px;
-  padding-bottom: 10px;
-  font-size: 1.08rem;
-  border-bottom: 1px solid var(--border);
-}
-.dir-col ul { list-style: none; margin: 0 0 18px; padding: 0; }
-.dir-col li + li { border-top: 1px solid var(--border); }
-.dir-col a { display: block; padding: 10px 0; text-decoration: none; color: var(--text); }
-.dir-title { display: block; font-weight: 600; font-size: var(--fs-base); }
-.dir-desc { display: block; margin-top: 2px; color: var(--text-dim); font-size: var(--fs-xs); line-height: 1.45; }
-.dir-col a:hover .dir-title { color: var(--primary); }
-
+/* ---- home page: the game beside the daily trivia ---- */
 .home-duo {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
@@ -4081,5 +4031,125 @@ p, li, .guide-note, .hint {
 .home-duo > .trivia { max-width: none; margin: 0; padding: 0; }
 .home-duo .arcade { grid-template-columns: minmax(min(200px, 100%), 340px) 1fr; }
 @media (max-width: 1100px) { .home-duo { grid-template-columns: 1fr; } }
-@media (max-width: 760px) { .home-duo .arcade { grid-template-columns: 1fr; } .home-directory { padding: 20px 18px 8px; } }
+@media (max-width: 760px) { .home-duo .arcade { grid-template-columns: 1fr; } }
 @media screen and (min-width: 1200px) { body.has-sidebar .hot-papers-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* =====================================================================
+   Full width (2026). Above 1200px nothing is capped any more: every page
+   runs edge to edge beside the sidebar with fluid gutters, the way a
+   catalogue page fills a wide screen rather than floating in the middle.
+   ===================================================================== */
+:root { --gutter: clamp(24px, 2.4vw, 44px); }
+@media screen and (min-width: 1200px) {
+  body.has-sidebar #guide,
+  body.has-sidebar #calc-guide,
+  body.has-sidebar #app,
+  body.has-sidebar.calc-wide #app,
+  body.has-sidebar.calc-wide #calc-guide,
+  body.has-sidebar .topbar-inner,
+  body.has-sidebar .footer,
+  body.has-sidebar .tabs,
+  body.has-sidebar .home-body { max-width: none; }
+  body.has-sidebar #guide,
+  body.has-sidebar #calc-guide,
+  body.has-sidebar #app,
+  body.has-sidebar .tabs,
+  body.has-sidebar .footer,
+  body.has-sidebar .home-body { padding-left: var(--gutter); padding-right: var(--gutter); }
+  body.has-sidebar .topbar { padding-left: var(--gutter); padding-right: var(--gutter); }
+  body.has-sidebar .topbar-inner { padding: 0; }
+}
+@media screen and (min-width: 1440px) {
+  body.has-rail .guide-shell {
+    grid-template-columns: minmax(0, 1fr) var(--rail);
+    padding: 0 var(--gutter);
+  }
+  body.has-rail .topbar-inner,
+  body.has-rail .footer { max-width: none; }
+  body.has-rail .footer { padding: 0 var(--gutter); }
+}
+
+/* On a wide screen a card's heading moves into its own left column and the
+   content takes the rest, label beside text, so a full-width card is filled
+   rather than carrying a ragged paragraph down its left side. */
+@media screen and (min-width: 1500px) {
+  #guide > .card {
+    display: grid;
+    grid-template-columns: minmax(min(200px, 100%), 22%) minmax(0, 1fr);
+    column-gap: clamp(28px, 3vw, 56px);
+    align-items: start;
+  }
+  #guide > .card > * { grid-column: 2; min-width: 0; }
+  #guide > .card > h3 {
+    grid-column: 1;
+    grid-row: 1 / span 60;
+    position: sticky;
+    top: 24px;
+    margin: 0;
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+  #guide .card > p,
+  #guide .card > .guide-note,
+  #guide .card > ul.guide-list,
+  #guide .card > ol.guide-steps { max-width: 88ch; }
+}
+
+/* ---- home: the lead and the gallery ---- */
+.lead {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 20px;
+  row-gap: 28px;
+  padding: clamp(28px, 4vw, 64px) 0 clamp(20px, 2.6vw, 40px);
+}
+.lead-title {
+  grid-column: 1 / -1;
+  margin: 0;
+  max-width: 16ch;
+  font-size: clamp(2.4rem, 5.2vw, 5.4rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+.lead-note { grid-column: 1; margin: 0; max-width: 30ch; color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.5; }
+.lead-text { grid-column: 2 / span 2; margin: 0; max-width: 72ch; font-size: var(--fs-md); line-height: 1.6; }
+@media (max-width: 900px) {
+  .lead { grid-template-columns: 1fr; }
+  .lead-note, .lead-text { grid-column: 1; }
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(28px, 3vw, 48px) 20px;
+}
+@media screen and (min-width: 2300px) { .tile-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 1100px) { .tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .tile-grid { grid-template-columns: 1fr; } }
+.tile { display: block; color: var(--text); text-decoration: none; }
+.tile-media {
+  display: block;
+  aspect-ratio: 16 / 10;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  padding: 6%;
+}
+.tile-svg { display: block; width: 100%; height: 100%; }
+.tile:hover .tile-media, .tile:focus-visible .tile-media { border-color: var(--primary); }
+.tile:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+.tile-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 16px; }
+.tile-title { font-family: "Iowan Old Style", "Palatino Linotype", Cambria, Charter, Georgia, serif; font-size: clamp(1.3rem, 1.6vw, 1.75rem); font-weight: 500; letter-spacing: -0.012em; line-height: 1.15; }
+.tile-group { flex: none; font-size: var(--fs-2xs); color: var(--text-dim); }
+.tile-sub { display: block; margin-top: 4px; color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.4; }
+.tile:hover .tile-title { color: var(--primary); }
+
+.more-tools { border-top: 1px solid var(--border); padding-top: 22px; }
+.more-tools h2 { margin: 0 0 12px; font-size: 1.08rem; }
+.more-tools ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); gap: 4px 20px; }
+.more-tools a { display: block; padding: 8px 0; color: var(--text); text-decoration: none; }
+.more-tools .dir-title { display: block; font-weight: 600; font-size: var(--fs-base); }
+.more-tools .dir-desc { display: block; margin-top: 2px; color: var(--text-dim); font-size: var(--fs-xs); line-height: 1.45; }
+.more-tools a:hover .dir-title { color: var(--primary); }
+.more-tools a:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
