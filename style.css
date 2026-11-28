@@ -13,11 +13,11 @@
      ground reads as an application chrome; a warm one reads as paper, which is
      what a page of chemistry that people read for minutes at a time should
      look like. The hues are close enough that nothing else had to move. */
-  --bg: #faf9f7;
+  --bg: #f5f6f8;
   --card-bg: #ffffff;
-  --text: #1a1917;
+  --text: #171a21;
   --text-dim: #5f6470;
-  --border: #e6e2dc;
+  --border: #e1e4ea;
   --primary: #2563eb;
   /* Label colour for a filled --primary surface. White is 5.17:1 on the
      light #2563eb but only 3.23:1 on the lighter dark-theme #5b8def, so
@@ -81,11 +81,11 @@
    chosen light with the toggle kept the old cool one - the same site in two
    different skins depending on a setting nobody would connect to it. */
 :root[data-theme="light"] {
-  --bg: #faf9f7;
+  --bg: #f5f6f8;
   --card-bg: #ffffff;
-  --text: #1f2328;
+  --text: #171a21;
   --text-dim: #5f6470;
-  --border: #e6e2dc;
+  --border: #e1e4ea;
   --primary: #2563eb;
   --on-primary: #ffffff;
   --amber-ink: #88672a;
@@ -3796,3 +3796,297 @@ p, li, .guide-note, .hint {
   white-space: pre;
   overflow-wrap: normal;
 }
+
+/* =====================================================================
+   Wide-screen shell (2026 revamp)
+   Every page used to be one 1080px column, so on a 1920px screen 840px of
+   it was blank margin. Above 1200px the site now has three parts: a fixed
+   index of every tool on the left (nav.js builds it), the page in the
+   middle, and above 1440px a sticky "On this page" contents rail on the
+   right of every long guide. Below 1200px nothing here applies and the
+   phone and tablet layouts are exactly as they were.
+   ===================================================================== */
+:root { --side: 268px; --rail: 232px; --rail-gap: 44px; --col: 1040px; }
+
+/* the mark, wherever it appears */
+.brand-logo { display: block; flex: none; color: var(--text); }
+.brand-mark { width: 28px; height: 28px; border-radius: 0; }
+.brand-name { font-family: "Iowan Old Style", "Palatino Linotype", Cambria, Charter, Georgia, serif; font-weight: 600; font-size: 1.06rem; }
+.brand-name sup, .side-brand sup { font-size: 0.5em; font-weight: 400; color: var(--text-dim); margin-left: 1px; vertical-align: super; }
+
+.side-nav { display: none; }
+
+@media screen and (min-width: 1200px) {
+  body.has-sidebar { padding-left: var(--side); }
+  .side-nav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--side);
+    z-index: 60;
+    background: var(--card-bg);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding: 18px 14px 28px;
+  }
+  /* the sidebar carries the brand and the index, so the header no longer
+     needs its own brand link or the chip strip */
+  body.has-sidebar .site-nav,
+  body.has-sidebar .brand-link { display: none; }
+
+  /* more room for the page itself */
+  body.has-sidebar #guide,
+  body.has-sidebar #calc-guide,
+  body.has-sidebar #app,
+  body.has-sidebar .topbar-inner,
+  body.has-sidebar .footer,
+  body.has-sidebar .tabs { max-width: 1200px; }
+  body.has-sidebar.calc-wide #app,
+  body.has-sidebar.calc-wide #calc-guide { max-width: 1320px; }
+  body.has-sidebar .topbar { padding: 26px 32px 22px; }
+  body.has-sidebar .topbar h1 { font-size: 2.15rem; letter-spacing: -0.012em; }
+}
+
+.side-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 10px 18px;
+  color: var(--text);
+  text-decoration: none;
+  font-family: "Iowan Old Style", "Palatino Linotype", Cambria, Charter, Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+.side-brand .brand-logo { width: 32px; height: 32px; }
+.side-brand:hover span { color: var(--primary); }
+
+.side-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0 0 20px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-dim);
+  font: inherit;
+  font-size: var(--fs-sm);
+  text-align: left;
+  cursor: pointer;
+}
+.side-search svg { width: 16px; height: 16px; flex: none; }
+.side-search kbd {
+  margin-left: auto;
+  font-family: inherit;
+  font-size: var(--fs-3xs);
+  font-weight: 600;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  background: var(--card-bg);
+}
+.side-search:hover { border-color: var(--primary); color: var(--text); }
+.side-search:focus-visible, .side-group a:focus-visible, .side-brand:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.side-group { margin: 0 0 18px; }
+.side-group-label {
+  margin: 0 10px 6px;
+  font-size: var(--fs-2xs);
+  font-weight: 650;
+  color: var(--text-dim);
+}
+.side-group ul { list-style: none; margin: 0; padding: 0; }
+.side-group a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+}
+.side-group a:hover { background: var(--primary-dim); color: var(--primary); }
+.side-group a[aria-current="page"] {
+  background: var(--primary-dim);
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+/* ---- the contents rail ---- */
+.section-nav.rail-only { display: none; }
+
+@media screen and (min-width: 1440px) {
+  body.has-rail .guide-shell {
+    display: grid;
+    grid-template-columns: minmax(0, var(--col)) var(--rail);
+    column-gap: var(--rail-gap);
+    justify-content: center;
+    padding: 0 32px;
+  }
+  body.has-rail .guide-shell > #guide {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: none;
+    width: 100%;
+    margin: 24px 0 44px;
+    padding: 0;
+  }
+  body.has-rail .guide-shell > .section-nav,
+  body.has-rail .guide-shell > .section-nav.rail-only {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    max-width: none;
+    max-height: calc(100vh - 48px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    margin: 24px 0 0;
+    padding: 2px 0 2px 14px;
+    background: none;
+    border: none;
+    border-left: 1px solid var(--border);
+    z-index: 1;
+  }
+  body.has-rail .section-nav::before {
+    content: "On this page";
+    margin: 0 0 8px 8px;
+    font-size: var(--fs-2xs);
+    font-weight: 650;
+    color: var(--text-dim);
+  }
+  body.has-rail .section-nav a {
+    white-space: normal;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+  body.has-rail .section-nav a.section-nav-current {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-weight: 650;
+    box-shadow: inset 2px 0 0 var(--primary);
+    border-radius: 0;
+    margin-left: -15px;
+    padding-left: 23px;
+  }
+  /* header and footer line up with the page column, not the viewport */
+  body.has-rail .topbar-inner,
+  body.has-rail .footer { max-width: calc(var(--col) + var(--rail-gap) + var(--rail)); }
+  body.has-rail .footer { padding: 0 32px; }
+  #guide > .card, #calc-guide > .card { scroll-margin-top: 24px; }
+}
+
+/* Prose keeps a reading measure even in a wide card; tables, figures and
+   tools still take the full width. */
+@media screen and (min-width: 1200px) {
+  #guide .card > p,
+  #guide .card > .guide-note,
+  #guide .card > ul.guide-list,
+  #guide .card > ol.guide-steps { max-width: 82ch; }
+}
+
+/* ---- home page ---- */
+@media screen and (min-width: 1200px) {
+  body.has-sidebar .hero-next { padding: 56px 40px 32px; }
+  body.has-sidebar .hero-next-inner,
+  body.has-sidebar .home-body { max-width: 1320px; }
+  body.has-sidebar .home-body { padding: 0 40px; }
+  body.has-sidebar .home-grid--four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  body.has-sidebar .home-grid { grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); }
+}
+@media print { .side-nav { display: none !important; } body.has-sidebar { padding-left: 0 !important; } }
+
+/* ---- home page, 2026 revamp ----
+   The hero states what the site is; three start cards cover the three ways
+   in; then a directory of every tool in three columns, read like the
+   contents of a handbook rather than a wall of equal tiles. */
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.btn-primary, .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  text-decoration: none;
+  border: 1px solid var(--primary);
+}
+.btn-primary { background: var(--primary); color: var(--on-primary); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-secondary { background: transparent; color: var(--primary); border-color: var(--border); }
+.btn-secondary:hover { border-color: var(--primary); }
+.btn-primary:focus-visible, .btn-secondary:focus-visible, .start-card:focus-visible, .home-directory a:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.home-start {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 18px;
+}
+.start-card {
+  display: block;
+  padding: 24px 26px 26px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  text-decoration: none;
+  border-top: 3px solid var(--primary);
+}
+.start-card:hover { border-color: var(--primary); }
+.start-kicker { display: block; font-size: var(--fs-xs); font-weight: 600; color: var(--primary); margin-bottom: 8px; }
+.start-card h2 { margin: 0 0 8px; font-size: 1.32rem; line-height: 1.2; }
+.start-card p { margin: 0; color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.55; }
+
+.home-directory {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 0 40px;
+  padding: 28px 30px 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.dir-col h2 {
+  margin: 0 0 6px;
+  padding-bottom: 10px;
+  font-size: 1.08rem;
+  border-bottom: 1px solid var(--border);
+}
+.dir-col ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.dir-col li + li { border-top: 1px solid var(--border); }
+.dir-col a { display: block; padding: 10px 0; text-decoration: none; color: var(--text); }
+.dir-title { display: block; font-weight: 600; font-size: var(--fs-base); }
+.dir-desc { display: block; margin-top: 2px; color: var(--text-dim); font-size: var(--fs-xs); line-height: 1.45; }
+.dir-col a:hover .dir-title { color: var(--primary); }
+
+.home-duo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 22px;
+  align-items: stretch;
+}
+.home-duo > .trivia { max-width: none; margin: 0; padding: 0; }
+.home-duo .arcade { grid-template-columns: minmax(min(200px, 100%), 340px) 1fr; }
+@media (max-width: 1100px) { .home-duo { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .home-duo .arcade { grid-template-columns: 1fr; } .home-directory { padding: 20px 18px 8px; } }
+@media screen and (min-width: 1200px) { body.has-sidebar .hot-papers-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

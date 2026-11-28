@@ -34,6 +34,97 @@
     ["glossary.html", "📖 Glossary"]
   ];
 
+  // ---- Sidebar index (wide screens) ----
+  // On a screen wide enough to spare it, every page carries the whole site in
+  // a fixed column on the left, grouped the way the home page groups it, so
+  // the next tool is one click away instead of a scroll through a chip strip.
+  // Below 1200px the column is not shown and the chip strip above does the job.
+  var SIDEBAR_GROUPS = [
+    ["Start", [
+      ["calculator.html", "Calculator"],
+      ["polymer-search.html", "Structure search"],
+      ["polymer-families.html", "Polymer families"]
+    ]],
+    ["Plan a polymerization", [
+      ["copolymer-composition.html", "Copolymer composition"],
+      ["dispersity-predictor.html", "Dispersity predictor"],
+      ["mwd-simulator.html", "Distribution simulator"],
+      ["tg-predictor.html", "T<sub>g</sub> predictor"],
+      ["chain-dimensions.html", "Chain dimensions"],
+      ["flory-huggins.html", "Flory&ndash;Huggins phase behaviour"],
+      ["calculator.html#sg", "Step-growth and gel point"],
+      ["crosslink-density.html", "Crosslink density"],
+      ["hydrogel-mesh-size.html", "Hydrogel mesh size"],
+      ["network-formation.html", "Network formation"],
+      ["radical-kinetics.html", "Free-radical kinetics"],
+      ["recipe-scaling.html", "Recipe scaling"]
+    ]],
+    ["Characterize", [
+      ["thermal-analysis.html", "Thermal analysis"],
+      ["thermal-instrument-guide.html", "Running DSC, TGA and DMA"],
+      ["tts-master-curve.html", "Time&ndash;temperature superposition"],
+      ["gpc-calibration.html", "GPC calibration"],
+      ["gpc-trace.html", "GPC trace analyzer"],
+      ["gpc-peak-interpretation.html", "GPC peak interpretation"],
+      ["end-group-analysis.html", "End-group analysis"],
+      ["conversion-monitoring.html", "Monitoring conversion"],
+      ["isocyanate-cure.html", "Isocyanate cure"]
+    ]],
+    ["Bench guides", [
+      ["mechanisms.html", "Polymerization mechanisms"],
+      ["air-free-technique.html", "Air-free technique"],
+      ["glossary.html", "Glossary"]
+    ]],
+    ["About", [
+      ["whats-new.html", "What&rsquo;s new"],
+      ["founder.html", "About the author"]
+    ]]
+  ];
+  // The mark: a repeat unit, [ ]n, with a monomer bead joining the chain. The
+  // brackets take the link colour and the chain the text colour, so it follows
+  // the theme; favicon.svg is the same drawing on a tile.
+  var LOGO_SVG =
+    '<svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">' +
+    '<path d="M19 13H12V51H19M45 13H52V51H45" fill="none" stroke="var(--primary)" stroke-width="5" stroke-linecap="square"/>' +
+    '<path d="M4 40 22 24 32 36 42 24 60 40" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>' +
+    '<circle cx="32" cy="36" r="6" fill="#f5b83d" stroke="var(--card-bg)" stroke-width="2"/>' +
+    "</svg>";
+  window.PT_LOGO_SVG = LOGO_SVG;
+  var NO_SIDEBAR = ["polymer-chain-game", "404", "diagnostics"];
+
+  function buildSidebar(current) {
+    if (document.querySelector(".side-nav") || NO_SIDEBAR.indexOf(current) !== -1) return;
+    var aside = document.createElement("aside");
+    aside.className = "side-nav";
+    aside.setAttribute("aria-label", "All tools and guides");
+    var h = '<a class="side-brand" href="/">' + LOGO_SVG + '<span>PolyTechniques<sup>&trade;</sup></span></a>' +
+      '<button type="button" class="side-search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' +
+      '<span>Search tools</span><kbd>Ctrl K</kbd></button>';
+    var hash = (location.hash || "").toLowerCase();
+    SIDEBAR_GROUPS.forEach(function (g) {
+      h += '<div class="side-group"><p class="side-group-label">' + g[0] + "</p><ul>";
+      g[1].forEach(function (l) {
+        var href = l[0], here = pageKey(href) === current;
+        // calculator.html and calculator.html#sg are one page; mark the step-growth
+        // entry only when that tab is the one open
+        if (here && href.indexOf("#") !== -1) here = hash === href.slice(href.indexOf("#")).toLowerCase();
+        else if (here && current === "calculator" && hash === "#sg") here = false;
+        h += '<li><a href="' + href + '"' + (here ? ' aria-current="page"' : "") + ">" + l[1] + "</a></li>";
+      });
+      h += "</ul></div>";
+    });
+    aside.innerHTML = h;
+    aside.querySelector(".side-search").addEventListener("click", function () { openPalette(); });
+    document.body.insertBefore(aside, document.body.firstChild);
+    document.body.classList.add("has-sidebar");
+    var cur = aside.querySelector('[aria-current="page"]');
+    if (cur) {
+      // scroll only when the current entry would otherwise be out of sight,
+      // so the brand at the top stays put on most pages
+      if (cur.offsetTop + cur.offsetHeight > aside.clientHeight - 24) aside.scrollTop = cur.offsetTop - aside.clientHeight / 2;
+    }
+  }
+
   // ---- Inline validation feedback for numeric inputs, site-wide ----
   // The number inputs already carry min/max, so lean on the browser's own
   // validity check: red-flag the field and surface the native message right
@@ -794,8 +885,8 @@
     a.className = "brand-link";
     a.href = "/";
     a.innerHTML =
-      '<img src="favicon.svg" alt="" class="brand-mark">' +
-      '<span class="brand-name"><span class="brand-poly">Poly</span>Techniques<sup>&trade;</sup></span>';
+      LOGO_SVG.replace('class="brand-logo"', 'class="brand-logo brand-mark"') +
+      '<span class="brand-name">PolyTechniques<sup>&trade;</sup></span>';
 
     wrap.appendChild(btn);
     wrap.appendChild(a);
@@ -807,6 +898,7 @@
     addLegalNotice();
     addAdSlot();
     watchTables();
+    buildSidebar(pageKey(location.pathname));
 
     var topbar = document.querySelector("header.topbar");
     if (!topbar) return;
@@ -916,14 +1008,16 @@
     // readability, but "current" has already had the extension stripped, so a
     // direct indexOf never matched and this table of contents had never once
     // rendered - on any page, since the feature was added.
-    if (TOC_PAGES.map(pageKey).indexOf(current) === -1) return;
+    var listed = TOC_PAGES.map(pageKey).indexOf(current) !== -1;
     var main = document.getElementById("guide");
     if (!main) return;
     var headings = main.querySelectorAll(":scope > .card > h3");
     if (headings.length < 3) return;
 
     var bar = document.createElement("nav");
-    bar.className = "section-nav";
+    // Pages off the list never had the strip, and keep not having it on a
+    // narrow screen; they get only the rail, which takes no reading space.
+    bar.className = "section-nav" + (listed ? "" : " rail-only");
     bar.setAttribute("aria-label", "On this page");
 
     var links = [];
@@ -941,7 +1035,14 @@
       links.push({ a: a, card: card });
     });
 
-    document.body.insertBefore(bar, main);
+    // Wrap the contents and the page in one shell, so that on a wide screen the
+    // contents can sit in a sticky column beside the page rather than above it.
+    var shell = document.createElement("div");
+    shell.className = "guide-shell";
+    main.parentNode.insertBefore(shell, main);
+    shell.appendChild(bar);
+    shell.appendChild(main);
+    document.body.classList.add("has-rail");
     enableWheelScroll(bar);
 
     // Scroll-spy: highlight the section currently in view
@@ -955,8 +1056,9 @@
           if (currentLink) currentLink.classList.remove("section-nav-current");
           hit.a.classList.add("section-nav-current");
           currentLink = hit.a;
-          // keep the highlighted chip visible in the strip
+          // keep the highlighted entry visible: across in the strip, down in the rail
           bar.scrollLeft = hit.a.offsetLeft - (bar.clientWidth - hit.a.offsetWidth) / 2;
+          if (bar.scrollHeight > bar.clientHeight) bar.scrollTop = hit.a.offsetTop - bar.clientHeight / 2;
         });
       }, { rootMargin: "-15% 0px -70% 0px" });
       links.forEach(function (l) { observer.observe(l.card); });
