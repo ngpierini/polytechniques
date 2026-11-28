@@ -348,13 +348,13 @@ function pageHtml(fam, entries) {
   h += '<meta property="og:title" content="' + esc(fam.title) + ': PolyTechniques">\n';
   h += '<meta property="og:description" content="' + esc(desc) + '">\n';
   h += '<meta property="og:url" content="' + url + '">\n';
-  h += '<meta property="og:image" content="' + SITE + 'og/' + url.replace(SITE, "").replace(/\.html$/, "") + '.png">\n';
+  h += '<meta property="og:image" content="' + SITE + 'og/' + url.replace(SITE, "").replace(/\.html$/, "") + '.png?v=2">\n';
   h += '<meta property="og:image:width" content="1200">\n';
   h += '<meta property="og:image:height" content="628">\n';
   h += '<meta name="twitter:card" content="summary_large_image">\n';
   h += '<meta name="twitter:title" content="' + esc(fam.title) + ': PolyTechniques">\n';
   h += '<meta name="twitter:description" content="' + esc(desc) + '">\n';
-  h += '<meta name="twitter:image" content="' + SITE + 'og/' + url.replace(SITE, "").replace(/\.html$/, "") + '.png">\n';
+  h += '<meta name="twitter:image" content="' + SITE + 'og/' + url.replace(SITE, "").replace(/\.html$/, "") + '.png?v=2">\n';
   h += '<script type="application/ld+json">\n' + JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Article",
@@ -467,13 +467,13 @@ function hubHtml(groups) {
   h += '<meta property="og:title" content="Polymer families: PolyTechniques">\n';
   h += '<meta property="og:description" content="' + esc(desc) + '">\n';
   h += '<meta property="og:url" content="' + url + '">\n';
-  h += '<meta property="og:image" content="' + SITE + 'og/' + url.replace(SITE, "").replace(/\.html$/, "") + '.png">\n';
+  h += '<meta property="og:image" content="' + SITE + 'og/' + url.replace(SITE, "").replace(/\.html$/, "") + '.png?v=2">\n';
   h += '<meta property="og:image:width" content="1200">\n';
   h += '<meta property="og:image:height" content="628">\n';
   h += '<meta name="twitter:card" content="summary_large_image">\n';
   h += '<meta name="twitter:title" content="Polymer families: PolyTechniques">\n';
   h += '<meta name="twitter:description" content="' + esc(desc) + '">\n';
-  h += '<meta name="twitter:image" content="' + SITE + 'og/' + url.replace(SITE, "").replace(/\.html$/, "") + '.png">\n';
+  h += '<meta name="twitter:image" content="' + SITE + 'og/' + url.replace(SITE, "").replace(/\.html$/, "") + '.png?v=2">\n';
   h += '<script src="structure-map.js?v=4" defer><\/script>\n';
   h += '<script src="theme.js?v=1"><\/script>\n';
   h += '<script src="nav.js?v=40" defer><\/script>\n';
