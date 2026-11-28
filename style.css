@@ -3806,7 +3806,14 @@ p, li, .guide-note, .hint {
    right of every long guide. Below 1200px nothing here applies and the
    phone and tablet layouts are exactly as they were.
    ===================================================================== */
-:root { --side: 268px; --rail: 232px; --rail-gap: 44px; --col: 1040px; }
+:root { --side: 268px; --rail: 232px; --rail-gap: 44px; --col: 1040px;
+  /* logo colours (brand/README.md): orange ring, white P, navy ink */
+  --logo-accent: #EA580C; --logo-p: #FFFFFF; --logo-ink: #13212F; --logo-ring: rgba(255, 255, 255, 0.35); }
+/* the brand's dark-background variant: light orange ring, navy P, white ink */
+:root[data-theme="dark"] { --logo-accent: #FB923C; --logo-p: #13212F; --logo-ink: #FFFFFF; --logo-ring: transparent; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --logo-accent: #FB923C; --logo-p: #13212F; --logo-ink: #FFFFFF; --logo-ring: transparent; } }
+.brand-lockup { display: block; height: 28px; width: auto; flex: none; }
+.brand-tm { font-size: 0.6rem; color: var(--text-dim); align-self: flex-start; margin-left: -6px; }
 
 /* the mark, wherever it appears */
 .brand-logo { display: block; flex: none; color: var(--text); }
@@ -3864,7 +3871,8 @@ p, li, .guide-note, .hint {
   font-weight: 600;
   letter-spacing: -0.012em;
 }
-.side-brand .brand-logo { width: 32px; height: 32px; }
+.side-brand .brand-lockup { height: 32px; }
+.side-brand sup { align-self: flex-start; margin: 2px 0 0 -6px; }
 .side-brand:hover span { color: var(--primary); }
 
 .side-search {
