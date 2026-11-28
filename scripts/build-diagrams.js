@@ -1017,7 +1017,10 @@ const JOBS = [
   { file: "thermal-instrument-guide.html", build: dscReading, before: null },
   { file: "thermal-instrument-guide.html", build: tgDefinitions, before: null },
   { file: "thermal-instrument-guide.html", build: tgaE1131, before: null },
-  { file: "thermal-instrument-guide.html", build: dmaTgMarkers, before: null }
+  { file: "thermal-instrument-guide.html", build: dmaTgMarkers, before: null },
+  { file: "thermal-instrument-guide.html", build: mdscSignals, before: null },
+  { file: "thermal-instrument-guide.html", build: tgaKinetics, before: null },
+  { file: "thermal-instrument-guide.html", build: dmaMultiFreq, before: null }
 ];
 
 // ---- 16. cis and trans dienes, from Odian Table 8-1 -------------------------
@@ -1590,8 +1593,8 @@ function tgaE1131() {
   b += axes(X0, Y0, X1, Y1);
   // DTG, scaled into the lower part of the frame
   const dmax = Math.max(...rows.map((r) => r[2]));
-  b += '<path d="' + pathOf(rows.filter((r, i) => i % 6 === 0).map((r) => [sx(r[0]), Y1 - r[2] / dmax * 60])) + '" fill="none" stroke="' + BLUE + '" stroke-width="1.4" stroke-dasharray="4 3"/>';
-  b += '<path d="' + pathOf(rows.filter((r, i) => i % 6 === 0).map((r) => [sx(r[0]), sy(r[1])])) + '" fill="none" stroke="var(--text)" stroke-width="2.2"/>';
+  b += '<path d="' + pathOf(rows.filter((r, i) => i % 24 === 0).map((r) => [sx(r[0]), Y1 - r[2] / dmax * 60])) + '" fill="none" stroke="' + BLUE + '" stroke-width="1.4" stroke-dasharray="4 3"/>';
+  b += '<path d="' + pathOf(rows.filter((r, i) => i % 24 === 0).map((r) => [sx(r[0]), sy(r[1])])) + '" fill="none" stroke="var(--text)" stroke-width="2.2"/>';
   b += text(sx(470), Y1 - 52, "DTG", "small", tint(BLUE));
   // step labels, from the curve
   const lab = (T1, T2, y, s) => b += text((sx(T1) + sx(T2)) / 2, y, s, "small", ' text-anchor="middle"');
@@ -1680,6 +1683,229 @@ function dmaTgMarkers() {
   const caption = "Three glass transitions from one DMA run. The storage modulus E&#8242; (black, log scale) falls three decades; the loss modulus E&#8243; (green) peaks partway down; and tan&nbsp;&#948;&nbsp;=&nbsp;E&#8243;/E&#8242; (violet, right axis) peaks last, because E&#8242; is still falling after E&#8243; has turned over. The order is always the same, onset before E&#8243; peak before tan&nbsp;&#948; peak, but the gaps are not a constant that can be subtracted: they depend on how broad the transition is. ASTM E1640 takes the onset, which is the temperature at which the material starts to lose stiffness and the conservative number for design.";
   const source = "Computed from a Cole&ndash;Cole relaxation (&#945;&nbsp;=&nbsp;0.7, glassy 2.2&nbsp;GPa, rubbery 20&nbsp;MPa, plus a background tan&nbsp;&#948; of 0.012) with a Vogel&ndash;Fulcher time scale moving about 6&nbsp;K per decade of frequency, at 1&nbsp;Hz; E1640 onset by the two-tangent construction on log&nbsp;E&#8242;. ASTM E1640-23 specifies 1&nbsp;Hz and 1&nbsp;&deg;C/min. For a measured comparison, TA Instruments&rsquo; polycarbonate example (TA082) gives 141.8, 147.1 and 151.5&nbsp;&deg;C at 1&nbsp;Hz and 3&nbsp;&deg;C/min.";
   return panel("dma-tg", "DMA storage modulus, loss modulus and tan delta against temperature through a glass transition at 1 Hz, with the ASTM E1640 onset construction on the storage modulus and the three glass transition markers in their usual order.", 680, 250, b, caption, source);
+}
+
+// ---- 27-29. Beyond the standard run (thermal-instrument-guide.html) -------
+// These three figures do the experiment rather than draw it: each simulates a
+// raw measurement and then runs the analysis the software would, and the
+// build fails unless the analysis recovers what went into the simulation.
+
+// 27. modulated DSC: simulate, then deconvolve into reversing and non-reversing
+function mdscSignals() {
+  const BETA = 2 / 60, P = 60, AMP = 0.5, W = 2 * Math.PI / P, DT = 0.25;    // K/s, s, K
+  const T0 = 70, T1 = 130, DCP = 0.30, DH = 1.6;
+  const cp = (T) => 1.25 + 0.004 * (T - 80) + DCP / (1 + Math.exp(-(T - 100) / 1.8));            // J/(g K)
+  const recov = (T) => DH * Math.exp(-0.5 * ((T - 103) / 1.6) * ((T - 103) / 1.6)) / (1.6 * Math.sqrt(2 * Math.PI)); // 1/K
+  // raw signal: sample temperature carries the modulation; the enthalpy
+  // recovery is kinetic and follows the underlying temperature, not the wiggle
+  const N = Math.round((T1 - T0) / BETA / DT), t = [], Q = [];
+  for (let i = 0; i <= N; i++) {
+    const tt = i * DT, Tu = T0 + BETA * tt, Ts = Tu + AMP * Math.sin(W * tt), rate = BETA + AMP * W * Math.cos(W * tt);
+    t.push(tt); Q.push(-(cp(Ts) * rate + recov(Tu) * BETA));                                      // W/g, endotherm down
+  }
+  // deconvolution: over a two-period window, fit heat flow to a quadratic
+  // trend plus one sinusoid at the modulation frequency (least squares). The
+  // trend at the window centre is the total heat flow; the sinusoid's amplitude
+  // over the heating-rate amplitude is the reversing heat capacity.
+  const solve = (A, v) => {
+    const n = v.length;
+    for (let i = 0; i < n; i++) {
+      let p = i; for (let r = i + 1; r < n; r++) if (Math.abs(A[r][i]) > Math.abs(A[p][i])) p = r;
+      [A[i], A[p]] = [A[p], A[i]]; [v[i], v[p]] = [v[p], v[i]];
+      for (let r = i + 1; r < n; r++) { const fct = A[r][i] / A[i][i]; for (let c = i; c < n; c++) A[r][c] -= fct * A[i][c]; v[r] -= fct * v[i]; }
+    }
+    const x = new Array(n);
+    for (let i = n - 1; i >= 0; i--) { let s = v[i]; for (let c = i + 1; c < n; c++) s -= A[i][c] * x[c]; x[i] = s / A[i][i]; }
+    return x;
+  };
+  const win = Math.round(2 * P / DT), out = [];
+  for (let i = win; i < N - win; i += Math.round(4 / DT)) {
+    const tc = t[i], A = [0, 1, 2, 3, 4].map(() => [0, 0, 0, 0, 0]), v = [0, 0, 0, 0, 0];
+    for (let k = i - win / 2; k < i + win / 2; k++) {
+      const u = (t[k] - tc) / P, fv = [1, u, u * u, Math.cos(W * t[k]), Math.sin(W * t[k])];
+      for (let r = 0; r < 5; r++) { v[r] += fv[r] * Q[k]; for (let c = 0; c < 5; c++) A[r][c] += fv[r] * fv[c]; }
+    }
+    const x = solve(A, v), total = x[0], cprev = Math.hypot(x[3], x[4]) / (AMP * W), rev = -cprev * BETA;
+    out.push([T0 + BETA * tc, total, rev, total - rev, cprev]);
+  }
+  // step height read the way the software reads it: straight lines fitted to the
+  // reversing cp well below and well above the transition, compared at 100 C
+  const lineFit = (lo, hi) => {
+    const pts = out.filter((r) => r[0] >= lo && r[0] <= hi), n = pts.length;
+    const mx = pts.reduce((q, r) => q + r[0], 0) / n, my = pts.reduce((q, r) => q + r[4], 0) / n;
+    let sxy = 0, sxx = 0; pts.forEach((r) => { sxy += (r[0] - mx) * (r[4] - my); sxx += (r[0] - mx) * (r[0] - mx); });
+    return (T) => my + (sxy / sxx) * (T - mx);
+  };
+  const glass = lineFit(80, 90), liquid = lineFit(110, 122);
+  const dcpRec = liquid(100) - glass(100);
+  let dhRec = 0;
+  for (let k = 1; k < out.length; k++) dhRec += -out[k][3] * (out[k][0] - out[k - 1][0]) / BETA;
+  if (Math.abs(dcpRec - DCP) > 0.01 || Math.abs(dhRec - DH) > 0.08) throw new Error("MDSC deconvolution did not recover the inputs: " + dcpRec + ", " + dhRec);
+  const X0 = 56, X1 = 440, TA = 80, TZ = 125;
+  const sx = (T) => X0 + (T - TA) / (TZ - TA) * (X1 - X0);
+  let b = "";
+  // top strip: the raw modulated heat flow, on its own scale
+  {
+    const Y0 = 22, Y1 = 62, raw = [];
+    const lo = Math.min(...Q), hi = Math.max(...Q), sy = (v) => Y1 - (v - lo) / (hi - lo) * (Y1 - Y0);
+    for (let i = 0; i <= N; i += 4) { const T = T0 + BETA * t[i]; if (T >= TA && T <= TZ) raw.push([sx(T), sy(Q[i])]); }
+    b += '<path d="' + pathOf(raw) + '" fill="none" stroke="' + DIM + '" stroke-width="0.7"/>';
+    b += text(X0 - 6, (Y0 + Y1) / 2 + 4, "raw", "small dim", ' text-anchor="end"');
+  }
+  // main panel: total, reversing and non-reversing
+  const Y0 = 80, Y1 = 206, QA = -0.068, QZ = -0.020, OFF = -0.024;                                 // non-reversing drawn offset for clarity
+  const sy = (v) => Y1 - (v - QA) / (QZ - QA) * (Y1 - Y0);
+  b = yTicks(b, X0, X1, sy, [-0.06, -0.05, -0.04, -0.03], (v) => neg(+v.toFixed(2)));
+  b += axes(X0, Y0, X1, Y1);
+  const line = (j, col, w, off) => '<path d="' + pathOf(out.filter((r) => r[0] >= TA && r[0] <= TZ).map((r) => [sx(r[0]), sy(r[j] + (off || 0))])) + '" fill="none" stroke="' + col + '" stroke-width="' + w + '"/>';
+  b += line(3, VIOLET, 2, OFF) + line(1, "var(--text)", 2.2) + line(2, BLUE, 2.2);
+  b = xTicks(b, sx, Y1, [80, 90, 100, 110, 120]);
+  b += text((X0 + X1) / 2, Y1 + 32, "underlying temperature (&#176;C)", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 46, Y0 - 6, "heat flow (W/g), exo up", "small dim");
+  const XR = 462;
+  const key = (y, col, w, label, note) => '<line x1="' + XR + '" y1="' + (y - 4) + '" x2="' + (XR + 20) + '" y2="' + (y - 4) + '" stroke="' + col + '" stroke-width="' + w + '"/>' + text(XR + 26, y, label, "small") + (note ? text(XR + 26, y + 15, note, "small dim") : "");
+  b += key(40, DIM, 1, "modulated signal (top)", "");
+  b += key(88, "var(--text)", 2.2, "total", "what plain DSC sees");
+  b += key(124, BLUE, 2.2, "reversing", "&#916;c" + sub("p") + " " + dcpRec.toFixed(3) + " J g" + sup("&#8722;1") + " K" + sup("&#8722;1"));
+  b += key(160, VIOLET, 2, "non-reversing (offset)", "recovery " + dhRec.toFixed(2) + " J/g");
+  const hiso = BETA * P / (2 * Math.PI);
+  b += text(XR, 200, "&#177;" + AMP + " K / " + P + " s / 2 K/min;", "small dim");
+  b += text(XR, 216, "heating only below &#177;" + hiso.toFixed(2) + " K", "small dim");
+  const caption = "Why modulated DSC exists. On an aged glass the T<sub>g</sub> step and the enthalpy-recovery peak sit on top of each other, and the total heat flow (black) is all ordinary DSC can show. A small sinusoid added to the temperature (the raw signal, top) lets the software split it: the part that follows the modulation is heat capacity, the reversing signal (blue), carrying the clean T<sub>g</sub> step; what is left over is the non-reversing signal (violet), carrying the kinetic events, here the recovery peak. The figure does that split on a simulated run and recovers both inputs (&#916;c<sub>p</sub> 0.30, recovery 1.60&nbsp;J/g). Real kinetic events can leak a little into the reversing signal, so confirm a separation by repeating at a second period.";
+  const source = "Simulated at &#177;0.5&nbsp;K, 60&nbsp;s, 2&nbsp;K/min, and deconvolved by a least-squares fit over two periods; reversing c<sub>p</sub>&nbsp;=&nbsp;A(heat flow)/A(heating rate), as in TA Instruments&rsquo; MDSC (note TA489). Settings within the published ranges (&#177;0.5&ndash;1&nbsp;K, 40&ndash;60&nbsp;s, 2&ndash;3&nbsp;K/min; 4&ndash;6 cycles across a transition). Standards: ASTM E2602-24 (T<sub>g</sub> by modulated DSC), ISO 19935-1 to -3. Signal content: Righetti, <i>Materials</i> 10 (2017) 442.";
+  return panel("mdsc-signals", "A simulated modulated DSC run through a glass transition with an enthalpy recovery peak: the raw modulated heat flow in a strip above, and below it the averaged total, the deconvolved reversing signal showing only the heat capacity step, and the non-reversing signal showing only the recovery peak.", 680, 250, b, caption, source);
+}
+
+// 28. TGA kinetics by ASTM E1641 (Ozawa-Flynn-Wall), checked against Kissinger
+function tgaKinetics() {
+  const R = 8.314, EA = 180e3, RATES = [1, 2, 5, 10], ALPHA = 0.10;
+  const TP10 = 420 + 273.15, A = (EA * (10 / 60) / (R * TP10 * TP10)) * Math.exp(EA / (R * TP10));
+  const COL = [VIOLET, GREEN, "#d08a3a", BLUE];
+  const runs = RATES.map((r) => {
+    const beta = r / 60, curve = [];
+    let a = 0, T = 500, Ta = null, peak = 0, Tp = 0;
+    while (a < 0.995 && T < 1000) {
+      const k = A * Math.exp(-EA / (R * T)), rate = k * (1 - a);
+      if (rate > peak) { peak = rate; Tp = T; }
+      a = Math.min(1, a + rate / beta * 0.02);
+      if (Ta === null && a >= ALPHA) Ta = T;
+      if (Math.round(T * 50) % 50 === 0) curve.push([T - 273.15, a]);
+      T += 0.02;
+    }
+    return { r, Ta, Tp, curve };
+  });
+  const slope = (xs, ys) => { const n = xs.length, mx = xs.reduce((s, v) => s + v, 0) / n, my = ys.reduce((s, v) => s + v, 0) / n; let a = 0, c = 0; xs.forEach((x, i) => { a += (x - mx) * (ys[i] - my); c += (x - mx) * (x - mx); }); return [a / c, my - (a / c) * mx]; };
+  const [sO, iO] = slope(runs.map((u) => 1 / u.Ta), runs.map((u) => Math.log10(u.r)));
+  const eOFW = -R / 0.457 * sO / 1000;
+  const [sK] = slope(runs.map((u) => 1 / u.Tp), runs.map((u) => Math.log(u.r / 60 / (u.Tp * u.Tp))));
+  const eK = -sK * R / 1000;
+  if (Math.abs(eOFW - 180) > 5 || Math.abs(eK - 180) > 5) throw new Error("kinetics did not recover 180 kJ/mol: " + eOFW + ", " + eK);
+  let b = "";
+  {
+    const X0 = 56, Y0 = 26, X1 = 330, Y1 = 196, TA = 300, TZ = 460;
+    const sx = (T) => X0 + (T - TA) / (TZ - TA) * (X1 - X0), sy = (a) => Y1 - a * (Y1 - Y0);
+    b = yTicks(b, X0, X1, sy, [0.25, 0.5, 0.75, 1], (v) => String(Math.round(v * 100)));
+    b += '<line x1="' + X0 + '" y1="' + f1(sy(ALPHA)) + '" x2="' + X1 + '" y2="' + f1(sy(ALPHA)) + '" stroke="' + DIM + '" stroke-width="1" stroke-dasharray="4 3"/>';
+    b += text(X1 - 2, sy(ALPHA) - 4, "&#945; = 10%", "small dim", ' text-anchor="end"');
+    b += axes(X0, Y0, X1, Y1);
+    runs.forEach((u, i) => {
+      b += '<path d="' + pathOf(u.curve.filter((p) => p[0] >= TA && p[0] <= TZ).map((p) => [sx(p[0]), sy(p[1])])) + '" fill="none" stroke="' + COL[i] + '" stroke-width="2"/>';
+      b += '<circle cx="' + f1(sx(u.Ta - 273.15)) + '" cy="' + f1(sy(ALPHA)) + '" r="3" fill="' + COL[i] + '"/>';
+      b += '<line x1="' + (X0 + 10) + '" y1="' + (Y0 + 10 + i * 16) + '" x2="' + (X0 + 28) + '" y2="' + (Y0 + 10 + i * 16) + '" stroke="' + COL[i] + '" stroke-width="2"/>';
+      b += text(X0 + 34, Y0 + 14 + i * 16, u.r + " K/min", "small");
+    });
+    b = xTicks(b, sx, Y1, [300, 350, 400, 450]);
+    b += text((X0 + X1) / 2, Y1 + 32, "temperature (&#176;C)", "small dim", ' text-anchor="middle"');
+    b += text(X0 - 46, Y0 - 12, "conversion &#945; (%)", "small dim");
+  }
+  {
+    const xs = runs.map((u) => 1000 / u.Ta), X0 = 400, Y0 = 26, X1 = 560, Y1 = 196;
+    const XA = Math.min(...xs) - 0.02, XZ = Math.max(...xs) + 0.02, YA = -0.15, YZ = 1.15;
+    const sx = (x) => X0 + (x - XA) / (XZ - XA) * (X1 - X0), sy = (y) => Y1 - (y - YA) / (YZ - YA) * (Y1 - Y0);
+    b += axes(X0, Y0, X1, Y1);
+    const fy = (x) => sO * (x / 1000) + iO;
+    b += '<line x1="' + f1(sx(XA)) + '" y1="' + f1(sy(fy(XA))) + '" x2="' + f1(sx(XZ)) + '" y2="' + f1(sy(fy(XZ))) + '" stroke="var(--text)" stroke-width="1.2"/>';
+    runs.forEach((u, i) => b += '<circle cx="' + f1(sx(1000 / u.Ta)) + '" cy="' + f1(sy(Math.log10(u.r))) + '" r="4" fill="' + COL[i] + '"/>');
+    [0, 0.5, 1].forEach((y) => b += text(X0 - 6, sy(y) + 4, y.toFixed(1), "small dim", ' text-anchor="end"'));
+    [XA + 0.02, (XA + XZ) / 2, XZ - 0.02].forEach((x) => b += text(sx(x), Y1 + 16, x.toFixed(3), "small dim", ' text-anchor="middle"'));
+    b += text((X0 + X1) / 2, Y1 + 32, "1000 / T" + sub("10%") + " (K" + sup("&#8722;1") + ")", "small dim", ' text-anchor="middle"');
+    b += text(X0 - 30, Y0 - 12, "log" + sub("10") + " &#946;", "small dim");
+  }
+  const XR = 580;
+  b += text(XR, 50, "Ozawa&ndash;Flynn&ndash;Wall", "small");
+  b += text(XR, 66, "E = &#8722;(R/0.457) slope", "small dim");
+  b += text(XR, 84, "= " + eOFW.toFixed(1) + " kJ/mol", "small");
+  b += text(XR, 114, "Kissinger, DTG peaks", "small");
+  b += text(XR, 132, "= " + eK.toFixed(1) + " kJ/mol", "small");
+  b += text(XR, 162, "Put into the", "small dim");
+  b += text(XR, 178, "simulation:", "small dim");
+  b += text(XR, 194, (EA / 1000).toFixed(0) + " kJ/mol", "small dim");
+  const caption = "How an activation energy comes out of a TGA. The same decomposition run at four heating rates shifts to higher temperature the faster it is heated (left). ASTM E1641 reads the temperature at one conversion on each curve, here 10%, and plots log&nbsp;&#946; against 1/T (right): the slope gives the activation energy through Doyle&rsquo;s approximation. On this simulated first-order reaction both it and the Kissinger method, which uses the DTG peaks, recover the 180&nbsp;kJ/mol that went in. A real decomposition is rarely one step, so the ICTAC recommendations ask for the activation energy across the whole conversion range, not at a single point: if it changes with conversion, one number does not describe the reaction.";
+  const source = "Simulated first-order decomposition, E&nbsp;=&nbsp;180&nbsp;kJ/mol, at 1, 2, 5 and 10&nbsp;K/min. Method: ASTM E1641-23 (four or more rates; b&nbsp;=&nbsp;0.457 with its iterative correction); ICTAC Kinetics Committee, <i>Thermochim. Acta</i> 520 (2011) 1 and 590 (2014) 1 (at least three, normally four or five, programs; isoconversional methods). Lifetime extrapolation (ASTM E1877) assumes the high-temperature mechanism holds at service temperature, which needs separate evidence.";
+  return panel("tga-kinetics", "Left: TGA conversion against temperature at heating rates of 1, 2, 5 and 10 K/min with the 10 percent conversion points marked. Right: log heating rate against inverse temperature at 10 percent conversion, a straight line whose slope gives an activation energy of about 180 kJ/mol by the Ozawa-Flynn-Wall method, matching the Kissinger result and the simulated value.", 680, 240, b, caption, source);
+}
+
+// 29. DMA at several frequencies, and the apparent activation energy
+function dmaMultiFreq() {
+  const EG = 2.2e9, ER = 2e7, AL = 0.70, TSTAR = 420.15, T0 = 350.15, B = 1852;           // the same material as the E1640 figure
+  const FREQ = [0.1, 1, 10, 30], COL = [VIOLET, "var(--text)", GREEN, BLUE];
+  const curve = (f) => {
+    const pts = []; let best = -1, tE2 = 0;
+    for (let C = 110; C <= 200; C += 0.05) {
+      const K = C + 273.15, lnX = Math.log(f) + B * (1 / (K - T0) - 1 / (TSTAR - T0));
+      const xa = Math.exp(AL * lnX), cr = 1 + xa * Math.cos(AL * Math.PI / 2), ci = xa * Math.sin(AL * Math.PI / 2), den = cr * cr + ci * ci;
+      const e1 = EG - (EG - ER) * cr / den, e2 = (EG - ER) * ci / den + 0.012 * e1;
+      if (e2 > best) { best = e2; tE2 = C; }
+      pts.push([C, e2 / e1]);
+    }
+    return { f, pts, tE2 };
+  };
+  const runs = FREQ.map(curve);
+  const xs = runs.map((u) => 1 / (u.tE2 + 273.15)), ys = runs.map((u) => Math.log(u.f));
+  const n = xs.length, mx = xs.reduce((s, v) => s + v, 0) / n, my = ys.reduce((s, v) => s + v, 0) / n;
+  let sxy = 0, sxx = 0; xs.forEach((x, i) => { sxy += (x - mx) * (ys[i] - my); sxx += (x - mx) * (x - mx); });
+  const eApp = -sxy / sxx * 8.314 / 1000, perDecade = (runs[2].tE2 - runs[0].tE2) / 2;
+  if (!(eApp > 200 && eApp < 700 && perDecade > 4 && perDecade < 8)) throw new Error("multifrequency result outside the expected range: " + eApp + ", " + perDecade);
+  let b = "";
+  {
+    const X0 = 56, Y0 = 26, X1 = 330, Y1 = 196, TA = 120, TZ = 195, TMAX = 1.6;
+    const sx = (C) => X0 + (C - TA) / (TZ - TA) * (X1 - X0), sy = (v) => Y1 - v / TMAX * (Y1 - Y0);
+    b = yTicks(b, X0, X1, sy, [0.5, 1, 1.5], (v) => v.toFixed(1));
+    b += axes(X0, Y0, X1, Y1);
+    runs.forEach((u, i) => {
+      b += '<path d="' + pathOf(u.pts.filter((p, k) => k % 6 === 0 && p[0] >= TA && p[0] <= TZ).map((p) => [sx(p[0]), sy(p[1])])) + '" fill="none" stroke="' + COL[i] + '" stroke-width="2"/>';
+      b += '<line x1="' + (X0 + 10) + '" y1="' + (Y0 + 10 + i * 16) + '" x2="' + (X0 + 28) + '" y2="' + (Y0 + 10 + i * 16) + '" stroke="' + COL[i] + '" stroke-width="2"/>';
+      b += text(X0 + 34, Y0 + 14 + i * 16, u.f + " Hz", "small");
+    });
+    b = xTicks(b, sx, Y1, [120, 140, 160, 180]);
+    b += text((X0 + X1) / 2, Y1 + 32, "temperature (&#176;C)", "small dim", ' text-anchor="middle"');
+    b += text(X0 - 46, Y0 - 12, "tan &#948;", "small dim");
+  }
+  {
+    const X0 = 400, Y0 = 26, X1 = 560, Y1 = 196;
+    const XA = Math.min(...xs) * 1000 - 0.01, XZ = Math.max(...xs) * 1000 + 0.01, YA = Math.log(0.05), YZ = Math.log(60);
+    const sx = (x) => X0 + (x - XA) / (XZ - XA) * (X1 - X0), sy = (y) => Y1 - (y - YA) / (YZ - YA) * (Y1 - Y0);
+    b += axes(X0, Y0, X1, Y1);
+    const sl = sxy / sxx, ic = my - sl * mx, fy = (x) => sl * (x / 1000) + ic;
+    b += '<line x1="' + f1(sx(XA)) + '" y1="' + f1(sy(fy(XA))) + '" x2="' + f1(sx(XZ)) + '" y2="' + f1(sy(fy(XZ))) + '" stroke="var(--text)" stroke-width="1.2"/>';
+    runs.forEach((u, i) => b += '<circle cx="' + f1(sx(1000 * xs[i])) + '" cy="' + f1(sy(ys[i])) + '" r="4" fill="' + COL[i] + '"/>');
+    [0.1, 1, 10].forEach((f) => b += text(X0 - 6, sy(Math.log(f)) + 4, String(f), "small dim", ' text-anchor="end"'));
+    [XA + 0.01, XZ - 0.01].forEach((x) => b += text(sx(x), Y1 + 16, x.toFixed(3), "small dim", ' text-anchor="middle"'));
+    b += text((X0 + X1) / 2, Y1 + 32, "1000 / T(E&#8243; peak) (K" + sup("&#8722;1") + ")", "small dim", ' text-anchor="middle"');
+    b += text(X0 - 30, Y0 - 12, "f (Hz), log scale", "small dim");
+  }
+  const XR = 580;
+  b += text(XR, 50, "E&#8243; peak moves", "small");
+  b += text(XR, 66, perDecade.toFixed(1) + " K per decade", "small");
+  b += text(XR, 96, "Apparent E", "small");
+  b += text(XR, 112, "= " + eApp.toFixed(0) + " kJ/mol", "small");
+  b += text(XR, 142, "A &#946; relaxation would", "small dim");
+  b += text(XR, 158, "give ~30&ndash;100 kJ/mol;", "small dim");
+  b += text(XR, 174, "the glass transition,", "small dim");
+  b += text(XR, 190, "~200&ndash;600.", "small dim");
+  const caption = "One DMA ramp at several frequencies tells you what kind of transition you are looking at. The glass transition moves to higher temperature as frequency rises, here " + perDecade.toFixed(1) + "&nbsp;K per decade, and an Arrhenius plot of frequency against the inverse peak temperature gives an apparent activation energy of about " + eApp.toFixed(0) + "&nbsp;kJ/mol. That is large because the glass transition is cooperative; a secondary &#946; relaxation, the motion of a side group or a short segment, gives a few tens of kJ/mol and shifts far more per decade. Over a wide range the glass transition is not Arrhenius at all, so treat the number as local, and use WLF for time&ndash;temperature superposition.";
+  const source = "Computed with the same material model as the E1640 figure above, tracking the E&#8243; peak at 0.1, 1, 10 and 30&nbsp;Hz. Typical ranges: Rom&aacute;n et al., <i>Materials</i> 9 (2016) 192 (an epoxy&rsquo;s &#945; at 358 and &#946; at 89&nbsp;kJ/mol). A measured comparison: TA Instruments&rsquo; PET film reads 103, 108 and 115&nbsp;&deg;C at 0.1, 1 and 10&nbsp;Hz, 5 and 7&nbsp;K per decade.";
+  return panel("dma-multifreq", "Left: tan delta against temperature at 0.1, 1, 10 and 30 Hz, the peak moving to higher temperature with frequency. Right: an Arrhenius plot of frequency against inverse loss-modulus peak temperature, giving an apparent activation energy of about 530 kJ/mol.", 680, 240, b, caption, source);
 }
 
 // Diagrams that live on generated family pages. build-family-pages.js writes
