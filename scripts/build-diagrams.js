@@ -1952,7 +1952,9 @@ function galleryThumb(page, fig, n) {
   else if (fig) svg = html.match(new RegExp('data-figure="' + fig + '">\\s*(<svg[\\s\\S]*?<\\/svg>)'));
   else svg = html.match(/<svg class="diagram-svg"[\s\S]*?<\/svg>/);
   if (!svg) throw new Error("gallery: no figure '" + fig + "' in " + page);
-  let s = svg[1] || svg[0];
+  // line endings normalised here, or a Windows checkout writes stray CRs that a
+  // Linux CI run regenerates without, and the check reports the page stale
+  let s = (svg[1] || svg[0]).replace(/\r\n?/g, "\n");
   s = s.replace(/<text[\s\S]*?<\/text>/g, "");
   s = s.replace(/^<svg[^>]*>/, (tag) => {
     const vb = (tag.match(/viewBox="([^"]+)"/) || [])[1];
