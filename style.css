@@ -4020,22 +4020,7 @@ p, li, .guide-note, .hint {
    The hero states what the site is; three start cards cover the three ways
    in; then a directory of every tool in three columns, read like the
    contents of a handbook rather than a wall of equal tiles. */
-.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
-.btn-primary, .btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  padding: 11px 18px;
-  border-radius: 8px;
-  font-size: var(--fs-sm);
-  font-weight: 650;
-  text-decoration: none;
-  border: 1px solid var(--primary);
-}
-.btn-primary { background: var(--primary); color: var(--on-primary); }
-.btn-primary:hover { filter: brightness(1.08); }
-.btn-secondary { background: transparent; color: var(--primary); border-color: var(--border); }
-.btn-secondary:hover { border-color: var(--primary); }
-.btn-primary:focus-visible, .btn-secondary:focus-visible, .start-card:focus-visible, .home-directory a:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.start-card:focus-visible, .home-directory a:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 .home-start {
   display: grid;
