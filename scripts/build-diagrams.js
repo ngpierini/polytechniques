@@ -1012,7 +1012,12 @@ const JOBS = [
   { file: "gpc-calibration.html", build: gpcUniversal, before: null },
   { file: "gpc-peak-interpretation.html", build: gpcExclusion, before: null },
   { file: "gpc-peak-interpretation.html", build: gpcBaseline, before: null },
-  { file: "gpc-peak-interpretation.html", build: gpcDetectors, before: null }
+  { file: "gpc-peak-interpretation.html", build: gpcDetectors, before: null },
+  { file: "thermal-instrument-guide.html", build: dscProgram, before: null },
+  { file: "thermal-instrument-guide.html", build: dscReading, before: null },
+  { file: "thermal-instrument-guide.html", build: tgDefinitions, before: null },
+  { file: "thermal-instrument-guide.html", build: tgaE1131, before: null },
+  { file: "thermal-instrument-guide.html", build: dmaTgMarkers, before: null }
 ];
 
 // ---- 16. cis and trans dienes, from Odian Table 8-1 -------------------------
@@ -1369,6 +1374,314 @@ function bottlebrush() {
   return panel("bottlebrush", "Left: entanglement plateau modulus of comb and bottlebrush melts relative to the linear polymer, against side-chain length, for three graft spacings, all converging on a line falling as side-chain length to the minus three halves. Right: true stress against stretch for three bottlebrush networks, soft at small strain and stiffening sharply near their limiting stretch.", 680, 240, b, caption, source);
 }
 
+// ---- 22-26. Running DSC, TGA and DMA (thermal-instrument-guide.html) ------
+// Every curve here comes from a stated model with stated parameters, and every
+// number printed on a figure is computed from the curve it labels.
+const yTicks = (b, X0, X1, sy, vals, fmt) => {
+  vals.forEach((v) => {
+    b += '<line x1="' + X0 + '" y1="' + f1(sy(v)) + '" x2="' + X1 + '" y2="' + f1(sy(v)) + '" stroke="' + BORDER + '" stroke-width="0.8" stroke-dasharray="2 4"/>';
+    b += text(X0 - 6, sy(v) + 4, fmt ? fmt(v) : String(v), "small dim", ' text-anchor="end"');
+  });
+  return b;
+};
+const xTicks = (b, sx, Y1, vals, fmt) => {
+  vals.forEach((v) => {
+    b += '<line x1="' + f1(sx(v)) + '" y1="' + Y1 + '" x2="' + f1(sx(v)) + '" y2="' + (Y1 + 4) + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+    b += text(sx(v), Y1 + 16, fmt ? fmt(v) : String(v), "small dim", ' text-anchor="middle"');
+  });
+  return b;
+};
+const neg = (v) => (v < 0 ? "&#8722;" : "") + Math.abs(v);
+
+// 22. a heat-cool-heat program, as the software builds it
+function dscProgram() {
+  const T0 = 25, TTOP = 290, RATE = 10, HOLD = 5;              // deg C, K/min, min
+  const segs = [];                                             // [t0, t1, T0, T1, label]
+  let t = 0;
+  const ramp = (to, lab) => { const from = segs.length ? segs[segs.length - 1][3] : T0; const d = Math.abs(to - from) / RATE; segs.push([t, t + d, from, to, lab]); t += d; };
+  const iso = (lab) => { const T = segs[segs.length - 1][3]; segs.push([t, t + HOLD, T, T, lab]); t += HOLD; };
+  ramp(TTOP, "first heat"); iso("hold"); ramp(T0, "controlled cool"); iso("hold"); ramp(TTOP, "second heat");
+  const X0 = 50, Y0 = 30, X1 = 470, Y1 = 196, TMAX = t, YMAX = 320;
+  const sx = (m) => X0 + m / TMAX * (X1 - X0), sy = (T) => Y1 - T / YMAX * (Y1 - Y0);
+  let b = yTicks("", X0, X1, sy, [0, 100, 200, 300]);
+  b += axes(X0, Y0, X1, Y1);
+  // reference temperatures for a PET-like sample
+  [[250, "T" + sub("m") + " peak"], [78, "T" + sub("g")]].forEach(([T, lab]) => {
+    b += '<line x1="' + X0 + '" y1="' + f1(sy(T)) + '" x2="' + X1 + '" y2="' + f1(sy(T)) + '" stroke="' + VIOLET + '" stroke-width="1" stroke-dasharray="5 4"/>';
+    b += text(X0 + 4, sy(T) - 4, lab, "small", tint(VIOLET));
+  });
+  const COL = { "first heat": DIM, "hold": DIM, "controlled cool": BLUE, "second heat": GREEN };
+  segs.forEach(([a, z, Ta, Tz, lab], i) => {
+    b += '<line x1="' + f1(sx(a)) + '" y1="' + f1(sy(Ta)) + '" x2="' + f1(sx(z)) + '" y2="' + f1(sy(Tz)) + '" stroke="' + COL[lab] + '" stroke-width="' + (lab === "second heat" ? 3 : 2.2) + '"/>';
+    // each label at its own height along its segment, so neighbours never meet
+    const fr = { "first heat": 0.45, "controlled cool": 0.35, "second heat": 0.72 }[lab];
+    if (fr) { const xm = sx(a + (z - a) * fr), ym = sy(Ta + (Tz - Ta) * fr); b += text(xm + (Tz > Ta ? -10 : 10), ym, lab, "small", ' text-anchor="' + (Tz > Ta ? "end" : "start") + '"' + tint(COL[lab] === DIM ? "var(--text-dim)" : COL[lab])); }
+    if (i < segs.length - 1) b += '<line x1="' + f1(sx(z)) + '" y1="' + Y0 + '" x2="' + f1(sx(z)) + '" y2="' + Y1 + '" stroke="' + BORDER + '" stroke-width="0.8"/>';
+  });
+  b = xTicks(b, sx, Y1, [0, 20, 40, 60, 80]);
+  b += text((X0 + X1) / 2, Y1 + 32, "time (min)", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 40, Y0 - 12, "programmed temperature (&#176;C)", "small dim");
+  // the same program written as segments, in each package's vocabulary
+  const XR = 494;
+  const L = ["Equilibrate at " + T0 + " &#176;C", "Ramp " + RATE + " &#176;C/min to " + TTOP + " &#176;C", "Isothermal " + HOLD + " min", "Mark end of cycle", "Ramp " + RATE + " &#176;C/min to " + T0 + " &#176;C", "Isothermal " + HOLD + " min", "Mark end of cycle", "Ramp " + RATE + " &#176;C/min to " + TTOP + " &#176;C"];
+  b += text(XR, 40, "TRIOS segments", "small");
+  L.forEach((s, i) => b += text(XR, 58 + i * 15, (i + 1) + ". " + s, "small dim"));
+  b += text(XR, 190, "STARe: the same as", "small");
+  b += text(XR, 205, "dynamic and isothermal", "small dim");
+  b += text(XR, 220, "segments, " + segs.length + " in all.", "small dim");
+  const caption = "The standard way to measure a semicrystalline polymer. The first heat records the sample as received, processing history and all, and melts it; the hold erases the crystals it arrived with; a controlled cool gives every sample the same history; the second heat is the one quoted as the material&rsquo;s own. Heat to about 30&nbsp;K above the end of melting, and cool to at least 50&nbsp;K below the crystallization peak, and below T<sub>g</sub> if you want T<sub>g</sub> on the reheat. The whole program takes " + Math.round(t) + "&nbsp;minutes at " + RATE + "&nbsp;K/min.";
+  const source = "Program as described in ASTM D3418-21 and ISO 11357-3:2025 (both allow 10 or 20&nbsp;K/min; D3418 uses 10&nbsp;K/min for disputes). Segment names as in TA Instruments TRIOS; Mettler Toledo STARe builds the same method from dynamic and isothermal segments. Temperatures are for a PET-like sample.";
+  return panel("dsc-program", "A DSC heat-cool-heat temperature program against time: heat at 10 K/min to 290 degrees, hold 5 minutes, cool at 10 K/min to 25 degrees, hold, and heat again, with the same program listed as software segments.", 680, 240, b, caption, source);
+}
+
+// 23. reading a first heat of quenched PET, with the integrations done
+function dscReading() {
+  const BETA = 10 / 60;                                        // K/s
+  const TG = 78, DCP = 0.30;                                   // deg C, J/(g K)
+  const CC = [134, 6, 24.0], MELT = [250, 5.5, 39.0];          // centre, sigma (K), enthalpy (J/g)
+  const DH0 = 140;                                             // J/g, 100% crystalline PET
+  const g = (T, m, s) => Math.exp(-0.5 * ((T - m) / s) * ((T - m) / s)) / (s * Math.sqrt(2 * Math.PI));
+  // heat flow per gram, exotherm up: a sloped baseline, the Tg step down,
+  // the cold-crystallization exotherm up and the melting endotherm down
+  const q = (T) => -0.02 - 0.0003 * (T - 30) - DCP * BETA / (1 + Math.exp(-(T - TG) / 2.2)) + CC[2] * BETA * g(T, CC[0], CC[1]) - MELT[2] * BETA * g(T, MELT[0], MELT[1]);
+  const integrate = (a, z) => {          // area between curve and the straight line joining its ends, J/g
+    const qa = q(a), qz = q(z); let s = 0;
+    for (let T = a; T <= z; T += 0.05) s += (q(T) - (qa + (qz - qa) * (T - a) / (z - a))) * 0.05;
+    return s / BETA;
+  };
+  const LIM = { cc: [112, 156], m: [228, 270] };
+  const hcc = integrate(LIM.cc[0], LIM.cc[1]), hm = -integrate(LIM.m[0], LIM.m[1]);
+  if (Math.abs(hcc - CC[2]) > 0.5 || Math.abs(hm - MELT[2]) > 0.5) throw new Error("DSC integrations do not recover the model enthalpies: " + hcc + ", " + hm);
+  const xc = 100 * (hm - hcc) / DH0;
+  const X0 = 50, Y0 = 26, X1 = 470, Y1 = 196, TA = 30, TZ = 290, QMIN = -0.60, QMAX = 0.40;
+  const sx = (T) => X0 + (T - TA) / (TZ - TA) * (X1 - X0), sy = (v) => Y1 - (v - QMIN) / (QMAX - QMIN) * (Y1 - Y0);
+  let b = yTicks("", X0, X1, sy, [-0.6, -0.4, -0.2, 0, 0.2, 0.4], (v) => neg(+v.toFixed(1)));
+  b += axes(X0, Y0, X1, Y1);
+  // shaded integrations
+  const shade = (a, z, col) => {
+    const up = [], dn = [];
+    for (let i = 0; i <= 80; i++) { const T = a + (z - a) * i / 80; up.push([sx(T), sy(q(T))]); dn.push([sx(T), sy(q(a) + (q(z) - q(a)) * (T - a) / (z - a))]); }
+    return '<path d="' + pathOf(up.concat(dn.reverse())) + ' Z" fill="' + col + '" fill-opacity="0.22"/>' +
+      '<line x1="' + f1(sx(a)) + '" y1="' + f1(sy(q(a))) + '" x2="' + f1(sx(z)) + '" y2="' + f1(sy(q(z))) + '" stroke="' + col + '" stroke-width="1.2"/>';
+  };
+  b += shade(LIM.cc[0], LIM.cc[1], GREEN) + shade(LIM.m[0], LIM.m[1], VIOLET);
+  const pts = [];
+  for (let i = 0; i <= 520; i++) { const T = TA + (TZ - TA) * i / 520; pts.push([sx(T), sy(q(T))]); }
+  b += '<path d="' + pathOf(pts) + '" fill="none" stroke="var(--text)" stroke-width="2"/>';
+  b += text(sx(TG) - 4, sy(q(TG - 12)) - 12, "T" + sub("g") + " step", "small", ' text-anchor="middle"');
+  b += text(sx(CC[0]), sy(q(CC[0])) - 8, "cold crystallization, " + hcc.toFixed(1) + " J/g", "small", ' text-anchor="middle"' + tint(GREEN));
+  b += text(sx(MELT[0]) - 12, sy(q(LIM.m[0])) + 18, "melting, " + hm.toFixed(1) + " J/g", "small", ' text-anchor="end"' + tint(VIOLET));
+  // exo-up arrow, as every thermogram must carry
+  b += '<path d="M' + (X0 + 14) + "," + (Y0 + 30) + " L" + (X0 + 14) + "," + (Y0 + 6) + '" stroke="var(--text)" stroke-width="1.2" marker-end="url(#exo-arrow)"/>';
+  b += '<defs><marker id="exo-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--text)"/></marker></defs>';
+  b += text(X0 + 20, Y0 + 14, "exo up", "small");
+  b = xTicks(b, sx, Y1, [50, 100, 150, 200, 250]);
+  b += text((X0 + X1) / 2, Y1 + 32, "temperature (&#176;C), first heat at 10 K/min", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 40, Y0 - 12, "heat flow (W/g)", "small dim");
+  const XR = 494;
+  b += text(XR, 44, "Crystallinity before the scan", "small");
+  b += text(XR, 66, "X" + sub("c") + " = (&#916;H" + sub("m") + " &#8722; &#916;H" + sub("cc") + ") / &#916;H" + sub("m") + sup("0"), "small");
+  b += text(XR, 86, "= (" + hm.toFixed(1) + " &#8722; " + hcc.toFixed(1) + ") / " + DH0, "small");
+  b += text(XR, 106, "= " + xc.toFixed(1) + "%", "small");
+  b += text(XR, 136, "Without subtracting the", "small dim");
+  b += text(XR, 152, "cold crystallization it", "small dim");
+  b += text(XR, 168, "would read " + (100 * hm / DH0).toFixed(1) + "%: the", "small dim");
+  b += text(XR, 184, "crystals grown during", "small dim");
+  b += text(XR, 200, "the scan, counted as", "small dim");
+  b += text(XR, 216, "if they were there before.", "small dim");
+  const caption = "A first heat of quenched, mostly amorphous PET, read the way the software reads it. The glass transition is a step, not a peak. Above it the chains can move, so the sample crystallizes during the scan (the exotherm, up), and those crystals then melt with everything else (the endotherm, down). Each peak is integrated against a straight baseline between limits chosen on flat curve either side, and the areas are reported per gram of sample. Only the difference between them is crystallinity the sample had before the scan.";
+  const source = "Model curve: T<sub>g</sub> step &#916;c<sub>p</sub>&nbsp;=&nbsp;0.30&nbsp;J/(g&nbsp;K) and Gaussian peaks of 24.0 and 39.0&nbsp;J/g, which the integrations recover. &#916;H<sub>m</sub><sup>0</sup>&nbsp;=&nbsp;140&nbsp;J/g for PET (TA Instruments TN048, after Wunderlich). For a filled or blended sample divide by the polymer&rsquo;s mass fraction as well. Melting is reported as the peak temperature for polymers (ISO 11357-3); calibration standards use the extrapolated onset.";
+  return panel("dsc-reading", "A DSC first heat of quenched PET, exotherm up: a glass transition step near 78 degrees, a cold crystallization exotherm near 134 degrees and a melting endotherm near 250 degrees, each peak shaded where it is integrated, with the crystallinity worked out beside it.", 680, 240, b, caption, source);
+}
+
+// 24. one Tg step, four standard midpoints
+function tgDefinitions() {
+  // apparent heat capacity, J/(g K): glass line, a step, and an enthalpy-
+  // relaxation overshoot of the kind an aged glass shows on reheating
+  const cg = (T) => 1.20 + 0.004 * (T - 60), DC = 0.30;
+  const cl = (T) => cg(T) + DC;
+  const c = (T) => cg(T) + DC / (1 + Math.exp(-(T - 80) / 2.4)) + 0.12 * Math.exp(-0.5 * ((T - 86.0) / 2.2) * ((T - 86.0) / 2.2));
+  const TA = 60, TZ = 105;
+  // inflection: steepest point of c(T) on the rising side
+  let tInf = 0, sMax = -1;
+  for (let T = 72; T <= 81; T += 0.01) { const s = (c(T + 0.01) - c(T - 0.01)) / 0.02; if (s > sMax) { sMax = s; tInf = T; } }
+  // half step: c is halfway between the extrapolated glass and liquid lines (DIN 51007, ASTM E1356 midpoint)
+  let tHalf = 0;
+  for (let T = 70; T <= 90; T += 0.005) { if (c(T) >= (cg(T) + cl(T)) / 2) { tHalf = T; break; } }
+  // onset and end: the inflectional tangent meeting the two lines
+  const cInf = c(tInf), tOn = tInf - (cInf - cg(tInf)) / (sMax - 0.004), tEnd = tInf + (cl(tInf) - cInf) / (sMax - 0.004);
+  // equal areas / fictive temperature (Richardson; preferred by ISO 11357-2)
+  let area = 0;
+  for (let T = TA; T <= TZ; T += 0.005) area += (c(T) - cg(T)) * 0.005;
+  const tFic = TZ - area / DC;
+  const X0 = 50, Y0 = 26, X1 = 440, Y1 = 196, YA = 1.1, YZ = 1.85;
+  const sx = (T) => X0 + (T - TA) / (TZ - TA) * (X1 - X0), sy = (v) => Y1 - (v - YA) / (YZ - YA) * (Y1 - Y0);
+  let b = axes(X0, Y0, X1, Y1);
+  // extrapolated glass and liquid lines
+  [[cg, "glass"], [cl, "liquid"]].forEach(([fn, lab]) => {
+    b += '<line x1="' + f1(sx(TA)) + '" y1="' + f1(sy(fn(TA))) + '" x2="' + f1(sx(TZ)) + '" y2="' + f1(sy(fn(TZ))) + '" stroke="' + DIM + '" stroke-width="1" stroke-dasharray="4 4"/>';
+  });
+  b += text(sx(TZ) - 4, sy(cl(TZ)) - 6, "liquid line", "small dim", ' text-anchor="end"');
+  b += text(sx(TA) + 4, sy(cg(TA)) + 14, "glass line", "small dim");
+  // inflectional tangent
+  b += '<line x1="' + f1(sx(tOn - 2)) + '" y1="' + f1(sy(cInf + sMax * (tOn - 2 - tInf))) + '" x2="' + f1(sx(tEnd + 2)) + '" y2="' + f1(sy(cInf + sMax * (tEnd + 2 - tInf))) + '" stroke="' + DIM + '" stroke-width="1"/>';
+  const pts = [];
+  for (let i = 0; i <= 300; i++) { const T = TA + (TZ - TA) * i / 300; pts.push([sx(T), sy(c(T))]); }
+  b += '<path d="' + pathOf(pts) + '" fill="none" stroke="var(--text)" stroke-width="2.2"/>';
+  const marks = [[tFic, VIOLET, "fictive / equal areas"], [tOn, DIM, "onset"], [tHalf, GREEN, "half step"], [tInf, BLUE, "inflection"], [tEnd, DIM, "end"]];
+  marks.forEach(([T, col]) => {
+    b += '<line x1="' + f1(sx(T)) + '" y1="' + Y1 + '" x2="' + f1(sx(T)) + '" y2="' + f1(sy(c(T))) + '" stroke="' + col + '" stroke-width="1.4" stroke-dasharray="3 2"/>';
+    b += '<circle cx="' + f1(sx(T)) + '" cy="' + f1(sy(c(T))) + '" r="3" fill="' + col + '"/>';
+  });
+  b = xTicks(b, sx, Y1, [60, 70, 80, 90, 100]);
+  b += text((X0 + X1) / 2, Y1 + 32, "temperature (&#176;C)", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 40, Y0 - 12, "apparent c" + sub("p") + " (J g" + sup("&#8722;1") + " K" + sup("&#8722;1") + "), endo up", "small dim");
+  const XR = 466;
+  const rows = [[tFic, VIOLET, "fictive (equal areas)", "ISO 11357-2 preferred"], [tOn, DIM, "extrapolated onset", ""], [tHalf, GREEN, "half step height", "ASTM E1356, DIN 51007"], [tInf, BLUE, "inflection", "steepest point"], [tEnd, DIM, "extrapolated end", ""]];
+  rows.sort((p, q2) => p[0] - q2[0]).forEach(([T, col, name, std], i) => {
+    const y = 42 + i * 34;
+    b += '<circle cx="' + (XR + 4) + '" cy="' + (y - 4) + '" r="3.5" fill="' + col + '"/>';
+    b += text(XR + 14, y, T.toFixed(1) + " &#176;C, " + name, "small");
+    if (std) b += text(XR + 14, y + 15, std, "small dim");
+  });
+  const caption = "One glass transition, five numbers. On a step with an enthalpy-relaxation peak, the kind an aged or slowly cooled glass shows on reheating, the standard constructions spread over several kelvin, and the fictive temperature lands below the midpoints because the overshoot is extra enthalpy recovered on heating. A DSC T<sub>g</sub> is therefore incomplete without its construction, its scan (first or second heat) and its rate. TRIOS offers onset, end, inflection, half height, half width and fictive temperature; STARe offers its own bisector midpoint, DIN, ASTM/IEC and Richardson. Pick one, report it, and use it for every sample you compare.";
+  const source = "Constructions computed on a model step (&#916;c<sub>p</sub>&nbsp;=&nbsp;0.30&nbsp;J/(g&nbsp;K)) with an overshoot. ASTM E1356-25 and D3418-21 prefer the midpoint; ISO 11357-2:2020 prefers equal areas. Software options from TA Instruments TRIOS help and Mettler Toledo&rsquo;s note on glass-transition evaluation (HB401). Plotted as heat capacity, endotherm up, so the step rises.";
+  return panel("tg-definitions", "A DSC glass transition step with an enthalpy relaxation overshoot, plotted as apparent heat capacity, with five constructions marked: fictive temperature, extrapolated onset, half step height, inflection and extrapolated end, each with its computed temperature.", 680, 240, b, caption, source);
+}
+
+// 25. ASTM E1131 compositional analysis, nitrogen then air
+function tgaE1131() {
+  const BETA = 10 / 60, R = 8.314, SWITCH = 600, END = 750;
+  // components: mass fraction (%), activation energy (J/mol), DTG peak (deg C), atmosphere
+  const COMP = [
+    ["moisture", 1, 60e3, 95, "any", BLUE],
+    ["process oil", 14, 100e3, 300, "any", "#d08a3a"],
+    ["polymer", 52, 220e3, 465, "any", GREEN],
+    ["carbon black", 25, 160e3, 650, "air", "var(--text)"],
+  ];
+  const ASH = 100 - COMP.reduce((s, c) => s + c[1], 0);
+  const Afor = (Ea, Tp) => { const T = Tp + 273.15; return (Ea * BETA / (R * T * T)) * Math.exp(Ea / (R * T)); };
+  const state = COMP.map(() => 0);                             // conversion alpha of each component
+  const rows = [];
+  for (let T = 30; T <= END; T += 0.05) {
+    const K = T + 273.15;
+    let mass = ASH, dmdT = 0;
+    COMP.forEach(([name, w, Ea, Tp, atm], i) => {
+      const live = atm === "any" || T >= SWITCH;
+      if (live) {
+        const k = Afor(Ea, Tp) / BETA * Math.exp(-Ea / (R * K));
+        const da = k * (1 - state[i]) * 0.05;
+        state[i] = Math.min(1, state[i] + da);
+        dmdT += w * da / 0.05;
+      }
+      mass += w * (1 - state[i]);
+    });
+    rows.push([T, mass, dmdT]);
+  }
+  const at = (T) => rows.reduce((p, r) => (Math.abs(r[0] - T) < Math.abs(p[0] - T) ? r : p))[1];
+  const m150 = at(150), m380 = at(380), mSw = at(SWITCH - 1), mEnd = rows[rows.length - 1][1];
+  const X0 = 50, Y0 = 34, X1 = 470, Y1 = 196, TA = 30, TZ = END;
+  const sx = (T) => X0 + (T - TA) / (TZ - TA) * (X1 - X0), sy = (m) => Y1 - m / 100 * (Y1 - Y0);
+  let b = "";
+  b += '<rect x="' + f1(sx(SWITCH)) + '" y="' + Y0 + '" width="' + f1(sx(END) - sx(SWITCH)) + '" height="' + (Y1 - Y0) + '" fill="#d08a3a" fill-opacity="0.08"/>';
+  b += text((sx(TA) + sx(SWITCH)) / 2, Y0 - 8, "nitrogen", "small dim", ' text-anchor="middle"');
+  b += text((sx(SWITCH) + sx(END)) / 2, Y0 - 8, "air", "small dim", ' text-anchor="middle"');
+  b = yTicks(b, X0, X1, sy, [0, 25, 50, 75, 100]);
+  b += axes(X0, Y0, X1, Y1);
+  // DTG, scaled into the lower part of the frame
+  const dmax = Math.max(...rows.map((r) => r[2]));
+  b += '<path d="' + pathOf(rows.filter((r, i) => i % 6 === 0).map((r) => [sx(r[0]), Y1 - r[2] / dmax * 60])) + '" fill="none" stroke="' + BLUE + '" stroke-width="1.4" stroke-dasharray="4 3"/>';
+  b += '<path d="' + pathOf(rows.filter((r, i) => i % 6 === 0).map((r) => [sx(r[0]), sy(r[1])])) + '" fill="none" stroke="var(--text)" stroke-width="2.2"/>';
+  b += text(sx(470), Y1 - 52, "DTG", "small", tint(BLUE));
+  // step labels, from the curve
+  const lab = (T1, T2, y, s) => b += text((sx(T1) + sx(T2)) / 2, y, s, "small", ' text-anchor="middle"');
+  lab(150, 380, sy(m380) + 22, "oil " + (m150 - m380).toFixed(1) + "%");
+  b += text(sx(500), sy(62), "polymer " + (m380 - mSw).toFixed(1) + "%", "small");
+  lab(SWITCH, END, sy(mSw) - 8, "carbon " + (mSw - mEnd).toFixed(1) + "%");
+  b += text(sx(END) - 4, sy(mEnd) - 7, "ash " + mEnd.toFixed(1) + "%", "small", ' text-anchor="end"');
+  b = xTicks(b, sx, Y1, [100, 200, 300, 400, 500, 600, 700]);
+  b += text((X0 + X1) / 2, Y1 + 32, "temperature (&#176;C), 10 K/min", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 40, Y0 - 22, "mass (%)", "small dim");
+  const XR = 494;
+  b += text(XR, 44, "The program", "small");
+  ["Equilibrate at 30 &#176;C, N" + sub("2"), "Ramp 10 &#176;C/min to " + SWITCH + " &#176;C", "Select gas: air", "Ramp 10 &#176;C/min to " + END + " &#176;C"].forEach((s, i) => b += text(XR, 62 + i * 18, (i + 1) + ". " + s, "small dim"));
+  b += text(XR, 146, "Volatiles below ~150 &#176;C", "small dim");
+  b += text(XR, 162, "are moisture; oil and", "small dim");
+  b += text(XR, 178, "polymer leave in N" + sub("2") + ";", "small dim");
+  b += text(XR, 196, "what burns only in air is", "small dim");
+  b += text(XR, 212, "carbon; what is left is ash.", "small dim");
+  const caption = "A compositional run on a filled rubber compound, the classic use of TGA. Under nitrogen the volatile and organic fractions leave in order of volatility: moisture, then process oil, then the polymer itself, while carbon black survives. Switching the purge to air at 600&nbsp;&deg;C burns the carbon off, and whatever remains is mineral ash. Read each fraction from the plateaus either side of its step, using the derivative (DTG) to place the boundaries where steps overlap. One caution the standard itself makes: the air step is all combustible residue, so char left by the polymer counts as &ldquo;carbon black&rdquo; too.";
+  const source = "Program after the thermoplastics example in ASTM E1131-20 (10&nbsp;&deg;C/min, N<sub>2</sub> to 600&nbsp;&deg;C, then air); the current E1131-25 leaves the switch temperature to the material. Curve computed from first-order Arrhenius kinetics for each component (moisture 1, oil 14, polymer 52, carbon black 25, ash 8&nbsp;wt%); the step sizes read off the curve recover them to within half a percent. Keep the balance purge inert when the sample gas switches to air.";
+  return panel("tga-e1131", "A TGA compositional analysis of a filled rubber: mass against temperature at 10 K/min, nitrogen to 600 degrees then air, with steps for moisture, oil and polymer, a carbon step after the switch to air, and the ash residue, plus the derivative curve.", 680, 240, b, caption, source);
+}
+
+// 26. three DMA glass transitions from one curve
+function dmaTgMarkers() {
+  // Cole-Cole relaxation with a Vogel-Fulcher time scale, at 1 Hz
+  const EG = 2.2e9, ER = 2e7, AL = 0.70, W = 2 * Math.PI * 1;
+  // T0 is kept 70 K below TSTAR and B set so the transition moves about 6 K per
+  // decade of frequency near TSTAR, typical of a DMA glass transition
+  const TSTAR = 420.15, T0 = 350.15, B = 1852;                 // omega*tau = 1 at TSTAR
+  const lnX = (K) => B * (1 / (K - T0) - 1 / (TSTAR - T0));   // ln(omega tau), computed directly so it cannot overflow
+  const mod = (C) => {
+    const K = C + 273.15;
+    // (i x)^a = x^a (cos(a pi/2) + i sin(a pi/2))
+    const xa = Math.exp(AL * lnX(K)), cr = 1 + xa * Math.cos(AL * Math.PI / 2), ci = xa * Math.sin(AL * Math.PI / 2);
+    const den = cr * cr + ci * ci;
+    return [EG - (EG - ER) * cr / den, (EG - ER) * ci / den];
+  };
+  const TA = 100, TZ = 200;
+  const T = [], E1 = [], E2 = [], TD = [];
+  for (let C = TA; C <= TZ; C += 0.05) { const [a, d0] = mod(C), d = d0 + 0.012 * a; T.push(C); E1.push(a); E2.push(d); TD.push(d / a); }
+  const argmax = (arr) => arr.reduce((bi, v, i) => (v > arr[bi] ? i : bi), 0);
+  const tE2 = T[argmax(E2)], tTD = T[argmax(TD)];
+  // ASTM E1640: tangent to log E' before the transition meets the tangent at its steepest point
+  const L = E1.map((v) => Math.log10(v));
+  let iS = 0, sMin = 0;
+  for (let i = 1; i < L.length - 1; i++) { const s = (L[i + 1] - L[i - 1]) / (T[i + 1] - T[i - 1]); if (s < sMin) { sMin = s; iS = i; } }
+  const i0 = T.findIndex((x) => x >= 110), i1 = T.findIndex((x) => x >= 125);
+  const s0 = (L[i1] - L[i0]) / (T[i1] - T[i0]);
+  const tOn = (L[iS] - sMin * T[iS] - (L[i0] - s0 * T[i0])) / (s0 - sMin);
+  if (!(tOn < tE2 && tE2 < tTD)) throw new Error("DMA markers out of the expected order: " + [tOn, tE2, tTD]);
+  const X0 = 58, Y0 = 26, X1 = 430, Y1 = 196, LA = 6, LZ = 9.6;
+  const sx = (C) => X0 + (C - TA) / (TZ - TA) * (X1 - X0), sy = (l) => Y1 - (l - LA) / (LZ - LA) * (Y1 - Y0);
+  const TDMAX = 1.5, sy2 = (v) => Y1 - v / TDMAX * (Y1 - Y0);
+  let b = "";
+  [7, 8, 9].forEach((l) => b += text(X0 - 6, sy(l) + 4, "10" + sup(String(l)), "small dim", ' text-anchor="end"'));
+  [0.5, 1, 1.5].forEach((v) => b += text(X1 + 6, sy2(v) + 4, v.toFixed(1), "small dim"));
+  b += axes(X0, Y0, X1, Y1);
+  b += '<line x1="' + X1 + '" y1="' + Y0 + '" x2="' + X1 + '" y2="' + Y1 + '" stroke="' + BORDER + '" stroke-width="1.2"/>';
+  const path = (ys, fn) => pathOf(T.filter((x, i) => i % 8 === 0).map((x, k) => [sx(x), fn(ys[k * 8])]));
+  b += '<path d="' + path(L, sy) + '" fill="none" stroke="var(--text)" stroke-width="2.2"/>';
+  b += '<path d="' + path(E2.map((v) => Math.max(Math.log10(v), LA)), sy) + '" fill="none" stroke="' + GREEN + '" stroke-width="2"/>';
+  b += '<path d="' + path(TD, sy2) + '" fill="none" stroke="' + VIOLET + '" stroke-width="2" stroke-dasharray="6 3"/>';
+  // the E1640 construction
+  b += '<line x1="' + f1(sx(100)) + '" y1="' + f1(sy(L[i0] + s0 * (100 - T[i0]))) + '" x2="' + f1(sx(tOn + 6)) + '" y2="' + f1(sy(L[i0] + s0 * (tOn + 6 - T[i0]))) + '" stroke="' + DIM + '" stroke-width="1"/>';
+  b += '<line x1="' + f1(sx(tOn - 4)) + '" y1="' + f1(sy(L[iS] + sMin * (tOn - 4 - T[iS]))) + '" x2="' + f1(sx(T[iS] + 6)) + '" y2="' + f1(sy(L[iS] + sMin * (T[iS] + 6 - T[iS]))) + '" stroke="' + DIM + '" stroke-width="1"/>';
+  [[tOn, "var(--text)"], [tE2, GREEN], [tTD, VIOLET]].forEach(([C, col]) => {
+    b += '<line x1="' + f1(sx(C)) + '" y1="' + Y0 + '" x2="' + f1(sx(C)) + '" y2="' + Y1 + '" stroke="' + col + '" stroke-width="1" stroke-dasharray="2 3"/>';
+  });
+  b = xTicks(b, sx, Y1, [100, 125, 150, 175, 200]);
+  b += text((X0 + X1) / 2, Y1 + 32, "temperature (&#176;C), 1 Hz", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 44, Y0 - 12, "E&#8242;, E&#8243; (Pa)", "small dim");
+  b += text(X1 + 30, Y0 - 12, "tan &#948;", "small dim", ' text-anchor="end"');
+  const XR = 470;
+  const rows = [[tOn, "var(--text)", "E&#8242; onset", "ASTM E1640: the Tg", ""], [tE2, GREEN, "E&#8243; peak", "", ""], [tTD, VIOLET, "tan &#948; peak", "highest, most quoted", "6 3"]];
+  rows.forEach(([C, col, name, note, dash], i) => {
+    const y = 46 + i * 40;
+    b += '<line x1="' + XR + '" y1="' + (y - 4) + '" x2="' + (XR + 20) + '" y2="' + (y - 4) + '" stroke="' + col + '" stroke-width="2"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>";
+    b += text(XR + 26, y, name + ": " + C.toFixed(1) + " &#176;C", "small");
+    if (note) b += text(XR + 26, y + 15, note, "small dim");
+  });
+  b += text(XR, 178, "E1640 also requires the", "small dim");
+  b += text(XR, 194, "axis scale be stated: on a", "small dim");
+  b += text(XR, 210, "linear E&#8242; axis the onset", "small dim");
+  b += text(XR, 226, "moves.", "small dim");
+  const caption = "Three glass transitions from one DMA run. The storage modulus E&#8242; (black, log scale) falls three decades; the loss modulus E&#8243; (green) peaks partway down; and tan&nbsp;&#948;&nbsp;=&nbsp;E&#8243;/E&#8242; (violet, right axis) peaks last, because E&#8242; is still falling after E&#8243; has turned over. The order is always the same, onset before E&#8243; peak before tan&nbsp;&#948; peak, but the gaps are not a constant that can be subtracted: they depend on how broad the transition is. ASTM E1640 takes the onset, which is the temperature at which the material starts to lose stiffness and the conservative number for design.";
+  const source = "Computed from a Cole&ndash;Cole relaxation (&#945;&nbsp;=&nbsp;0.7, glassy 2.2&nbsp;GPa, rubbery 20&nbsp;MPa, plus a background tan&nbsp;&#948; of 0.012) with a Vogel&ndash;Fulcher time scale moving about 6&nbsp;K per decade of frequency, at 1&nbsp;Hz; E1640 onset by the two-tangent construction on log&nbsp;E&#8242;. ASTM E1640-23 specifies 1&nbsp;Hz and 1&nbsp;&deg;C/min. For a measured comparison, TA Instruments&rsquo; polycarbonate example (TA082) gives 141.8, 147.1 and 151.5&nbsp;&deg;C at 1&nbsp;Hz and 3&nbsp;&deg;C/min.";
+  return panel("dma-tg", "DMA storage modulus, loss modulus and tan delta against temperature through a glass transition at 1 Hz, with the ASTM E1640 onset construction on the storage modulus and the three glass transition markers in their usual order.", 680, 250, b, caption, source);
+}
+
 // Diagrams that live on generated family pages. build-family-pages.js writes
 // those pages whole, so it calls these builders itself rather than having this
 // script patch its output.
@@ -1382,7 +1695,7 @@ if (require.main === module) {
     let s = fs.readFileSync(f, "utf8");
     const E = s.indexOf("\r\n") !== -1 ? "\r\n" : "\n";
     const html = job.build().split("\n").join(E);
-    const name = /diagram:([a-z-]+):start/.exec(html)[1];
+    const name = /diagram:([a-z0-9-]+):start/.exec(html)[1];
     const start = "<!-- diagram:" + name + ":start -->", end = "<!-- diagram:" + name + ":end -->";
     let next;
     const a = s.indexOf(start), z = s.indexOf(end);

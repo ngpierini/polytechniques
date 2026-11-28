@@ -16,6 +16,7 @@
     ["mechanisms.html", "⚛️ Mechanisms"],
     ["air-free-technique.html", "💨 Air-Free"],
     ["conversion-monitoring.html", "📊 Conversion"],
+    ["thermal-instrument-guide.html", "🌡️ Running DSC/TGA/DMA"],
     ["end-group-analysis.html", "🔬 End Groups"],
     ["gpc-peak-interpretation.html", "📉 GPC Peaks"],
     ["gpc-trace.html", "📈 GPC Trace"],
@@ -118,6 +119,7 @@
     ["mechanisms.html", "Polymerization Mechanisms", "atrp raft romp frp scheme controlled radical"],
     ["air-free-technique.html", "Air-Free Reaction Setup", "schlenk line freeze pump thaw degas inert"],
     ["conversion-monitoring.html", "Monitoring Conversion", "aliquot internal standard kinetics nmr"],
+    ["thermal-instrument-guide.html", "Running DSC, TGA and DMA", "trios stare ta instruments mettler toledo method astm d3418 e1131 e1640 calibration indium"],
     ["gpc-peak-interpretation.html", "GPC Peak Interpretation", "chromatogram shoulder tailing column detector"],
     ["thermal-analysis.html", "Thermal Analysis (DSC, TGA, DMA)", "dsc tga dma thermal thermogravimetric differential scanning calorimetry dynamic mechanical analysis glass transition tg melting tm crystallinity char yield decomposition onset storage loss modulus tan delta crosslink density"],
     ["calculator.html#sg", "Step-Growth & Gel Point", "carothers gel point flory stockmayer functionality stoichiometry conversion xn thermoset network cure polyester polyamide endcapper"],
@@ -907,7 +909,7 @@
   }
 
   // ---- "On this page" sticky jump nav for the long guide pages ----
-  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html", "thermal-analysis.html", "end-group-analysis.html", "hydrogel-mesh-size.html"];
+  var TOC_PAGES = ["gpc-peak-interpretation.html", "mechanisms.html", "conversion-monitoring.html", "dispersity-predictor.html", "thermal-analysis.html", "thermal-instrument-guide.html", "end-group-analysis.html", "hydrogel-mesh-size.html"];
 
   function buildSectionNav(current) {
     // Compare through pageKey. The list is written with ".html" for
