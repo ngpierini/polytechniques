@@ -85,13 +85,14 @@ const FAMILIES = [
     lede: "An inorganic backbone with the lowest glass transition and the highest gas permeability in common use",
     match: e => e.cls === "Ring-opening (silicone)",
     intro: [
-      "A siloxane chain is not a carbon backbone at all. Alternating silicon and oxygen atoms, &ndash;[Si(R<sub>2</sub>)&ndash;O]&ndash;, give the family a set of properties no organic polymer matches, and the reasons are all geometric. The Si&ndash;O bond is longer than C&ndash;C (about 1.64&nbsp;&Aring; against 1.54&nbsp;&Aring;), the Si&ndash;O&ndash;Si angle is far wider than a tetrahedral carbon's (roughly 140&deg; against 109.5&deg;), and the barrier to rotation about the bond is close to nothing. The chain is exceptionally limber.",
+      "A siloxane chain is not a carbon backbone at all. Alternating silicon and oxygen atoms, &ndash;[Si(R<sub>2</sub>)&ndash;O]&ndash;, give the family a set of properties no organic polymer matches, and the reasons are all geometric. The Si&ndash;O bond is longer than C&ndash;C (about 1.64&nbsp;&Aring; against 1.54&nbsp;&Aring;), the Si&ndash;O&ndash;Si angle is far wider than a tetrahedral carbon's (143&deg; against 109.5&deg;), and the barrier to rotation about the bond is close to nothing. The chain is exceptionally limber.",
       "Poly(dimethylsiloxane) shows what that buys. Its glass transition is &minus;125&nbsp;&deg;C &ndash; the lowest of any polymer in ordinary use &ndash; so it stays rubbery through the whole range a terrestrial application will ever see. Its gas permeability is the highest of the common polymers, which is why it turns up as a membrane material and in oxygen-permeable contact lenses. Its surface energy is very low, which is what makes it a release coating, an antifoam, and a mould-making rubber. And the Si&ndash;O bond is strong enough that the family tolerates heat and oxidation that would degrade a hydrocarbon.",
     ],
     design: [
       "Most siloxanes are made by ring-opening the cyclic oligomers rather than by condensing silanols: the tetramer D<sub>4</sub> and trimer D<sub>3</sub> are opened under acid or base catalysis. The distinction matters in practice. Anionic ring-opening of the strained trimer can be run as a living polymerisation and gives a defined molecular weight and narrow distribution; equilibration of the unstrained tetramer instead settles into a thermodynamic mixture of chains and rings, giving a broad product that always contains residual cyclics.",
       "The two substituents on each silicon are where the family diversifies. Replacing methyl with phenyl stiffens the chain, raises the refractive index, and improves radiation resistance. A trifluoropropyl group buys resistance to fuels and hydrocarbon oils that a dimethyl silicone swells in badly. Hydride and vinyl substituents are reactive handles rather than property modifiers: a hydride on silicon adds across a vinyl on another chain under a platinum catalyst, and that hydrosilylation is the addition cure behind most two-part silicone rubbers. Aminopropyl, epoxy and polyether substituents make the chain compatible with organic resins or with water, which is how silicone surfactants and copolymer coatings are built.",
     ],
+    diagram: "siloxaneChain",
     related: [
       ["crosslink-density.html", "Crosslink density &ndash; network calculations for cured silicone rubber"],
       ["polymer-search.html", "Structure search &ndash; draw a siloxane repeat unit to identify it"],
@@ -180,9 +181,10 @@ const FAMILIES = [
     ],
     design: [
       "The numbering encodes the synthesis. A single number &ndash; nylon 6, nylon 11, nylon 12 &ndash; means an AB monomer, one molecule carrying both an amine and an acid (or the lactam that ring-opens to it), so the chain is built from one feedstock and stoichiometry looks after itself. Two numbers &ndash; nylon 6,6, nylon 6,10 &ndash; mean an AABB pair, a diamine of the first count condensed with a diacid of the second, where the ratio has to be controlled precisely for the chain to grow. The digits are simply the carbon counts.",
-      "Amide density sets the thermal properties, and diluting it with hydrocarbon lowers everything together. Nylon 6 melts at 220&nbsp;&deg;C and nylon 6,6 at 265&nbsp;&deg;C; stretch the diacid and nylon 6,10 falls to 215&nbsp;&deg;C; go to the long single-monomer nylons and nylon 11 melts at 190&nbsp;&deg;C and nylon 12 at 178&nbsp;&deg;C. The glass transitions move far less &ndash; they sit in a narrow band from about 41&nbsp;&deg;C to 57&nbsp;&deg;C across that whole range &ndash; because T<sub>g</sub> reflects local backbone mobility while T<sub>m</sub> reflects how well the crystal packs.",
+      "Amide density sets the thermal properties, and diluting it with hydrocarbon lowers everything together. Nylon 6 melts at 220&nbsp;&deg;C and nylon 6,6 at 265&nbsp;&deg;C; stretch the diacid and nylon 6,10 falls to 220&nbsp;&deg;C; go to the long single-monomer nylons and nylon 11 melts at 189&nbsp;&deg;C and nylon 12 at 178&nbsp;&deg;C. The glass transitions move far less &ndash; they sit in a narrow band from about 41&nbsp;&deg;C to 57&nbsp;&deg;C across that whole range &ndash; because T<sub>g</sub> reflects local backbone mobility while T<sub>m</sub> reflects how well the crystal packs.",
       "The same hydrogen bonds absorb water from the air, and absorbed water sits between chains and plasticises them. A dry nylon 6,6 moulding and the same moulding conditioned to equilibrium in a humid room are measurably different materials: the conditioned one is tougher and less brittle but lower in modulus and dimensionally larger. Nylons are therefore specified conditioned rather than dry, and the long-chain nylons 11 and 12 are chosen where dimensional stability matters precisely because their lower amide density takes up much less water. The aromatic polyamides at the far end of the family &ndash; the aramids &ndash; hydrogen-bond so effectively between rigid rods that they do not melt at all and have to be spun from solution.",
     ],
+    diagram: "polyamideMelting",
     related: [
       ["polyesters.html", "Polyesters &ndash; the same step-growth with an ester in place of the amide"],
       ["calculator.html#sg", "Step-growth calculator &ndash; conversion, stoichiometry and the gel point"],
@@ -597,8 +599,8 @@ const CITED = [
   // polyamides
   ["Nylon 6", "tm", "220 °C"],
   ["Nylon 6,6", "tm", "265 °C"],
-  ["Nylon 6,10", "tm", "215 °C"],
-  ["Nylon 11", "tm", "190 °C"],
+  ["Nylon 6,10", "tm", "220 °C"],
+  ["Nylon 11", "tm", "189 °C"],
   ["Nylon 12", "tm", "178 °C"],
   ["Nylon 12", "tg", "41 °C"],
   ["Nylon 6,6", "tg", "57 °C"],

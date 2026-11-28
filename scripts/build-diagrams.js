@@ -1908,6 +1908,125 @@ function dmaMultiFreq() {
   return panel("dma-multifreq", "Left: tan delta against temperature at 0.1, 1, 10 and 30 Hz, the peak moving to higher temperature with frequency. Right: an Arrhenius plot of frequency against inverse loss-modulus peak temperature, giving an apparent activation energy of about 530 kJ/mol.", 680, 240, b, caption, source);
 }
 
+// ---- family pages: nylon melting points against amide density ---------------
+// Every point is a library entry with a sourced melting point; amide density is
+// counted from the entry's own repeat-unit atoms (N per C+N on the backbone),
+// so neither axis is typed here. Polyethylene is the no-amide limit.
+function libraryDB() {
+  global.window = global.window || {};
+  if (!global.window.POLYMER_DB) require(path.join(ROOT, "polymer-data.js"));
+  return global.window.POLYMER_DB;
+}
+function polyamideMelting() {
+  const DB = libraryDB();
+  const NYLONS = ["Nylon 6", "Nylon 6,6", "Nylon 6,10", "Nylon 11", "Nylon 12"];
+  const pts = NYLONS.map((name) => {
+    const e = DB.find((x) => x.name === name);
+    if (!e || !e.tmSource) throw new Error("polyamideMelting: " + name + " needs a sourced tm");
+    const n = e.atoms.filter((a) => a.el === "N").length, back = e.atoms.filter((a) => a.el === "N" || a.el === "C").length;
+    return { name: name.replace("Nylon ", "nylon "), x: 100 * n / back, tm: parseFloat(e.tm) };
+  });
+  // Odian Table 1-3 (Brandrup data): linear polyethylene, Tm 137 C
+  pts.push({ name: "polyethylene", x: 0, tm: 137 });
+  const X0 = 70, X1 = 470, Y0 = 24, Y1 = 254, XMAX = 16, TMIN = 120, TMAX = 280;
+  const sx = (x) => X0 + x / XMAX * (X1 - X0), sy = (t) => Y1 - (t - TMIN) / (TMAX - TMIN) * (Y1 - Y0);
+  let b = axes(X0, Y0, X1, Y1);
+  for (let t = 140; t <= 280; t += 20) {
+    b += '<line x1="' + X0 + '" y1="' + f1(sy(t)) + '" x2="' + X1 + '" y2="' + f1(sy(t)) + '" stroke="' + BORDER + '" stroke-width="0.6" stroke-dasharray="2 4"/>';
+    b += text(X0 - 8, sy(t) + 4, String(t), "small dim", ' text-anchor="end"');
+  }
+  for (let x = 0; x <= XMAX; x += 4) b += text(sx(x), Y1 + 16, String(x), "small dim", ' text-anchor="middle"');
+  b += text((X0 + X1) / 2, Y1 + 34, "amide groups per 100 backbone atoms", "small dim", ' text-anchor="middle"');
+  b += text(X0 - 46, (Y0 + Y1) / 2, "T" + sub("m") + " (&#176;C)", "small dim", ' text-anchor="middle" transform="rotate(-90 ' + (X0 - 46) + " " + f1((Y0 + Y1) / 2) + ')"');
+  // same density, different melt: the bracket between nylon 6 and nylon 6,6
+  const p6 = pts.find((p) => p.name === "nylon 6"), p66 = pts.find((p) => p.name === "nylon 6,6");
+  if (Math.abs(p6.x - p66.x) > 1e-9) throw new Error("polyamideMelting: nylon 6 and 6,6 no longer share an amide density");
+  const bx = sx(p6.x) + 16;
+  b += '<path d="M' + f1(bx) + "," + f1(sy(p66.tm)) + " h6 V" + f1(sy(p6.tm)) + ' h-6" fill="none" stroke="' + DIM + '" stroke-width="1"/>';
+  b += text(bx + 10, (sy(p66.tm) + sy(p6.tm)) / 2 + 4, (p66.tm - p6.tm) + " K", "small dim");
+  pts.forEach((p) => {
+    const pe = p.x === 0, col = pe ? DIM : BLUE;
+    b += '<circle cx="' + f1(sx(p.x)) + '" cy="' + f1(sy(p.tm)) + '" r="5" fill="' + col + '"/>';
+    // label placement: left of the point for 6,6 and 6,10 (6,10 shares nylon 6's height), below for nylon 6
+    const left = p.name === "nylon 6,6" || p.name === "nylon 6,10", below = p.name === "nylon 6";
+    const lx = below ? sx(p.x) : sx(p.x) + (left ? -9 : 9), ly = sy(p.tm) + (below ? 20 : p.name === "nylon 12" ? 14 : 4);
+    b += text(lx, ly, p.name + " " + p.tm, "small", below ? ' text-anchor="middle"' : left ? ' text-anchor="end"' : "");
+  });
+  // key
+  const XK = 500;
+  b += text(XK, 50, "More amide groups per", "small dim") + text(XK, 64, "chain: more hydrogen", "small dim") + text(XK, 78, "bonds in the crystal,", "small dim") + text(XK, 92, "higher melting point.", "small dim");
+  b += text(XK, 124, "Spacing is not the", "small dim") + text(XK, 138, "whole story: nylon 6", "small dim") + text(XK, 152, "and 6,6 have the same", "small dim") + text(XK, 166, "density and melt " + (p66.tm - p6.tm) + " K", "small dim") + text(XK, 180, "apart.", "small dim");
+  const caption = "Each amide group in a nylon can hydrogen-bond to its neighbour in the crystal, and those bonds are what the melt has to break. Dilute them with methylene and the melting point falls toward polyethylene's, the limit with no amide groups at all: nylon 6,6 and nylon 6 at one amide per seven backbone atoms, nylon 6,10 at one per nine, nylon 11 and 12 at one per twelve and thirteen. Density is not everything, though. Nylon 6 and nylon 6,6 carry exactly the same number of amides per backbone atom and melt " + (p66.tm - p6.tm) + " K apart, which is about how the amides line up from chain to chain, not how many there are.";
+  const source = "Melting points from the library's entries: nylon 6,6 from Odian, <i>Principles of Polymerization</i>, 4th ed., Table 1-3; nylon 6, 11, 12 and 6,10 from the makers' datasheets (BASF Ultramid, Arkema Rilsan, Evonik Vestamid; DSC at 10 &#176;C/min, ISO 11357). Polyethylene: Odian, Table 1-3, 137 &#176;C for ideal linear polyethylene (commercial HDPE melts nearer 130 &#176;C). Amide density counted from each repeat unit.";
+  return panel("polyamide-melting", "Melting temperature against amide groups per 100 backbone atoms for nylon 6, 6,6, 6,10, 11 and 12, with polyethylene at zero amide density. The melting point rises with amide density; nylon 6 and 6,6 share a density but melt " + (p66.tm - p6.tm) + " K apart.", 680, Y1 + 46, b, caption, source);
+}
+
+// ---- family pages: the all-trans siloxane chain ------------------------------
+// A planar all-trans chain turns by (180 - bond angle) at each atom, alternating
+// sides. With equal angles (a carbon chain) the turns cancel and the chain runs
+// straight; with 110 at silicon and 143 at oxygen they leave 33 degrees per
+// repeat unit, so the chain closes into a ring after 360/33, about 11 units.
+function allTrans(n, lenA, angA, lenB, angB) {
+  // bonds alternate A-type then B-type; the angle at an atom is set by the atom, which alternates too
+  const pts = [[0, 0]];
+  // start half a turn back, so a chain with equal angles zigzags along the x axis
+  let th = -(Math.PI - angB * Math.PI / 180) / 2, sign = 1;
+  for (let i = 0; i < n; i++) {
+    const L = i % 2 ? lenB : lenA;
+    const [x, y] = pts[pts.length - 1];
+    pts.push([x + L * Math.cos(th), y + L * Math.sin(th)]);
+    const ang = i % 2 ? angA : angB;          // the atom just reached
+    th += sign * (Math.PI - ang * Math.PI / 180);
+    sign = -sign;
+  }
+  return pts;
+}
+function siloxaneChain() {
+  const SIO = 1.64, A_SI = 110, A_O = 143, CC = 1.54, A_C = 109.5;
+  const turn = (180 - A_SI) - (180 - A_O), units = 360 / turn;
+  if (Math.abs(units - 10.9) > 0.15) throw new Error("siloxaneChain: closure moved to " + units);
+  const NB = 22, S = 17;                       // bonds drawn; px per angstrom
+  // carbon chain, straight zigzag, laid along the top
+  const cc = allTrans(NB, CC, A_C, CC, A_C);
+  const cMinY = Math.min(...cc.map((p) => p[1]));
+  const cx0 = 60, cy0 = 54;
+  const cpt = cc.map(([x, y]) => [cx0 + x * S, cy0 + (y - cMinY) * S]);
+  // siloxane ring: start at Si, first bond Si-O; centre it in the lower panel
+  const si = allTrans(NB, SIO, A_SI, SIO, A_O);
+  const xs = si.map((p) => p[0]), ys = si.map((p) => p[1]);
+  const sxm = (Math.min(...xs) + Math.max(...xs)) / 2, sym = (Math.min(...ys) + Math.max(...ys)) / 2;
+  const RX = 190, RY = 262;
+  const spt = si.map(([x, y]) => [RX + (x - sxm) * S, RY + (y - sym) * S]);
+  let b = "";
+  const atom = (p, r, fill, lab) => '<circle cx="' + f1(p[0]) + '" cy="' + f1(p[1]) + '" r="' + r + '" fill="' + fill + '" stroke="var(--bg)" stroke-width="1.5"/>' + (lab ? text(p[0], p[1] + 3.5, lab, "small", ' text-anchor="middle" style="fill:var(--bg);font-size:10px;font-weight:600"') : "");
+  // carbon chain
+  b += text(cx0, 26, "Carbon chain, all-trans: C&#8211;C " + CC.toFixed(2) + " &#197;, " + A_C + "&#176; at every atom", "small");
+  b += '<path d="' + pathOf(cpt) + '" fill="none" stroke="var(--text)" stroke-width="2.2" stroke-linejoin="round"/>';
+  cpt.forEach((p) => { b += atom(p, 4.5, "var(--text)"); });
+  b += text(cpt[cpt.length - 1][0] + 14, cpt[cpt.length - 1][1] + 4, "runs straight", "small dim");
+  // siloxane chain
+  b += text(cx0, 146, "Siloxane chain, all-trans: Si&#8211;O " + SIO.toFixed(2) + " &#197;, " + A_SI + "&#176; at Si, " + A_O + "&#176; at O", "small");
+  b += '<path d="' + pathOf(spt) + '" fill="none" stroke="var(--text)" stroke-width="2.2" stroke-linejoin="round"/>';
+  spt.forEach((p, i) => { b += i % 2 ? atom(p, 6, BLUE, "O") : atom(p, 8, VIOLET, "Si"); });
+  // the chain starts and, 11 units on, ends at the same atom position: say so in the empty middle of the ring
+  b += text(RX, RY - 4, "after " + (NB / 2) + " units the chain", "small dim", ' text-anchor="middle"');
+  b += text(RX, RY + 10, "is back where it started", "small dim", ' text-anchor="middle"');
+  const XK = 410;
+  b += text(XK, 196, "The two angles do not match,", "small dim");
+  b += text(XK, 210, "so the turns do not cancel:", "small dim");
+  b += text(XK, 224, "(180 &#8722; " + A_SI + ") &#8722; (180 &#8722; " + A_O + ") = " + turn + "&#176; per unit.", "small");
+  b += text(XK, 248, "360 / " + turn + " = " + units.toFixed(1) + " repeat units,", "small");
+  b += text(XK, 262, "and the extended chain", "small dim");
+  b += text(XK, 276, "has closed into a ring.", "small dim");
+  b += text(XK, 304, "Real chains are not all-trans;", "small dim");
+  b += text(XK, 318, "this is why PDMS cannot pack", "small dim");
+  b += text(XK, 332, "into an extended zigzag and", "small dim");
+  b += text(XK, 346, "why its coil is so compact.", "small dim");
+  const caption = "Draw both chains in their most extended conformation, every bond trans, and the difference is obvious. A carbon chain has the same angle at every atom, so its turns cancel and it runs straight. A siloxane alternates a " + A_SI + "&#176; angle at silicon with a " + A_O + "&#176; angle at oxygen; each repeat unit leaves " + turn + "&#176; of turn uncancelled, and after about " + Math.round(units) + " units the &ldquo;extended&rdquo; chain has come round in a circle. Add the long Si&#8211;O bond and a near-zero barrier to rotation and you have the most flexible backbone in common use, with the lowest glass transition.";
+  const source = "Bond lengths and angles: J. E. Mark, <i>Acc. Chem. Res.</i> 37 (2004) 946, and J. E. Mark, D. S. Chiu, T.-K. Su, <i>Polymer</i> 19 (1978) 407 (Si&#8211;O 1.64 &#197;, Si&#8211;O&#8211;Si 143&#176;, O&#8211;Si&#8211;O 110&#176;; the all-trans chain closes after about eleven units). Both chains are drawn to the same scale from these values.";
+  return panel("siloxane-chain", "A carbon chain and a siloxane chain drawn to scale in the all-trans conformation. The carbon chain runs straight; the siloxane chain, with 110 degree angles at silicon and 143 at oxygen, curves round and closes into a ring after about eleven repeat units.", 680, 372, b, caption, source);
+}
+
 // ---- home page gallery ----------------------------------------------------
 // The home page shows every tool as a small version of its link-preview card:
 // the topic label, title and one line of text set as real HTML on the left,
@@ -1960,7 +2079,7 @@ function buildGallery() {
 // Diagrams that live on generated family pages. build-family-pages.js writes
 // those pages whole, so it calls these builders itself rather than having this
 // script patch its output.
-module.exports = { FAMILY_DIAGRAMS: { carothers, ringStrain, blockPhases, dieneTransitions, tacticity, bottlebrush } };
+module.exports = { FAMILY_DIAGRAMS: { carothers, ringStrain, blockPhases, dieneTransitions, tacticity, bottlebrush, polyamideMelting, siloxaneChain } };
 
 if (require.main === module) {
   const check = process.argv.includes("--check");

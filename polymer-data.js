@@ -374,8 +374,8 @@ window.POLYMER_DB = [
       source: "Odian, Principles of Polymerization (4th ed.), §7-3b"
     },
     name: "Nylon 6", aka: ["Polycaprolactam", "PA6"], monomer: "Caprolactam", cls: "Ring-opening (polyamide)",
-    cas: "25038-54-4", tg: "47 °C", tm: "220 °C", tags: ["polyamide", "engineering", "fiber"],
-    note: "Odian's Table 1-3 gives Tg 40 °C and Tm 223 °C; the figures here are 7 K and 3 K away and are not yet attributed to a source.",
+    cas: "25038-54-4", tg: "47 °C", tm: "220 °C", tmSource: "BASF, Ultramid B3K (PA6) Product Information: melting temperature 220 °C by DSC, ISO 11357-1/-3.", tags: ["polyamide", "engineering", "fiber"],
+    note: "Odian's Table 1-3 gives Tg 40 °C and Tm 223 °C. The Tm here is BASF's datasheet value; the Tg is 7 K above Odian's and not yet attributed to a source.",
     atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" }, { id: 8, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 }, { a: 5, b: 6, order: 1 }, { a: 6, b: 7, order: 1 }, { a: 7, b: 8, order: 2 }, { a: 7, b: "S1", order: 1 }]
   },
@@ -772,7 +772,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Nylon 11", aka: ["PA11", "Polyundecanamide", "Rilsan"], monomer: "11-Aminoundecanoic acid",
-    cls: "Step-growth (polyamide)", cas: "25035-04-5", tg: "46 °C", tm: "190 °C", tags: ["polyamide", "engineering"],
+    cls: "Step-growth (polyamide)", cas: "25035-04-5", tg: "46 °C", tm: "189 °C", tmSource: "Arkema, RILSAN BMNO (PA11) Technical Data Sheet: melting temperature 189 °C at 10 °C/min, ISO 11357-1/-3. Arkema's PA11 powder grades list 183-188 °C.", tags: ["polyamide", "engineering"],
     note: "Bio-based (castor oil); lower moisture uptake than nylon 6 or 6,6.",
     atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" },
       { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
@@ -782,7 +782,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Nylon 12", aka: ["PA12", "Polylaurolactam"], monomer: "Laurolactam",
-    cls: "Ring-opening (polyamide)", cas: "24937-16-4", tg: "41 °C", tm: "178 °C", tags: ["polyamide", "engineering", "coating"],
+    cls: "Ring-opening (polyamide)", cas: "24937-16-4", tg: "41 °C", tm: "178 °C", tmSource: "Evonik, VESTAMID L2140 (PA12) datasheet on Material Data Center: melting temperature 178 °C at 10 °C/min, ISO 11357-1/-3.", tags: ["polyamide", "engineering", "coating"],
     atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" },
       { id: 7, el: "C" }, { id: 8, el: "C" }, { id: 9, el: "C" }, { id: 10, el: "C" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
     bonds: [{ a: "S0", b: 1, order: 1 }, { a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }, { a: 3, b: 4, order: 1 }, { a: 4, b: 5, order: 1 },
@@ -855,7 +855,7 @@ window.POLYMER_DB = [
   },
   {
     name: "Nylon 6,10", aka: ["PA610", "Polyhexamethylene sebacamide"], monomer: "Hexamethylenediamine + sebacic acid",
-    cls: "Step-growth (polyamide)", cas: "9008-66-6", tg: "50 °C", tm: "215 °C", tags: ["polyamide", "engineering"],
+    cls: "Step-growth (polyamide)", cas: "9008-66-6", tg: "50 °C", tm: "220 °C", tmSource: "BASF, Ultramid (PA) Product Range (Europe), Ultramid S Balance grades: PA610 melting temperature 220 °C by DSC, ISO 11357-1/-3. DuPont lists 225 °C for Zytel RS LC3030.", tags: ["polyamide", "engineering"],
     atoms: [{ id: 1, el: "N" }, { id: 2, el: "C" }, { id: 3, el: "C" }, { id: 4, el: "C" }, { id: 5, el: "C" }, { id: 6, el: "C" }, { id: 7, el: "C" },
       { id: 8, el: "N" }, { id: 9, el: "C" }, { id: 10, el: "O" }, { id: 11, el: "C" }, { id: 12, el: "C" }, { id: 13, el: "C" }, { id: 14, el: "C" },
       { id: 15, el: "C" }, { id: 16, el: "C" }, { id: 17, el: "C" }, { id: 18, el: "C" }, { id: 19, el: "C" }, { id: 20, el: "O" }, { id: "S0", el: "*" }, { id: "S1", el: "*" }],
